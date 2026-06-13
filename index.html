@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Login</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="home.css" />
+  </head>
+  <body>
+    <main class="login-shell">
+      <section class="login-copy" aria-labelledby="login-title">
+        <div class="brand-line">
+          <div class="brand-mark" aria-hidden="true">SG</div>
+          <div>
+            <strong>Seven Gold</strong>
+            <span>Sistema interno</span>
+          </div>
+        </div>
+
+        <div>
+          <p class="eyebrow">Acesso privado</p>
+          <h1 id="login-title">Entre para acessar o painel Seven Gold.</h1>
+          <p>
+            Depois do login, cada pessoa ve apenas as areas liberadas para o seu perfil.
+          </p>
+        </div>
+      </section>
+
+      <section class="login-panel" aria-label="Formulario de login">
+        <form class="login-form" data-auth-form data-redirect="painel.html" data-button-text="Entrar">
+          <header>
+            <p class="eyebrow">Login</p>
+            <h2>Bem-vindo de volta</h2>
+          </header>
+
+          <button class="google-button" type="button" data-google-login data-redirect="painel.html">
+            Entrar com Google
+          </button>
+
+          <div class="login-divider"><span>ou</span></div>
+
+          <label>
+            E-mail
+            <input type="email" name="email" placeholder="seuemail@sevengold.com.br" />
+          </label>
+
+          <label>
+            Senha
+            <input type="password" name="password" placeholder="Digite sua senha" />
+          </label>
+
+          <div class="login-row">
+            <label class="remember-option">
+              <input type="checkbox" name="remember" />
+              Manter conectado
+            </label>
+            <a href="#">Esqueci a senha</a>
+          </div>
+
+          <button class="login-button" type="submit">Entrar</button>
+
+          <p class="login-note">
+            A validacao real de usuario, senha e permissoes entra quando ligarmos o
+            sistema ao banco de dados.
+          </p>
+        </form>
+      </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+  </body>
+</html>

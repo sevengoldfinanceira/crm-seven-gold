@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Editar Tempos</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="home.css" />
+  </head>
+  <body class="owner-history-body" data-require-auth data-permission-area="historia_dono" data-login-page="index.html" data-allowed-roles="dono" data-denied-redirect="empresa.html">
+    <main class="history-shell time-editor-shell">
+      <header class="company-topbar">
+        <a class="back-link" href="historia-dono.html">Voltar</a>
+        <div class="brand-line">
+          <div class="brand-mark" aria-hidden="true">SG</div>
+          <div><strong>Seven Gold</strong><span>Editar tempos</span></div>
+        </div>
+        <div class="owner-pill"><span>Dono</span><strong>Jhow</strong></div>
+      </header>
+
+      <section class="time-editor-panel">
+        <div>
+          <span>Data inicial</span>
+          <h1>Início no consórcio</h1>
+          <p>O tempo total será recalculado automaticamente usando a data atual.</p>
+        </div>
+        <label>
+          Data de entrada
+          <input id="consortium-start-input" type="date" value="2023-04-15" />
+        </label>
+        <div class="time-editor-preview">
+          <span>Tempo calculado</span>
+          <strong id="time-preview">Calculando...</strong>
+        </div>
+        <button id="save-consortium-start" type="button">Salvar data inicial</button>
+        <span id="time-editor-status"></span>
+      </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="editar-tempo-consorcio.js"></script>
+  </body>
+</html>

@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Historia do Dono</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="home.css?v=28" />
+  </head>
+  <body class="owner-history-body" data-require-auth data-permission-area="historia_dono" data-login-page="index.html" data-allowed-roles="dono" data-denied-redirect="empresa.html">
+    <div class="history-dashboard-shell">
+      <aside class="history-sidebar">
+        <a class="history-sidebar-brand" href="empresa.html">
+          <img src="assets/logo-copa.png" alt="Seven Gold" />
+          <span><strong>Seven Gold</strong><small>História do Dono</small></span>
+        </a>
+        <nav class="history-sidebar-nav" aria-label="Navegação da empresa">
+          <a class="history-back" href="empresa.html"><i data-lucide="chevron-left"></i><span>Voltar</span></a>
+          <a class="active" href="historia-dono.html"><i data-lucide="crown"></i><span>História do Dono</span></a>
+          <a href="empresa.html"><i data-lucide="house"></i><span>Painel</span></a>
+          <a href="organograma.html"><i data-lucide="network"></i><span>Organograma</span></a>
+          <a href="financeiro.html"><i data-lucide="badge-dollar-sign"></i><span>Financeiro</span></a>
+          <a href="comissoes.html"><i data-lucide="percent"></i><span>Comissões</span></a>
+          <a href="equipe.html"><i data-lucide="users"></i><span>Equipe</span></a>
+          <a href="#marketing"><i data-lucide="megaphone"></i><span>Marketing</span></a>
+          <a href="documentos.html"><i data-lucide="file-text"></i><span>Documentos</span></a>
+          <a href="relatorios.html"><i data-lucide="chart-column"></i><span>Relatórios</span></a>
+          <a href="permissoes.html"><i data-lucide="lock-keyhole"></i><span>Permissões</span></a>
+          <a href="#metas"><i data-lucide="target"></i><span>Metas</span></a>
+        </nav>
+        <div class="history-sidebar-profile">
+          <span class="profile-avatar">J</span>
+          <span><strong>Seven Gold</strong><small>Empresa</small></span>
+        </div>
+      </aside>
+
+      <section class="history-dashboard-main">
+        <header class="history-dashboard-header">
+          <div>
+            <h1>Olá, Jhow!</h1>
+            <p>Aqui está um resumo completo da história da sua empresa.</p>
+          </div>
+          <div class="history-header-actions">
+            <button type="button" aria-label="Tema" title="Tema"><i data-lucide="sun"></i></button>
+            <button type="button" aria-label="Notificacoes" title="Notificacoes"><i data-lucide="bell"></i></button>
+            <div class="history-header-profile">
+              <span class="profile-avatar">J</span>
+              <span><strong>Jhow</strong><small>Dono</small></span>
+              <i data-lucide="chevron-down"></i>
+            </div>
+          </div>
+        </header>
+
+        <main class="history-shell">
+
+      <div class="career-time-toolbar">
+        <button type="button" onclick="window.open('editar-tempo-consorcio.html', '_blank', 'noopener')">Editar tempos</button>
+      </div>
+      <section class="career-time-grid" aria-label="Tempo de carreira no consorcio">
+        <article data-time-card="consorcio" draggable="true">
+          <i data-lucide="calendar-days"></i>
+          <span>Tempo no consórcio</span>
+          <strong id="consortium-time">Calculando...</strong>
+          <small id="consortium-start-label">Desde 15/04/2023</small>
+        </article>
+        <article data-time-card="fora" draggable="true">
+          <i data-lucide="route"></i>
+          <span>Tempo fora do consórcio</span>
+          <strong id="outside-time">Calculando...</strong>
+          <small id="outside-months">Com base nos meses abaixo</small>
+        </article>
+        <article data-time-card="vendedor" draggable="true">
+          <i data-lucide="user-round"></i>
+          <span>Tempo como vendedor</span>
+          <strong id="seller-time">Calculando...</strong>
+          <small id="seller-months">Com base nos meses abaixo</small>
+        </article>
+        <article data-time-card="coordenador" draggable="true">
+          <i data-lucide="badge-check"></i>
+          <span>Tempo como coordenador</span>
+          <strong id="coordinator-time">Calculando...</strong>
+          <small id="coordinator-months">Com base nos meses abaixo</small>
+        </article>
+        <article data-time-card="representante" draggable="true">
+          <i data-lucide="handshake"></i>
+          <span>Tempo como representante</span>
+          <strong id="representative-time">Calculando...</strong>
+          <small id="representative-months">Com base nos meses abaixo</small>
+        </article>
+        <article data-time-card="apadrinhando" draggable="true">
+          <i data-lucide="user-round-plus"></i>
+          <span>Tempo apadrinhando</span>
+          <strong id="sponsor-time">Calculando...</strong>
+          <small id="sponsor-months">Com base nos meses abaixo</small>
+        </article>
+        <article data-time-card="telemarketing" draggable="true">
+          <i data-lucide="headphones"></i>
+          <span>Tempo em telemarketing</span>
+          <strong id="telemarketing-time">Calculando...</strong>
+          <small id="telemarketing-months">Com base nos meses abaixo</small>
+        </article>
+      </section>
+
+      <section class="lifetime-grid" aria-label="Resumo de todos os anos">
+        <article>
+          <i data-lucide="wallet-cards"></i>
+          <span>Total vendido</span>
+          <strong>R$ 42.816.961,42</strong>
+        </article>
+        <article>
+          <i data-lucide="users-round"></i>
+          <span>Total de cotas</span>
+          <strong>98</strong>
+        </article>
+        <article>
+          <i data-lucide="percent"></i>
+          <span>Total comissao</span>
+          <strong>R$ 168.081,23</strong>
+        </article>
+        <article>
+          <i data-lucide="trophy"></i>
+          <span>Melhor ano</span>
+          <strong>2025</strong>
+        </article>
+      </section>
+
+      <div class="year-gallery-toolbar">
+        <div class="year-heading-row" aria-label="Anos da história">
+          <strong>2023</strong>
+          <strong>2024</strong>
+          <strong class="featured-year-heading">2025</strong>
+          <strong>2026</strong>
+        </div>
+        <button id="toggle-photo-edit" type="button">Editar fotos</button>
+      </div>
+      <section class="year-card-grid" aria-label="Comparativo por ano">
+        <article class="owner-year-card muted-year">
+          <div class="year-photo-gallery">
+            <div class="year-photo-box" data-year-photo="2023-1">
+              <img alt="Foto 1 de 2023" hidden /><span>Adicionar</span>
+              <button class="year-photo-change" type="button" aria-label="Adicionar ou trocar foto 1 de 2023" title="Adicionar ou trocar foto">↻</button>
+              <div class="year-photo-zoom" aria-label="Controles de zoom"><button type="button" data-photo-zoom="-0.1" aria-label="Diminuir zoom">−</button><button type="button" data-photo-zoom="0.1" aria-label="Aumentar zoom">+</button></div>
+            </div>
+            <div class="year-photo-box" data-year-photo="2023-2">
+              <img alt="Foto 2 de 2023" hidden /><span>Adicionar</span>
+              <button class="year-photo-change" type="button" aria-label="Adicionar ou trocar foto 2 de 2023" title="Adicionar ou trocar foto">↻</button>
+              <div class="year-photo-zoom" aria-label="Controles de zoom"><button type="button" data-photo-zoom="-0.1" aria-label="Diminuir zoom">−</button><button type="button" data-photo-zoom="0.1" aria-label="Aumentar zoom">+</button></div>
+            </div>
+            <div class="year-photo-box" data-year-photo="2023-3">
+              <img alt="Foto 3 de 2023" hidden /><span>Adicionar</span>
+              <button class="year-photo-change" type="button" aria-label="Adicionar ou trocar foto 3 de 2023" title="Adicionar ou trocar foto">↻</button>
+              <div class="year-photo-zoom" aria-label="Controles de zoom"><button type="button" data-photo-zoom="-0.1" aria-label="Diminuir zoom">−</button><button type="button" data-photo-zoom="0.1" aria-label="Aumentar zoom">+</button></div>
+            </div>
+          </div>
+          <header>
+            <strong>Início do consórcio, abril de 2023 na J. Alfa</strong>
+          </header>
+          <div class="owner-year-metrics">
+            <p><span>Crédito</span><strong>R$ 6.506.600,00</strong></p>
+            <p><span>Cotas</span><strong>26</strong></p>
+            <p><span>Comissao</span><strong>R$ 20.290,10</strong></p>
+            <p><span>Média de crédito</span><strong>R$ 929.514,29</strong></p>
+            <p><span>Média de cotas</span><strong>3,71</strong></p>
+            <p><span>Média de comissão</span><strong>R$ 2.898,59</strong></p>
+          </div>
+        </article>
+
+        <article class="owner-year-card year-2024">
+          <div class="year-photo-gallery">
+            <div class="year-photo-box" data-year-photo="2024-1">
+              <img alt="Foto 1 de 2024" hidden /><span>Adicionar</span>
+              <button class="year-photo-change" type="button" aria-label="Adicionar ou trocar foto 1 de 2024" title="Adicionar ou trocar foto">↻</button>
+              <div class="year-photo-zoom" aria-label="Controles de zoom"><button type="button" data-photo-zoom="-0.1" aria-label="Diminuir zoom">−</button><button type="button" data-photo-zoom="0.1" aria-label="Aumentar zoom">+</button></div>
+            </div>
+            <div class="year-photo-box" data-year-photo="2024-2">
+              <img alt="Foto 2 de 2024" hidden /><span>Adicionar</span>
+              <button class="year-photo-change" type="button" aria-label="Adicionar ou trocar foto 2 de 2024" title="Adicionar ou trocar foto">↻</button>
+              <div class="year-photo-zoom" aria-label="Controles de zoom"><button type="button" data-photo-zoom="-0.1" aria-label="Diminuir zoom">−</button><button type="button" data-photo-zoom="0.1" aria-label="Aumentar zoom">+</button></div>
+            </div>
+            <div class="year-photo-box" data-year-photo="2024-3">
+              <img alt="Foto 3 de 2024" hidden /><span>Adicionar</span>
+              <button class="year-photo-change" type="button" aria-label="Adicionar ou trocar foto 3 de 2024" title="Adicionar ou trocar foto">↻</button>
+              <div class="year-photo-zoom" aria-label="Controles de zoom"><button type="button" data-photo-zoom="-0.1" aria-label="Diminuir zoom">−</button><button type="button" data-photo-zoom="0.1" aria-label="Aumentar zoom">+</button></div>
+            </div>
+          </div>
+          <header>
+            <strong>J.Alfa / SMK / Imoby</strong>
+          </header>
+          <div class="owner-year-metrics">
+            <p><span>Crédito</span><strong>R$ 10.896.325,33</strong></p>
+            <p><span>Cotas</span><strong>44</strong></p>
+            <p><span>Comissao</span><strong>R$ 44.811,56</strong></p>
+            <p><span>Média de crédito</span><strong>R$ 990.575,03</strong></p>
+            <p><span>Média de cotas</span><strong>4,00</strong></p>
+            <p><span>Média de comissão</span><strong>R$ 4.073,78</strong></p>
+          </div>
+        </article>
+
+        <article class="owner-year-card featured-history">
+          <div class="year-photo-gallery">
+            <div class="year-photo-box" data-year-photo="2025-1">
+              <img alt="Foto 1 de 2025" hidden /><span>Adicionar</span>
+              <button class="year-photo-change" type="button" aria-label="Adicionar ou trocar foto 1 de 2025" title="Adicionar ou trocar foto">↻</button>
+              <div class="year-photo-zoom" aria-label="Controles de zoom"><button type="button" data-photo-zoom="-0.1" aria-label="Diminuir zoom">−</button><button type="button" data-photo-zoom="0.1" aria-label="Aumentar zoom">+</button></div>
+            </div>
+            <div class="year-photo-box" data-year-photo="2025-2">
+              <img alt="Foto 2 de 2025" hidden /><span>Adicionar</span>
+              <button class="year-photo-change" type="button" aria-label="Adicionar ou trocar foto 2 de 2025" title="Adicionar ou trocar foto">↻</button>
+              <div class="year-photo-zoom" aria-label="Controles de zoom"><button type="button" data-photo-zoom="-0.1" aria-label="Diminuir zoom">−</button><button type="button" data-photo-zoom="0.1" aria-label="Aumentar zoom">+</button></div>
+            </div>
+            <div class="year-photo-box" data-year-photo="2025-3">
+              <img alt="Foto 3 de 2025" hidden /><span>Adicionar</span>
+              <button class="year-photo-change" type="button" aria-label="Adicionar ou trocar foto 3 de 2025" title="Adicionar ou trocar foto">↻</button>
+              <div class="year-photo-zoom" aria-label="Controles de zoom"><button type="button" data-photo-zoom="-0.1" aria-label="Diminuir zoom">−</button><button type="button" data-photo-zoom="0.1" aria-label="Aumentar zoom">+</button></div>
+            </div>
+          </div>
+          <header>
+            <strong>Imoby / Ueki / LC / DG</strong>
+          </header>
+          <div class="owner-year-metrics">
+            <p><span>Crédito</span><strong>R$ 24.123.036,09</strong></p>
+            <p><span>Cotas</span><strong>75</strong></p>
+            <p><span>Comissao</span><strong>R$ 95.009,69</strong></p>
+            <p><span>Média de crédito</span><strong>R$ 2.010.253,01</strong></p>
+            <p><span>Média de cotas</span><strong>6,25</strong></p>
+            <p><span>Média de comissão</span><strong>R$ 10.556,63</strong></p>
+          </div>
+        </article>
+
+        <article class="owner-year-card active-year">
+          <div class="year-photo-gallery">
+            <div class="year-photo-box" data-year-photo="2026-1">
+              <img alt="Foto 1 de 2026" hidden /><span>Adicionar</span>
+              <button class="year-photo-change" type="button" aria-label="Adicionar ou trocar foto 1 de 2026" title="Adicionar ou trocar foto">↻</button>
+              <div class="year-photo-zoom" aria-label="Controles de zoom"><button type="button" data-photo-zoom="-0.1" aria-label="Diminuir zoom">−</button><button type="button" data-photo-zoom="0.1" aria-label="Aumentar zoom">+</button></div>
+            </div>
+            <div class="year-photo-box" data-year-photo="2026-2">
+              <img alt="Foto 2 de 2026" hidden /><span>Adicionar</span>
+              <button class="year-photo-change" type="button" aria-label="Adicionar ou trocar foto 2 de 2026" title="Adicionar ou trocar foto">↻</button>
+              <div class="year-photo-zoom" aria-label="Controles de zoom"><button type="button" data-photo-zoom="-0.1" aria-label="Diminuir zoom">−</button><button type="button" data-photo-zoom="0.1" aria-label="Aumentar zoom">+</button></div>
+            </div>
+            <div class="year-photo-box" data-year-photo="2026-3">
+              <img alt="Foto 3 de 2026" hidden /><span>Adicionar</span>
+              <button class="year-photo-change" type="button" aria-label="Adicionar ou trocar foto 3 de 2026" title="Adicionar ou trocar foto">↻</button>
+              <div class="year-photo-zoom" aria-label="Controles de zoom"><button type="button" data-photo-zoom="-0.1" aria-label="Diminuir zoom">−</button><button type="button" data-photo-zoom="0.1" aria-label="Aumentar zoom">+</button></div>
+            </div>
+          </div>
+          <header>
+            <strong>DG - Coordenador, Alpha ADM - Representante Júnior</strong>
+          </header>
+          <div class="owner-year-metrics">
+            <p><span>Crédito</span><strong>R$ 3.300.000,00</strong></p>
+            <p><span>Cotas</span><strong>10</strong></p>
+            <p><span>Comissao</span><strong>R$ 12.300,00</strong></p>
+            <p><span>Média de crédito</span><strong>R$ 3.300.000,00</strong></p>
+            <p><span>Média de cotas</span><strong>10,00</strong></p>
+            <p><span>Média de comissão</span><strong>R$ 12.300,00</strong></p>
+          </div>
+        </article>
+      </section>
+
+      <section class="comparison-grid" aria-label="Comparacao lado a lado">
+        <article>
+          <i data-lucide="chart-no-axes-column-increasing"></i>
+          <span>2024 vs 2023</span>
+          <strong>+R$ 4.389.725,33</strong>
+          <small>Credito vendido cresceu 67,5%</small>
+        </article>
+        <article>
+          <i data-lucide="trending-up"></i>
+          <span>2025 vs 2024</span>
+          <strong>+R$ 13.226.710,76</strong>
+          <small>Maior salto da historia ate agora</small>
+        </article>
+        <article>
+          <i data-lucide="circle-dollar-sign"></i>
+          <span>2026 parcial</span>
+          <strong>R$ 3.300.000,00</strong>
+          <small>Resultado concentrado em janeiro</small>
+        </article>
+      </section>
+
+      <section class="month-detail-grid" aria-label="Detalhe mensal por ano">
+        <details class="year-detail" open>
+          <summary>
+            <strong>2026</strong>
+            <span class="year-summary-actions">
+              <span>Ver meses e totais</span>
+              <a class="edit-year-link" href="editar-historia-ano.html?ano=2026" target="_blank" rel="noopener">Editar ano</a>
+            </span>
+          </summary>
+          <div class="owner-sheet-wrap">
+            <table class="owner-sheet-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Jan</th>
+                  <th>Fev</th>
+                  <th>Mar</th>
+                  <th>Abr</th>
+                  <th>Mai</th>
+                  <th>Jun</th>
+                  <th>Jul</th>
+                  <th>Ago</th>
+                  <th>Set</th>
+                  <th>Out</th>
+                  <th>Nov</th>
+                  <th>Dez</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Credito vendido</th>
+                  <td>R$ 3.300.000,00</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td class="total-cell">R$ 3.300.000,00</td>
+                </tr>
+                <tr>
+                  <th>Cotas</th>
+                  <td>10</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td class="total-cell">10</td>
+                </tr>
+                <tr>
+                  <th>Media</th>
+                  <td>R$ 330.000,00</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td class="total-cell">R$ 330.000,00</td>
+                </tr>
+                <tr>
+                  <th>Comissao</th>
+                  <td>R$ 12.300,00</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td class="total-cell">R$ 12.300,00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="year-detail" open>
+          <summary>
+            <strong>2025</strong>
+            <span class="year-summary-actions">
+              <span>Ver meses e totais</span>
+              <a class="edit-year-link" href="editar-historia-ano.html?ano=2025" target="_blank" rel="noopener">Editar ano</a>
+            </span>
+          </summary>
+          <div class="owner-sheet-wrap">
+            <table class="owner-sheet-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Jan</th>
+                  <th>Fev</th>
+                  <th>Mar</th>
+                  <th>Abr</th>
+                  <th>Mai</th>
+                  <th>Jun</th>
+                  <th>Jul</th>
+                  <th>Ago</th>
+                  <th>Set</th>
+                  <th>Out</th>
+                  <th>Nov</th>
+                  <th>Dez</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Credito vendido</th>
+                  <td>R$ 1.900.000,00</td>
+                  <td>R$ 2.490.000,00</td>
+                  <td>R$ 2.325.000,00</td>
+                  <td>R$ 3.350.000,00</td>
+                  <td>R$ 4.970.000,00</td>
+                  <td>R$ 464.000,00</td>
+                  <td>R$ 2.526.726,74</td>
+                  <td>R$ 1.012.366,35</td>
+                  <td>R$ 724.943,00</td>
+                  <td>R$ 1.004.000,00</td>
+                  <td>R$ 1.230.000,00</td>
+                  <td>R$ 2.126.000,00</td>
+                  <td class="total-cell">R$ 24.123.036,09</td>
+                </tr>
+                <tr>
+                  <th>Cotas</th>
+                  <td>8</td>
+                  <td>10</td>
+                  <td>6</td>
+                  <td>8</td>
+                  <td>13</td>
+                  <td>2</td>
+                  <td>7</td>
+                  <td>3</td>
+                  <td>3</td>
+                  <td>4</td>
+                  <td>4</td>
+                  <td>7</td>
+                  <td class="total-cell">75</td>
+                </tr>
+                <tr>
+                  <th>Media</th>
+                  <td>R$ 237.500,00</td>
+                  <td>R$ 249.000,00</td>
+                  <td>R$ 387.500,00</td>
+                  <td>R$ 418.750,00</td>
+                  <td>R$ 382.307,69</td>
+                  <td>R$ 232.000,00</td>
+                  <td>R$ 360.960,96</td>
+                  <td>R$ 337.455,45</td>
+                  <td>R$ 241.647,67</td>
+                  <td>R$ 251.000,00</td>
+                  <td>R$ 307.500,00</td>
+                  <td>R$ 303.714,29</td>
+                  <td class="total-cell">R$ 321.640,48</td>
+                </tr>
+                <tr>
+                  <th>Comissao</th>
+                  <td>R$ 11.341,30</td>
+                  <td>R$ 15.390,00</td>
+                  <td>R$ 14.441,40</td>
+                  <td>R$ 6.325,00</td>
+                  <td>R$ 10.530,00</td>
+                  <td>R$ 1.188,00</td>
+                  <td>R$ 11.145,23</td>
+                  <td>R$ 3.991,19</td>
+                  <td>R$ 3.612,07</td>
+                  <td>R$ 3.458,50</td>
+                  <td>R$ 4.920,00</td>
+                  <td>R$ 8.667,00</td>
+                  <td class="total-cell">R$ 95.009,69</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="year-detail" open>
+          <summary>
+            <strong>2024</strong>
+            <span class="year-summary-actions">
+              <span>Ver meses e totais</span>
+              <a class="edit-year-link" href="editar-historia-ano.html?ano=2024" target="_blank" rel="noopener">Editar ano</a>
+            </span>
+          </summary>
+          <div class="owner-sheet-wrap">
+            <table class="owner-sheet-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Jan</th>
+                  <th>Fev</th>
+                  <th>Mar</th>
+                  <th>Abr</th>
+                  <th>Mai</th>
+                  <th>Jun</th>
+                  <th>Jul</th>
+                  <th>Ago</th>
+                  <th>Set</th>
+                  <th>Out</th>
+                  <th>Nov</th>
+                  <th>Dez</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Credito vendido</th>
+                  <td>R$ 880.000,00</td>
+                  <td>R$ 1.420.000,00</td>
+                  <td>R$ 350.000,00</td>
+                  <td>R$ 2.070.000,00</td>
+                  <td>R$ 1.700.000,00</td>
+                  <td>R$ 240.000,00</td>
+                  <td>Tuberculose</td>
+                  <td>R$ 1.130.000,00</td>
+                  <td>R$ 721.555,33</td>
+                  <td>R$ 1.132.885,00</td>
+                  <td>R$ 582.885,00</td>
+                  <td>R$ 669.000,00</td>
+                  <td class="total-cell">R$ 10.896.325,33</td>
+                </tr>
+                <tr>
+                  <th>Cotas</th>
+                  <td>4</td>
+                  <td>5</td>
+                  <td>1</td>
+                  <td>8</td>
+                  <td>6</td>
+                  <td>2</td>
+                  <td>-</td>
+                  <td>5</td>
+                  <td>3</td>
+                  <td>5</td>
+                  <td>3</td>
+                  <td>2</td>
+                  <td class="total-cell">44</td>
+                </tr>
+                <tr>
+                  <th>Media</th>
+                  <td>R$ 220.000,00</td>
+                  <td>R$ 284.000,00</td>
+                  <td>R$ 350.000,00</td>
+                  <td>R$ 258.750,00</td>
+                  <td>R$ 283.333,33</td>
+                  <td>R$ 120.000,00</td>
+                  <td>-</td>
+                  <td>R$ 226.000,00</td>
+                  <td>R$ 240.518,44</td>
+                  <td>R$ 226.577,00</td>
+                  <td>R$ 194.295,00</td>
+                  <td>R$ 334.500,00</td>
+                  <td class="total-cell">R$ 247.643,76</td>
+                </tr>
+                <tr>
+                  <th>Comissao</th>
+                  <td>R$ 2.570,00</td>
+                  <td>R$ 4.130,00</td>
+                  <td>R$ 700,00</td>
+                  <td>R$ 7.760,00</td>
+                  <td>R$ 4.900,00</td>
+                  <td>R$ 1.875,00</td>
+                  <td>-</td>
+                  <td>R$ 8.500,00</td>
+                  <td>R$ 3.247,00</td>
+                  <td>R$ 5.987,31</td>
+                  <td>R$ 3.338,75</td>
+                  <td>R$ 1.803,50</td>
+                  <td class="total-cell">R$ 44.811,56</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="year-detail" open>
+          <summary>
+            <strong>2023</strong>
+            <span class="year-summary-actions">
+              <span>Ver meses e totais</span>
+              <a class="edit-year-link" href="editar-historia-ano.html?ano=2023" target="_blank" rel="noopener">Editar ano</a>
+            </span>
+          </summary>
+          <div class="owner-sheet-wrap">
+            <table class="owner-sheet-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Jan</th>
+                  <th>Fev</th>
+                  <th>Mar</th>
+                  <th>Abr</th>
+                  <th>Mai</th>
+                  <th>Jun</th>
+                  <th>Jul</th>
+                  <th>Ago</th>
+                  <th>Set</th>
+                  <th>Out</th>
+                  <th>Nov</th>
+                  <th>Dez</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Credito vendido</th>
+                  <td>Fora do consorcio</td>
+                  <td>Fora do consorcio</td>
+                  <td>Fora do consorcio</td>
+                  <td>R$ 261.000,00</td>
+                  <td>R$ 980.000,00</td>
+                  <td>R$ 533.600,00</td>
+                  <td>R$ 840.000,00</td>
+                  <td>R$ 1.497.000,00</td>
+                  <td>R$ 815.000,00</td>
+                  <td>R$ 1.580.000,00</td>
+                  <td>Depressao</td>
+                  <td>Depressao</td>
+                  <td class="total-cell">R$ 6.506.600,00</td>
+                </tr>
+                <tr>
+                  <th>Cotas</th>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>1</td>
+                  <td>4</td>
+                  <td>2</td>
+                  <td>4</td>
+                  <td>7</td>
+                  <td>3</td>
+                  <td>5</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td class="total-cell">26</td>
+                </tr>
+                <tr>
+                  <th>Media</th>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>R$ 261.000,00</td>
+                  <td>R$ 245.000,00</td>
+                  <td>R$ 266.800,00</td>
+                  <td>R$ 210.000,00</td>
+                  <td>R$ 213.857,14</td>
+                  <td>R$ 271.666,67</td>
+                  <td>R$ 316.000,00</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td class="total-cell">R$ 250.253,85</td>
+                </tr>
+                <tr>
+                  <th>Comissao</th>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>R$ 522,00</td>
+                  <td>R$ 1.960,00</td>
+                  <td>R$ 1.467,20</td>
+                  <td>R$ 5.040,80</td>
+                  <td>R$ 5.316,50</td>
+                  <td>R$ 2.740,00</td>
+                  <td>R$ 3.243,60</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td class="total-cell">R$ 20.290,10</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+        </main>
+      </section>
+    </div>
+    <input id="year-photo-input" type="file" accept="image/*" hidden />
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="historia-dono.js?v=26"></script>
+    <script>lucide.createIcons();</script>
+  </body>
+</html>

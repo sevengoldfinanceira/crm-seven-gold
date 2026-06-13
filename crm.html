@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold CRM | Pipeline</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-require-auth data-permission-area="crm" data-login-page="crm-login.html" data-allowed-roles="dono,administrador,coordenador,representante,vendedor,financeiro,marketing" data-denied-redirect="crm-login.html">
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Menu do CRM">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">SG</div>
+          <div>
+            <strong>Seven Gold</strong>
+            <span>CRM operacional</span>
+          </div>
+        </div>
+
+        <nav class="nav-list">
+          <a class="nav-item" href="#dashboard">
+            <span class="nav-icon" aria-hidden="true">DB</span>
+            Dashboard
+          </a>
+          <a class="nav-item active" href="#pipeline" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">PL</span>
+            Pipeline
+          </a>
+          <a class="nav-item" href="#tarefas">
+            <span class="nav-icon" aria-hidden="true">TK</span>
+            Tarefas
+          </a>
+          <a class="nav-item" href="#feed">
+            <span class="nav-icon" aria-hidden="true">FD</span>
+            Feed
+          </a>
+          <a class="nav-item" href="#calendario">
+            <span class="nav-icon" aria-hidden="true">CL</span>
+            Calendario
+          </a>
+          <a class="nav-item" href="#financeiro">
+            <span class="nav-icon" aria-hidden="true">R$</span>
+            Financeiro
+          </a>
+          <a class="nav-item" href="#cadastro">
+            <span class="nav-icon" aria-hidden="true">+</span>
+            Cadastro rapido
+          </a>
+          <a class="nav-item" href="#equipe">
+            <span class="nav-icon" aria-hidden="true">EQ</span>
+            Minha equipe
+          </a>
+        </nav>
+
+        <div class="user-box">
+          <strong>Seven Gold Financeira</strong>
+          <span>seven.goldfinanceira@gmail.com</span>
+          <mark>Representante</mark>
+          <button type="button" data-logout data-logout-redirect="crm-login.html">Sair</button>
+        </div>
+      </aside>
+
+      <main class="crm-workspace">
+        <header class="mobile-bar">
+          <button class="icon-button menu-button" type="button" aria-label="Abrir menu">
+            Menu
+          </button>
+          <strong>Pipeline</strong>
+        </header>
+
+        <section class="pipeline-header" id="pipeline">
+          <div>
+            <p class="route-label">sistema.sevengold.com.br/crm</p>
+            <h1>Pipeline</h1>
+            <span class="lead-count" data-lead-count>Carregando leads...</span>
+          </div>
+          <button class="new-lead-button" type="button" data-open-modal>
+            <span aria-hidden="true">+</span>
+            Novo lead
+          </button>
+        </section>
+
+        <section class="filter-row" aria-label="Filtros do pipeline">
+          <label>
+            <span>Tipo</span>
+            <select>
+              <option>Todos os tipos</option>
+              <option>Consorcio</option>
+              <option>Investimento</option>
+              <option>Credito</option>
+            </select>
+          </label>
+          <label>
+            <span>Origem</span>
+            <select>
+              <option>Todas as origens</option>
+              <option>Site publico</option>
+              <option>Instagram</option>
+              <option>Indicacao</option>
+            </select>
+          </label>
+          <label>
+            <span>Periodo</span>
+            <select>
+              <option>Este mes</option>
+              <option>Hoje</option>
+              <option>Ultimos 7 dias</option>
+              <option>Este ano</option>
+            </select>
+          </label>
+          <button class="clear-button" type="button">Limpar filtros</button>
+        </section>
+
+        <section class="kanban-wrap" aria-label="Quadro de leads">
+          <div class="kanban-board" data-kanban-board>
+            <article class="kanban-column" data-status="lead_recebido">
+              <header>
+                <span class="dot blue"></span>
+                <strong>Lead recebido</strong>
+                <small>0</small>
+              </header>
+              <div class="card-stack"></div>
+            </article>
+
+            <article class="kanban-column" data-status="primeiro_contato">
+              <header>
+                <span class="dot orange"></span>
+                <strong>Primeiro contato</strong>
+                <small>0</small>
+              </header>
+              <div class="card-stack"></div>
+            </article>
+
+            <article class="kanban-column" data-status="agendamento">
+              <header>
+                <span class="dot purple"></span>
+                <strong>Agendamento</strong>
+                <small>0</small>
+              </header>
+              <div class="card-stack"></div>
+            </article>
+
+            <article class="kanban-column" data-status="cliente_em_loja">
+              <header>
+                <span class="dot pink"></span>
+                <strong>Cliente em loja</strong>
+                <small>0</small>
+              </header>
+              <div class="card-stack"></div>
+            </article>
+
+            <article class="kanban-column" data-status="proposta_enviada">
+              <header>
+                <span class="dot amber"></span>
+                <strong>Proposta enviada</strong>
+                <small>0</small>
+              </header>
+              <div class="card-stack"></div>
+            </article>
+
+            <article class="kanban-column" data-status="venda_fechada">
+              <header>
+                <span class="dot green"></span>
+                <strong>Venda fechada</strong>
+                <small>0</small>
+              </header>
+              <div class="card-stack"></div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="lead-modal" aria-labelledby="modal-title">
+      <form data-lead-form>
+        <header>
+          <h2 id="modal-title">Novo lead</h2>
+          <button class="icon-button" type="button" data-close-modal aria-label="Fechar">X</button>
+        </header>
+        <label>
+          Nome do lead
+          <input name="name" type="text" placeholder="Ex: Amanda Silva" required />
+        </label>
+        <label>
+          Origem
+          <select name="origin">
+            <option>Site publico</option>
+            <option>Instagram</option>
+            <option>WhatsApp</option>
+            <option>Indicacao</option>
+          </select>
+        </label>
+        <label>
+          Observacao
+          <textarea name="note" rows="4" placeholder="Resumo do primeiro contato"></textarea>
+        </label>
+        <p class="form-status" data-lead-form-status></p>
+        <button class="new-lead-button" type="submit">Salvar lead</button>
+      </form>
+    </dialog>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

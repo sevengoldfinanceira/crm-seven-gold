@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Editar Historia do Dono</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="home.css" />
+  </head>
+  <body class="owner-history-body" data-require-auth data-permission-area="historia_dono" data-login-page="index.html" data-allowed-roles="dono" data-denied-redirect="empresa.html">
+    <main class="history-shell year-editor-shell">
+      <header class="company-topbar">
+        <a class="back-link" href="historia-dono.html">Voltar</a>
+        <div class="brand-line">
+          <div class="brand-mark" aria-hidden="true">SG</div>
+          <div>
+            <strong>Seven Gold</strong>
+            <span>Historia do Dono</span>
+          </div>
+        </div>
+        <div class="owner-pill">
+          <span>Dono</span>
+          <strong>Jhow</strong>
+        </div>
+      </header>
+
+      <section class="history-toolbar compact-toolbar year-editor-heading">
+        <div>
+          <span class="editor-eyebrow">Edicao anual</span>
+          <h1 id="editor-title">Editar ano</h1>
+          <span>Altere qualquer valor da planilha e salve tudo de uma vez.</span>
+        </div>
+        <div class="history-actions">
+          <button class="secondary-action" id="reset-year" type="button">Restaurar original</button>
+          <button id="save-year" type="button">Salvar alteracoes</button>
+        </div>
+      </section>
+
+      <section class="year-editor-panel">
+        <div class="owner-sheet-wrap">
+          <table class="owner-sheet-table year-editor-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Jan</th>
+                <th>Fev</th>
+                <th>Mar</th>
+                <th>Abr</th>
+                <th>Mai</th>
+                <th>Jun</th>
+                <th>Jul</th>
+                <th>Ago</th>
+                <th>Set</th>
+                <th>Out</th>
+                <th>Nov</th>
+                <th>Dez</th>
+                <th>Total</th>
+                <th>Média</th>
+              </tr>
+            </thead>
+            <tbody id="editor-table-body"></tbody>
+          </table>
+        </div>
+        <div class="editor-save-bar">
+          <span id="save-status">Nenhuma alteracao pendente.</span>
+          <button id="save-year-bottom" type="button">Salvar alteracoes</button>
+        </div>
+      </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="editar-historia-ano.js?v=12"></script>
+  </body>
+</html>

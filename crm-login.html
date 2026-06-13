@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold CRM | Login</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="home.css" />
+  </head>
+  <body class="crm-login-body">
+    <main class="login-shell">
+      <section class="login-copy" aria-labelledby="crm-login-title">
+        <div class="brand-line">
+          <div class="brand-mark" aria-hidden="true">SG</div>
+          <div>
+            <strong>Seven Gold</strong>
+            <span>CRM comercial</span>
+          </div>
+        </div>
+
+        <div>
+          <p class="eyebrow">Acesso da equipe</p>
+          <h1 id="crm-login-title">Entre direto no CRM da Seven Gold.</h1>
+          <p>
+            Esse acesso e para vendedores e equipe comercial acompanharem leads,
+            tarefas, clientes e pipeline.
+          </p>
+        </div>
+      </section>
+
+      <section class="login-panel" aria-label="Formulario de login do CRM">
+        <form class="login-form" data-auth-form data-redirect="crm.html" data-button-text="Entrar no CRM">
+          <header>
+            <p class="eyebrow">CRM</p>
+            <h2>Login comercial</h2>
+          </header>
+
+          <button class="google-button" type="button" data-google-login data-redirect="crm.html">
+            Entrar com Google
+          </button>
+
+          <div class="login-divider"><span>ou</span></div>
+
+          <label>
+            E-mail
+            <input type="email" name="email" placeholder="vendedor@sevengold.com.br" />
+          </label>
+
+          <label>
+            Senha
+            <input type="password" name="password" placeholder="Digite sua senha" />
+          </label>
+
+          <div class="login-row">
+            <label class="remember-option">
+              <input type="checkbox" name="remember" />
+              Manter conectado
+            </label>
+            <a href="#">Esqueci a senha</a>
+          </div>
+
+          <button class="login-button" type="submit">Entrar no CRM</button>
+
+          <p class="login-note">
+            No sistema real, esse login vai liberar somente as permissoes do perfil
+            comercial.
+          </p>
+        </form>
+      </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+  </body>
+</html>

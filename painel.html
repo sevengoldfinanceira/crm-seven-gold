@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Painel Inicial</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="home.css" />
+  </head>
+  <body data-require-auth data-login-page="index.html">
+    <main class="entry-shell">
+      <section class="entry-hero" aria-labelledby="page-title">
+        <div class="brand-line">
+          <div class="brand-mark" aria-hidden="true">SG</div>
+          <div>
+            <strong>Seven Gold</strong>
+            <span>Sistema interno</span>
+          </div>
+        </div>
+
+        <div class="entry-copy">
+          <p class="eyebrow">Painel inicial</p>
+          <h1 id="page-title">Escolha onde voce quer trabalhar agora.</h1>
+          <p>
+            Use o CRM para operar leads e atendimentos. Use Empresa para acompanhar a
+            gestao, financeiro, permissoes e visao dos donos.
+          </p>
+        </div>
+      </section>
+
+      <section class="entry-options" aria-label="Areas do sistema">
+        <a class="entry-card primary-card" href="crm-login.html">
+          <span class="card-icon" aria-hidden="true">CRM</span>
+          <div>
+            <p>Equipe comercial</p>
+            <h2>Entrar no CRM</h2>
+            <span>
+              Leads, pipeline, tarefas, atendimento, clientes e passagem para o
+              financeiro.
+            </span>
+          </div>
+          <strong>Abrir</strong>
+        </a>
+
+        <a class="entry-card" href="empresa.html" data-visible-roles="dono,administrador,financeiro,marketing,rh">
+          <span class="card-icon" aria-hidden="true">ADM</span>
+          <div>
+            <p>Dono e diretoria</p>
+            <h2>Entrar na Empresa</h2>
+            <span>
+              Gestao geral, usuarios, permissoes, relatorios, financeiro completo e
+              configuracoes.
+            </span>
+          </div>
+          <strong>Abrir</strong>
+        </a>
+      </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+  </body>
+</html>

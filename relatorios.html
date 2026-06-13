@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Relatorios</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="home.css" />
+  </head>
+  <body class="reports-body" data-require-auth data-permission-area="relatorios" data-login-page="index.html" data-allowed-roles="dono,administrador,financeiro,marketing,rh,coordenador" data-denied-redirect="empresa.html">
+    <main class="reports-shell">
+      <header class="company-topbar">
+        <a class="back-link" href="empresa.html">Voltar</a>
+        <div class="brand-line">
+          <div class="brand-mark" aria-hidden="true">SG</div>
+          <div>
+            <strong>Seven Gold</strong>
+            <span>Relatorios</span>
+          </div>
+        </div>
+        <div class="owner-pill">
+          <span>Perfil</span>
+          <strong data-user-role>Dono</strong>
+        </div>
+      </header>
+
+      <section class="reports-toolbar">
+        <div>
+          <h1>Relatorios de vendas</h1>
+          <span>Painel mensal de producao, vendas, credito, vendedores e representantes.</span>
+        </div>
+        <div class="reports-actions">
+          <label>
+            Mes do relatorio
+            <input type="month" data-report-month />
+          </label>
+          <button type="button" data-focus-sale-form>Adicionar venda</button>
+        </div>
+      </section>
+
+      <section class="reports-summary">
+        <article>
+          <span>Credito vendido</span>
+          <strong data-report-credit>R$ 0,00</strong>
+        </article>
+        <article>
+          <span>Valor recebido</span>
+          <strong data-report-money>R$ 0,00</strong>
+        </article>
+        <article>
+          <span>Cotas</span>
+          <strong data-report-quota>0</strong>
+        </article>
+        <article>
+          <span>Media de credito</span>
+          <strong data-report-average>R$ 0,00</strong>
+        </article>
+        <article>
+          <span>Producao iniciada</span>
+          <strong data-report-started>0</strong>
+        </article>
+        <article>
+          <span>Producao finalizada</span>
+          <strong data-report-finished>0</strong>
+        </article>
+        <article>
+          <span>Total de vendas</span>
+          <strong data-report-sales-count>0</strong>
+        </article>
+        <article>
+          <span>Ticket medio</span>
+          <strong data-report-ticket>R$ 0,00</strong>
+        </article>
+      </section>
+
+      <section class="reports-layout">
+        <section class="reports-panel">
+          <div class="reports-filters">
+            <input type="search" placeholder="Buscar cliente, vendedor ou representante" data-report-search />
+            <select data-report-period>
+              <option value="mes">Mes selecionado</option>
+              <option value="ano">Este ano</option>
+              <option value="todos">Todos</option>
+            </select>
+            <select data-report-person>
+              <option value="todos">Todos</option>
+            </select>
+          </div>
+
+          <div class="reports-table-wrap">
+            <table class="reports-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Cliente</th>
+                  <th>Vendedor</th>
+                  <th>Representante</th>
+                  <th>Tabela</th>
+                  <th>Credito</th>
+                  <th>Valor</th>
+                  <th>Cotas</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody data-sales-table>
+                <tr><td colspan="9">Carregando vendas...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <section class="report-breakdowns">
+            <article>
+              <h2>Relatorio por vendedor</h2>
+              <div data-seller-report></div>
+            </article>
+            <article>
+              <h2>Relatorio por representante</h2>
+              <div data-representative-report></div>
+            </article>
+          </section>
+        </section>
+
+        <aside class="reports-side">
+          <form class="sale-form" data-sale-form>
+            <h2>Adicionar venda</h2>
+            <label>
+              Cliente
+              <input name="client_name" type="text" placeholder="Nome do cliente" required />
+            </label>
+            <label>
+              Vendedor
+              <input name="seller_name" type="text" placeholder="Nome do vendedor" required />
+            </label>
+            <label>
+              Representante
+              <input name="representative_name" type="text" placeholder="Nome do representante" />
+            </label>
+            <label>
+              Tabela
+              <select name="sale_table">
+                <option>Tab 01</option>
+                <option>Tab 02</option>
+                <option>Tab 03</option>
+                <option>Tab 04</option>
+                <option>Tab 05</option>
+                <option>Tab 06</option>
+                <option>Tab 07</option>
+              </select>
+            </label>
+            <label>
+              Credito vendido
+              <input name="credit_amount" type="number" min="0" step="0.01" required />
+            </label>
+            <label>
+              Valor recebido
+              <input name="sale_amount" type="number" min="0" step="0.01" required />
+            </label>
+            <label>
+              Cotas
+              <input name="quota_count" type="number" min="1" step="1" value="1" required />
+            </label>
+            <label>
+              Data
+              <input name="sale_date" type="date" required />
+            </label>
+            <label>
+              Status da producao
+              <select name="production_status">
+                <option value="iniciada">Producao iniciada</option>
+                <option value="finalizada">Producao finalizada</option>
+              </select>
+            </label>
+            <p class="sale-form-status" data-sale-message></p>
+            <button type="submit">Salvar venda</button>
+          </form>
+
+          <section class="ranking-panel">
+            <h2>Ranking</h2>
+            <div data-sales-ranking></div>
+          </section>
+        </aside>
+      </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="relatorios.js"></script>
+  </body>
+</html>

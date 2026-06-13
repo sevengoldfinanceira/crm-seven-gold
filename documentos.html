@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Documentos</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="home.css" />
+  </head>
+  <body class="documents-body" data-require-auth data-permission-area="documentos" data-login-page="index.html" data-allowed-roles="dono,administrador,coordenador,representante,vendedor,financeiro,marketing,rh" data-denied-redirect="painel.html">
+    <main class="documents-shell">
+      <header class="company-topbar">
+        <a class="back-link" href="empresa.html">Voltar</a>
+        <div class="brand-line">
+          <div class="brand-mark" aria-hidden="true">SG</div>
+          <div>
+            <strong>Seven Gold</strong>
+            <span>Documentos</span>
+          </div>
+        </div>
+        <div class="owner-pill">
+          <span>Arquivos</span>
+          <strong>Setores</strong>
+        </div>
+      </header>
+
+      <section class="documents-toolbar" aria-label="Controles de documentos">
+        <div>
+          <h1>Documentos</h1>
+          <span>Organize arquivos por setor, categoria, cargo e tipo de documento.</span>
+        </div>
+        <div class="documents-actions">
+          <button type="button" data-focus-document-form>Adicionar documento</button>
+        </div>
+      </section>
+
+      <section class="documents-layout">
+        <aside class="sector-sidebar" aria-label="Setores">
+          <button class="sector-tab active" type="button" data-sector-filter="todos">
+            <strong>Todos</strong>
+            <span data-sector-count="todos">0 docs</span>
+          </button>
+          <button class="sector-tab" type="button" data-sector-filter="Diretoria">
+            <strong>Diretoria</strong>
+            <span data-sector-count="Diretoria">0 docs</span>
+          </button>
+          <button class="sector-tab" type="button" data-sector-filter="Comercial">
+            <strong>Comercial</strong>
+            <span data-sector-count="Comercial">0 docs</span>
+          </button>
+          <button class="sector-tab" type="button" data-sector-filter="Financeiro">
+            <strong>Financeiro</strong>
+            <span data-sector-count="Financeiro">0 docs</span>
+          </button>
+          <button class="sector-tab" type="button" data-sector-filter="Juridico">
+            <strong>Juridico</strong>
+            <span data-sector-count="Juridico">0 docs</span>
+          </button>
+          <button class="sector-tab" type="button" data-sector-filter="RH">
+            <strong>RH</strong>
+            <span data-sector-count="RH">0 docs</span>
+          </button>
+          <button class="sector-tab" type="button" data-sector-filter="Marketing">
+            <strong>Marketing</strong>
+            <span data-sector-count="Marketing">0 docs</span>
+          </button>
+          <button class="sector-tab" type="button" data-sector-filter="Pos-venda">
+            <strong>Pos-venda</strong>
+            <span data-sector-count="Pos-venda">0 docs</span>
+          </button>
+          <button class="sector-tab" type="button" data-sector-filter="Administrativo">
+            <strong>Administrativo</strong>
+            <span data-sector-count="Administrativo">0 docs</span>
+          </button>
+        </aside>
+
+        <section class="document-main" aria-label="Categorias e documentos">
+          <div class="document-search">
+            <input type="search" placeholder="Buscar documento, setor ou categoria" data-document-search />
+            <select data-type-filter>
+              <option>Todos os tipos</option>
+              <option>Contrato</option>
+              <option>Comprovante</option>
+              <option>Modelo</option>
+              <option>Planilha</option>
+              <option>PDF</option>
+              <option>Imagem</option>
+            </select>
+          </div>
+
+          <div class="document-category-grid" data-document-grid>
+            <article class="document-category">
+              <header>
+                <span class="category-icon docs-icon" aria-hidden="true"></span>
+                <div>
+                  <h2>Carregando documentos</h2>
+                  <p>Buscando arquivos cadastrados na Seven Gold.</p>
+                </div>
+              </header>
+            </article>
+          </div>
+        </section>
+
+        <form class="upload-panel" aria-label="Adicionar documento" data-document-form>
+          <h2>Adicionar documento</h2>
+          <label>
+            Nome do documento
+            <input name="title" type="text" placeholder="Ex: Contrato padrao" required />
+          </label>
+          <label>
+            Setor
+            <select name="sector">
+              <option>Diretoria</option>
+              <option>Comercial</option>
+              <option>Financeiro</option>
+              <option>Juridico</option>
+              <option>RH</option>
+              <option>Marketing</option>
+              <option>Pos-venda</option>
+              <option>Administrativo</option>
+            </select>
+          </label>
+          <label>
+            Categoria
+            <select name="category">
+              <option>Contratos</option>
+              <option>Financeiro</option>
+              <option>Equipe</option>
+              <option>Marketing</option>
+              <option>Modelos</option>
+              <option>Comissoes</option>
+              <option>Procedimentos</option>
+            </select>
+          </label>
+          <label>
+            Tipo
+            <select name="document_type">
+              <option>Contrato</option>
+              <option>Comprovante</option>
+              <option>Modelo</option>
+              <option>Planilha</option>
+              <option>PDF</option>
+              <option>Imagem</option>
+            </select>
+          </label>
+          <label>
+            Cargo relacionado
+            <select name="role_key">
+              <option value="">Sem cargo especifico</option>
+              <option value="diretor-ceo">Diretor / CEO</option>
+              <option value="supervisor">Supervisor</option>
+              <option value="coordenador">Coordenador</option>
+              <option value="vendedor">Vendedor</option>
+              <option value="assistente-vendas">Assistente de Vendas</option>
+              <option value="pos-vendas">Pos-vendas</option>
+              <option value="administrativo">Administrativo</option>
+              <option value="financeiro-contador">Financeiro / Contador</option>
+              <option value="advogado-juridico">Advogado / Juridico</option>
+              <option value="rh">RH</option>
+              <option value="marketing-cargo">Marketing</option>
+            </select>
+          </label>
+          <label class="file-drop">
+            <span data-file-name>Selecionar arquivo</span>
+            <input name="file" type="file" required />
+          </label>
+          <p class="document-form-status" data-document-status></p>
+          <button type="submit">Salvar documento</button>
+        </form>
+      </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="documentos.js"></script>
+  </body>
+</html>
