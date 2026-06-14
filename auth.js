@@ -181,6 +181,41 @@
     });
   };
 
+  const applyUserProfile = async (session, profile) => {
+    const user = session?.user;
+    const name = profile?.full_name || user?.user_metadata?.full_name || user?.email || "Usuario";
+    const firstName = name.trim().split(/\s+/)[0];
+    const initial = firstName.charAt(0).toUpperCase();
+
+    document.querySelectorAll("[data-user-name]").forEach((element) => {
+      element.textContent = name;
+    });
+    document.querySelectorAll("[data-user-first-name]").forEach((element) => {
+      element.textContent = firstName;
+    });
+    document.querySelectorAll("[data-user-email]").forEach((element) => {
+      element.textContent = user?.email || profile?.email || "";
+    });
+    document.querySelectorAll("[data-user-avatar]").forEach((element) => {
+      element.textContent = initial;
+    });
+
+    const { data: avatar } = await client.storage
+      .from("company-documents")
+      .download(`${user.id}/profile/avatar.jpg`);
+
+    const avatarUrl = avatar ? URL.createObjectURL(avatar) : user?.user_metadata?.avatar_url;
+    if (!avatarUrl) {
+      return;
+    }
+
+    document.querySelectorAll("[data-user-avatar]").forEach((element) => {
+      element.textContent = "";
+      element.style.backgroundImage = `url("${avatarUrl}")`;
+      element.classList.add("has-user-photo");
+    });
+  };
+
   const redirectAuthenticatedLoginPage = async () => {
     const form = document.querySelector("[data-auth-form]");
 
@@ -315,6 +350,7 @@
     }
 
     applyRoleVisibility(role);
+    await applyUserProfile(session, profile);
   };
 
   const setupLogout = () => {

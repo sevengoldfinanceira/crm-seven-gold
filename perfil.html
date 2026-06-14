@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Meu Perfil</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="home.css?v=29" />
+  </head>
+  <body class="profile-page-body" data-require-auth data-login-page="index.html">
+    <main class="profile-page-shell">
+      <a class="profile-back-link" href="painel.html">Voltar ao painel</a>
+
+      <section class="profile-editor-card">
+        <header>
+          <img src="assets/logo-copa.png" alt="Seven Gold" />
+          <div>
+            <p class="eyebrow">Cadastro único</p>
+            <h1>Meu perfil</h1>
+            <p>Seu nome e sua foto aparecem no CRM e nas áreas da empresa.</p>
+          </div>
+        </header>
+
+        <form data-profile-form>
+          <div class="profile-photo-editor">
+            <span class="profile-avatar profile-avatar-large" data-user-avatar>U</span>
+            <label>
+              Alterar foto
+              <input type="file" name="avatar" accept="image/*" />
+            </label>
+            <small>A foto inicial vem do Google. Você pode substituí-la aqui.</small>
+          </div>
+
+          <label>
+            Nome
+            <input type="text" name="full_name" required />
+          </label>
+
+          <label>
+            E-mail conectado pelo Google
+            <input type="email" name="email" readonly />
+          </label>
+
+          <button type="submit">Salvar perfil</button>
+          <p class="profile-form-status" data-profile-status></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js?v=2"></script>
+    <script src="perfil.js"></script>
+  </body>
+</html>

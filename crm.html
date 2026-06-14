@@ -60,9 +60,14 @@
         </nav>
 
         <div class="user-box">
-          <strong>Seven Gold Financeira</strong>
-          <span>seven.goldfinanceira@gmail.com</span>
-          <mark>Representante</mark>
+          <a class="user-profile-link" href="perfil.html">
+            <span class="user-box-avatar" data-user-avatar>U</span>
+            <span>
+              <strong data-user-name>Usuário</strong>
+              <small data-user-email></small>
+            </span>
+          </a>
+          <mark data-user-role>Perfil</mark>
           <button type="button" data-logout data-logout-redirect="crm-login.html">Sair</button>
         </div>
       </aside>
@@ -208,7 +213,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
-    <script src="auth.js"></script>
+    <script src="auth.js?v=2"></script>
     <script src="script.js"></script>
   </body>
 </html>

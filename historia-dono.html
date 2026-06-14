@@ -34,26 +34,26 @@
           <a href="permissoes.html"><i data-lucide="lock-keyhole"></i><span>Permissões</span></a>
           <a href="#metas"><i data-lucide="target"></i><span>Metas</span></a>
         </nav>
-        <div class="history-sidebar-profile">
-          <span class="profile-avatar">J</span>
-          <span><strong>Seven Gold</strong><small>Empresa</small></span>
-        </div>
+        <a class="history-sidebar-profile" href="perfil.html">
+          <span class="profile-avatar" data-user-avatar>U</span>
+          <span><strong data-user-name>Usuário</strong><small data-user-role>Perfil</small></span>
+        </a>
       </aside>
 
       <section class="history-dashboard-main">
         <header class="history-dashboard-header">
           <div>
-            <h1>Olá, Jhow!</h1>
+            <h1>Olá, <span data-user-first-name>usuário</span>!</h1>
             <p>Aqui está um resumo completo da história da sua empresa.</p>
           </div>
           <div class="history-header-actions">
             <button type="button" aria-label="Tema" title="Tema"><i data-lucide="sun"></i></button>
             <button type="button" aria-label="Notificacoes" title="Notificacoes"><i data-lucide="bell"></i></button>
-            <div class="history-header-profile">
-              <span class="profile-avatar">J</span>
-              <span><strong>Jhow</strong><small>Dono</small></span>
+            <a class="history-header-profile" href="perfil.html">
+              <span class="profile-avatar" data-user-avatar>U</span>
+              <span><strong data-user-name>Usuário</strong><small data-user-role>Perfil</small></span>
               <i data-lucide="chevron-down"></i>
-            </div>
+            </a>
           </div>
         </header>
 
@@ -686,7 +686,7 @@
     <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
-    <script src="auth.js"></script>
+    <script src="auth.js?v=2"></script>
     <script src="historia-dono.js?v=27"></script>
     <script>lucide.createIcons();</script>
   </body>

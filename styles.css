@@ -159,6 +159,39 @@ select {
   font-size: 0.82rem;
 }
 
+.user-profile-link {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}
+
+.user-profile-link > span:last-child {
+  display: grid;
+  gap: 3px;
+}
+
+.user-profile-link small {
+  color: #8f978f;
+  font-size: 0.68rem;
+  overflow-wrap: anywhere;
+}
+
+.user-box-avatar {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #45454b;
+  background-position: center;
+  background-size: cover;
+  color: #fff;
+  font-weight: 800;
+}
+
 .user-box span {
   color: #8f978f;
   font-size: 0.74rem;

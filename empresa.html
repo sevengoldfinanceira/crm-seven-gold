@@ -33,8 +33,10 @@
         </nav>
 
         <div class="company-sidebar-profile">
-          <span class="profile-avatar">J</span>
-          <span><strong>Jonatã de Souza</strong><small data-user-role>Dono da Empresa</small></span>
+          <a class="company-profile-identity" href="perfil.html">
+            <span class="profile-avatar" data-user-avatar>U</span>
+            <span><strong data-user-name>Usuário</strong><small data-user-role>Perfil</small></span>
+          </a>
           <a href="painel.html" title="Voltar ao painel"><i data-lucide="log-out"></i></a>
         </div>
       </aside>
@@ -42,10 +44,10 @@
       <section class="company-dashboard-main">
         <header class="company-dashboard-header">
           <div>
-            <h1>Bem-vindo, Jonatã</h1>
+            <h1>Bem-vindo, <span data-user-first-name>usuário</span></h1>
             <p>Aqui está um resumo geral da sua empresa.</p>
           </div>
-          <a class="company-profile-button" href="painel.html"><i data-lucide="user-round"></i><span>Perfil</span><i data-lucide="chevron-down"></i></a>
+          <a class="company-profile-button" href="perfil.html"><i data-lucide="user-round"></i><span>Perfil</span><i data-lucide="chevron-down"></i></a>
         </header>
 
         <section class="company-stat-grid" aria-label="Resumo da empresa">
@@ -92,7 +94,7 @@
     <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
-    <script src="auth.js"></script>
+    <script src="auth.js?v=2"></script>
     <script>lucide.createIcons();</script>
   </body>
 </html>
