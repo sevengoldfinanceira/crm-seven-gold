@@ -16,7 +16,7 @@
     <meta name="apple-mobile-web-app-title" content="Seven Gold" />
     <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
-  <body class="company-body company-dashboard-body" data-require-auth data-permission-area="empresa" data-login-page="index.html" data-allowed-roles="dono,administrador,financeiro,marketing,rh" data-denied-redirect="painel.html">
+  <body class="company-body company-dashboard-body" data-require-auth data-permission-area="empresa" data-login-page="index.html" data-allowed-roles="dono,administrador,financeiro,marketing,rh" data-denied-redirect="painel.html" data-unified-admin>
     <main class="company-dashboard-shell">
       <aside class="company-sidebar">
         <a class="company-sidebar-brand" href="painel.html" aria-label="Seven Gold">
@@ -102,6 +102,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=2"></script>
     <script>lucide.createIcons();</script>
+    <script src="/admin-shell.js"></script>
     <script src="/pwa.js"></script>
   </body>
 </html>

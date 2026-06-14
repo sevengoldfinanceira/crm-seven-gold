@@ -19,7 +19,7 @@
     <meta name="apple-mobile-web-app-title" content="Seven Gold" />
     <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
-  <body class="finance-body" data-require-auth data-permission-area="financeiro" data-login-page="index.html" data-allowed-roles="dono,administrador,financeiro" data-denied-redirect="empresa.html">
+  <body class="finance-body" data-require-auth data-permission-area="financeiro" data-login-page="index.html" data-allowed-roles="dono,administrador,financeiro" data-denied-redirect="empresa.html" data-unified-admin>
     <main class="finance-shell">
       <header class="company-topbar">
         <a class="back-link" href="empresa.html">Voltar</a>
@@ -158,6 +158,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js"></script>
     <script src="financeiro.js"></script>
+    <script src="/admin-shell.js"></script>
     <script src="/pwa.js"></script>
   </body>
 </html>

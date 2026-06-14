@@ -868,6 +868,115 @@ body {
   font-weight: 700;
 }
 
+.unified-admin-shell {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: 100vh;
+  background: #f3f3f2;
+  transition: grid-template-columns 180ms ease;
+}
+
+.unified-admin-shell > main,
+.unified-admin-shell > section {
+  min-width: 0;
+}
+
+.unified-admin-shell.sidebar-collapsed {
+  grid-template-columns: 76px minmax(0, 1fr);
+}
+
+.unified-admin-sidebar {
+  width: auto;
+  transition: padding 180ms ease;
+}
+
+.unified-sidebar-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: center;
+}
+
+.sidebar-toggle {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid #39383d;
+  border-radius: 6px;
+  background: #151618;
+  color: #efc341;
+}
+
+.sidebar-toggle svg {
+  width: 18px;
+}
+
+.unified-sidebar-profile {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 9px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #303034;
+  border-radius: 7px;
+  background: #101113;
+  color: #ddd9e0;
+  text-decoration: none;
+}
+
+.unified-sidebar-profile strong,
+.unified-sidebar-profile small {
+  display: block;
+}
+
+.unified-sidebar-profile strong {
+  font-size: 0.73rem;
+}
+
+.unified-sidebar-profile small {
+  margin-top: 3px;
+  color: #aaa5ad;
+  font-size: 0.62rem;
+}
+
+.sidebar-collapsed .unified-admin-sidebar {
+  padding-inline: 9px;
+}
+
+.sidebar-collapsed .unified-sidebar-header {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+
+.sidebar-collapsed .company-sidebar-brand {
+  padding: 0;
+}
+
+.sidebar-collapsed .company-sidebar-brand img {
+  width: 48px;
+  height: 48px;
+}
+
+.sidebar-collapsed .company-sidebar-brand span,
+.sidebar-collapsed .company-sidebar-nav span,
+.sidebar-collapsed .unified-sidebar-profile > span:last-child {
+  display: none;
+}
+
+.sidebar-collapsed .company-sidebar-nav a {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.sidebar-collapsed .unified-sidebar-profile {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
 .has-user-photo {
   color: transparent;
 }
@@ -4434,6 +4543,20 @@ body {
   .profile-page-header {
     display: grid;
   }
+}
+
+.company-dashboard-shell.unified-admin-shell,
+.history-dashboard-shell.unified-admin-shell,
+.profile-dashboard-shell.unified-admin-shell,
+.unified-admin-shell {
+  grid-template-columns: 260px minmax(0, 1fr);
+}
+
+.company-dashboard-shell.unified-admin-shell.sidebar-collapsed,
+.history-dashboard-shell.unified-admin-shell.sidebar-collapsed,
+.profile-dashboard-shell.unified-admin-shell.sidebar-collapsed,
+.unified-admin-shell.sidebar-collapsed {
+  grid-template-columns: 76px minmax(0, 1fr);
 }
 
 .permission-layout {

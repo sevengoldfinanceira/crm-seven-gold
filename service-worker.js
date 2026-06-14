@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-v1";
+const CACHE_VERSION = "seven-gold-v2";
 const APP_SHELL = [
   "/",
   "/index.html",
@@ -9,6 +9,7 @@ const APP_SHELL = [
   "/home.css",
   "/styles.css",
   "/auth.js",
+  "/admin-shell.js",
   "/pwa.js",
   "/supabase-config.js",
   "/assets/logo-copa.png",
