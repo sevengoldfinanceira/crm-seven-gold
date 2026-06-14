@@ -181,6 +181,24 @@
     });
   };
 
+  const redirectAuthenticatedLoginPage = async () => {
+    const form = document.querySelector("[data-auth-form]");
+
+    if (!form || document.body.matches("[data-require-auth], [data-auth-callback]")) {
+      return false;
+    }
+
+    const { data } = await client.auth.getSession();
+
+    if (!data.session) {
+      return false;
+    }
+
+    await ensureProfile(data.session);
+    window.location.replace(getTarget(form));
+    return true;
+  };
+
   const showAuthBlock = (loginPage, detail = "") => {
     const debugInfo = [
       `URL: ${window.location.href}`,
@@ -316,6 +334,12 @@
 
     const callbackResult = await handleOAuthCallback();
     setupLoginForms();
+
+    const redirectedAuthenticatedUser = await redirectAuthenticatedLoginPage();
+    if (redirectedAuthenticatedUser) {
+      return;
+    }
+
     await setupProtectedPages(callbackResult.error);
     setupLogout();
   });
