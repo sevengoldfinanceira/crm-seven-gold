@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="home.css" />
+    <link rel="stylesheet" href="home.css?v=30" />
   </head>
   <body class="company-body company-dashboard-body" data-require-auth data-permission-area="empresa" data-login-page="index.html" data-allowed-roles="dono,administrador,financeiro,marketing,rh" data-denied-redirect="painel.html">
     <main class="company-dashboard-shell">
@@ -33,7 +33,7 @@
         </nav>
 
         <div class="company-sidebar-profile">
-          <a class="company-profile-identity" href="perfil.html">
+          <a class="company-profile-identity" href="perfil.html?area=empresa">
             <span class="profile-avatar" data-user-avatar>U</span>
             <span><strong data-user-name>Usuário</strong><small data-user-role>Perfil</small></span>
           </a>
@@ -47,7 +47,7 @@
             <h1>Bem-vindo, <span data-user-first-name>usuário</span></h1>
             <p>Aqui está um resumo geral da sua empresa.</p>
           </div>
-          <a class="company-profile-button" href="perfil.html"><i data-lucide="user-round"></i><span>Perfil</span><i data-lucide="chevron-down"></i></a>
+          <a class="company-profile-button" href="perfil.html?area=empresa"><i data-lucide="user-round"></i><span>Perfil</span><i data-lucide="chevron-down"></i></a>
         </header>
 
         <section class="company-stat-grid" aria-label="Resumo da empresa">

@@ -4,6 +4,13 @@
   const avatarInput = form?.elements.avatar;
   const avatar = document.querySelector("[data-user-avatar]");
   let user = null;
+  const area = new URLSearchParams(window.location.search).get("area") === "crm" ? "crm" : "empresa";
+
+  document.querySelectorAll("[data-profile-sidebar]").forEach((sidebar) => {
+    sidebar.hidden = sidebar.dataset.profileSidebar !== area;
+  });
+  document.querySelector("[data-profile-back]").href = area === "crm" ? "crm.html" : "empresa.html";
+  document.body.dataset.profileArea = area;
 
   const setStatus = (message, type = "") => {
     status.textContent = message;

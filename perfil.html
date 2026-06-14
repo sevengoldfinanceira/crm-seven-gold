@@ -8,15 +8,47 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="home.css?v=29" />
+    <link rel="stylesheet" href="home.css?v=30" />
   </head>
   <body class="profile-page-body" data-require-auth data-login-page="index.html">
-    <main class="profile-page-shell">
-      <a class="profile-back-link" href="painel.html">Voltar ao painel</a>
-
-      <section class="profile-editor-card">
-        <header>
+    <div class="profile-dashboard-shell">
+      <aside class="company-sidebar profile-context-sidebar" data-profile-sidebar="empresa">
+        <a class="company-sidebar-brand" href="empresa.html">
           <img src="assets/logo-copa.png" alt="Seven Gold" />
+          <span><strong>Seven Gold</strong><small>Empresa</small></span>
+        </a>
+        <nav class="company-sidebar-nav" aria-label="Navegação da empresa">
+          <a href="empresa.html"><i data-lucide="house"></i><span>Painel</span></a>
+          <a href="organograma.html"><i data-lucide="network"></i><span>Organograma</span></a>
+          <a href="financeiro.html"><i data-lucide="badge-dollar-sign"></i><span>Financeiro</span></a>
+          <a href="equipe.html"><i data-lucide="users"></i><span>Equipe</span></a>
+          <a href="historia-dono.html"><i data-lucide="crown"></i><span>História do Dono</span></a>
+          <a class="active" href="perfil.html?area=empresa"><i data-lucide="user-round"></i><span>Meu perfil</span></a>
+        </nav>
+        <a class="profile-sidebar-user" href="perfil.html?area=empresa">
+          <span class="profile-avatar" data-user-avatar>U</span>
+          <span><strong data-user-name>Usuário</strong><small data-user-role>Perfil</small></span>
+        </a>
+      </aside>
+
+      <aside class="sidebar profile-context-sidebar" data-profile-sidebar="crm" hidden>
+        <a class="brand profile-crm-brand" href="crm.html">
+          <span class="brand-mark" aria-hidden="true">SG</span>
+          <span><strong>Seven Gold</strong><small>CRM operacional</small></span>
+        </a>
+        <nav class="nav-list">
+          <a class="nav-item" href="crm.html"><span class="nav-icon">PL</span>Pipeline</a>
+          <a class="nav-item active" href="perfil.html?area=crm"><span class="nav-icon">EU</span>Meu perfil</a>
+        </nav>
+        <a class="profile-sidebar-user profile-sidebar-user-crm" href="perfil.html?area=crm">
+          <span class="profile-avatar" data-user-avatar>U</span>
+          <span><strong data-user-name>Usuário</strong><small data-user-role>Perfil</small></span>
+        </a>
+      </aside>
+
+      <main class="profile-page-shell">
+        <header class="profile-page-header">
+          <a class="profile-back-link" data-profile-back href="empresa.html">Voltar</a>
           <div>
             <p class="eyebrow">Cadastro único</p>
             <h1>Meu perfil</h1>
@@ -24,35 +56,29 @@
           </div>
         </header>
 
-        <form data-profile-form>
-          <div class="profile-photo-editor">
-            <span class="profile-avatar profile-avatar-large" data-user-avatar>U</span>
-            <label>
-              Alterar foto
-              <input type="file" name="avatar" accept="image/*" />
-            </label>
-            <small>A foto inicial vem do Google. Você pode substituí-la aqui.</small>
-          </div>
-
-          <label>
-            Nome
-            <input type="text" name="full_name" required />
-          </label>
-
-          <label>
-            E-mail conectado pelo Google
-            <input type="email" name="email" readonly />
-          </label>
-
-          <button type="submit">Salvar perfil</button>
-          <p class="profile-form-status" data-profile-status></p>
-        </form>
-      </section>
-    </main>
-
+        <section class="profile-editor-card">
+          <form data-profile-form>
+            <div class="profile-photo-editor">
+              <span class="profile-avatar profile-avatar-large" data-user-avatar>U</span>
+              <label>
+                Alterar foto
+                <input type="file" name="avatar" accept="image/*" />
+              </label>
+              <small>A foto inicial vem do Google. Você pode substituí-la aqui.</small>
+            </div>
+            <label>Nome<input type="text" name="full_name" required /></label>
+            <label>E-mail conectado pelo Google<input type="email" name="email" readonly /></label>
+            <button type="submit">Salvar perfil</button>
+            <p class="profile-form-status" data-profile-status></p>
+          </form>
+        </section>
+      </main>
+    </div>
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=2"></script>
     <script src="perfil.js"></script>
+    <script>lucide.createIcons();</script>
   </body>
 </html>
