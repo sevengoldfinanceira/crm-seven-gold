@@ -12,6 +12,12 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="home.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#150126" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Seven Gold" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
   <body class="documents-body" data-require-auth data-permission-area="documentos" data-login-page="index.html" data-allowed-roles="dono,administrador,coordenador,representante,vendedor,financeiro,marketing,rh" data-denied-redirect="painel.html">
     <main class="documents-shell">
@@ -179,5 +185,6 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js"></script>
     <script src="documentos.js"></script>
+    <script src="/pwa.js"></script>
   </body>
 </html>

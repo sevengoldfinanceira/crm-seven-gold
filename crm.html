@@ -12,6 +12,12 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css?v=2" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#150126" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Seven Gold" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
   <body data-require-auth data-permission-area="crm" data-login-page="crm-login.html" data-allowed-roles="dono,administrador,coordenador,representante,vendedor,financeiro,marketing" data-denied-redirect="crm-login.html">
     <div class="app-shell">
@@ -215,5 +221,6 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=2"></script>
     <script src="script.js"></script>
+    <script src="/pwa.js"></script>
   </body>
 </html>
