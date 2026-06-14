@@ -6,6 +6,114 @@
   const galleryOrderKey = (year) => `seven-gold-owner-gallery-order-${year}`;
   const consortiumStartKey = "seven-gold-consortium-start-date";
   const timeCardOrderKey = "seven-gold-time-card-order";
+  const photoBucketName = "company-documents";
+  const photoSlots = ["2023-1", "2023-2", "2023-3", "2024-1", "2024-2", "2024-3", "2025-1", "2025-2", "2025-3", "2026-1", "2026-2", "2026-3"];
+  let photoStorageUser = null;
+  let settingsSyncTimer = null;
+
+  const getPhotoStoragePath = (slot) => `${photoStorageUser.id}/owner-history/${slot}.jpg`;
+  const getPhotoSettingsPath = () => `${photoStorageUser.id}/owner-history/settings.json`;
+
+  const dataUrlToBlob = async (dataUrl) => {
+    const response = await fetch(dataUrl);
+    return response.blob();
+  };
+
+  const blobToDataUrl = (blob) =>
+    new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => resolve(reader.result));
+      reader.readAsDataURL(blob);
+    });
+
+  const collectPhotoSettings = () => ({
+    positions: Object.fromEntries(photoSlots.map((slot) => [slot, localStorage.getItem(photoPositionKey(slot))])),
+    zooms: Object.fromEntries(photoSlots.map((slot) => [slot, localStorage.getItem(photoZoomKey(slot))])),
+    galleryOrders: Object.fromEntries(["2023", "2024", "2025", "2026"].map((year) => [year, localStorage.getItem(galleryOrderKey(year))])),
+  });
+
+  const syncPhotoSettings = async () => {
+    const client = window.sevenGoldAuth;
+    if (!client || !photoStorageUser) return;
+
+    const file = new Blob([JSON.stringify(collectPhotoSettings())], { type: "application/json" });
+    const { error } = await client.storage.from(photoBucketName).upload(getPhotoSettingsPath(), file, {
+      contentType: "application/json",
+      upsert: true,
+    });
+
+    if (error) {
+      console.warn("Nao foi possivel sincronizar os ajustes das fotos.", error.message);
+    }
+  };
+
+  const schedulePhotoSettingsSync = () => {
+    window.clearTimeout(settingsSyncTimer);
+    settingsSyncTimer = window.setTimeout(syncPhotoSettings, 500);
+  };
+
+  const uploadPhoto = async (slot, photo) => {
+    const client = window.sevenGoldAuth;
+    if (!client || !photoStorageUser || !photo) return false;
+
+    const file = typeof photo === "string" ? await dataUrlToBlob(photo) : photo;
+    const { error } = await client.storage.from(photoBucketName).upload(getPhotoStoragePath(slot), file, {
+      contentType: "image/jpeg",
+      upsert: true,
+    });
+
+    if (error) {
+      console.warn(`Nao foi possivel sincronizar a foto ${slot}.`, error.message);
+      return false;
+    }
+
+    return true;
+  };
+
+  const loadRemotePhotoSettings = async () => {
+    const client = window.sevenGoldAuth;
+    const { data, error } = await client.storage.from(photoBucketName).download(getPhotoSettingsPath());
+    if (error || !data) return;
+
+    let settings;
+    try {
+      settings = JSON.parse(await data.text());
+    } catch {
+      return;
+    }
+
+    Object.entries(settings.positions || {}).forEach(([slot, value]) => value && localStorage.setItem(photoPositionKey(slot), value));
+    Object.entries(settings.zooms || {}).forEach(([slot, value]) => value && localStorage.setItem(photoZoomKey(slot), value));
+    Object.entries(settings.galleryOrders || {}).forEach(([year, value]) => value && localStorage.setItem(galleryOrderKey(year), value));
+  };
+
+  const initializePersistentPhotos = async () => {
+    const client = window.sevenGoldAuth;
+    if (!client) return;
+
+    const { data } = await client.auth.getUser();
+    if (!data.user) return;
+    photoStorageUser = data.user;
+
+    await loadRemotePhotoSettings();
+
+    await Promise.all(photoSlots.map(async (slot) => {
+      const localPhoto = localStorage.getItem(photoStorageKey(slot));
+      const { data: remotePhoto, error } = await client.storage.from(photoBucketName).download(getPhotoStoragePath(slot));
+
+      if (!error && remotePhoto) {
+        localStorage.setItem(photoStorageKey(slot), await blobToDataUrl(remotePhoto));
+        return;
+      }
+
+      if (localPhoto) {
+        await uploadPhoto(slot, localPhoto);
+      }
+    }));
+
+    await syncPhotoSettings();
+    document.querySelectorAll(".year-photo-box").forEach(renderPhoto);
+  };
   const roleRows = {
     "2023": ["ANTES DO CONSÓRCIO", "ANTES DO CONSÓRCIO", "ANTES DO CONSÓRCIO", "J. ALFA - TELEMARKETING", "J. ALFA - TELEMARKETING", "J. ALFA - VENDEDOR", "J. ALFA - VENDEDOR", "J. ALFA - VENDEDOR", "J. ALFA - VENDEDOR", "J. ALFA - VENDEDOR", "FORA DO CONSÓRCIO", "FORA DO CONSÓRCIO", "-"],
     "2024": ["J. ALFA - VENDEDOR", "J. ALFA - APADRINHANDO", "SMK - COORDENADOR", "SMK - COORDENADOR", "SMK - COORDENADOR", "SMK - COORDENADOR", "FORA DO CONSÓRCIO", "IMOBY - VENDEDOR", "IMOBY - VENDEDOR", "IMOBY - VENDEDOR", "IMOBY - APADRINHANDO", "IMOBY - APADRINHANDO", "-"],
@@ -117,6 +225,7 @@
       draggedBox.classList.remove("is-reordering");
       const order = [...gallery.querySelectorAll(".year-photo-box")].map((box) => box.dataset.yearPhoto);
       localStorage.setItem(galleryOrderKey(year), JSON.stringify(order));
+      schedulePhotoSettingsSync();
       draggedBox = null;
     });
   });
@@ -454,6 +563,7 @@
       if (button.hasPointerCapture(event.pointerId)) button.releasePointerCapture(event.pointerId);
       if (button.dataset.pendingPosition) {
         localStorage.setItem(photoPositionKey(button.dataset.yearPhoto), button.dataset.pendingPosition);
+        schedulePhotoSettingsSync();
       }
       dragStart = null;
       button.classList.remove("is-dragging");
@@ -475,6 +585,7 @@
         const currentZoom = Number(localStorage.getItem(photoZoomKey(year))) || 1.22;
         const nextZoom = Math.max(1, Math.min(2, currentZoom + Number(zoomButton.dataset.photoZoom)));
         localStorage.setItem(photoZoomKey(year), nextZoom.toFixed(2));
+        schedulePhotoSettingsSync();
         button.querySelector("img").style.setProperty("--photo-zoom", nextZoom);
       });
     });
@@ -499,6 +610,8 @@
         localStorage.setItem(photoStorageKey(selectedPhotoYear), canvas.toDataURL("image/jpeg", 0.84));
         localStorage.setItem(photoPositionKey(selectedPhotoYear), JSON.stringify({ x: 50, y: 50 }));
         localStorage.setItem(photoZoomKey(selectedPhotoYear), "1.22");
+        canvas.toBlob((blob) => uploadPhoto(selectedPhotoYear, blob), "image/jpeg", 0.84);
+        schedulePhotoSettingsSync();
         const button = document.querySelector(`[data-year-photo="${selectedPhotoYear}"]`);
         if (button) renderPhoto(button);
       });
@@ -511,6 +624,7 @@
   addAverageColumns();
   calculateConsortiumTime();
   refreshHistory();
+  initializePersistentPhotos();
   window.addEventListener("focus", refreshHistory);
   window.addEventListener("storage", refreshHistory);
 })();
