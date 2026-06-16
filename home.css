@@ -477,7 +477,7 @@ body[data-unified-admin] > .unified-admin-shell {
 
 .login-panel {
   width: 100% !important;
-  max-width: 350px !important;
+  max-width: 390px !important;
   background: rgba(18, 18, 24, 0.65) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
@@ -490,18 +490,18 @@ body[data-unified-admin] > .unified-admin-shell {
 
 .login-form {
   display: grid;
-  gap: 18px;
-  padding: 40px 36px !important;
+  gap: 10px !important;
+  padding: 16px 24px !important;
   color: #ffffff !important;
 }
 
 .login-form header {
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .login-form h2 {
   margin: 0;
-  font-size: 1.7rem;
+  font-size: 1.4rem;
 }
 
 .login-form label {
