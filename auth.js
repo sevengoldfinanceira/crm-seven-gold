@@ -217,6 +217,7 @@
       document.querySelectorAll("[data-user-avatar]").forEach((element) => {
         element.style.backgroundImage = `url("${avatarUrl}")`;
         element.classList.add("has-user-photo");
+        element.textContent = "";
       });
     }
   };
