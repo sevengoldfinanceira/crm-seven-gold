@@ -8235,9 +8235,9 @@ body[data-unified-admin]:not(.theme-dark) .company-dashboard-shell.unified-admin
 body[data-unified-admin]:not(.theme-dark) .history-dashboard-shell.unified-admin-shell,
 body[data-unified-admin]:not(.theme-dark) .profile-dashboard-shell.unified-admin-shell {
   min-height: 100vh;
-  padding: 22px;
-  gap: 22px;
-  grid-template-columns: 292px minmax(0, 1fr) !important;
+  padding: 20px !important;
+  gap: 20px !important;
+  grid-template-columns: 280px minmax(0, 1fr) !important;
   background: var(--company-page-bg) !important;
 }
 
@@ -8245,18 +8245,20 @@ body[data-unified-admin]:not(.theme-dark) .unified-admin-shell.sidebar-collapsed
 body[data-unified-admin]:not(.theme-dark) .company-dashboard-shell.unified-admin-shell.sidebar-collapsed,
 body[data-unified-admin]:not(.theme-dark) .history-dashboard-shell.unified-admin-shell.sidebar-collapsed,
 body[data-unified-admin]:not(.theme-dark) .profile-dashboard-shell.unified-admin-shell.sidebar-collapsed {
-  grid-template-columns: 96px minmax(0, 1fr) !important;
+  grid-template-columns: 92px minmax(0, 1fr) !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .company-sidebar,
 body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar {
-  position: sticky;
-  top: 22px;
-  width: auto !important;
-  height: calc(100vh - 44px);
-  padding: 20px 16px;
+  position: sticky !important;
+  top: 20px !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
+  height: calc(100vh - 40px) !important;
+  padding: 20px 16px !important;
   border: 0 !important;
-  border-radius: 28px;
+  border-radius: 30px !important;
   background:
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 34%),
     linear-gradient(180deg, var(--company-sidebar-bg-soft), var(--company-sidebar-bg));
@@ -8266,7 +8268,10 @@ body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar {
 
 body[data-unified-admin]:not(.theme-dark) .sidebar-collapsed .company-sidebar,
 body[data-unified-admin]:not(.theme-dark) .sidebar-collapsed .unified-admin-sidebar {
-  padding-inline: 12px;
+  padding: 20px 10px !important;
+  width: 92px !important;
+  min-width: 92px !important;
+  max-width: 92px !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .unified-sidebar-header {
@@ -9611,9 +9616,9 @@ body[data-unified-admin] .unified-admin-shell,
 body[data-unified-admin] .company-dashboard-shell.unified-admin-shell,
 body[data-unified-admin] .history-dashboard-shell.unified-admin-shell,
 body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell {
-  grid-template-columns: 268px minmax(0, 1fr) !important;
-  gap: 18px !important;
-  padding: 18px !important;
+  grid-template-columns: 280px minmax(0, 1fr) !important;
+  gap: 20px !important;
+  padding: 20px !important;
   background: #e5e7eb !important;
 }
 
@@ -9627,15 +9632,13 @@ body[data-unified-admin].theme-dark .profile-dashboard-shell.unified-admin-shell
 body[data-unified-admin] .company-sidebar,
 body[data-unified-admin] .unified-admin-sidebar {
   position: sticky !important;
-  top: 18px !important;
-  width: 268px !important;
-  min-width: 268px !important;
-  max-width: 268px !important;
-  height: calc(100vh - 36px) !important;
-  min-height: calc(100vh - 36px) !important;
-  max-height: calc(100vh - 36px) !important;
+  top: 20px !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
+  height: calc(100vh - 40px) !important;
   margin: 0 !important;
-  padding: 18px 14px !important;
+  padding: 20px 16px !important;
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
   border-radius: 30px !important;
   overflow: hidden !important;
@@ -9878,7 +9881,7 @@ body[data-unified-admin] .profile-page-shell,
 body[data-unified-admin] .metas-shell,
 body[data-unified-admin] .marketing-shell {
   border-radius: 32px !important;
-  min-height: calc(100vh - 36px) !important;
+  min-height: calc(100vh - 40px) !important;
   overflow: hidden !important;
 }
 
@@ -9897,7 +9900,7 @@ body[data-unified-admin]:not(.theme-dark) .history-shell,
 body[data-unified-admin]:not(.theme-dark) .profile-page-shell,
 body[data-unified-admin]:not(.theme-dark) .metas-shell,
 body[data-unified-admin]:not(.theme-dark) .marketing-shell {
-  background: #ffffff !important;
+  background: var(--company-main-bg) !important;
   box-shadow: 0 24px 70px rgba(15, 23, 42, 0.1) !important;
 }
 
@@ -9916,7 +9919,7 @@ body[data-unified-admin].theme-dark .history-shell,
 body[data-unified-admin].theme-dark .profile-page-shell,
 body[data-unified-admin].theme-dark .metas-shell,
 body[data-unified-admin].theme-dark .marketing-shell {
-  background: #101216 !important;
+  background: #0f1115 !important;
   color: #f4f4f5 !important;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35) !important;
 }
