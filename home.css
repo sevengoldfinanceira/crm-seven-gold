@@ -797,7 +797,7 @@ body[data-unified-admin] > .unified-admin-shell {
   height: 100vh;
   padding: 20px 14px;
   border-right: 1px solid rgba(216, 173, 61, 0.35);
-  background: #07080a;
+  background: #150126;
 }
 
 .company-sidebar-brand {
@@ -5479,11 +5479,11 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .index-login-body {
-  background-image: url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1800&q=80") !important;
+  background-image: url("assets/login-background-new.png") !important;
 }
 
 .crm-login-body {
-  background-image: url("https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1800&q=80") !important;
+  background-image: url("assets/login-background-new.png") !important;
 }
 
 .login-header-layout {
