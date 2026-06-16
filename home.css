@@ -8700,3 +8700,85 @@ body[data-unified-admin].theme-dark .panel-card {
     min-height: auto !important;
   }
 }
+
+/* Estado recolhido: encosta a sidebar flutuante à esquerda e libera espaço para o conteúdo. */
+body[data-unified-admin] .unified-admin-shell.sidebar-collapsed,
+body[data-unified-admin] .company-dashboard-shell.unified-admin-shell.sidebar-collapsed,
+body[data-unified-admin] .history-dashboard-shell.unified-admin-shell.sidebar-collapsed,
+body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell.sidebar-collapsed {
+  grid-template-columns: 86px minmax(0, 1fr) !important;
+  gap: 18px !important;
+}
+
+body[data-unified-admin] .sidebar-collapsed .company-sidebar,
+body[data-unified-admin] .sidebar-collapsed .unified-admin-sidebar {
+  justify-self: start !important;
+  align-self: start !important;
+  width: 86px !important;
+  min-width: 86px !important;
+  max-width: 86px !important;
+  box-sizing: border-box !important;
+  padding: 18px 10px !important;
+}
+
+body[data-unified-admin] .sidebar-collapsed .unified-sidebar-header {
+  align-items: center !important;
+}
+
+body[data-unified-admin] .sidebar-collapsed .company-sidebar-brand,
+body[data-unified-admin] .sidebar-collapsed .profile-main,
+body[data-unified-admin] .sidebar-collapsed .menu-item {
+  justify-content: center !important;
+}
+
+body[data-unified-admin] .sidebar-collapsed .company-sidebar-brand img {
+  width: 50px !important;
+  height: 50px !important;
+}
+
+body[data-unified-admin] .sidebar-collapsed .sidebar-toggle {
+  width: 42px !important;
+  height: 42px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #d1d5db !important;
+  box-shadow: none !important;
+}
+
+body[data-unified-admin] .sidebar-collapsed .sidebar-toggle svg,
+body[data-unified-admin] .sidebar-collapsed .sidebar-toggle i {
+  color: #d1d5db !important;
+  stroke: #d1d5db !important;
+}
+
+body[data-unified-admin] .sidebar-collapsed .company-sidebar-nav .menu-item,
+body[data-unified-admin] .sidebar-collapsed .company-sidebar-nav a {
+  width: 48px !important;
+  min-width: 48px !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  margin-inline: auto !important;
+  padding: 0 !important;
+}
+
+body[data-unified-admin] .sidebar-collapsed .sidebar-profile-card,
+body[data-unified-admin] .sidebar-collapsed .company-sidebar-profile,
+body[data-unified-admin] .sidebar-collapsed .unified-sidebar-profile {
+  width: 58px !important;
+  margin-inline: auto !important;
+  padding: 10px 6px !important;
+}
+
+body[data-unified-admin] .sidebar-collapsed .profile-avatar {
+  width: 46px !important;
+  height: 46px !important;
+}
+
+@media (max-width: 900px) {
+  body[data-unified-admin] .unified-admin-shell.sidebar-collapsed,
+  body[data-unified-admin] .company-dashboard-shell.unified-admin-shell.sidebar-collapsed,
+  body[data-unified-admin] .history-dashboard-shell.unified-admin-shell.sidebar-collapsed,
+  body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell.sidebar-collapsed {
+    grid-template-columns: 1fr !important;
+  }
+}
