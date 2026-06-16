@@ -8534,8 +8534,6 @@ body[data-unified-admin]:not(.theme-dark) .owner-year-card:hover {
 
 body[data-unified-admin]:not(.theme-dark) .company-stat-grid article>svg,
 body[data-unified-admin]:not(.theme-dark) .company-stat-grid article>i,
-body[data-unified-admin]:not(.theme-dark) .company-module-grid>a>svg,
-body[data-unified-admin]:not(.theme-dark) .company-module-grid>a>i,
 body[data-unified-admin]:not(.theme-dark) .category-icon,
 body[data-unified-admin]:not(.theme-dark) .sector-icon {
   border: 0 !important;
@@ -8544,20 +8542,17 @@ body[data-unified-admin]:not(.theme-dark) .sector-icon {
   color: #4f46e5 !important;
 }
 
-body[data-unified-admin]:not(.theme-dark) .company-stat-grid article:nth-child(2)>svg,
-body[data-unified-admin]:not(.theme-dark) .company-module-grid>a:nth-child(2)>svg {
+body[data-unified-admin]:not(.theme-dark) .company-stat-grid article:nth-child(2)>svg {
   color: #16a34a !important;
   background: #dcfce7 !important;
 }
 
-body[data-unified-admin]:not(.theme-dark) .company-stat-grid article:nth-child(3)>svg,
-body[data-unified-admin]:not(.theme-dark) .company-module-grid>a:nth-child(3)>svg {
+body[data-unified-admin]:not(.theme-dark) .company-stat-grid article:nth-child(3)>svg {
   color: #ea580c !important;
   background: #ffedd5 !important;
 }
 
-body[data-unified-admin]:not(.theme-dark) .company-stat-grid article:nth-child(4)>svg,
-body[data-unified-admin]:not(.theme-dark) .company-module-grid>a:nth-child(4)>svg {
+body[data-unified-admin]:not(.theme-dark) .company-stat-grid article:nth-child(4)>svg {
   color: #2563eb !important;
   background: #dbeafe !important;
 }
@@ -10591,4 +10586,116 @@ body.theme-dark .lead-source-bar {
 #btn-new-campaign:hover svg {
   color: #ffffff !important;
   stroke: #ffffff !important;
+}
+
+/* ============================================================
+   Ícones Coloridos dos Módulos da Página Empresa
+   ============================================================ */
+
+/* 1. Definição de Cores Temáticas por Módulo (independente de ordem ou tema) */
+.company-module-grid>a[href="organograma.html"] {
+  --mod-color: #3b82f6; /* Azul */
+  --mod-bg-light: rgba(59, 130, 246, 0.08);
+  --mod-bg-dark: rgba(59, 130, 246, 0.12);
+  --mod-border-light: rgba(59, 130, 246, 0.22);
+  --mod-border-dark: rgba(59, 130, 246, 0.28);
+}
+.company-module-grid>a[href="financeiro.html"] {
+  --mod-color: #10b981; /* Esmeralda/Verde */
+  --mod-bg-light: rgba(16, 185, 129, 0.08);
+  --mod-bg-dark: rgba(16, 185, 129, 0.12);
+  --mod-border-light: rgba(16, 185, 129, 0.22);
+  --mod-border-dark: rgba(16, 185, 129, 0.28);
+}
+.company-module-grid>a[href="comissoes.html"] {
+  --mod-color: #f59e0b; /* Âmbar */
+  --mod-bg-light: rgba(245, 158, 11, 0.08);
+  --mod-bg-dark: rgba(245, 158, 11, 0.12);
+  --mod-border-light: rgba(245, 158, 11, 0.22);
+  --mod-border-dark: rgba(245, 158, 11, 0.28);
+}
+.company-module-grid>a[href="equipe.html"] {
+  --mod-color: #8b5cf6; /* Roxo */
+  --mod-bg-light: rgba(139, 92, 246, 0.08);
+  --mod-bg-dark: rgba(139, 92, 246, 0.12);
+  --mod-border-light: rgba(139, 92, 246, 0.22);
+  --mod-border-dark: rgba(139, 92, 246, 0.28);
+}
+.company-module-grid>a[href="marketing.html"] {
+  --mod-color: #ec4899; /* Rosa/Pink */
+  --mod-bg-light: rgba(236, 72, 153, 0.08);
+  --mod-bg-dark: rgba(236, 72, 153, 0.12);
+  --mod-border-light: rgba(236, 72, 153, 0.22);
+  --mod-border-dark: rgba(236, 72, 153, 0.28);
+}
+.company-module-grid>a[href="documentos.html"] {
+  --mod-color: #eab308; /* Amarelo/Ouro */
+  --mod-bg-light: rgba(234, 179, 8, 0.08);
+  --mod-bg-dark: rgba(234, 179, 8, 0.12);
+  --mod-border-light: rgba(234, 179, 8, 0.22);
+  --mod-border-dark: rgba(234, 179, 8, 0.28);
+}
+.company-module-grid>a[href="relatorios.html"] {
+  --mod-color: #06b6d4; /* Ciano */
+  --mod-bg-light: rgba(6, 182, 212, 0.08);
+  --mod-bg-dark: rgba(6, 182, 212, 0.12);
+  --mod-border-light: rgba(6, 182, 212, 0.22);
+  --mod-border-dark: rgba(6, 182, 212, 0.28);
+}
+.company-module-grid>a[href="permissoes.html"] {
+  --mod-color: #ef4444; /* Vermelho */
+  --mod-bg-light: rgba(239, 68, 68, 0.08);
+  --mod-bg-dark: rgba(239, 68, 68, 0.12);
+  --mod-border-light: rgba(239, 68, 68, 0.22);
+  --mod-border-dark: rgba(239, 68, 68, 0.28);
+}
+.company-module-grid>a[href="metas.html"] {
+  --mod-color: #f97316; /* Laranja */
+  --mod-bg-light: rgba(249, 115, 22, 0.08);
+  --mod-bg-dark: rgba(249, 115, 22, 0.12);
+  --mod-border-light: rgba(249, 115, 22, 0.22);
+  --mod-border-dark: rgba(249, 115, 22, 0.28);
+}
+.company-module-grid>a[href="historia-dono.html"] {
+  --mod-color: #f59e0b; /* Bronze/Dourado */
+  --mod-bg-light: rgba(245, 158, 11, 0.08);
+  --mod-bg-dark: rgba(245, 158, 11, 0.12);
+  --mod-border-light: rgba(245, 158, 11, 0.22);
+  --mod-border-dark: rgba(245, 158, 11, 0.28);
+}
+
+/* 2. Aplicação de Cores aos Ícones */
+.company-module-grid>a>i,
+.company-module-grid>a>svg {
+  color: var(--mod-color) !important;
+  background: var(--mod-bg-light) !important;
+  border: 1px solid var(--mod-border-light) !important;
+  border-radius: 14px !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+body.theme-dark .company-module-grid>a>i,
+body.theme-dark .company-module-grid>a>svg {
+  background: var(--mod-bg-dark) !important;
+  border-color: var(--mod-border-dark) !important;
+}
+
+/* 3. Efeitos de Hover Premium (Ícones e Cards) */
+.company-module-grid>a:hover>i,
+.company-module-grid>a:hover>svg {
+  background: var(--mod-color) !important;
+  color: #ffffff !important;
+  border-color: var(--mod-color) !important;
+  box-shadow: 0 0 16px var(--mod-color), 0 0 8px var(--mod-color) !important;
+  transform: scale(1.1) !important;
+}
+
+.company-module-grid>a:hover {
+  border-color: var(--mod-color) !important;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08), 0 0 12px var(--mod-bg-light) !important;
+}
+
+body.theme-dark .company-module-grid>a:hover {
+  border-color: var(--mod-color) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4), 0 0 18px var(--mod-bg-dark) !important;
 }
