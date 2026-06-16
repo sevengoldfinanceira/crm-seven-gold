@@ -1,113 +1,131 @@
 :root {
   color-scheme: light;
 
-  /* Identidade Seven Gold */
   --sg-gold: #d4af37;
-  --sg-gold-light: #f6d365;
-  --sg-gold-dark: #9c7620;
+  --sg-gold-light: #f5c84c;
+  --sg-gold-dark: #a47d1e;
   --sg-gold-soft: rgba(212, 175, 55, 0.16);
-
-  --sg-purple: #180026;
-  --sg-purple-2: #240033;
-  --sg-purple-3: #320047;
-
   --sg-success: #22c55e;
   --sg-danger: #ef4444;
   --sg-warning: #f59e0b;
 
-  --sg-radius-sm: 10px;
-  --sg-radius-md: 14px;
-  --sg-radius-lg: 20px;
+  --sg-radius-sm: 12px;
+  --sg-radius-md: 20px;
+  --sg-radius-lg: 24px;
+  --sg-radius-xl: 30px;
 
   --sg-transition: all 0.25s ease;
 
-  /* MODO CLARO - elegante, limpo e premium */
-  --sg-bg-main: #f7f4ee;
-  --sg-bg-page: #f8f6f0;
+  /* default light mode variables */
+  --sg-bg-main: #f6f6f4;
+  --sg-bg-page: #f7f7f5;
   --sg-bg-elevated: #ffffff;
 
-  --sg-bg-card: rgba(255, 255, 255, 0.92);
-  --sg-bg-card-solid: #ffffff;
-  --sg-bg-card-hover: #fff8e6;
+  --sg-sidebar-bg: #ffffff;
+  --sg-sidebar-card: #ffffff;
+  --sg-sidebar-hover: #f2efe7;
 
-  --sg-text-main: #151019;
-  --sg-text-secondary: #5f5868;
-  --sg-text-muted: #857d8d;
+  --sg-card-bg: #ffffff;
+  --sg-card-bg-soft: #fbfaf7;
+  --sg-card-hover: #f8f4ea;
+  
+  --sg-bg-card: #ffffff;
+  --sg-bg-card-solid: #ffffff;
+  --sg-bg-card-hover: #f8f4ea;
+
+  --sg-text-main: #111214;
+  --sg-text-secondary: #555b64;
+  --sg-text-muted: #858b94;
   --sg-text-inverse: #ffffff;
 
-  --sg-border: rgba(24, 0, 38, 0.10);
-  --sg-border-strong: rgba(24, 0, 38, 0.18);
-  --sg-border-gold: rgba(212, 175, 55, 0.42);
+  --sg-border: rgba(17, 18, 20, 0.08);
+  --sg-border-strong: rgba(17, 18, 20, 0.14);
+  --sg-border-gold: rgba(212, 175, 55, 0.35);
 
   --sg-input-bg: #ffffff;
-  --sg-input-border: rgba(24, 0, 38, 0.14);
-  --sg-input-text: #151019;
-  --sg-input-placeholder: #8b8492;
+  --sg-input-border: rgba(17, 18, 20, 0.12);
+  --sg-input-text: #111214;
+  --sg-input-placeholder: #858b94;
 
-  --sg-shadow-card: 0 16px 35px rgba(24, 0, 38, 0.10);
-  --sg-shadow-gold: 0 0 18px rgba(212, 175, 55, 0.18);
+  --sg-shadow-card: 0 16px 35px rgba(17, 18, 20, 0.08);
+  --sg-shadow-soft: 0 8px 18px rgba(17, 18, 20, 0.06);
+  --sg-shadow-gold: 0 0 16px rgba(212, 175, 55, 0.10);
 
   --sg-page-gradient:
-    radial-gradient(circle at top right, rgba(212, 175, 55, 0.16), transparent 28%),
-    radial-gradient(circle at bottom left, rgba(24, 0, 38, 0.08), transparent 34%),
-    linear-gradient(180deg, #fbf8f0 0%, #f7f4ee 55%, #efe9dc 100%);
+    radial-gradient(circle at top left, rgba(212,175,55,0.08), transparent 30%),
+    linear-gradient(180deg, #ffffff 0%, #f7f7f5 55%, #f1f0ec 100%);
 
-  /* Compatibilidade Retroativa */
+  /* retrocompatibilidade */
   --ink: var(--sg-text-main);
   --muted: var(--sg-text-secondary);
   --page: var(--sg-bg-page);
-  --surface: var(--sg-bg-card-solid);
+  --surface: var(--sg-card-bg);
   --line: var(--sg-border);
+  --shadow: var(--sg-shadow-card);
   --gold: var(--sg-gold);
   --gold-dark: var(--sg-gold-dark);
   --green: var(--sg-success);
-  --brand-purple: var(--sg-purple);
-  --shadow: var(--sg-shadow-card);
+  --brand-purple: #111214;
+  --surface-soft: var(--sg-card-bg-soft);
 }
 
-/* MODO ESCURO - premium roxo/dourado */
-body.theme-dark {
+/* MODO ESCURO — preto/grafite profissional */
+html[data-theme="dark"],
+body[data-theme="dark"],
+body.dark,
+body.theme-dark,
+.dark-mode {
   color-scheme: dark;
+
+  --sg-bg-main: #050607;
+  --sg-bg-page: #08090b;
+  --sg-bg-elevated: #0d0f12;
+
+  --sg-sidebar-bg: #07080a;
+  --sg-sidebar-card: #101216;
+  --sg-sidebar-hover: #171a20;
+
+  --sg-card-bg: #101216;
+  --sg-card-bg-soft: #13161b;
+  --sg-card-hover: #181c22;
   
-  --sg-bg-main: #08000f;
-  --sg-bg-page: #100018;
-  --sg-bg-elevated: #160021;
+  --sg-bg-card: #101216;
+  --sg-bg-card-solid: #101216;
+  --sg-bg-card-hover: #181c22;
 
-  --sg-bg-card: rgba(255, 255, 255, 0.06);
-  --sg-bg-card-solid: #180026;
-  --sg-bg-card-hover: rgba(255, 255, 255, 0.10);
+  --sg-text-main: #f7f7f8;
+  --sg-text-secondary: #c5c8ce;
+  --sg-text-muted: #8d929c;
+  --sg-text-inverse: #08090b;
 
-  --sg-text-main: #ffffff;
-  --sg-text-secondary: #cfc7d8;
-  --sg-text-muted: #9f96aa;
-  --sg-text-inverse: #12001f;
+  --sg-border: rgba(255, 255, 255, 0.08);
+  --sg-border-strong: rgba(255, 255, 255, 0.14);
+  --sg-border-gold: rgba(212, 175, 55, 0.28);
 
-  --sg-border: rgba(255, 255, 255, 0.10);
-  --sg-border-strong: rgba(255, 255, 255, 0.18);
-  --sg-border-gold: rgba(212, 175, 55, 0.35);
+  --sg-input-bg: #101216;
+  --sg-input-border: rgba(255, 255, 255, 0.12);
+  --sg-input-text: #f7f7f8;
+  --sg-input-placeholder: #8d929c;
 
-  --sg-input-bg: rgba(255, 255, 255, 0.06);
-  --sg-input-border: rgba(255, 255, 255, 0.14);
-  --sg-input-text: #ffffff;
-  --sg-input-placeholder: #9f96aa;
-
-  --sg-shadow-card: 0 18px 45px rgba(0, 0, 0, 0.28);
-  --sg-shadow-gold: 0 0 22px rgba(212, 175, 55, 0.18);
+  --sg-shadow-card: 0 18px 40px rgba(0, 0, 0, 0.35);
+  --sg-shadow-soft: 0 10px 25px rgba(0, 0, 0, 0.22);
+  --sg-shadow-gold: 0 0 18px rgba(212, 175, 55, 0.12);
 
   --sg-page-gradient:
-    radial-gradient(circle at top right, rgba(212, 175, 55, 0.10), transparent 30%),
-    radial-gradient(circle at bottom left, rgba(99, 0, 140, 0.22), transparent 35%),
-    linear-gradient(180deg, #08000f 0%, #100018 45%, #160021 100%);
+    radial-gradient(circle at top left, rgba(255,255,255,0.035), transparent 32%),
+    linear-gradient(180deg, #050607 0%, #08090b 48%, #050607 100%);
 
-  /* Compatibilidade Retroativa em Modo Escuro */
+  /* retrocompatibilidade em Modo Escuro */
   --ink: var(--sg-text-main);
   --muted: var(--sg-text-secondary);
   --page: var(--sg-bg-page);
-  --surface: var(--sg-bg-card-solid);
+  --surface: var(--sg-card-bg);
   --line: var(--sg-border);
   --shadow: var(--sg-shadow-card);
   --gold: var(--sg-gold);
   --gold-dark: var(--sg-gold-dark);
+  --brand-purple: #15181d;
+  --surface-soft: var(--sg-card-bg-soft);
 }
 
 * {
@@ -142,11 +160,8 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .company-body {
-  background:
-    linear-gradient(135deg, rgba(243, 244, 241, 0.98), rgba(232, 235, 229, 0.9)),
-    url("https://images.unsplash.com/photo-1604594849809-dfedbc827105?auto=format&fit=crop&w=1800&q=80");
-  background-position: center;
-  background-size: cover;
+  background: var(--sg-page-gradient) !important;
+  background-image: var(--sg-page-gradient) !important;
 }
 
 .org-body {
@@ -6397,13 +6412,13 @@ body.theme-dark .career-time-toolbar a:hover {
    ========================================================================== */
 body.theme-dark {
   color-scheme: dark;
-  --page: #08010f; /* fundo roxo bem escuro (Seven Gold) */
-  --surface: #150126; /* roxo de marca como superficie */
-  --surface-soft: #241032; /* roxo mais claro */
-  --ink: #fbfaf4; /* texto claro */
-  --muted: #9f9baf; /* texto secundario */
-  --line: #2e1743; /* bordas roxas */
-  --shadow: 0 16px 38px rgba(0, 0, 0, 0.4);
+  --page: var(--sg-bg-page);
+  --surface: var(--sg-card-bg);
+  --surface-soft: var(--sg-card-bg-soft);
+  --ink: var(--sg-text-main);
+  --muted: var(--sg-text-secondary);
+  --line: var(--sg-border);
+  --shadow: var(--sg-shadow-card);
 }
 
 /* Sobrescreve especificamente os painéis translúcidos brancos em Modo Escuro */
@@ -6443,9 +6458,8 @@ body.theme-dark textarea:focus {
 
 /* Imagem de Fundo da Empresa no Modo Escuro */
 body.theme-dark.company-body {
-  background:
-    linear-gradient(135deg, rgba(14, 1, 26, 0.98), rgba(8, 1, 15, 0.95)),
-    url("https://images.unsplash.com/photo-1604594849809-dfedbc827105?auto=format&fit=crop&w=1800&q=80") !important;
+  background: var(--sg-page-gradient) !important;
+  background-image: var(--sg-page-gradient) !important;
 }
 
 /* Sobrescrever botões de perfil e cabeçalho */
@@ -6528,7 +6542,20 @@ body[data-unified-admin] {
   transition: var(--sg-transition) !important;
 }
 
-/* 2. Unificação de Cards */
+/* 2. Barra Lateral (Sidebar) */
+.company-sidebar {
+  background: var(--sg-sidebar-bg) !important;
+  border-right: 1px solid var(--sg-border) !important;
+  color: var(--sg-text-main) !important;
+  box-shadow: var(--sg-shadow-soft) !important;
+  transition: var(--sg-transition) !important;
+}
+
+.unified-sidebar-header {
+  border-bottom: 1px solid var(--sg-border) !important;
+}
+
+/* 3. Unificação de Cards e Módulos */
 .company-stat-grid article,
 .company-module-grid > a,
 .finance-table-panel,
@@ -6553,10 +6580,10 @@ body[data-unified-admin] {
 .year-editor-panel,
 .org-sector,
 .job-card {
-  background: var(--sg-bg-card) !important;
+  background: var(--sg-card-bg) !important;
   color: var(--sg-text-main) !important;
   border: 1px solid var(--sg-border) !important;
-  border-radius: var(--sg-radius-lg) !important;
+  border-radius: var(--sg-radius-lg) !important; /* 24px */
   box-shadow: var(--sg-shadow-card) !important;
   padding: 20px !important;
   transition: var(--sg-transition) !important;
@@ -6571,11 +6598,22 @@ body[data-unified-admin] {
 .job-card:hover {
   transform: translateY(-3px) !important;
   border-color: var(--sg-border-gold) !important;
-  background: var(--sg-bg-card-hover) !important;
+  background: var(--sg-card-hover) !important;
   box-shadow: var(--sg-shadow-gold) !important;
 }
 
-/* 3. Unificação de Cabeçalhos e Toolbars */
+/* 4. Arredondamentos e Menores Especiais */
+.company-stat-grid article,
+.owner-year-card,
+.job-card,
+.commission-card,
+.org-sector,
+.rank-link,
+.role-pill {
+  border-radius: var(--sg-radius-md) !important; /* 18px */
+}
+
+/* 5. Cabeçalhos e Toolbars */
 .org-toolbar,
 .history-toolbar,
 .documents-toolbar,
@@ -6585,7 +6623,7 @@ body[data-unified-admin] {
 .reports-toolbar,
 .permissions-toolbar,
 .company-dashboard-header {
-  background: var(--sg-bg-card) !important;
+  background: var(--sg-card-bg) !important;
   border: 1px solid var(--sg-border) !important;
   border-radius: var(--sg-radius-md) !important;
   padding: 16px 20px !important;
@@ -6623,7 +6661,7 @@ body[data-unified-admin] {
   display: block !important;
 }
 
-/* 4. Barra Superior (Top Bar) */
+/* 6. Barra Superior (Top Bar) */
 .company-topbar {
   margin-bottom: 20px !important;
 }
@@ -6632,7 +6670,7 @@ body[data-unified-admin] {
 .owner-pill {
   border: 1px solid var(--sg-border) !important;
   border-radius: var(--sg-radius-sm) !important;
-  background: var(--sg-bg-card) !important;
+  background: var(--sg-card-bg) !important;
   color: var(--sg-text-main) !important;
   box-shadow: var(--sg-shadow-card) !important;
   padding: 10px 14px !important;
@@ -6648,19 +6686,19 @@ body[data-unified-admin] {
 }
 
 .back-link:hover {
-  background: var(--sg-bg-card-hover) !important;
+  background: var(--sg-card-hover) !important;
   border-color: var(--sg-border-gold) !important;
   color: var(--sg-gold) !important;
 }
 
-/* 5. Inputs, Selects e Textareas */
+/* 7. Inputs, Selects e Textareas */
 input,
 select,
 textarea {
   background: var(--sg-input-bg) !important;
   color: var(--sg-input-text) !important;
   border: 1px solid var(--sg-input-border) !important;
-  border-radius: var(--sg-radius-sm) !important;
+  border-radius: 14px !important;
   padding: 8px 12px !important;
   font-size: 0.88rem !important;
   transition: var(--sg-transition) !important;
@@ -6680,7 +6718,7 @@ textarea:focus {
   box-shadow: var(--sg-shadow-gold) !important;
 }
 
-/* 6. Unificação de Botões */
+/* 8. Unificação de Botões */
 .reports-actions button,
 .permissions-actions button,
 .org-actions button,
@@ -6704,7 +6742,7 @@ button[type="submit"] {
   gap: 8px !important;
   min-height: 42px !important;
   padding: 0 18px !important;
-  border-radius: var(--sg-radius-sm) !important;
+  border-radius: 16px !important; /* 16px */
   font-family: inherit !important;
   font-size: 0.88rem !important;
   font-weight: 700 !important;
@@ -6727,8 +6765,8 @@ button[type="submit"] {
 button.primary,
 button[type="submit"] {
   background: linear-gradient(135deg, var(--sg-gold-light), var(--sg-gold)) !important;
-  color: var(--sg-text-inverse) !important;
-  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2) !important;
+  color: #08090b !important; /* Texto escuro no botão dourado */
+  box-shadow: var(--sg-shadow-gold) !important;
 }
 
 .reports-actions button:not(.secondary):hover,
@@ -6744,7 +6782,6 @@ button[type="submit"] {
 button.primary:hover,
 button[type="submit"]:hover {
   transform: translateY(-1px) !important;
-  box-shadow: var(--sg-shadow-gold) !important;
   filter: brightness(1.08) !important;
 }
 
@@ -6755,7 +6792,7 @@ button[type="submit"]:hover {
 .reload-btn,
 button.secondary,
 button[type="button"]:not(.primary):not([type="submit"]):not(.delete-btn) {
-  background: var(--sg-bg-card) !important;
+  background: var(--sg-card-bg-soft) !important;
   color: var(--sg-gold) !important;
   border: 1px solid var(--sg-border-gold) !important;
 }
@@ -6786,12 +6823,12 @@ button.danger:hover,
   filter: brightness(1.15) !important;
 }
 
-/* 7. Unificação de Tabelas */
+/* 9. Unificação de Tabelas */
 table,
 .sg-table {
   width: 100% !important;
   border-collapse: collapse !important;
-  background: var(--sg-bg-card) !important;
+  background: var(--sg-card-bg) !important;
   color: var(--sg-text-main) !important;
   border-radius: var(--sg-radius-md) !important;
   overflow: hidden !important;
@@ -6818,10 +6855,10 @@ table th,
 
 table tbody tr:hover,
 .sg-table tbody tr:hover {
-  background: var(--sg-bg-card-hover) !important;
+  background: var(--sg-card-hover) !important;
 }
 
-/* 8. Indicadores (Stat Cards Children) */
+/* 10. Indicadores (Stat Cards) */
 .company-stat-grid article strong {
   color: var(--sg-text-main) !important;
   font-size: 1.6rem !important;
@@ -6851,7 +6888,7 @@ table tbody tr:hover,
   font-weight: 700 !important;
 }
 
-/* 9. Links "Acessar" */
+/* 11. Links "Acessar" */
 .company-module-grid strong,
 .company-stat-grid a strong,
 .premium-access-card strong,
@@ -6877,7 +6914,7 @@ a.acessar-link:hover,
   gap: 10px !important;
 }
 
-/* 10. Ícones */
+/* 12. Ícones */
 .company-module-grid > a > svg,
 .company-stat-grid svg,
 .sg-icon-box svg,
@@ -6892,7 +6929,7 @@ a.acessar-link:hover,
   color: var(--sg-gold-light) !important;
 }
 
-/* 11. Badges e Status */
+/* 13. Badges e Status */
 .sg-badge,
 .badge,
 .pdf-badge,
@@ -6932,9 +6969,9 @@ a.acessar-link:hover,
   border-color: rgba(245, 158, 11, 0.25) !important;
 }
 
-/* 12. Hierarquia e Controle na Equipe / Organograma */
+/* 14. Hierarquia e Controle na Equipe / Organograma */
 .rank-link {
-  background: var(--sg-bg-card) !important;
+  background: var(--sg-card-bg) !important;
   color: var(--sg-text-main) !important;
   border: 1px solid var(--sg-border) !important;
   border-radius: var(--sg-radius-sm) !important;
@@ -6945,7 +6982,7 @@ a.acessar-link:hover,
 }
 
 .rank-link:hover {
-  background: var(--sg-bg-card-hover) !important;
+  background: var(--sg-card-hover) !important;
   border-color: var(--sg-border-gold) !important;
 }
 
@@ -6956,7 +6993,7 @@ a.acessar-link:hover,
 }
 
 .role-pill {
-  background: var(--sg-bg-card) !important;
+  background: var(--sg-card-bg) !important;
   color: var(--sg-text-main) !important;
   border: 1px solid var(--sg-border) !important;
   border-radius: var(--sg-radius-sm) !important;
@@ -6968,7 +7005,7 @@ a.acessar-link:hover,
 }
 
 .role-pill:hover {
-  background: var(--sg-bg-card-hover) !important;
+  background: var(--sg-card-hover) !important;
   border-color: var(--sg-border-gold) !important;
 }
 
@@ -6976,4 +7013,114 @@ a.acessar-link:hover,
   background: var(--sg-gold-soft) !important;
   border-color: var(--sg-gold) !important;
   color: var(--sg-gold) !important;
+}
+
+/* 15. Estilos Específicos dos Itens do Menu (Sidebar Items) */
+.company-sidebar-brand strong {
+  color: var(--sg-gold-light) !important;
+}
+
+.company-sidebar-brand small {
+  color: var(--sg-text-secondary) !important;
+}
+
+.menu-section-title {
+  color: var(--sg-text-muted) !important;
+}
+
+.menu-item {
+  color: var(--sg-text-secondary) !important;
+  transition: var(--sg-transition) !important;
+}
+
+.menu-item svg,
+.menu-item i {
+  color: var(--sg-gold) !important;
+}
+
+.menu-item:hover {
+  background: var(--sg-sidebar-hover) !important;
+  color: var(--sg-text-main) !important;
+  border-color: var(--sg-border-gold) !important;
+}
+
+/* Item Ativo (Menu) */
+.menu-item.active {
+  color: var(--sg-text-main) !important;
+  border: 1px solid var(--sg-border-gold) !important;
+  box-shadow: var(--sg-shadow-gold) !important;
+  border-radius: 16px !important;
+}
+
+body.theme-dark .menu-item.active {
+  background: #15181d !important;
+}
+
+body:not(.theme-dark) .menu-item.active {
+  background: #fff4d6 !important;
+}
+
+.menu-item.active::before {
+  background: var(--sg-gold) !important;
+  box-shadow: 0 0 8px var(--sg-gold) !important;
+}
+
+/* 16. Perfil no Rodapé (Sidebar Profile Card) */
+.sidebar-profile-card,
+.company-sidebar-profile {
+  background: var(--sg-sidebar-card) !important;
+  border: 1px solid var(--sg-border-gold) !important;
+  border-radius: 22px !important;
+  box-shadow: var(--sg-shadow-soft) !important;
+}
+
+.sidebar-profile-card .profile-info strong,
+.company-sidebar-profile strong {
+  color: var(--sg-text-main) !important;
+}
+
+.sidebar-profile-card .profile-info span,
+.company-sidebar-profile small {
+  color: var(--sg-text-muted) !important;
+}
+
+.sidebar-profile-card .profile-action,
+.company-sidebar-profile a {
+  border: 1px solid var(--sg-border-gold) !important;
+  background: var(--sg-card-bg-soft) !important;
+  color: var(--sg-gold) !important;
+  border-radius: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  transition: var(--sg-transition) !important;
+}
+
+.sidebar-profile-card .profile-action:hover,
+.company-sidebar-profile a:hover {
+  background: var(--sg-sidebar-hover) !important;
+  color: var(--sg-gold-light) !important;
+}
+
+/* 17. Botão do Tema */
+.theme-toggle-btn {
+  background: var(--sg-sidebar-bg) !important;
+  color: var(--sg-gold) !important;
+  border: 1px solid var(--sg-border-gold) !important;
+  box-shadow: var(--sg-shadow-soft) !important;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--sg-sidebar-hover) !important;
+  border-color: var(--sg-gold) !important;
+}
+
+/* 18. Alinhamento da barra lateral do menu ativo */
+.menu-item.active::before {
+  left: 0px !important;
+  top: 12px !important;
+  height: 26px !important;
+  width: 4px !important;
+  border-radius: 0 4px 4px 0 !important;
 }

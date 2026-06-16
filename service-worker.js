@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-v8";
+const CACHE_VERSION = "seven-gold-v9";
 const APP_SHELL = [
   "/",
   "/index.html",
