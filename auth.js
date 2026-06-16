@@ -373,6 +373,8 @@
     };
   };
 
+
+
   const setupAuthCallbackPage = async () => {
     if (!document.body.matches("[data-auth-callback]")) {
       return false;
@@ -439,7 +441,55 @@
     });
   };
 
+  const initTheme = () => {
+    if (!document.body || !document.body.matches("[data-require-auth]")) {
+      return;
+    }
+
+    const savedTheme = localStorage.getItem("seven-gold-theme") || "light";
+    if (savedTheme === "dark") {
+      document.body.classList.add("theme-dark");
+    } else {
+      document.body.classList.remove("theme-dark");
+    }
+
+    const toggleBtn = document.createElement("button");
+    toggleBtn.type = "button";
+    toggleBtn.className = "theme-toggle-btn";
+    toggleBtn.title = "Alternar Tema (Claro / Escuro)";
+
+    const updateButtonIcon = (theme) => {
+      if (theme === "dark") {
+        toggleBtn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+        `;
+      } else {
+        toggleBtn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        `;
+      }
+    };
+
+    updateButtonIcon(savedTheme);
+
+    toggleBtn.addEventListener("click", () => {
+      const isDark = document.body.classList.toggle("theme-dark");
+      const currentTheme = isDark ? "dark" : "light";
+      localStorage.setItem("seven-gold-theme", currentTheme);
+      updateButtonIcon(currentTheme);
+    });
+
+    document.body.appendChild(toggleBtn);
+  };
+
   document.addEventListener("DOMContentLoaded", async () => {
+    initTheme();
+
     const handledCallback = await setupAuthCallbackPage();
     if (handledCallback) {
       return;
