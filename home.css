@@ -10973,45 +10973,62 @@ body.theme-dark .empresa-topbar-user small,
    Modo Claro — Empresa Topbar (body[data-unified-admin] scope)
    ============================================================ */
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar {
-  background: #ffffff !important;
-  border-color: rgba(0, 0, 0, 0.04) !important;
-  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08) !important;
+  background: #101216 !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.28) !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-brand-text strong {
-  color: #111827 !important;
+  color: #f4d46f !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-brand-text small {
-  color: #9ca3af !important;
-}
-
-body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a {
   color: #6b7280 !important;
 }
 
+body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a {
+  color: #9ca3af !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a i,
+body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a svg {
+  color: #9ca3af !important;
+  stroke: #9ca3af !important;
+}
+
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a:hover {
-  background: rgba(0, 0, 0, 0.04) !important;
-  color: #111827 !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #f4f4f5 !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a.active {
-  background: rgba(212, 175, 55, 0.14) !important;
-  color: #b8941e !important;
-  border-color: rgba(212, 175, 55, 0.22) !important;
+  background: rgba(212, 175, 55, 0.18) !important;
+  color: #d4af37 !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a.active i,
+body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a.active svg {
+  color: #d4af37 !important;
+  stroke: #d4af37 !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-profile {
-  border-color: rgba(0, 0, 0, 0.06) !important;
-  background: rgba(0, 0, 0, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .empresa-topbar-profile:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user strong {
-  color: #111827 !important;
+  color: #f4f4f5 !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user small {
-  color: #9ca3af !important;
+  color: #6b7280 !important;
 }
 
 /* ============================================================
