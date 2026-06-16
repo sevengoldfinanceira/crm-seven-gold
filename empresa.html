@@ -96,6 +96,119 @@
           <a href="#metas" data-visible-roles="dono,administrador,coordenador"><i data-lucide="target"></i><div><h2>Metas</h2><p>Objetivos mensais, ranking e campanhas internas.</p><strong>Acessar <span>→</span></strong></div></a>
           <a href="historia-dono.html" data-visible-roles="dono"><i data-lucide="crown"></i><div><h2>História do Dono</h2><p>Crédito vendido, cotas, salário, totais e médias por ano.</p><strong>Acessar <span>→</span></strong></div></a>
         </section>
+
+        <section class="company-goals-section" id="metas" aria-label="Metas da empresa">
+          <header class="goals-header">
+            <div>
+              <span class="goals-eyebrow">Planejamento mensal</span>
+              <h2>Metas da Empresa</h2>
+              <p>Acompanhe os objetivos comerciais, financeiros e operacionais da Seven Gold.</p>
+            </div>
+            <div class="goals-actions" aria-label="Ações de metas">
+              <button type="button" class="goals-filter"><i data-lucide="calendar-days"></i><span>Este mês</span><i data-lucide="chevron-down"></i></button>
+              <button type="button" class="goals-primary"><i data-lucide="plus"></i><span>Nova meta</span></button>
+            </div>
+          </header>
+
+          <section class="goals-stat-grid" aria-label="Resumo das metas">
+            <article class="goal-stat-card goal-blue">
+              <i data-lucide="shopping-cart"></i>
+              <div>
+                <span>Meta de vendas do mês</span>
+                <strong>R$ 176.000</strong>
+                <small>Realizado: R$ 145.000</small>
+              </div>
+              <div class="goal-progress"><span style="width: 82%"></span></div>
+              <b>82%</b>
+            </article>
+            <article class="goal-stat-card goal-green">
+              <i data-lucide="users-round"></i>
+              <div>
+                <span>Cotas vendidas</span>
+                <strong>40 cotas</strong>
+                <small>Realizado: 31 cotas</small>
+              </div>
+              <div class="goal-progress"><span style="width: 78%"></span></div>
+              <b>78%</b>
+            </article>
+            <article class="goal-stat-card goal-purple">
+              <i data-lucide="funnel"></i>
+              <div>
+                <span>Leads convertidos</span>
+                <strong>120 conversões</strong>
+                <small>Realizado: 94 conversões</small>
+              </div>
+              <div class="goal-progress"><span style="width: 78%"></span></div>
+              <b>78%</b>
+            </article>
+            <article class="goal-stat-card goal-orange">
+              <i data-lucide="wallet-cards"></i>
+              <div>
+                <span>Comissões previstas</span>
+                <strong>R$ 7.500</strong>
+                <small>Status: dentro da meta</small>
+              </div>
+              <div class="goal-progress"><span style="width: 100%"></span></div>
+              <b>100%</b>
+            </article>
+          </section>
+
+          <section class="goals-insight-grid" aria-label="Desempenho das metas">
+            <article class="goals-chart-card">
+              <header>
+                <h3>Desempenho de vendas (R$)</h3>
+                <span><i></i> Realizado <i></i> Meta</span>
+              </header>
+              <div class="goals-bar-chart" aria-label="Gráfico visual de vendas por mês">
+                <div style="--bar: 38%; --label: '100k'"><span></span><small>Jan</small></div>
+                <div style="--bar: 45%; --label: '110k'"><span></span><small>Fev</small></div>
+                <div style="--bar: 57%; --label: '130k'"><span></span><small>Mar</small></div>
+                <div style="--bar: 64%; --label: '140k'"><span></span><small>Abr</small></div>
+                <div style="--bar: 72%; --label: '160k'"><span></span><small>Mai</small></div>
+                <div style="--bar: 78%; --label: '176k'"><span></span><small>Jun</small></div>
+                <div style="--bar: 78%; --label: '176k'"><span></span><small>Jul</small></div>
+              </div>
+            </article>
+
+            <article class="goals-donut-card">
+              <h3>Meta mensal</h3>
+              <div class="goals-donut" aria-label="82 por cento"><strong>82%</strong></div>
+              <strong>R$ 145.000 de R$ 176.000</strong>
+              <span>Faltam <b>R$ 31.000</b> para bater a meta</span>
+            </article>
+
+            <article class="goals-table-card">
+              <h3>Metas por equipe</h3>
+              <div class="goals-table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Consultor</th>
+                      <th>Meta</th>
+                      <th>Realizado</th>
+                      <th>Progresso</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Jonatã</td><td>R$ 60.000</td><td>R$ 52.000</td><td><span class="mini-progress"><i style="width: 86%"></i></span>86%</td><td><mark>Em andamento</mark></td></tr>
+                    <tr><td>Comercial 1</td><td>R$ 45.000</td><td>R$ 38.500</td><td><span class="mini-progress"><i style="width: 85%"></i></span>85%</td><td><mark>Em andamento</mark></td></tr>
+                    <tr><td>Comercial 2</td><td>R$ 40.000</td><td>R$ 29.000</td><td><span class="mini-progress"><i style="width: 72%"></i></span>72%</td><td><mark class="warning">Atenção</mark></td></tr>
+                    <tr><td>Pós-venda</td><td>R$ 31.000</td><td>R$ 25.500</td><td><span class="mini-progress"><i style="width: 82%"></i></span>82%</td><td><mark>Em andamento</mark></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+
+          <section class="goals-active-grid" aria-label="Metas ativas">
+            <h3>Metas ativas</h3>
+            <article class="goal-blue"><i data-lucide="target"></i><div><strong>Bater R$ 176.000 em vendas no mês</strong><span>Prazo: 31/07/2025</span></div><b>82%</b></article>
+            <article class="goal-green"><i data-lucide="users-round"></i><div><strong>Vender 40 cotas de consórcio</strong><span>Prazo: 31/07/2025</span></div><b>78%</b></article>
+            <article class="goal-purple"><i data-lucide="funnel"></i><div><strong>Converter 120 leads em atendimento qualificado</strong><span>Prazo: 31/07/2025</span></div><b>78%</b></article>
+            <article class="goal-orange"><i data-lucide="trending-up"></i><div><strong>Reduzir perda de leads em 15%</strong><span>Prazo: 31/07/2025</span></div><b>60%</b></article>
+          </section>
+        </section>
       </section>
     </main>
     <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
