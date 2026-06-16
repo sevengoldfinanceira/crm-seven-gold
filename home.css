@@ -29,7 +29,7 @@ body {
 }
 
 body[data-unified-admin] > main {
-  margin-left: 260px;
+  margin-left: 280px;
 }
 
 html[data-admin-sidebar="collapsed"] body[data-unified-admin] > main {
@@ -788,46 +788,53 @@ body[data-unified-admin] > .unified-admin-shell {
     #090a0b;
 }
 
+/* ============================================================
+   SIDEBAR PREMIUM — SEVEN GOLD
+   ============================================================ */
+
 .company-sidebar {
   position: sticky;
   top: 0;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: 22px;
-  height: 100vh;
-  padding: 20px 14px;
-  border-right: 1px solid rgba(216, 173, 61, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 280px;
+  min-height: 100vh;
+  padding: 24px 18px;
+  border-right: 1px solid rgba(212, 175, 55, 0.35);
   background:
-    linear-gradient(180deg, #150126 0%, #1a0430 40%, #0f011d 100%);
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    radial-gradient(circle at top left, rgba(212, 175, 55, 0.08), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(128, 0, 180, 0.18), transparent 35%),
+    linear-gradient(180deg, #08000f 0%, #12001f 45%, #1b002b 100%);
+  box-shadow: 12px 0 35px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+/* --- Header / Brand --- */
+.unified-sidebar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 20px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
 }
 
 .company-sidebar-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 10px;
-  color: #f2c94c;
+  gap: 14px;
   text-decoration: none;
-  position: relative;
-}
-
-.company-sidebar-brand::after {
-  content: "";
-  position: absolute;
-  bottom: -10px;
-  left: 10px;
-  right: 10px;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(216, 173, 61, 0.5), transparent);
+  color: inherit;
 }
 
 .company-sidebar-brand img {
-  width: 62px;
-  height: 62px;
-  object-fit: cover;
-  border-radius: 10px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 12px;
+  filter: drop-shadow(0 4px 12px rgba(212, 175, 55, 0.2));
 }
 
 .company-sidebar-brand strong,
@@ -838,37 +845,67 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .brand-title {
-  font-size: 1.1rem;
-  letter-spacing: 2px;
-  color: #f2c94c;
-  text-shadow: 0 0 20px rgba(242, 201, 76, 0.15);
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #f6d365;
+  text-shadow: 0 0 24px rgba(246, 211, 101, 0.2);
 }
 
 .brand-subtitle {
-  margin-top: 2px;
-  color: #c8b8f0;
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  margin-top: 3px;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
 }
 
 .brand-tagline {
-  margin-top: 4px;
-  color: rgba(216, 173, 61, 0.6);
-  font-size: 0.58rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
+  margin-top: 2px;
+  color: rgba(207, 199, 216, 0.6);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
+.sidebar-toggle {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: rgba(255, 255, 255, 0.05);
+  color: #d4af37;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(212, 175, 55, 0.14);
+  box-shadow: 0 0 18px rgba(212, 175, 55, 0.25);
+  border-color: rgba(212, 175, 55, 0.7);
+}
+
+.sidebar-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* --- Navigation --- */
 .company-sidebar-nav {
-  display: grid;
-  align-content: start;
-  gap: 3px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  padding-right: 4px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(216, 173, 61, 0.15) transparent;
+  scrollbar-color: rgba(212, 175, 55, 0.15) transparent;
 }
 
 .company-sidebar-nav::-webkit-scrollbar {
@@ -876,98 +913,220 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .company-sidebar-nav::-webkit-scrollbar-thumb {
-  background: rgba(216, 173, 61, 0.2);
+  background: rgba(212, 175, 55, 0.2);
   border-radius: 3px;
 }
 
-.company-sidebar-nav a {
+/* --- Menu Sections --- */
+.menu-section {
+  padding-top: 18px;
+}
+
+.menu-section:first-child {
+  padding-top: 0;
+}
+
+.menu-section-title {
+  display: block;
+  padding: 0 12px;
+  margin-bottom: 10px;
+  color: #f6d365;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.menu-section + .menu-section {
+  border-top: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+/* --- Menu Items --- */
+.menu-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 50px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  color: #cfc7d8;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.menu-item svg,
+.menu-item i {
+  width: 20px;
+  height: 20px;
+  color: #d4af37;
+  flex-shrink: 0;
+  transition: color 0.25s ease;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateX(4px);
+  border-color: rgba(212, 175, 55, 0.18);
+  color: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.12);
+}
+
+.menu-item:hover svg,
+.menu-item:hover i {
+  color: #f6d365;
+}
+
+.menu-item.active {
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.22), rgba(255, 255, 255, 0.06));
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 10px 28px rgba(212, 175, 55, 0.16);
+  transform: none;
+}
+
+.menu-item.active svg,
+.menu-item.active i {
+  color: #f6d365;
+  filter: drop-shadow(0 0 6px rgba(246, 211, 101, 0.4));
+}
+
+.menu-item.active::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  top: 10px;
+  width: 4px;
+  height: 30px;
+  border-radius: 0 999px 999px 0;
+  background: linear-gradient(180deg, #f6d365, #d4af37);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+}
+
+/* --- Profile Card --- */
+.sidebar-profile-card {
+  margin-top: auto;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.profile-main {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 44px;
-  padding: 0 13px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: #b8b0c4;
-  font-size: 0.83rem;
-  font-weight: 500;
-  text-decoration: none;
-  position: relative;
-  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.company-sidebar-nav a:hover {
-  border-color: rgba(216, 173, 61, 0.25);
-  background: rgba(216, 173, 61, 0.08);
-  color: #ede4f2;
-}
-
-.company-sidebar-nav a.active {
-  border-color: rgba(216, 173, 61, 0.5);
-  background: linear-gradient(135deg, rgba(216, 173, 61, 0.15), rgba(216, 173, 61, 0.05));
-  color: #f2c94c;
-  font-weight: 600;
-  box-shadow: inset 2px 0 0 #d8ad3d;
-}
-
-.company-sidebar-nav a.active::before {
-  content: "";
-  position: absolute;
-  left: -14px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 20px;
-  border-radius: 0 3px 3px 0;
-  background: #d8ad3d;
-  box-shadow: 0 0 10px rgba(216, 173, 61, 0.4);
-}
-
-.company-sidebar-nav svg {
-  width: 19px;
-  height: 19px;
-  color: #c8a84e;
-  flex-shrink: 0;
-  transition: color 180ms ease;
-}
-
-.company-sidebar-nav a:hover svg {
-  color: #e2b83f;
-}
-
-.company-sidebar-nav a.active svg {
-  color: #f2c94c;
-}
-
-.company-sidebar-profile {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 9px;
-  padding: 12px 10px;
-  border: 1px solid rgba(216, 173, 61, 0.15);
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.25);
 }
 
 .profile-avatar {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  background-color: rgba(216, 173, 61, 0.12);
+  background-color: rgba(212, 175, 55, 0.12);
   background-position: center;
   background-size: cover;
+  border: 2px solid rgba(212, 175, 55, 0.6);
   font-weight: 700;
-  font-size: 0.85rem;
-  color: #d8ad3d;
-  border: 1px solid rgba(216, 173, 61, 0.2);
+  font-size: 1rem;
+  color: #d4af37;
+  flex-shrink: 0;
 }
 
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.profile-name-row strong {
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.verified-badge {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.profile-role {
+  display: block;
+  margin-top: 2px;
+  color: #f6d365;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.profile-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  color: #cfc7d8;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+  flex-shrink: 0;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.profile-action {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: rgba(255, 255, 255, 0.05);
+  color: #d4af37;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.profile-action svg {
+  width: 18px;
+  height: 18px;
+}
+
+.profile-action:hover {
+  background: rgba(212, 175, 55, 0.14);
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.2);
+  border-color: rgba(212, 175, 55, 0.6);
+  color: #f6d365;
+}
+
+/* --- Layout Shell --- */
 .unified-admin-shell {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-columns: 280px minmax(0, 1fr);
   min-height: 100vh;
   background: #f3f3f2;
 }
@@ -983,140 +1142,19 @@ body[data-unified-admin] > .unified-admin-shell {
 
 .unified-admin-sidebar {
   width: auto;
-  transition: padding 180ms ease;
+  transition: width 0.3s ease, padding 0.3s ease;
 }
 
-.unified-sidebar-header {
+/* --- Sidebar Profile (empresa.html static fallback) --- */
+.company-sidebar-profile {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 6px;
-  align-items: start;
-  padding-bottom: 4px;
-}
-
-.sidebar-toggle {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border: 1px solid rgba(216, 173, 61, 0.25);
-  border-radius: 8px;
-  background: rgba(216, 173, 61, 0.06);
-  color: #d8ad3d;
-  cursor: pointer;
-  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.sidebar-toggle:hover {
-  border-color: rgba(216, 173, 61, 0.5);
-  background: rgba(216, 173, 61, 0.14);
-  color: #f2c94c;
-  box-shadow: 0 0 16px rgba(216, 173, 61, 0.12);
-}
-
-.sidebar-toggle svg {
-  width: 18px;
-  height: 18px;
-}
-
-.unified-sidebar-profile {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
+  gap: 9px;
   padding: 12px 10px;
-  border: 1px solid rgba(216, 173, 61, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.15);
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.25);
-  color: #ddd9e0;
-  text-decoration: none;
-  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.unified-sidebar-profile:hover {
-  border-color: rgba(216, 173, 61, 0.3);
-  background: rgba(0, 0, 0, 0.35);
-}
-
-.unified-sidebar-profile strong,
-.unified-sidebar-profile small {
-  display: block;
-}
-
-.unified-sidebar-profile strong {
-  font-size: 0.75rem;
-  color: #ede4f2;
-}
-
-.unified-sidebar-profile small {
-  margin-top: 2px;
-  color: #a898b0;
-  font-size: 0.62rem;
-}
-
-.sidebar-collapsed .unified-admin-sidebar {
-  padding-inline: 9px;
-}
-
-.sidebar-collapsed .unified-sidebar-header {
-  display: grid;
-  grid-template-columns: 1fr;
-  justify-items: center;
-  gap: 10px;
-}
-
-.sidebar-collapsed .company-sidebar-brand {
-  padding: 0;
-  justify-content: center;
-}
-
-.sidebar-collapsed .company-sidebar-brand::after {
-  display: none;
-}
-
-.sidebar-collapsed .company-sidebar-brand img {
-  width: 48px;
-  height: 48px;
-}
-
-.sidebar-collapsed .brand-text,
-.sidebar-collapsed .company-sidebar-nav span,
-.sidebar-collapsed .unified-sidebar-profile > span:last-child {
-  display: none;
-}
-
-.sidebar-collapsed .company-sidebar-nav a {
-  justify-content: center;
-  padding-inline: 0;
-  min-height: 44px;
-  border-radius: 8px;
-}
-
-.sidebar-collapsed .company-sidebar-nav a.active::before {
-  display: none;
-}
-
-.sidebar-collapsed .company-sidebar-nav a.active {
-  box-shadow: none;
-}
-
-.sidebar-collapsed .unified-sidebar-profile {
-  display: flex;
-  justify-content: center;
-  padding: 8px;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  margin-inline: auto;
-}
-
-.sidebar-collapsed .unified-sidebar-profile:hover {
-  border-color: rgba(216, 173, 61, 0.4);
-}
-
-.has-user-photo {
-  color: transparent;
 }
 
 .company-sidebar-profile strong {
@@ -1142,6 +1180,162 @@ body[data-unified-admin] > .unified-admin-shell {
   align-items: center;
   min-width: 0;
   text-decoration: none;
+}
+
+.has-user-photo {
+  color: transparent;
+}
+
+/* ============================================================
+   SIDEBAR COLLAPSED STATE
+   ============================================================ */
+
+.sidebar-collapsed .unified-admin-sidebar {
+  width: 76px;
+  padding: 20px 12px;
+}
+
+.sidebar-collapsed .unified-sidebar-header {
+  align-items: center;
+  padding-bottom: 16px;
+}
+
+.sidebar-collapsed .company-sidebar-brand {
+  justify-content: center;
+}
+
+.sidebar-collapsed .company-sidebar-brand img {
+  width: 48px;
+  height: 48px;
+}
+
+.sidebar-collapsed .brand-text {
+  display: none;
+}
+
+.sidebar-collapsed .sidebar-toggle {
+  width: 38px;
+  height: 38px;
+}
+
+.sidebar-collapsed .menu-section-title {
+  display: none;
+}
+
+.sidebar-collapsed .menu-section {
+  padding-top: 10px;
+}
+
+.sidebar-collapsed .menu-section + .menu-section {
+  border-top: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.sidebar-collapsed .menu-item {
+  justify-content: center;
+  padding: 0;
+  height: 46px;
+}
+
+.sidebar-collapsed .menu-item span {
+  display: none;
+}
+
+.sidebar-collapsed .menu-item.active::before {
+  display: none;
+}
+
+.sidebar-collapsed .sidebar-profile-card {
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sidebar-collapsed .profile-info,
+.sidebar-collapsed .profile-actions {
+  display: none;
+}
+
+.sidebar-collapsed .profile-main {
+  justify-content: center;
+}
+
+/* ============================================================
+   MOBILE HAMBURGER + DRAWER
+   ============================================================ */
+
+.sidebar-hamburger {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1001;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: rgba(8, 0, 15, 0.92);
+  color: #d4af37;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+  transition: all 0.25s ease;
+}
+
+.sidebar-hamburger:hover {
+  background: rgba(212, 175, 55, 0.14);
+  box-shadow: 0 0 18px rgba(212, 175, 55, 0.25);
+}
+
+.sidebar-hamburger svg {
+  width: 22px;
+  height: 22px;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+  display: block;
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .sidebar-hamburger {
+    display: flex;
+  }
+
+  .company-sidebar {
+    position: fixed;
+    left: -300px;
+    top: 0;
+    z-index: 1000;
+    width: 280px;
+    transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .company-sidebar.drawer-open {
+    left: 0;
+  }
+
+  body[data-unified-admin] > main,
+  body[data-unified-admin] > .unified-admin-shell {
+    margin-left: 0 !important;
+  }
+
+  .unified-admin-shell {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 .company-sidebar-profile svg {

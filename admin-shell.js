@@ -5,18 +5,38 @@
   const currentPage = window.location.pathname.split("/").pop() || "empresa.html";
   const area = document.body.dataset.permissionArea || currentPage.replace(".html", "");
 
-  const navigation = [
-    ["empresa.html", "house", "Painel", "empresa", ""],
-    ["organograma.html", "network", "Organograma", "organograma", "dono,administrador,rh"],
-    ["financeiro.html", "badge-dollar-sign", "Financeiro", "financeiro", "dono,administrador,financeiro"],
-    ["comissoes.html", "percent", "Comissões", "comissoes", "dono,administrador,financeiro"],
-    ["equipe.html", "users", "Equipe", "equipe", "dono,administrador,rh"],
-    ["#marketing", "megaphone", "Marketing", "marketing", "dono,administrador,marketing"],
-    ["documentos.html", "file-text", "Documentos", "documentos", ""],
-    ["relatorios.html", "chart-column", "Relatórios", "relatorios", "dono,administrador,financeiro,marketing,rh"],
-    ["permissoes.html", "lock-keyhole", "Permissões", "permissoes", "dono"],
-    ["#metas", "target", "Metas", "metas", "dono,administrador,coordenador"],
-    ["historia-dono.html", "crown", "História do Dono", "historia_dono", "dono"],
+  const categories = [
+    {
+      title: "PRINCIPAL",
+      items: [
+        ["empresa.html", "house", "Painel", "empresa", ""],
+        ["organograma.html", "network", "Organograma", "organograma", "dono,administrador,rh"],
+        ["#metas", "target", "Metas", "metas", "dono,administrador,coordenador"],
+      ],
+    },
+    {
+      title: "GESTÃO",
+      items: [
+        ["equipe.html", "users", "Equipe", "equipe", "dono,administrador,rh"],
+        ["permissoes.html", "lock-keyhole", "Permissões", "permissoes", "dono"],
+        ["historia-dono.html", "crown", "História do Dono", "historia_dono", "dono"],
+      ],
+    },
+    {
+      title: "FINANCEIRO",
+      items: [
+        ["financeiro.html", "badge-dollar-sign", "Financeiro", "financeiro", "dono,administrador,financeiro"],
+        ["comissoes.html", "percent", "Comissões", "comissoes", "dono,administrador,financeiro"],
+        ["relatorios.html", "chart-column", "Relatórios", "relatorios", "dono,administrador,financeiro,marketing,rh"],
+      ],
+    },
+    {
+      title: "OPERACIONAL",
+      items: [
+        ["#marketing", "megaphone", "Marketing", "marketing", "dono,administrador,marketing"],
+        ["documentos.html", "file-text", "Documentos", "documentos", ""],
+      ],
+    },
   ];
 
   const createSidebar = () => {
@@ -26,26 +46,51 @@
       <div class="unified-sidebar-header">
         <a class="company-sidebar-brand" href="empresa.html" aria-label="Seven Gold">
           <img src="assets/logo-copa.png" alt="" />
-          <span class="brand-text"><strong class="brand-title">SEVEN GOLD</strong><small class="brand-subtitle">Painel Empresa</small><small class="brand-tagline">Gestão interna</small></span>
+          <span class="brand-text">
+            <strong class="brand-title">SEVEN GOLD</strong>
+            <small class="brand-subtitle">PAINEL EMPRESA</small>
+            <small class="brand-tagline">Gestão interna</small>
+          </span>
         </a>
         <button class="sidebar-toggle" type="button" aria-label="Recolher menu" title="Recolher ou expandir menu">
           <i data-lucide="menu"></i>
         </button>
       </div>
       <nav class="company-sidebar-nav" aria-label="Navegação da empresa">
-        ${navigation
+        ${categories
           .map(
-            ([href, icon, label, key, roles]) => `
-              <a href="${href}" class="${area === key ? "active" : ""}" title="${label}" ${roles ? `data-visible-roles="${roles}"` : ""}>
+            (cat) => `
+          <div class="menu-section">
+            <span class="menu-section-title">${cat.title}</span>
+            ${cat.items
+              .map(
+                ([href, icon, label, key, roles]) => `
+              <a href="${href}" class="menu-item${area === key ? " active" : ""}" title="${label}" ${roles ? `data-visible-roles="${roles}"` : ""}>
                 <i data-lucide="${icon}"></i><span>${label}</span>
               </a>`
+              )
+              .join("")}
+          </div>`
           )
           .join("")}
       </nav>
-      <a class="unified-sidebar-profile" href="perfil.html?area=empresa">
-        <span class="profile-avatar" data-user-avatar>U</span>
-        <span><strong data-user-name>Usuário</strong><small data-user-role>Perfil</small></span>
-      </a>
+      <div class="sidebar-profile-card">
+        <div class="profile-main">
+          <span class="profile-avatar" data-user-avatar>U</span>
+          <div class="profile-info">
+            <div class="profile-name-row">
+              <strong data-user-name>Usuário</strong>
+              <span class="verified-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#d4af37"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+            <span class="profile-role" data-user-role>Perfil</span>
+            <span class="profile-status"><span class="status-dot"></span>Online</span>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <a href="perfil.html?area=empresa" class="profile-action" title="Configurações"><i data-lucide="settings"></i></a>
+          <a href="painel.html" class="profile-action" title="Sair"><i data-lucide="log-out"></i></a>
+        </div>
+      </div>
     `;
     return sidebar;
   };
@@ -55,7 +100,6 @@
       window.lucide.createIcons();
       return;
     }
-
     const script = document.createElement("script");
     script.src = "https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js";
     script.addEventListener("load", () => window.lucide?.createIcons());
@@ -68,22 +112,18 @@
       companyLayout.querySelector(".company-sidebar")?.remove();
       return companyLayout;
     }
-
     const historyLayout = document.querySelector(".history-dashboard-shell");
     if (historyLayout) {
       historyLayout.querySelector(".history-sidebar")?.remove();
       return historyLayout;
     }
-
     const profileLayout = document.querySelector(".profile-dashboard-shell");
     if (profileLayout) {
       profileLayout.querySelectorAll(".profile-context-sidebar").forEach((item) => item.remove());
       return profileLayout;
     }
-
     const content = document.querySelector("body > main");
     if (!content) return null;
-
     const layout = document.createElement("div");
     content.before(layout);
     layout.append(content);
@@ -117,6 +157,26 @@
       applyCollapsed(collapsed);
     });
 
+    const hamburger = document.createElement("button");
+    hamburger.className = "sidebar-hamburger";
+    hamburger.setAttribute("aria-label", "Abrir menu");
+    hamburger.innerHTML = '<i data-lucide="menu"></i>';
+    document.body.appendChild(hamburger);
+
+    const overlay = document.createElement("div");
+    overlay.className = "sidebar-overlay";
+    document.body.appendChild(overlay);
+
+    hamburger.addEventListener("click", () => {
+      sidebar.classList.toggle("drawer-open");
+      overlay.classList.toggle("active");
+    });
+
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("drawer-open");
+      overlay.classList.remove("active");
+    });
+
     renderIcons();
   };
 
@@ -125,5 +185,4 @@
   } else {
     initialize();
   }
-
 })();
