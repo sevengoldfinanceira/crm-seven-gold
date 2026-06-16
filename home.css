@@ -8632,45 +8632,6 @@ body[data-unified-admin].theme-dark .profile-dashboard-shell {
   background: #1f2329 !important;
 }
 
-body[data-unified-admin] .unified-admin-shell,
-body[data-unified-admin] .company-dashboard-shell.unified-admin-shell,
-body[data-unified-admin] .history-dashboard-shell.unified-admin-shell,
-body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell {
-  display: grid !important;
-  grid-template-columns: 292px minmax(0, 1fr) !important;
-  align-items: stretch !important;
-  justify-content: stretch !important;
-  justify-items: stretch !important;
-}
-
-body[data-unified-admin] .unified-admin-shell.sidebar-collapsed,
-body[data-unified-admin] .company-dashboard-shell.unified-admin-shell.sidebar-collapsed,
-body[data-unified-admin] .history-dashboard-shell.unified-admin-shell.sidebar-collapsed,
-body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell.sidebar-collapsed {
-  grid-template-columns: 96px minmax(0, 1fr) !important;
-}
-
-body[data-unified-admin] .company-sidebar,
-body[data-unified-admin] .unified-admin-sidebar {
-  position: sticky !important;
-  top: 18px !important;
-  align-self: start !important;
-  width: auto !important;
-  height: calc(100vh - 36px) !important;
-  min-height: calc(100vh - 36px) !important;
-  max-height: calc(100vh - 36px) !important;
-  margin: 0 !important;
-  padding: 20px 16px !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
-  border-radius: 30px !important;
-  overflow: hidden !important;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.09), transparent 30%),
-    linear-gradient(180deg, #111318 0%, #0b0d10 100%) !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2) !important;
-  color: #f4f4f5 !important;
-}
-
 body[data-unified-admin].theme-dark .company-sidebar,
 body[data-unified-admin].theme-dark .unified-admin-sidebar {
   background:
@@ -9658,9 +9619,11 @@ body[data-unified-admin] .unified-admin-shell,
 body[data-unified-admin] .company-dashboard-shell.unified-admin-shell,
 body[data-unified-admin] .history-dashboard-shell.unified-admin-shell,
 body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell {
+  display: grid !important;
   grid-template-columns: 280px minmax(0, 1fr) !important;
   gap: 20px !important;
   padding: 20px !important;
+  align-items: stretch !important;
   background: #e5e7eb !important;
 }
 
