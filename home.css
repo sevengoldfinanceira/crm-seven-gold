@@ -477,7 +477,7 @@ body[data-unified-admin] > .unified-admin-shell {
 
 .login-panel {
   width: 100% !important;
-  max-width: 390px !important;
+  max-width: 420px !important;
   background: rgba(18, 18, 24, 0.65) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
@@ -5485,9 +5485,11 @@ body[data-unified-admin] > .unified-admin-shell {
 
 .login-header-layout {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 8px !important;
   margin-bottom: 8px;
+  text-align: center !important;
 }
 
 .header-circle-avatar {
@@ -5516,12 +5518,14 @@ body[data-unified-admin] > .unified-admin-shell {
 .header-text-details {
   display: flex;
   flex-direction: column;
+  align-items: center !important;
 }
 
 .header-subtitle {
   font-size: 0.72rem;
   color: #b3b3c6;
   font-weight: 500;
+  text-align: center !important;
 }
 
 .header-title {
@@ -5529,6 +5533,7 @@ body[data-unified-admin] > .unified-admin-shell {
   color: #ffffff !important;
   font-weight: 800 !important;
   margin: 0 !important;
+  text-align: center !important;
 }
 
 .login-instruction-text {
@@ -5536,24 +5541,27 @@ body[data-unified-admin] > .unified-admin-shell {
   color: #b3b3c6;
   line-height: 1.4;
   margin-top: 0;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
+  text-align: center !important;
 }
 
 .active-session-card-wrapper {
   display: grid;
   gap: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   animation: fadeInSession 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .saved-account-card {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 8px !important;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: 10px 14px;
+  padding: 12px 14px !important;
+  text-align: center !important;
   transition: all 0.2s ease;
 }
 
