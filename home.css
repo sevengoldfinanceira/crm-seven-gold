@@ -8416,6 +8416,10 @@ body[data-unified-admin] .unified-admin-shell,
 body[data-unified-admin] .company-dashboard-shell,
 body[data-unified-admin] .history-dashboard-shell,
 body[data-unified-admin] .profile-dashboard-shell {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
   min-height: 100vh !important;
   gap: 18px !important;
   padding: 18px !important;
@@ -8437,6 +8441,8 @@ body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell {
   display: grid !important;
   grid-template-columns: 292px minmax(0, 1fr) !important;
   align-items: stretch !important;
+  justify-content: stretch !important;
+  justify-items: stretch !important;
 }
 
 body[data-unified-admin] .unified-admin-shell.sidebar-collapsed,
@@ -8706,17 +8712,19 @@ body[data-unified-admin] .unified-admin-shell.sidebar-collapsed,
 body[data-unified-admin] .company-dashboard-shell.unified-admin-shell.sidebar-collapsed,
 body[data-unified-admin] .history-dashboard-shell.unified-admin-shell.sidebar-collapsed,
 body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell.sidebar-collapsed {
-  grid-template-columns: 86px minmax(0, 1fr) !important;
+  grid-template-columns: 92px minmax(0, 1fr) !important;
   gap: 18px !important;
+  padding-left: 18px !important;
+  padding-right: 18px !important;
 }
 
 body[data-unified-admin] .sidebar-collapsed .company-sidebar,
 body[data-unified-admin] .sidebar-collapsed .unified-admin-sidebar {
   justify-self: start !important;
   align-self: start !important;
-  width: 86px !important;
-  min-width: 86px !important;
-  max-width: 86px !important;
+  width: 92px !important;
+  min-width: 92px !important;
+  max-width: 92px !important;
   box-sizing: border-box !important;
   padding: 18px 10px !important;
 }
@@ -8772,6 +8780,32 @@ body[data-unified-admin] .sidebar-collapsed .unified-sidebar-profile {
 body[data-unified-admin] .sidebar-collapsed .profile-avatar {
   width: 46px !important;
   height: 46px !important;
+}
+
+body[data-unified-admin] .unified-admin-shell.sidebar-collapsed > main,
+body[data-unified-admin] .unified-admin-shell.sidebar-collapsed > section,
+body[data-unified-admin] .company-dashboard-shell.unified-admin-shell.sidebar-collapsed > main,
+body[data-unified-admin] .company-dashboard-shell.unified-admin-shell.sidebar-collapsed > section,
+body[data-unified-admin] .history-dashboard-shell.unified-admin-shell.sidebar-collapsed > main,
+body[data-unified-admin] .history-dashboard-shell.unified-admin-shell.sidebar-collapsed > section,
+body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell.sidebar-collapsed > main,
+body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell.sidebar-collapsed > section,
+body[data-unified-admin] .sidebar-collapsed .company-dashboard-main,
+body[data-unified-admin] .sidebar-collapsed .history-dashboard-main,
+body[data-unified-admin] .sidebar-collapsed .documents-shell,
+body[data-unified-admin] .sidebar-collapsed .reports-shell,
+body[data-unified-admin] .sidebar-collapsed .permissions-shell,
+body[data-unified-admin] .sidebar-collapsed .finance-shell,
+body[data-unified-admin] .sidebar-collapsed .commission-shell,
+body[data-unified-admin] .sidebar-collapsed .team-shell,
+body[data-unified-admin] .sidebar-collapsed .org-shell,
+body[data-unified-admin] .sidebar-collapsed .history-shell,
+body[data-unified-admin] .sidebar-collapsed .profile-page-shell {
+  grid-column: 2 !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  justify-self: stretch !important;
 }
 
 @media (max-width: 900px) {
