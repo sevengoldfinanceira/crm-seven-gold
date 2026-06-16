@@ -26,7 +26,7 @@
       <div class="unified-sidebar-header">
         <a class="company-sidebar-brand" href="empresa.html" aria-label="Seven Gold">
           <img src="assets/logo-copa.png" alt="" />
-          <span><strong>Seven Gold</strong><small>Empresa</small></span>
+          <span class="brand-text"><strong class="brand-title">SEVEN GOLD</strong><small class="brand-subtitle">Painel Empresa</small><small class="brand-tagline">Gestão interna</small></span>
         </a>
         <button class="sidebar-toggle" type="button" aria-label="Recolher menu" title="Recolher ou expandir menu">
           <i data-lucide="menu"></i>
