@@ -1,5 +1,7 @@
 (() => {
   const collapsedKey = "seven-gold-admin-sidebar-collapsed";
+  document.documentElement.dataset.adminSidebar =
+    localStorage.getItem(collapsedKey) === "true" ? "collapsed" : "expanded";
   const currentPage = window.location.pathname.split("/").pop() || "empresa.html";
   const area = document.body.dataset.permissionArea || currentPage.replace(".html", "");
 
@@ -111,6 +113,7 @@
     sidebar.querySelector(".sidebar-toggle").addEventListener("click", () => {
       const collapsed = !layout.classList.contains("sidebar-collapsed");
       localStorage.setItem(collapsedKey, String(collapsed));
+      document.documentElement.dataset.adminSidebar = collapsed ? "collapsed" : "expanded";
       applyCollapsed(collapsed);
     });
 
@@ -122,4 +125,5 @@
   } else {
     initialize();
   }
+
 })();
