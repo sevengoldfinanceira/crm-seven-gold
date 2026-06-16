@@ -7384,3 +7384,341 @@ body.theme-dark .drag-clone {
   border: 1px solid rgba(212, 175, 55, 0.4) !important;
   color: #d4af37 !important;
 }
+
+/* --- 19.18 Adicionais para o Modo Escuro Premium (Seven Gold) --- */
+
+/* Botões de Ações nas Toolbars (Equipe, Comissões, Permissões, Relatórios, etc.) */
+body.theme-dark .team-actions button,
+body.theme-dark .commission-actions button,
+body.theme-dark .permissions-actions button,
+body.theme-dark .history-actions button,
+body.theme-dark .documents-actions button {
+  background: #111318 !important;
+  color: #f7f7f8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.theme-dark .team-actions button:hover,
+body.theme-dark .commission-actions button:hover,
+body.theme-dark .permissions-actions button:hover,
+body.theme-dark .history-actions button:hover,
+body.theme-dark .documents-actions button:hover {
+  background: #1a1e26 !important;
+  border-color: rgba(212, 175, 55, 0.30) !important;
+}
+
+/* Botões Primários no Modo Escuro (Salvar, Adicionar, etc.) */
+body.theme-dark .team-actions button:first-child,
+body.theme-dark .permissions-actions button:first-child,
+body.theme-dark .history-actions button:first-child,
+body.theme-dark .finance-form button,
+body.theme-dark .upload-panel button,
+body.theme-dark .sale-form button,
+body.theme-dark .reports-actions button,
+body.theme-dark .time-editor-panel button,
+body.theme-dark #save-year,
+body.theme-dark #save-year-bottom,
+body.theme-dark .editor-save-bar button {
+  background: var(--gold) !important;
+  color: #000000 !important;
+  border: 1px solid var(--gold) !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15) !important;
+}
+
+body.theme-dark .team-actions button:first-child:hover,
+body.theme-dark .permissions-actions button:first-child:hover,
+body.theme-dark .history-actions button:first-child:hover,
+body.theme-dark .finance-form button:hover,
+body.theme-dark .upload-panel button:hover,
+body.theme-dark .sale-form button:hover,
+body.theme-dark .reports-actions button:hover,
+body.theme-dark .time-editor-panel button:hover,
+body.theme-dark #save-year:hover,
+body.theme-dark #save-year-bottom:hover,
+body.theme-dark .editor-save-bar button:hover {
+  background: #e9bc47 !important;
+  color: #000000 !important;
+  border-color: #e9bc47 !important;
+  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.35) !important;
+}
+
+/* Botão de reset / secundário na edição de história */
+body.theme-dark #reset-year {
+  background: #111318 !important;
+  color: #f7f7f8 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+body.theme-dark #reset-year:hover {
+  background: #1a1e26 !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Equipe (equipe.html) */
+body.theme-dark .team-rank {
+  background: #111318 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35) !important;
+}
+body.theme-dark .rank-link {
+  color: #c5c8ce !important;
+}
+body.theme-dark .rank-link.active,
+body.theme-dark .rank-link:hover {
+  background: #1e222b !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+  color: var(--gold) !important;
+}
+body.theme-dark .role-section {
+  background: #111318 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35) !important;
+}
+body.theme-dark .role-section > header > span {
+  background: #15181d !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: var(--gold) !important;
+}
+body.theme-dark .job-card ol {
+  color: #c5c8ce !important;
+}
+
+/* Comissões (comissoes.html) */
+body.theme-dark .commission-reference article {
+  background: #111318 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35) !important;
+}
+body.theme-dark .commission-category > header {
+  background: #101216 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35) !important;
+}
+body.theme-dark .commission-table tbody td:nth-child(3) {
+  color: #22d3ee !important;
+}
+body.theme-dark .commission-table tbody td:nth-child(4) {
+  color: var(--gold) !important;
+}
+body.theme-dark .pdf-badge {
+  background: #15181d !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+body.theme-dark .commission-reference a,
+body.theme-dark .commission-card a {
+  background: #15181d !important;
+  color: #f7f7f8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+body.theme-dark .commission-reference a:hover,
+body.theme-dark .commission-card a:hover {
+  background: #1a1e26 !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+  color: var(--gold) !important;
+}
+
+/* Documentos (documentos.html) */
+body.theme-dark .sector-sidebar,
+body.theme-dark .document-main {
+  background: #111318 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35) !important;
+}
+body.theme-dark .sector-tab {
+  color: #c5c8ce !important;
+}
+body.theme-dark .sector-tab.active,
+body.theme-dark .sector-tab:hover {
+  background: #1e222b !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+  color: var(--gold) !important;
+}
+body.theme-dark .document-category {
+  background: #151820 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+body.theme-dark .category-icon {
+  background: #1e222b !important;
+}
+body.theme-dark .document-list a {
+  background: #111318 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #f7f7f8 !important;
+}
+body.theme-dark .document-list a:hover {
+  background: #1a1e26 !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+  color: var(--gold) !important;
+}
+body.theme-dark .file-drop {
+  background: #101216 !important;
+  border: 1px dashed rgba(255, 255, 255, 0.15) !important;
+  color: #c5c8ce !important;
+}
+
+/* Permissões (permissoes.html) */
+body.theme-dark .permission-table-wrap {
+  background: #111318 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35) !important;
+}
+body.theme-dark .permission-table tbody th {
+  background: #151820 !important;
+  color: #f7f7f8 !important;
+}
+body.theme-dark .user-access-row {
+  background: #151820 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+body.theme-dark .permission-save-status {
+  background: #111318 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+body.theme-dark .permission-toggle input {
+  accent-color: var(--gold) !important;
+}
+
+/* Relatórios (relatorios.html) */
+body.theme-dark .report-note {
+  color: #f87171 !important;
+}
+
+/* História do Dono (historia-dono.html) */
+body.theme-dark .career-time-grid article {
+  border-top: 3px solid var(--gold) !important;
+}
+body.theme-dark .career-time-grid strong {
+  color: #f7f7f8 !important;
+}
+body.theme-dark .year-heading-row strong {
+  background: #111318 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+  color: #c5c8ce !important;
+}
+body.theme-dark .year-heading-row .featured-year-heading {
+  background: rgba(212, 175, 55, 0.15) !important;
+  border-color: var(--gold) !important;
+  border-bottom-color: var(--gold) !important;
+  color: var(--gold) !important;
+  box-shadow: 0 8px 22px rgba(212, 175, 55, 0.15) !important;
+}
+body.theme-dark .year-gallery-toolbar button {
+  background: #111318 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f7f7f8 !important;
+}
+body.theme-dark .year-gallery-toolbar button.is-active {
+  background: var(--gold) !important;
+  color: #000000 !important;
+  border-color: var(--gold) !important;
+}
+body.theme-dark .year-detail {
+  background: #111318 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Spreadsheets (Planilhas Anuais - história do dono) */
+body.theme-dark .owner-sheet-wrap {
+  background: #0d0f12 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+body.theme-dark .owner-sheet-table {
+  border: 3px solid #111318 !important;
+}
+body.theme-dark .owner-sheet-table th,
+body.theme-dark .owner-sheet-table td {
+  background: #111318 !important;
+  color: #f7f7f8 !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+}
+body.theme-dark .owner-sheet-table thead th {
+  border: 2px solid rgba(255, 255, 255, 0.08) !important;
+  background: #1e222b !important;
+  color: var(--gold) !important;
+}
+body.theme-dark .owner-sheet-table thead th:first-child {
+  background: #0d0f12 !important;
+}
+body.theme-dark .owner-sheet-table tbody th {
+  border-right: 2px solid rgba(255, 255, 255, 0.1) !important;
+  background: #151820 !important;
+  color: #f7f7f8 !important;
+}
+body.theme-dark .owner-sheet-table .total-cell {
+  border: 2px solid rgba(212, 175, 55, 0.3) !important;
+  background: rgba(212, 175, 55, 0.12) !important;
+  color: #fbbf24 !important;
+}
+body.theme-dark .owner-sheet-table .average-head-cell,
+body.theme-dark .owner-sheet-table .average-cell {
+  border: 2px solid rgba(212, 175, 55, 0.3) !important;
+  background: rgba(212, 175, 55, 0.12) !important;
+  color: #fbbf24 !important;
+}
+body.theme-dark .owner-sheet-table .career-role-row td {
+  border: 2px solid rgba(168, 85, 247, 0.2) !important;
+  background: #1e1526 !important;
+  color: #d8b4fe !important;
+}
+body.theme-dark .owner-sheet-table .inactive-month-cell {
+  background: #0f1115 !important;
+  color: #555b64 !important;
+}
+
+/* Edição de ano (editar-historia-ano.html) */
+body.theme-dark .year-editor-table .role-editor-cell {
+  background: #1e1526 !important;
+  border-color: rgba(168, 85, 247, 0.2) !important;
+}
+body.theme-dark .year-editor-table .role-editor-cell small {
+  color: #c084fc !important;
+}
+body.theme-dark .year-editor-table .total-cell input {
+  background: rgba(212, 175, 55, 0.12) !important;
+  color: #fbbf24 !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+}
+body.theme-dark .year-editor-table .average-cell input {
+  background: rgba(212, 175, 55, 0.12) !important;
+  color: #fbbf24 !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+}
+
+/* Edição de tempos (editar-tempo-consorcio.html) */
+body.theme-dark .time-editor-preview {
+  background: #151820 !important;
+  border-left-color: var(--gold) !important;
+  color: #f7f7f8 !important;
+}
+
+/* Status de salvamento no rodapé */
+body.theme-dark .editor-save-bar span.pending {
+  color: #fb923c !important;
+}
+body.theme-dark .editor-save-bar span.saved {
+  color: #4ade80 !important;
+}
+
+/* Badges de Status (Tabelas) */
+body.theme-dark mark.entrada,
+body.theme-dark mark.pago {
+  background: rgba(34, 197, 94, 0.15) !important;
+  color: #4ade80 !important;
+  border: 1px solid rgba(34, 197, 94, 0.25) !important;
+}
+body.theme-dark mark.saida,
+body.theme-dark mark.pendente {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.25) !important;
+}
+body.theme-dark .reports-table mark,
+body.theme-dark .report-person-row mark,
+body.theme-dark .ranking-row mark,
+body.theme-dark .user-access-row mark {
+  background: rgba(212, 175, 55, 0.12) !important;
+  color: #f5c84c !important;
+  border: 1px solid rgba(212, 175, 55, 0.25) !important;
+}
