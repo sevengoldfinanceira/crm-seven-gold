@@ -81,17 +81,19 @@ body.theme-dark,
   --sg-bg-page: #08090b;
   --sg-bg-elevated: #0d0f12;
 
-  --sg-sidebar-bg: #07080a;
+  --sg-sidebar-bg: #050607;
   --sg-sidebar-card: #101216;
   --sg-sidebar-hover: #171a20;
 
-  --sg-card-bg: #101216;
-  --sg-card-bg-soft: #13161b;
-  --sg-card-hover: #181c22;
+  --sg-card-bg: #111318;
+  --sg-card-bg-soft: #151820;
+  --sg-card-hover: #1a1e26;
   
-  --sg-bg-card: #101216;
-  --sg-bg-card-solid: #101216;
-  --sg-bg-card-hover: #181c22;
+  --sg-bg-card: #111318;
+  --sg-bg-card-solid: #111318;
+  --sg-bg-card-hover: #1a1e26;
+
+  --sg-header-bg: #101216;
 
   --sg-text-main: #f7f7f8;
   --sg-text-secondary: #c5c8ce;
@@ -100,7 +102,7 @@ body.theme-dark,
 
   --sg-border: rgba(255, 255, 255, 0.08);
   --sg-border-strong: rgba(255, 255, 255, 0.14);
-  --sg-border-gold: rgba(212, 175, 55, 0.28);
+  --sg-border-gold: rgba(212, 175, 55, 0.30);
 
   --sg-input-bg: #101216;
   --sg-input-border: rgba(255, 255, 255, 0.12);
@@ -112,7 +114,6 @@ body.theme-dark,
   --sg-shadow-gold: 0 0 18px rgba(212, 175, 55, 0.12);
 
   --sg-page-gradient:
-    radial-gradient(circle at top left, rgba(255,255,255,0.035), transparent 32%),
     linear-gradient(180deg, #050607 0%, #08090b 48%, #050607 100%);
 
   /* retrocompatibilidade em Modo Escuro */
@@ -888,17 +889,15 @@ body[data-unified-admin] > .unified-admin-shell {
 
 /* Company dashboard */
 .company-dashboard-body {
-  background: #08090a;
-  color: #f5f3f6;
+  background: var(--sg-bg-page, #08090a);
+  color: var(--sg-text-main, #f5f3f6);
 }
 
 .company-dashboard-shell {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 88% 12%, rgba(43, 23, 53, 0.28), transparent 30%),
-    #090a0b;
+  background: var(--sg-bg-page, #090a0b);
 }
 
 /* ============================================================
@@ -1308,7 +1307,7 @@ body[data-unified-admin] > .unified-admin-shell {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
   min-height: 100vh;
-  background: #f3f3f2;
+  background: var(--sg-bg-page, #f3f3f2);
 }
 
 .unified-admin-shell > main,
@@ -7123,4 +7122,265 @@ body:not(.theme-dark) .menu-item.active {
   height: 26px !important;
   width: 4px !important;
   border-radius: 0 4px 4px 0 !important;
+}
+
+/* ==========================================================================
+   19. MODO ESCURO — OVERRIDES COMPLETOS
+   Força TODOS os containers/wrappers/shells a ficarem escuros.
+   Deve ser o último bloco do CSS para ter máxima precedência.
+   ========================================================================== */
+
+/* --- 19.1 Body e HTML --- */
+body.theme-dark {
+  background: #08090b !important;
+  background-image: none !important;
+  color: #f7f7f8 !important;
+}
+
+/* --- 19.2 Shells e Wrappers principais --- */
+body.theme-dark .unified-admin-shell,
+body.theme-dark .company-dashboard-shell {
+  background: #08090b !important;
+}
+
+body.theme-dark .company-dashboard-main,
+body.theme-dark main,
+body.theme-dark section,
+body.theme-dark .company-shell {
+  background: transparent !important;
+  color: #f7f7f8 !important;
+}
+
+/* --- 19.3 Header / Topo --- */
+body.theme-dark .company-dashboard-header,
+body.theme-dark .org-toolbar,
+body.theme-dark .history-toolbar,
+body.theme-dark .documents-toolbar,
+body.theme-dark .team-toolbar,
+body.theme-dark .finance-toolbar,
+body.theme-dark .commission-toolbar,
+body.theme-dark .reports-toolbar,
+body.theme-dark .permissions-toolbar {
+  background: #101216 !important;
+  color: #f7f7f8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.theme-dark .company-dashboard-header h1,
+body.theme-dark .company-dashboard-header p {
+  color: #f7f7f8 !important;
+}
+
+body.theme-dark .company-dashboard-header p {
+  color: #c5c8ce !important;
+}
+
+/* --- 19.4 Cards / Módulos --- */
+body.theme-dark .company-stat-grid article,
+body.theme-dark .company-module-grid > a,
+body.theme-dark .finance-table-panel,
+body.theme-dark .finance-form,
+body.theme-dark .documents-panel,
+body.theme-dark .upload-panel,
+body.theme-dark .team-panel,
+body.theme-dark .permissions-panel,
+body.theme-dark .user-access-panel,
+body.theme-dark .reports-panel,
+body.theme-dark .ranking-panel,
+body.theme-dark .commission-panel,
+body.theme-dark .commission-card,
+body.theme-dark .owner-history-panel,
+body.theme-dark .owner-year-card,
+body.theme-dark .year-editor-table-panel,
+body.theme-dark .career-time-grid article,
+body.theme-dark .lifetime-grid article,
+body.theme-dark .comparison-grid article,
+body.theme-dark .profile-editor-card,
+body.theme-dark .time-editor-panel,
+body.theme-dark .year-editor-panel,
+body.theme-dark .org-sector,
+body.theme-dark .job-card,
+body.theme-dark .sale-form,
+body.theme-dark .report-breakdowns article,
+body.theme-dark .reports-summary article {
+  background: #111318 !important;
+  color: #f7f7f8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* --- 19.5 Sidebar --- */
+body.theme-dark .company-sidebar {
+  background: #050607 !important;
+  border-right: 1px solid rgba(212, 175, 55, 0.22) !important;
+  color: #f7f7f8 !important;
+}
+
+body.theme-dark .sidebar-profile-card {
+  background: #101216 !important;
+}
+
+body.theme-dark .company-sidebar-profile {
+  background: #101216 !important;
+}
+
+/* --- 19.6 Textos --- */
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark h4,
+body.theme-dark h5,
+body.theme-dark h6 {
+  color: #f7f7f8 !important;
+}
+
+body.theme-dark p,
+body.theme-dark span:not(.status-dot):not(.premium-card-icon):not(.premium-recommended):not(.premium-restricted),
+body.theme-dark label,
+body.theme-dark small:not(.positive):not(.negative) {
+  color: #c5c8ce;
+}
+
+body.theme-dark strong {
+  color: #f7f7f8;
+}
+
+body.theme-dark .company-stat-grid article span {
+  color: #8d929c !important;
+}
+
+body.theme-dark .company-stat-grid article strong {
+  color: #f7f7f8 !important;
+}
+
+body.theme-dark .company-stat-grid article small {
+  color: #8d929c !important;
+}
+
+body.theme-dark .company-stat-grid article small.positive {
+  color: #22c55e !important;
+}
+
+/* --- 19.7 Ícones dourados --- */
+body.theme-dark .company-module-grid > a > svg,
+body.theme-dark .company-module-grid > a > i,
+body.theme-dark .company-stat-grid article > svg,
+body.theme-dark .company-stat-grid article > i {
+  color: #d4af37 !important;
+}
+
+/* --- 19.8 Links "Acessar" dourados --- */
+body.theme-dark .company-module-grid strong {
+  color: #d4af37 !important;
+}
+
+/* --- 19.9 Descrições dos módulos --- */
+body.theme-dark .company-module-grid h2 {
+  color: #f7f7f8 !important;
+}
+
+body.theme-dark .company-module-grid p {
+  color: #8d929c !important;
+}
+
+/* --- 19.10 Inputs/Selects/Textareas --- */
+body.theme-dark input,
+body.theme-dark select,
+body.theme-dark textarea {
+  background: #101216 !important;
+  color: #f7f7f8 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+body.theme-dark input:focus,
+body.theme-dark select:focus,
+body.theme-dark textarea:focus {
+  border-color: #d4af37 !important;
+}
+
+/* --- 19.11 Botão de perfil no header --- */
+body.theme-dark .company-profile-button {
+  background: #111318 !important;
+  color: #f7f7f8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.theme-dark .company-profile-button:hover {
+  background: #1a1e26 !important;
+  border-color: rgba(212, 175, 55, 0.30) !important;
+}
+
+/* --- 19.12 Tabelas --- */
+body.theme-dark table,
+body.theme-dark .sg-table {
+  background: #111318 !important;
+  color: #f7f7f8 !important;
+}
+
+body.theme-dark table th,
+body.theme-dark .sg-table th {
+  background: #0d0f12 !important;
+  color: #8d929c !important;
+}
+
+body.theme-dark table td,
+body.theme-dark .sg-table td {
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+body.theme-dark table tbody tr:hover,
+body.theme-dark .sg-table tbody tr:hover {
+  background: #1a1e26 !important;
+}
+
+/* --- 19.13 Back link e owner pill --- */
+body.theme-dark .back-link,
+body.theme-dark .owner-pill {
+  background: #111318 !important;
+  color: #f7f7f8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* --- 19.14 Company body e todas as body classes --- */
+body.theme-dark.company-body,
+body.theme-dark.org-body,
+body.theme-dark.owner-history-body,
+body.theme-dark.documents-body,
+body.theme-dark.team-body,
+body.theme-dark.permissions-body,
+body.theme-dark.finance-body,
+body.theme-dark.commission-body,
+body.theme-dark.reports-body,
+body.theme-dark.profile-page-body {
+  background: #08090b !important;
+  background-image: none !important;
+  color: #f7f7f8 !important;
+}
+
+/* --- 19.15 Toolbars com botões --- */
+body.theme-dark .history-header-actions button,
+body.theme-dark .career-time-toolbar a,
+body.theme-dark .career-time-toolbar button,
+body.theme-dark .history-toolbar-link {
+  background: #111318 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f7f7f8 !important;
+}
+
+body.theme-dark .career-time-toolbar a:hover,
+body.theme-dark .career-time-toolbar button:hover {
+  background: #1a1e26 !important;
+  border-color: rgba(212, 175, 55, 0.30) !important;
+}
+
+/* --- 19.16 Hamburger e overlay mobile --- */
+body.theme-dark .sidebar-hamburger {
+  background: rgba(5, 6, 7, 0.92) !important;
+}
+
+/* --- 19.17 Drag clone --- */
+body.theme-dark .drag-clone {
+  background: #111318 !important;
+  border: 1px solid rgba(212, 175, 55, 0.4) !important;
+  color: #d4af37 !important;
 }
