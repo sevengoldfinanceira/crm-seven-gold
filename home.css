@@ -18,7 +18,7 @@
 
   /* default light mode variables */
   --sg-bg-main: #f6f6f4;
-  --sg-bg-page: #f7f7f5;
+  --sg-bg-page: #ededeb;
   --sg-bg-elevated: #ffffff;
 
   --sg-sidebar-bg: #ffffff;
@@ -38,12 +38,12 @@
   --sg-text-muted: #858b94;
   --sg-text-inverse: #ffffff;
 
-  --sg-border: rgba(17, 18, 20, 0.08);
-  --sg-border-strong: rgba(17, 18, 20, 0.14);
+  --sg-border: rgba(17, 18, 20, 0.16);
+  --sg-border-strong: rgba(17, 18, 20, 0.24);
   --sg-border-gold: rgba(212, 175, 55, 0.35);
 
   --sg-input-bg: #ffffff;
-  --sg-input-border: rgba(17, 18, 20, 0.12);
+  --sg-input-border: rgba(17, 18, 20, 0.20);
   --sg-input-text: #111214;
   --sg-input-placeholder: #858b94;
 
@@ -53,7 +53,7 @@
 
   --sg-page-gradient:
     radial-gradient(circle at top left, rgba(212, 175, 55, 0.08), transparent 30%),
-    linear-gradient(180deg, #ffffff 0%, #f7f7f5 55%, #f1f0ec 100%);
+    linear-gradient(180deg, #f3f3f0 0%, #ededeb 55%, #e3e3df 100%);
 
   /* retrocompatibilidade */
   --ink: var(--sg-text-main);
@@ -8137,15 +8137,15 @@ mark {
    ============================================================ */
 
 body[data-unified-admin]:not(.theme-dark) {
-  --company-page-bg: #e9ecef;
+  --company-page-bg: #ededeb;
   --company-sidebar-bg: #0b0d10;
   --company-sidebar-bg-soft: #111318;
-  --company-main-bg: #ffffff;
+  --company-main-bg: #f5f6f8;
   --company-card-bg: #ffffff;
   --company-text: #111827;
   --company-muted: #6b7280;
   --company-sidebar-icon: #d1d5db;
-  --company-line: rgba(17, 24, 39, 0.08);
+  --company-line: rgba(17, 24, 39, 0.18);
   --company-shadow-panel: 0 24px 70px rgba(15, 23, 42, 0.13);
   --company-shadow-card: 0 16px 38px rgba(15, 23, 42, 0.08);
   --company-shadow-card-hover: 0 22px 52px rgba(15, 23, 42, 0.12);
@@ -8408,7 +8408,7 @@ body[data-unified-admin]:not(.theme-dark) .document-list a:hover,
 body[data-unified-admin]:not(.theme-dark) .job-card:hover,
 body[data-unified-admin]:not(.theme-dark) .owner-year-card:hover {
   transform: translateY(-3px) !important;
-  border-color: rgba(17, 24, 39, 0.12) !important;
+  border-color: rgba(17, 24, 39, 0.24) !important;
   box-shadow: var(--company-shadow-card-hover) !important;
 }
 
@@ -8655,7 +8655,7 @@ body[data-unified-admin] .marketing-shell {
   min-height: calc(100vh - 36px) !important;
   border-radius: 32px !important;
   overflow: hidden !important;
-  background: #ffffff !important;
+  background: var(--company-main-bg) !important;
   color: #111827 !important;
   box-shadow: 0 24px 70px rgba(15, 23, 42, 0.1) !important;
 }
@@ -8975,7 +8975,7 @@ body[data-unified-admin] .sidebar-collapsed .marketing-shell {
   min-height: 42px;
   padding: 0 16px;
   border-radius: 16px !important;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.16);
   font-weight: 800;
   cursor: default;
 }
@@ -8983,7 +8983,7 @@ body[data-unified-admin] .sidebar-collapsed .marketing-shell {
 .goals-filter {
   background: #ffffff;
   color: #111827;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
 }
 
 .goals-primary {
@@ -9005,10 +9005,10 @@ body[data-unified-admin] .sidebar-collapsed .marketing-shell {
 .goals-table-card,
 .goals-active-grid,
 .goals-active-grid article {
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.16);
   border-radius: 24px;
   background: #ffffff;
-  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.14);
 }
 
 .goal-stat-card {
@@ -9262,7 +9262,7 @@ body[data-unified-admin] .sidebar-collapsed .marketing-shell {
 .goals-table-card th,
 .goals-table-card td {
   padding: 13px 10px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.16);
   color: #111827;
   font-size: 0.78rem;
   text-align: left;
@@ -10134,10 +10134,10 @@ body[data-unified-admin] .profile-action:hover i {
   grid-template-rows: auto auto auto;
   gap: 6px;
   padding: 20px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.16);
   border-radius: 24px;
   background: #ffffff;
-  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.14);
 }
 
 .marketing-stat-grid article span {
@@ -10186,10 +10186,10 @@ body[data-unified-admin] .profile-action:hover i {
   display: grid;
   gap: 16px;
   padding: 20px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.16);
   border-radius: 24px;
   background: #ffffff;
-  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.14);
 }
 
 .marketing-campaigns header,
@@ -10210,7 +10210,7 @@ body[data-unified-admin] .profile-action:hover i {
 .campaign-filter select {
   padding: 8px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.16);
   background: #ffffff;
   color: #111827;
   font-size: 0.82rem;
@@ -10228,7 +10228,7 @@ body[data-unified-admin] .profile-action:hover i {
 .campaign-table th,
 .campaign-table td {
   padding: 12px 10px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.16);
   color: #111827;
   font-size: 0.78rem;
 }
@@ -10295,9 +10295,9 @@ body[data-unified-admin] .profile-action:hover i {
   align-items: center;
   gap: 12px;
   padding: 14px;
-  border: 1px solid rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: 16px;
-  background: rgba(15, 23, 42, 0.01);
+  background: rgba(15, 23, 42, 0.04);
 }
 
 .lead-source-icon {
@@ -10333,7 +10333,7 @@ body[data-unified-admin] .profile-action:hover i {
   grid-column: 1 / -1;
   height: 6px;
   border-radius: 3px;
-  background: rgba(15, 23, 42, 0.06);
+  background: rgba(15, 23, 42, 0.12);
   overflow: hidden;
   margin-top: 8px;
 }
