@@ -1,15 +1,113 @@
 :root {
   color-scheme: light;
-  --ink: #111411;
-  --muted: #687168;
-  --page: #f3f4f1;
-  --surface: #ffffff;
-  --line: #dde0da;
-  --gold: #d8ad3d;
-  --gold-dark: #8f6717;
-  --green: #1d7455;
-  --brand-purple: #150126;
-  --shadow: 0 22px 70px rgba(18, 20, 18, 0.12);
+
+  /* Identidade Seven Gold */
+  --sg-gold: #d4af37;
+  --sg-gold-light: #f6d365;
+  --sg-gold-dark: #9c7620;
+  --sg-gold-soft: rgba(212, 175, 55, 0.16);
+
+  --sg-purple: #180026;
+  --sg-purple-2: #240033;
+  --sg-purple-3: #320047;
+
+  --sg-success: #22c55e;
+  --sg-danger: #ef4444;
+  --sg-warning: #f59e0b;
+
+  --sg-radius-sm: 10px;
+  --sg-radius-md: 14px;
+  --sg-radius-lg: 20px;
+
+  --sg-transition: all 0.25s ease;
+
+  /* MODO CLARO - elegante, limpo e premium */
+  --sg-bg-main: #f7f4ee;
+  --sg-bg-page: #f8f6f0;
+  --sg-bg-elevated: #ffffff;
+
+  --sg-bg-card: rgba(255, 255, 255, 0.92);
+  --sg-bg-card-solid: #ffffff;
+  --sg-bg-card-hover: #fff8e6;
+
+  --sg-text-main: #151019;
+  --sg-text-secondary: #5f5868;
+  --sg-text-muted: #857d8d;
+  --sg-text-inverse: #ffffff;
+
+  --sg-border: rgba(24, 0, 38, 0.10);
+  --sg-border-strong: rgba(24, 0, 38, 0.18);
+  --sg-border-gold: rgba(212, 175, 55, 0.42);
+
+  --sg-input-bg: #ffffff;
+  --sg-input-border: rgba(24, 0, 38, 0.14);
+  --sg-input-text: #151019;
+  --sg-input-placeholder: #8b8492;
+
+  --sg-shadow-card: 0 16px 35px rgba(24, 0, 38, 0.10);
+  --sg-shadow-gold: 0 0 18px rgba(212, 175, 55, 0.18);
+
+  --sg-page-gradient:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.16), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(24, 0, 38, 0.08), transparent 34%),
+    linear-gradient(180deg, #fbf8f0 0%, #f7f4ee 55%, #efe9dc 100%);
+
+  /* Compatibilidade Retroativa */
+  --ink: var(--sg-text-main);
+  --muted: var(--sg-text-secondary);
+  --page: var(--sg-bg-page);
+  --surface: var(--sg-bg-card-solid);
+  --line: var(--sg-border);
+  --gold: var(--sg-gold);
+  --gold-dark: var(--sg-gold-dark);
+  --green: var(--sg-success);
+  --brand-purple: var(--sg-purple);
+  --shadow: var(--sg-shadow-card);
+}
+
+/* MODO ESCURO - premium roxo/dourado */
+body.theme-dark {
+  color-scheme: dark;
+  
+  --sg-bg-main: #08000f;
+  --sg-bg-page: #100018;
+  --sg-bg-elevated: #160021;
+
+  --sg-bg-card: rgba(255, 255, 255, 0.06);
+  --sg-bg-card-solid: #180026;
+  --sg-bg-card-hover: rgba(255, 255, 255, 0.10);
+
+  --sg-text-main: #ffffff;
+  --sg-text-secondary: #cfc7d8;
+  --sg-text-muted: #9f96aa;
+  --sg-text-inverse: #12001f;
+
+  --sg-border: rgba(255, 255, 255, 0.10);
+  --sg-border-strong: rgba(255, 255, 255, 0.18);
+  --sg-border-gold: rgba(212, 175, 55, 0.35);
+
+  --sg-input-bg: rgba(255, 255, 255, 0.06);
+  --sg-input-border: rgba(255, 255, 255, 0.14);
+  --sg-input-text: #ffffff;
+  --sg-input-placeholder: #9f96aa;
+
+  --sg-shadow-card: 0 18px 45px rgba(0, 0, 0, 0.28);
+  --sg-shadow-gold: 0 0 22px rgba(212, 175, 55, 0.18);
+
+  --sg-page-gradient:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.10), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(99, 0, 140, 0.22), transparent 35%),
+    linear-gradient(180deg, #08000f 0%, #100018 45%, #160021 100%);
+
+  /* Compatibilidade Retroativa em Modo Escuro */
+  --ink: var(--sg-text-main);
+  --muted: var(--sg-text-secondary);
+  --page: var(--sg-bg-page);
+  --surface: var(--sg-bg-card-solid);
+  --line: var(--sg-border);
+  --shadow: var(--sg-shadow-card);
+  --gold: var(--sg-gold);
+  --gold-dark: var(--sg-gold-dark);
 }
 
 * {
@@ -6198,6 +6296,201 @@ body.theme-dark .career-time-toolbar a:hover {
 }
 
 .theme-toggle-btn svg {
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.use-other-account-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.login-form input:focus {
+  border-color: var(--gold) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(216, 173, 61, 0.2) !important;
+}
+
+.login-button {
+  background: var(--gold) !important;
+  color: #000000 !important;
+  border-radius: 10px !important;
+  font-weight: 800 !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s ease;
+  min-height: 40px !important;
+}
+
+.login-button:hover {
+  background: #e9bc47 !important;
+  box-shadow: 0 4px 15px rgba(216, 173, 61, 0.4);
+}
+
+.login-row a {
+  color: var(--gold) !important;
+}
+
+.login-note {
+  color: #a5a5b4 !important;
+}
+
+.remember-option {
+  color: #e1e1e8 !important;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.remember-option input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  min-height: auto !important;
+  accent-color: var(--gold);
+  cursor: pointer;
+  margin: 0;
+}
+
+.bottom-action-link {
+  display: block;
+  text-align: center;
+  color: #4b89dc !important;
+  font-size: 0.85rem;
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: 12px;
+  transition: color 0.2s ease;
+}
+
+.bottom-action-link:hover {
+  color: #64a0f5 !important;
+  text-decoration: underline;
+}
+
+@keyframes fadeInSession {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Video Background */
+.video-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -10;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Modo Escuro (Theme Dark)
+   ========================================================================== */
+body.theme-dark {
+  color-scheme: dark;
+  --page: #08010f; /* fundo roxo bem escuro (Seven Gold) */
+  --surface: #150126; /* roxo de marca como superficie */
+  --surface-soft: #241032; /* roxo mais claro */
+  --ink: #fbfaf4; /* texto claro */
+  --muted: #9f9baf; /* texto secundario */
+  --line: #2e1743; /* bordas roxas */
+  --shadow: 0 16px 38px rgba(0, 0, 0, 0.4);
+}
+
+/* Sobrescreve especificamente os painéis translúcidos brancos em Modo Escuro */
+body.theme-dark .finance-table-panel,
+body.theme-dark .finance-form,
+body.theme-dark .documents-panel,
+body.theme-dark .team-panel,
+body.theme-dark .permissions-panel,
+body.theme-dark .reports-panel,
+body.theme-dark .commission-panel,
+body.theme-dark .owner-history-panel,
+body.theme-dark .career-time-grid article,
+body.theme-dark .owner-year-card,
+body.theme-dark .year-editor-table-panel,
+body.theme-dark .lifetime-grid article,
+body.theme-dark .comparison-grid article {
+  background: var(--surface) !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Formulários, Inputs e Selects */
+body.theme-dark input,
+body.theme-dark select,
+body.theme-dark textarea {
+  background: var(--surface-soft) !important;
+  color: var(--ink) !important;
+  border-color: var(--line) !important;
+}
+
+body.theme-dark input:focus,
+body.theme-dark select:focus,
+body.theme-dark textarea:focus {
+  border-color: var(--gold) !important;
+}
+
+/* Imagem de Fundo da Empresa no Modo Escuro */
+body.theme-dark.company-body {
+  background:
+    linear-gradient(135deg, rgba(14, 1, 26, 0.98), rgba(8, 1, 15, 0.95)),
+    url("https://images.unsplash.com/photo-1604594849809-dfedbc827105?auto=format&fit=crop&w=1800&q=80") !important;
+}
+
+/* Sobrescrever botões de perfil e cabeçalho */
+body.theme-dark .company-profile-button,
+body.theme-dark .history-header-actions button,
+body.theme-dark .career-time-toolbar a {
+  background: var(--surface) !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+}
+
+body.theme-dark .company-profile-button:hover,
+body.theme-dark .career-time-toolbar a:hover {
+  background: var(--surface-soft) !important;
+  border-color: var(--gold) !important;
+}
+
+/* Botão Alternador de Tema */
+.theme-toggle-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--gold);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle-btn:hover {
+  transform: scale(1.1) translateY(-3px);
+  background: var(--surface-soft);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  border-color: var(--gold);
+}
+
+.theme-toggle-btn svg {
   width: 22px;
   height: 22px;
   stroke-width: 2.2px;
@@ -6210,4 +6503,477 @@ body.theme-dark .career-time-toolbar a:hover {
     width: 42px;
     height: 42px;
   }
+}
+
+/* ==========================================================================
+   SISTEMA DE IDENTIDADE UNIFICADA - SEVEN GOLD (Modo Claro & Escuro)
+   ========================================================================== */
+
+/* 1. Fundo Geral Unificado */
+body.company-body,
+body.org-body,
+body.owner-history-body,
+body.documents-body,
+body.team-body,
+body.permissions-body,
+body.finance-body,
+body.commission-body,
+body.reports-body,
+body.profile-page-body,
+body[data-unified-admin] {
+  background: var(--sg-page-gradient) !important;
+  background-attachment: fixed !important;
+  background-size: cover !important;
+  color: var(--sg-text-main) !important;
+  transition: var(--sg-transition) !important;
+}
+
+/* 2. Unificação de Cards */
+.company-stat-grid article,
+.company-module-grid > a,
+.finance-table-panel,
+.finance-form,
+.documents-panel,
+.upload-panel,
+.team-panel,
+.permissions-panel,
+.user-access-panel,
+.reports-panel,
+.ranking-panel,
+.commission-panel,
+.commission-card,
+.owner-history-panel,
+.owner-year-card,
+.year-editor-table-panel,
+.career-time-grid article,
+.lifetime-grid article,
+.comparison-grid article,
+.profile-editor-card,
+.time-editor-panel,
+.year-editor-panel,
+.org-sector,
+.job-card {
+  background: var(--sg-bg-card) !important;
+  color: var(--sg-text-main) !important;
+  border: 1px solid var(--sg-border) !important;
+  border-radius: var(--sg-radius-lg) !important;
+  box-shadow: var(--sg-shadow-card) !important;
+  padding: 20px !important;
+  transition: var(--sg-transition) !important;
+}
+
+/* Efeito Hover nos Cards clicáveis */
+.company-module-grid > a:hover,
+.career-time-grid article:hover,
+.lifetime-grid article:hover,
+.comparison-grid article:hover,
+.commission-card:hover,
+.job-card:hover {
+  transform: translateY(-3px) !important;
+  border-color: var(--sg-border-gold) !important;
+  background: var(--sg-bg-card-hover) !important;
+  box-shadow: var(--sg-shadow-gold) !important;
+}
+
+/* 3. Unificação de Cabeçalhos e Toolbars */
+.org-toolbar,
+.history-toolbar,
+.documents-toolbar,
+.team-toolbar,
+.finance-toolbar,
+.commission-toolbar,
+.reports-toolbar,
+.permissions-toolbar,
+.company-dashboard-header {
+  background: var(--sg-bg-card) !important;
+  border: 1px solid var(--sg-border) !important;
+  border-radius: var(--sg-radius-md) !important;
+  padding: 16px 20px !important;
+  margin-bottom: 20px !important;
+  box-shadow: var(--sg-shadow-card) !important;
+}
+
+.org-toolbar h1,
+.history-toolbar h1,
+.documents-toolbar h1,
+.team-toolbar h1,
+.finance-toolbar h1,
+.commission-toolbar h1,
+.reports-toolbar h1,
+.permissions-toolbar h1,
+.company-dashboard-header h1 {
+  color: var(--sg-text-main) !important;
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  margin: 0 !important;
+}
+
+.org-toolbar span,
+.history-toolbar span,
+.documents-toolbar span,
+.team-toolbar span,
+.finance-toolbar span,
+.commission-toolbar span,
+.reports-toolbar span,
+.permissions-toolbar span,
+.company-dashboard-header p {
+  color: var(--sg-text-secondary) !important;
+  font-size: 0.88rem !important;
+  margin-top: 4px !important;
+  display: block !important;
+}
+
+/* 4. Barra Superior (Top Bar) */
+.company-topbar {
+  margin-bottom: 20px !important;
+}
+
+.back-link,
+.owner-pill {
+  border: 1px solid var(--sg-border) !important;
+  border-radius: var(--sg-radius-sm) !important;
+  background: var(--sg-bg-card) !important;
+  color: var(--sg-text-main) !important;
+  box-shadow: var(--sg-shadow-card) !important;
+  padding: 10px 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.back-link {
+  font-weight: 800 !important;
+  text-decoration: none !important;
+  transition: var(--sg-transition) !important;
+}
+
+.back-link:hover {
+  background: var(--sg-bg-card-hover) !important;
+  border-color: var(--sg-border-gold) !important;
+  color: var(--sg-gold) !important;
+}
+
+/* 5. Inputs, Selects e Textareas */
+input,
+select,
+textarea {
+  background: var(--sg-input-bg) !important;
+  color: var(--sg-input-text) !important;
+  border: 1px solid var(--sg-input-border) !important;
+  border-radius: var(--sg-radius-sm) !important;
+  padding: 8px 12px !important;
+  font-size: 0.88rem !important;
+  transition: var(--sg-transition) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--sg-input-placeholder) !important;
+  opacity: 0.7 !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none !important;
+  border-color: var(--sg-gold) !important;
+  box-shadow: var(--sg-shadow-gold) !important;
+}
+
+/* 6. Unificação de Botões */
+.reports-actions button,
+.permissions-actions button,
+.org-actions button,
+.finance-form button,
+.sale-form button,
+.upload-panel button,
+.profile-editor-card button,
+.time-editor-panel button,
+.year-editor-panel button,
+.editor-save-bar button,
+.save-btn,
+.reload-btn,
+.delete-btn,
+button.primary,
+button.secondary,
+button.danger,
+button[type="submit"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  min-height: 42px !important;
+  padding: 0 18px !important;
+  border-radius: var(--sg-radius-sm) !important;
+  font-family: inherit !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: var(--sg-transition) !important;
+  border: none !important;
+}
+
+/* Botão Principal */
+.reports-actions button:not(.secondary),
+.permissions-actions button:first-child,
+.org-actions button,
+.finance-form button,
+.sale-form button,
+.upload-panel button[type="submit"],
+.profile-editor-card button[type="submit"],
+.year-editor-panel button[type="submit"],
+.editor-save-bar button,
+.save-btn,
+button.primary,
+button[type="submit"] {
+  background: linear-gradient(135deg, var(--sg-gold-light), var(--sg-gold)) !important;
+  color: var(--sg-text-inverse) !important;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2) !important;
+}
+
+.reports-actions button:not(.secondary):hover,
+.permissions-actions button:first-child:hover,
+.org-actions button:hover,
+.finance-form button:hover,
+.sale-form button:hover,
+.upload-panel button[type="submit"]:hover,
+.profile-editor-card button[type="submit"]:hover,
+.year-editor-panel button[type="submit"]:hover,
+.editor-save-bar button:hover,
+.save-btn:hover,
+button.primary:hover,
+button[type="submit"]:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: var(--sg-shadow-gold) !important;
+  filter: brightness(1.08) !important;
+}
+
+/* Botão Secundário */
+.permissions-actions button:last-child,
+.team-actions button,
+.reports-actions button.secondary,
+.reload-btn,
+button.secondary,
+button[type="button"]:not(.primary):not([type="submit"]):not(.delete-btn) {
+  background: var(--sg-bg-card) !important;
+  color: var(--sg-gold) !important;
+  border: 1px solid var(--sg-border-gold) !important;
+}
+
+.permissions-actions button:last-child:hover,
+.team-actions button:hover,
+.reports-actions button.secondary:hover,
+.reload-btn:hover,
+button.secondary:hover,
+button[type="button"]:not(.primary):not([type="submit"]):not(.delete-btn):hover {
+  background: var(--sg-gold-soft) !important;
+  border-color: var(--sg-gold) !important;
+}
+
+/* Botão de Perigo / Excluir */
+.delete-btn,
+button.danger,
+.btn-danger,
+.upload-panel button.delete-btn {
+  background: var(--sg-danger) !important;
+  color: #ffffff !important;
+}
+
+.delete-btn:hover,
+button.danger:hover,
+.btn-danger:hover,
+.upload-panel button.delete-btn:hover {
+  filter: brightness(1.15) !important;
+}
+
+/* 7. Unificação de Tabelas */
+table,
+.sg-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  background: var(--sg-bg-card) !important;
+  color: var(--sg-text-main) !important;
+  border-radius: var(--sg-radius-md) !important;
+  overflow: hidden !important;
+}
+
+table th,
+table td,
+.sg-table th,
+.sg-table td {
+  padding: 12px 16px !important;
+  text-align: left !important;
+  border-bottom: 1px solid var(--sg-border) !important;
+}
+
+table th,
+.sg-table th {
+  background: var(--sg-bg-elevated) !important;
+  color: var(--sg-text-secondary) !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.05em !important;
+}
+
+table tbody tr:hover,
+.sg-table tbody tr:hover {
+  background: var(--sg-bg-card-hover) !important;
+}
+
+/* 8. Indicadores (Stat Cards Children) */
+.company-stat-grid article strong {
+  color: var(--sg-text-main) !important;
+  font-size: 1.6rem !important;
+  font-weight: 800 !important;
+}
+
+.company-stat-grid article span {
+  color: var(--sg-text-secondary) !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.company-stat-grid article small {
+  color: var(--sg-text-muted) !important;
+  font-size: 0.76rem !important;
+}
+
+.company-stat-grid article small.positive {
+  color: var(--sg-success) !important;
+  font-weight: 700 !important;
+}
+
+.company-stat-grid article small.negative {
+  color: var(--sg-danger) !important;
+  font-weight: 700 !important;
+}
+
+/* 9. Links "Acessar" */
+.company-module-grid strong,
+.company-stat-grid a strong,
+.premium-access-card strong,
+a.acessar-link,
+.acessar-link {
+  color: var(--sg-gold) !important;
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: var(--sg-transition) !important;
+}
+
+.company-module-grid a:hover strong,
+.company-stat-grid a:hover strong,
+.premium-access-card:hover strong,
+a.acessar-link:hover,
+.acessar-link:hover {
+  color: var(--sg-gold-light) !important;
+  gap: 10px !important;
+}
+
+/* 10. Ícones */
+.company-module-grid > a > svg,
+.company-stat-grid svg,
+.sg-icon-box svg,
+.icon-box svg {
+  color: var(--sg-gold) !important;
+  transition: var(--sg-transition) !important;
+}
+
+.company-module-grid > a:hover > svg,
+.company-stat-grid article:hover svg {
+  transform: scale(1.1) !important;
+  color: var(--sg-gold-light) !important;
+}
+
+/* 11. Badges e Status */
+.sg-badge,
+.badge,
+.pdf-badge,
+.status-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 4px 10px !important;
+  border-radius: var(--sg-radius-sm) !important;
+  font-size: 0.68rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  background: var(--sg-gold-soft) !important;
+  color: var(--sg-gold) !important;
+  border: 1px solid var(--sg-border-gold) !important;
+}
+
+.sg-badge.success,
+.badge.success {
+  background: rgba(34, 197, 94, 0.1) !important;
+  color: var(--sg-success) !important;
+  border-color: rgba(34, 197, 94, 0.25) !important;
+}
+
+.sg-badge.danger,
+.badge.danger {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: var(--sg-danger) !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+.sg-badge.warning,
+.badge.warning {
+  background: rgba(245, 158, 11, 0.1) !important;
+  color: var(--sg-warning) !important;
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+
+/* 12. Hierarquia e Controle na Equipe / Organograma */
+.rank-link {
+  background: var(--sg-bg-card) !important;
+  color: var(--sg-text-main) !important;
+  border: 1px solid var(--sg-border) !important;
+  border-radius: var(--sg-radius-sm) !important;
+  padding: 10px 14px !important;
+  display: block !important;
+  text-decoration: none !important;
+  transition: var(--sg-transition) !important;
+}
+
+.rank-link:hover {
+  background: var(--sg-bg-card-hover) !important;
+  border-color: var(--sg-border-gold) !important;
+}
+
+.rank-link.active {
+  background: var(--sg-gold-soft) !important;
+  border-color: var(--sg-gold) !important;
+  color: var(--sg-gold) !important;
+}
+
+.role-pill {
+  background: var(--sg-bg-card) !important;
+  color: var(--sg-text-main) !important;
+  border: 1px solid var(--sg-border) !important;
+  border-radius: var(--sg-radius-sm) !important;
+  padding: 8px 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: var(--sg-transition) !important;
+}
+
+.role-pill:hover {
+  background: var(--sg-bg-card-hover) !important;
+  border-color: var(--sg-border-gold) !important;
+}
+
+.role-pill.active {
+  background: var(--sg-gold-soft) !important;
+  border-color: var(--sg-gold) !important;
+  color: var(--sg-gold) !important;
 }
