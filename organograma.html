@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Organograma</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>document.documentElement.dataset.adminSidebar = localStorage.getItem("seven-gold-admin-sidebar-collapsed") === "true" ? "collapsed" : "expanded";</script>
+    <link rel="stylesheet" href="home.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#150126" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Seven Gold" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  </head>
+  <body class="org-body" data-require-auth data-permission-area="organograma" data-login-page="index.html" data-allowed-roles="dono,administrador,rh" data-denied-redirect="empresa.html" data-unified-admin>
+    <main class="org-shell">
+      <header class="company-topbar">
+        <a class="back-link" href="empresa.html">Voltar</a>
+        <div class="brand-line">
+          <div class="brand-mark" aria-hidden="true">SG</div>
+          <div>
+            <strong>Seven Gold</strong>
+            <span>Organograma</span>
+          </div>
+        </div>
+        <div class="owner-pill">
+          <span>Empresa</span>
+          <strong>Estrutura</strong>
+        </div>
+      </header>
+
+      <section class="org-toolbar" aria-label="Ferramentas do organograma">
+        <div>
+          <h1>Organograma</h1>
+          <span>Setores e cargos da Seven Gold Financeira</span>
+        </div>
+        <div class="org-actions">
+          <button type="button">Novo setor</button>
+          <button type="button">Novo cargo</button>
+        </div>
+      </section>
+
+      <section class="org-layout">
+        <div class="org-board" aria-label="Setores e cargos">
+          <article class="org-sector director-sector">
+            <header>
+              <span class="sector-icon director-dot"></span>
+              <div>
+                <h2>Diretoria</h2>
+                <p>Comando principal da empresa</p>
+              </div>
+            </header>
+            <div class="role-list">
+              <button class="role-pill active" type="button">
+                <strong>Diretor / CEO</strong>
+                <span>Dono</span>
+              </button>
+            </div>
+          </article>
+
+          <article class="org-sector">
+            <header>
+              <span class="sector-icon commercial-dot"></span>
+              <div>
+                <h2>Comercial</h2>
+                <p>Vendas, atendimento e conversao de leads</p>
+              </div>
+            </header>
+            <div class="role-list">
+              <button class="role-pill" type="button">
+                <strong>Assistente de Vendas</strong>
+                <span>Pre-atendimento</span>
+              </button>
+              <button class="role-pill" type="button">
+                <strong>Vendedor</strong>
+                <span>Negociacao</span>
+              </button>
+              <button class="role-pill" type="button">
+                <strong>Coordenador</strong>
+                <span>Gestao comercial</span>
+              </button>
+              <button class="role-pill" type="button">
+                <strong>Supervisor</strong>
+                <span>Acompanhamento</span>
+              </button>
+            </div>
+          </article>
+
+          <article class="org-sector">
+            <header>
+              <span class="sector-icon aftersale-dot"></span>
+              <div>
+                <h2>Pos-venda</h2>
+                <p>Relacionamento depois da venda</p>
+              </div>
+            </header>
+            <div class="role-list">
+              <button class="role-pill" type="button">
+                <strong>Pos-vendas</strong>
+                <span>Suporte ao cliente</span>
+              </button>
+            </div>
+          </article>
+
+          <article class="org-sector">
+            <header>
+              <span class="sector-icon admin-dot"></span>
+              <div>
+                <h2>Administrativo</h2>
+                <p>Rotina interna e organizacao</p>
+              </div>
+            </header>
+            <div class="role-list">
+              <button class="role-pill" type="button">
+                <strong>Administrativo</strong>
+                <span>Processos internos</span>
+              </button>
+            </div>
+          </article>
+
+          <article class="org-sector">
+            <header>
+              <span class="sector-icon finance-dot"></span>
+              <div>
+                <h2>Financeiro</h2>
+                <p>Caixa, contabilidade e repasses</p>
+              </div>
+            </header>
+            <div class="role-list">
+              <button class="role-pill" type="button">
+                <strong>Financeiro / Contador</strong>
+                <span>Controle financeiro</span>
+              </button>
+            </div>
+          </article>
+
+          <article class="org-sector">
+            <header>
+              <span class="sector-icon legal-dot"></span>
+              <div>
+                <h2>Juridico</h2>
+                <p>Contratos e suporte legal</p>
+              </div>
+            </header>
+            <div class="role-list">
+              <button class="role-pill" type="button">
+                <strong>Advogado / Juridico</strong>
+                <span>Analise legal</span>
+              </button>
+            </div>
+          </article>
+
+          <article class="org-sector">
+            <header>
+              <span class="sector-icon rh-dot"></span>
+              <div>
+                <h2>RH</h2>
+                <p>Pessoas e documentos internos</p>
+              </div>
+            </header>
+            <div class="role-list">
+              <button class="role-pill" type="button">
+                <strong>RH</strong>
+                <span>Gestao de pessoas</span>
+              </button>
+            </div>
+          </article>
+
+          <article class="org-sector">
+            <header>
+              <span class="sector-icon mkt-dot"></span>
+              <div>
+                <h2>Marketing</h2>
+                <p>Campanhas e captacao</p>
+              </div>
+            </header>
+            <div class="role-list">
+              <button class="role-pill" type="button">
+                <strong>Marketing</strong>
+                <span>Midias e criativos</span>
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <aside class="role-detail" aria-label="Detalhes do cargo selecionado">
+          <span class="detail-kicker">Cargo selecionado</span>
+          <h2>Diretor / CEO</h2>
+          <p>Dono da empresa, com acesso total ao sistema e visao completa da operacao.</p>
+
+          <div class="detail-group">
+            <strong>Acessos</strong>
+            <span>CRM, Empresa, financeiro, permissoes, documentos e relatorios.</span>
+          </div>
+
+          <div class="detail-group">
+            <strong>Arquivos</strong>
+            <span>Contratos, documentos pessoais, regras internas e arquivos do cargo.</span>
+          </div>
+
+          <div class="detail-group">
+            <strong>Comissao</strong>
+            <span>Campo reservado para regra de comissao ou retirada.</span>
+          </div>
+        </aside>
+      </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="/admin-shell.js"></script>
+    <script src="/pwa.js"></script>
+  </body>
+</html>

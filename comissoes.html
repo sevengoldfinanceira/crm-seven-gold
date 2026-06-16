@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Comissoes</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>document.documentElement.dataset.adminSidebar = localStorage.getItem("seven-gold-admin-sidebar-collapsed") === "true" ? "collapsed" : "expanded";</script>
+    <link rel="stylesheet" href="home.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#150126" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Seven Gold" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  </head>
+  <body class="commission-body" data-require-auth data-permission-area="comissoes" data-login-page="index.html" data-allowed-roles="dono,administrador,coordenador,representante,vendedor,financeiro" data-denied-redirect="empresa.html" data-unified-admin>
+    <main class="commission-shell">
+      <header class="company-topbar">
+        <a class="back-link" href="empresa.html">Voltar</a>
+        <div class="brand-line">
+          <div class="brand-mark" aria-hidden="true">SG</div>
+          <div>
+            <strong>Seven Gold</strong>
+            <span>Comissoes</span>
+          </div>
+        </div>
+        <div class="owner-pill">
+          <span>Perfil</span>
+          <strong data-user-role>Dono</strong>
+        </div>
+      </header>
+
+      <section class="commission-toolbar">
+        <div>
+          <h1>Comissoes</h1>
+          <span>Representantes e vendedores separados por categoria. Todas as tabelas seguem Tab 01 a Tab 07.</span>
+        </div>
+        <div class="commission-actions">
+          <button type="button" data-show-commission="representantes">Representantes</button>
+          <button type="button" data-show-commission="vendedores">Vendedores</button>
+          <button type="button" data-show-commission="referencias">Referencias</button>
+        </div>
+      </section>
+
+      <section class="commission-reference" id="referencias">
+        <article>
+          <img src="assets/comissoes/home-office.png" alt="Grade de comissao home office Seven Gold" />
+          <div>
+            <h2>Home Office</h2>
+            <p>Imagem original enviada para conferencia.</p>
+            <a href="assets/comissoes/home-office.png" target="_blank" rel="noreferrer">Abrir imagem</a>
+          </div>
+        </article>
+        <article>
+          <img src="assets/comissoes/comissao-submaster.jpeg" alt="Tabela de comissao com submaster" />
+          <div>
+            <h2>Submaster</h2>
+            <p>Imagem original enviada para conferencia.</p>
+            <a href="assets/comissoes/comissao-submaster.jpeg" target="_blank" rel="noreferrer">Abrir imagem</a>
+          </div>
+        </article>
+        <article>
+          <div class="pdf-badge">PDF</div>
+          <div>
+            <h2>Representante Junior</h2>
+            <p>Arquivo original para consulta.</p>
+            <a href="assets/comissoes/representante-junior.pdf" target="_blank" rel="noreferrer">Abrir PDF</a>
+          </div>
+        </article>
+        <article>
+          <div class="pdf-badge">PDF</div>
+          <div>
+            <h2>Representante Pleno</h2>
+            <p>Arquivo original para consulta.</p>
+            <a href="assets/comissoes/representante-pleno.pdf" target="_blank" rel="noreferrer">Abrir PDF</a>
+          </div>
+        </article>
+      </section>
+
+      <section class="commission-category" id="representantes">
+        <header>
+          <span>Categoria 01</span>
+          <h2>Representantes</h2>
+        </header>
+
+        <div class="commission-grid" aria-label="Tabelas de representantes">
+          <article class="commission-card featured-commission" id="representante-junior">
+            <header>
+              <div>
+                <span>Representante</span>
+                <h2>Representante Junior</h2>
+              </div>
+              <a href="assets/comissoes/representante-junior.pdf" target="_blank" rel="noreferrer">PDF</a>
+            </header>
+            <div class="commission-table-wrap">
+              <table class="commission-table">
+                <thead>
+                  <tr><th>Tabela</th><th>Adesao</th><th>Parcelas</th><th>Total Pleno</th><th>Total Junior</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Tab 01</td><td>0,40%</td><td>4,50%</td><td>5,30%</td><td>2,65%</td></tr>
+                  <tr><td>Tab 02</td><td>0,70%</td><td>3,60%</td><td>5,00%</td><td>2,50%</td></tr>
+                  <tr><td>Tab 03</td><td>1,25%</td><td>2,50%</td><td>5,00%</td><td>2,50%</td></tr>
+                  <tr><td>Tab 04</td><td>1,35%</td><td>2,20%</td><td>4,90%</td><td>2,45%</td></tr>
+                  <tr><td>Tab 05</td><td>1,50%</td><td>1,80%</td><td>4,80%</td><td>2,40%</td></tr>
+                  <tr><td>Tab 06</td><td>1,75%</td><td>1,20%</td><td>4,70%</td><td>2,35%</td></tr>
+                  <tr><td>Tab 07</td><td>2,00%</td><td>0,50%</td><td>4,50%</td><td>2,25%</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Dados corrigidos conforme PDF: representante junior recebe 50% das comissoes, com MEI e pagamento direto pela administradora.</p>
+          </article>
+
+          <article class="commission-card" id="representante-pleno">
+            <header>
+              <div>
+                <span>Representante</span>
+                <h2>Representante Pleno</h2>
+              </div>
+              <a href="assets/comissoes/representante-pleno.pdf" target="_blank" rel="noreferrer">PDF</a>
+            </header>
+            <div class="commission-table-wrap">
+              <table class="commission-table">
+                <thead>
+                  <tr><th>Tabela</th><th>Adesao</th><th>Parcelas</th><th>Total Pleno</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Tab 01</td><td>0,80%</td><td>4,50%</td><td>5,30%</td></tr>
+                  <tr><td>Tab 02</td><td>1,40%</td><td>3,60%</td><td>5,00%</td></tr>
+                  <tr><td>Tab 03</td><td>2,50%</td><td>2,50%</td><td>5,00%</td></tr>
+                  <tr><td>Tab 04</td><td>2,70%</td><td>2,20%</td><td>4,90%</td></tr>
+                  <tr><td>Tab 05</td><td>3,00%</td><td>1,80%</td><td>4,80%</td></tr>
+                  <tr><td>Tab 06</td><td>3,50%</td><td>1,20%</td><td>4,70%</td></tr>
+                  <tr><td>Tab 07</td><td>4,00%</td><td>0,50%</td><td>4,50%</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Dados corrigidos conforme PDF: representante pleno recebe 100% das comissoes, com CNPJ proprio e parceria direta.</p>
+          </article>
+
+          <article class="commission-card" id="submaster">
+            <header>
+              <div>
+                <span>Representante</span>
+                <h2>Submaster</h2>
+              </div>
+              <a href="assets/comissoes/comissao-submaster.jpeg" target="_blank" rel="noreferrer">Imagem</a>
+            </header>
+            <div class="commission-table-wrap">
+              <table class="commission-table">
+                <thead>
+                  <tr><th>Tabela</th><th>Quando a venda fechar</th><th>Comissao</th><th>Observacao</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Tab 01</td><td>Venda fechada na tabela 1</td><td>0,50%</td><td>Imposto 10% sobre comissao</td></tr>
+                  <tr><td>Tab 02</td><td>Venda fechada na tabela 2</td><td>1,00%</td><td>Imposto 10% sobre comissao</td></tr>
+                  <tr><td>Tab 03</td><td>Venda fechada na tabela 3</td><td>1,50%</td><td>Imposto 10% sobre comissao</td></tr>
+                  <tr><td>Tab 04</td><td>Venda fechada na tabela 4</td><td>1,85%</td><td>Imposto 10% sobre comissao</td></tr>
+                  <tr><td>Tab 05</td><td>Venda fechada na tabela 5</td><td>2,00%</td><td>Imposto 10% sobre comissao</td></tr>
+                  <tr><td>Tab 06</td><td>Venda fechada na tabela 6</td><td>2,25%</td><td>Imposto 10% sobre comissao</td></tr>
+                  <tr><td>Tab 07</td><td>Venda fechada na tabela 7</td><td>2,50%</td><td>Imposto 10% sobre comissao</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Tambem consta observacao de pos-venda ABC Bank no material enviado.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="commission-category" id="vendedores">
+        <header>
+          <span>Categoria 02</span>
+          <h2>Vendedores</h2>
+        </header>
+
+        <div class="commission-grid" aria-label="Tabelas de vendedores">
+          <article class="commission-card" id="home-office">
+            <header>
+              <div><span>Vendedores</span><h2>Home Office</h2></div>
+              <a href="assets/comissoes/home-office.png" target="_blank" rel="noreferrer">Imagem</a>
+            </header>
+            <div class="commission-table-wrap">
+              <table class="commission-table">
+                <thead><tr><th>Tabela</th><th>Quando a venda fechar</th><th>Comissao</th><th>Com 1M+</th></tr></thead>
+                <tbody>
+                  <tr><td>Tab 01</td><td>Venda fechada na tabela 1</td><td>0,10%</td><td>0,15%</td></tr>
+                  <tr><td>Tab 02</td><td>Venda fechada na tabela 2</td><td>0,20%</td><td>0,25%</td></tr>
+                  <tr><td>Tab 03</td><td>Venda fechada na tabela 3</td><td>0,30%</td><td>0,35%</td></tr>
+                  <tr><td>Tab 04</td><td>Venda fechada na tabela 4</td><td>0,40%</td><td>0,45%</td></tr>
+                  <tr><td>Tab 05</td><td>Venda fechada na tabela 5</td><td>0,50%</td><td>0,55%</td></tr>
+                  <tr><td>Tab 06</td><td>Venda fechada na tabela 6</td><td>0,60%</td><td>0,65%</td></tr>
+                  <tr><td>Tab 07</td><td>Venda fechada na tabela 7</td><td>0,70%</td><td>0,75%</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Pagamento somente sobre vendas efetuadas, confirmadas e checadas.</p>
+          </article>
+
+          <article class="commission-card" id="assistente-vendas">
+            <header><div><span>Vendedores</span><h2>Assistente de Vendas</h2></div><a href="documentos.html#assistente-vendas">Documentos</a></header>
+            <div class="commission-table-wrap"><table class="commission-table"><thead><tr><th>Tabela</th><th>Quando a venda fechar</th><th>Comissao</th><th>Com 1M+</th></tr></thead><tbody>
+              <tr><td>Tab 01</td><td>Venda fechada na tabela 1</td><td>0,05%</td><td>0,10%</td></tr>
+              <tr><td>Tab 02</td><td>Venda fechada na tabela 2</td><td>0,08%</td><td>0,13%</td></tr>
+              <tr><td>Tab 03</td><td>Venda fechada na tabela 3</td><td>0,10%</td><td>0,15%</td></tr>
+              <tr><td>Tab 04</td><td>Venda fechada na tabela 4</td><td>0,12%</td><td>0,17%</td></tr>
+              <tr><td>Tab 05</td><td>Venda fechada na tabela 5</td><td>0,15%</td><td>0,20%</td></tr>
+              <tr><td>Tab 06</td><td>Venda fechada na tabela 6</td><td>0,18%</td><td>0,23%</td></tr>
+              <tr><td>Tab 07</td><td>Venda fechada na tabela 7</td><td>0,20%</td><td>0,25%</td></tr>
+            </tbody></table></div><p>Base provisoria para apoio, cadastro e organizacao do lead.</p>
+          </article>
+
+          <article class="commission-card featured-commission" id="vendedor">
+            <header><div><span>Vendedores</span><h2>Vendedor</h2></div><a href="documentos.html#vendedor">Documentos</a></header>
+            <div class="commission-table-wrap"><table class="commission-table"><thead><tr><th>Tabela</th><th>Quando a venda fechar</th><th>Comissao</th><th>Com 1M+</th></tr></thead><tbody>
+              <tr><td>Tab 01</td><td>Venda fechada na tabela 1</td><td>0,50%</td><td>0,55%</td></tr>
+              <tr><td>Tab 02</td><td>Venda fechada na tabela 2</td><td>1,00%</td><td>1,05%</td></tr>
+              <tr><td>Tab 03</td><td>Venda fechada na tabela 3</td><td>1,50%</td><td>1,55%</td></tr>
+              <tr><td>Tab 04</td><td>Venda fechada na tabela 4</td><td>1,85%</td><td>1,90%</td></tr>
+              <tr><td>Tab 05</td><td>Venda fechada na tabela 5</td><td>2,00%</td><td>2,05%</td></tr>
+              <tr><td>Tab 06</td><td>Venda fechada na tabela 6</td><td>2,25%</td><td>2,30%</td></tr>
+              <tr><td>Tab 07</td><td>Venda fechada na tabela 7</td><td>2,50%</td><td>2,55%</td></tr>
+            </tbody></table></div><p>Base de venda direta. Ajustamos depois caso seja diferente de representante.</p>
+          </article>
+
+          <article class="commission-card" id="coordenador">
+            <header><div><span>Vendedores</span><h2>Coordenador</h2></div><a href="documentos.html#coordenador">Documentos</a></header>
+            <div class="commission-table-wrap"><table class="commission-table"><thead><tr><th>Tabela</th><th>Quando a venda fechar</th><th>Comissao</th><th>Com 1M+</th></tr></thead><tbody>
+              <tr><td>Tab 01</td><td>Venda fechada na tabela 1</td><td>0,10%</td><td>0,15%</td></tr>
+              <tr><td>Tab 02</td><td>Venda fechada na tabela 2</td><td>0,20%</td><td>0,25%</td></tr>
+              <tr><td>Tab 03</td><td>Venda fechada na tabela 3</td><td>0,30%</td><td>0,35%</td></tr>
+              <tr><td>Tab 04</td><td>Venda fechada na tabela 4</td><td>0,40%</td><td>0,45%</td></tr>
+              <tr><td>Tab 05</td><td>Venda fechada na tabela 5</td><td>0,50%</td><td>0,55%</td></tr>
+              <tr><td>Tab 06</td><td>Venda fechada na tabela 6</td><td>0,60%</td><td>0,65%</td></tr>
+              <tr><td>Tab 07</td><td>Venda fechada na tabela 7</td><td>0,70%</td><td>0,75%</td></tr>
+            </tbody></table></div><p>Base provisoria para lideranca direta do time comercial.</p>
+          </article>
+
+          <article class="commission-card" id="supervisor">
+            <header><div><span>Vendedores</span><h2>Supervisor</h2></div><a href="documentos.html#supervisor">Documentos</a></header>
+            <div class="commission-table-wrap"><table class="commission-table"><thead><tr><th>Tabela</th><th>Quando a venda fechar</th><th>Comissao</th><th>Com 1M+</th></tr></thead><tbody>
+              <tr><td>Tab 01</td><td>Venda fechada na tabela 1</td><td>0,15%</td><td>0,20%</td></tr>
+              <tr><td>Tab 02</td><td>Venda fechada na tabela 2</td><td>0,25%</td><td>0,30%</td></tr>
+              <tr><td>Tab 03</td><td>Venda fechada na tabela 3</td><td>0,35%</td><td>0,40%</td></tr>
+              <tr><td>Tab 04</td><td>Venda fechada na tabela 4</td><td>0,45%</td><td>0,50%</td></tr>
+              <tr><td>Tab 05</td><td>Venda fechada na tabela 5</td><td>0,60%</td><td>0,65%</td></tr>
+              <tr><td>Tab 06</td><td>Venda fechada na tabela 6</td><td>0,70%</td><td>0,75%</td></tr>
+              <tr><td>Tab 07</td><td>Venda fechada na tabela 7</td><td>0,80%</td><td>0,85%</td></tr>
+            </tbody></table></div><p>Base provisoria para supervisao e acompanhamento geral.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="commission-rules">
+        <h2>Regras gerais</h2>
+        <div>
+          <p>A tabela da venda fechada define o percentual de todos os envolvidos.</p>
+          <p>Pagamento somente sobre vendas efetuadas, confirmadas e checadas.</p>
+          <p>Nao pagar com estorno ou cancelamento ate a data da assembleia.</p>
+          <p>Quando houver regra de 1M+, acrescentar 0,05% em cada tab da tabela.</p>
+        </div>
+      </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="comissoes.js"></script>
+    <script src="/admin-shell.js"></script>
+    <script src="/pwa.js"></script>
+  </body>
+</html>

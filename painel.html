@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Painel Inicial</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="home.css" />
+    <link rel="stylesheet" href="painel.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#150126" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Seven Gold" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  </head>
+  <body class="entry-premium-body" data-require-auth data-login-page="index.html">
+    <main class="premium-entry-shell">
+      <header class="premium-entry-brand" aria-label="Seven Gold Financeira">
+        <img src="assets/logo-copa.png" alt="Seven Gold Financeira" />
+        <div>
+          <strong>Seven Gold Financeira</strong>
+          <span>Sistema interno</span>
+        </div>
+      </header>
+
+      <section class="premium-entry-copy" aria-labelledby="page-title">
+        <p class="premium-kicker">Bem-vindo</p>
+        <h1 id="page-title">Bem-vindo ao Sistema Seven Gold</h1>
+        <p>Selecione o ambiente que deseja acessar para continuar.</p>
+      </section>
+
+      <section class="premium-entry-cards" aria-label="Ambientes do sistema">
+        <a class="premium-access-card premium-access-card-main" href="crm.html">
+          <span class="premium-recommended">Recomendado</span>
+          <span class="premium-card-icon" aria-hidden="true">↗</span>
+          <div>
+            <p>Ambiente de vendas e atendimento</p>
+            <h2>CRM Comercial</h2>
+            <span>Gerencie leads, clientes, atendimentos, tarefas e negociações de forma eficiente.</span>
+          </div>
+          <ul aria-label="Recursos do CRM">
+            <li>Leads</li>
+            <li>Negociações</li>
+            <li>Tarefas</li>
+            <li>Clientes</li>
+          </ul>
+          <strong>Acessar CRM <span aria-hidden="true">→</span></strong>
+        </a>
+
+        <a class="premium-access-card premium-access-card-admin" href="empresa.html" data-visible-roles="dono,administrador,financeiro,marketing,rh">
+          <span class="premium-restricted">Acesso Restrito</span>
+          <span class="premium-card-icon" aria-hidden="true">▣</span>
+          <div>
+            <p>Gestão e controle da empresa</p>
+            <h2>Painel Administrativo</h2>
+            <span>Controle usuários, permissões, financeiro, relatórios e configurações gerais.</span>
+          </div>
+          <strong>Acessar Empresa <span aria-hidden="true">→</span></strong>
+        </a>
+      </section>
+
+      <aside class="premium-security-note" aria-label="Aviso de segurança">
+        <span aria-hidden="true">⌑</span>
+        <div>
+          <strong>Acesso seguro e restrito.</strong>
+          <small>Uso exclusivo para fins internos.</small>
+        </div>
+      </aside>
+
+      <footer class="premium-entry-footer">
+        © 2026 Seven Gold Financeira. Todos os direitos reservados.
+      </footer>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="/pwa.js"></script>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Empresa</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.dataset.adminSidebar = localStorage.getItem("seven-gold-admin-sidebar-collapsed") === "true" ? "collapsed" : "expanded";</script>
+    <link rel="stylesheet" href="home.css?v=30" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#150126" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Seven Gold" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  </head>
+  <body class="company-body company-dashboard-body" data-require-auth data-permission-area="empresa" data-login-page="index.html" data-allowed-roles="dono,administrador,financeiro,marketing,rh" data-denied-redirect="painel.html" data-unified-admin>
+    <main class="company-dashboard-shell">
+      <aside class="company-sidebar">
+        <a class="company-sidebar-brand" href="painel.html" aria-label="Seven Gold">
+          <img src="assets/logo-copa.png" alt="Seven Gold" />
+          <span><strong>Seven Gold</strong><small>Empresa</small></span>
+        </a>
+
+        <nav class="company-sidebar-nav" aria-label="Navegação da empresa">
+          <a class="active" href="empresa.html"><i data-lucide="house"></i><span>Painel</span></a>
+          <a href="organograma.html"><i data-lucide="network"></i><span>Organograma</span></a>
+          <a href="financeiro.html" data-visible-roles="dono,administrador,financeiro"><i data-lucide="badge-dollar-sign"></i><span>Financeiro</span></a>
+          <a href="comissoes.html" data-visible-roles="dono,administrador,financeiro"><i data-lucide="percent"></i><span>Comissões</span></a>
+          <a href="equipe.html" data-visible-roles="dono,administrador,rh"><i data-lucide="users"></i><span>Equipe</span></a>
+          <a href="#marketing" data-visible-roles="dono,administrador,marketing"><i data-lucide="megaphone"></i><span>Marketing</span></a>
+          <a href="documentos.html"><i data-lucide="file-text"></i><span>Documentos</span></a>
+          <a href="relatorios.html" data-visible-roles="dono,administrador,financeiro,marketing,rh"><i data-lucide="chart-column"></i><span>Relatórios</span></a>
+          <a href="permissoes.html" data-visible-roles="dono"><i data-lucide="lock-keyhole"></i><span>Permissões</span></a>
+          <a href="#metas" data-visible-roles="dono,administrador,coordenador"><i data-lucide="target"></i><span>Metas</span></a>
+          <a href="historia-dono.html" data-visible-roles="dono"><i data-lucide="crown"></i><span>História do Dono</span></a>
+        </nav>
+
+        <div class="company-sidebar-profile">
+          <a class="company-profile-identity" href="perfil.html?area=empresa">
+            <span class="profile-avatar" data-user-avatar>U</span>
+            <span><strong data-user-name>Usuário</strong><small data-user-role>Perfil</small></span>
+          </a>
+          <a href="painel.html" title="Voltar ao painel"><i data-lucide="log-out"></i></a>
+        </div>
+      </aside>
+
+      <section class="company-dashboard-main">
+        <header class="company-dashboard-header">
+          <div>
+            <h1>Bem-vindo, <span data-user-first-name>usuário</span></h1>
+            <p>Aqui está um resumo geral da sua empresa.</p>
+          </div>
+          <a class="company-profile-button" href="perfil.html?area=empresa"><i data-lucide="user-round"></i><span>Perfil</span><i data-lucide="chevron-down"></i></a>
+        </header>
+
+        <section class="company-stat-grid" aria-label="Resumo da empresa">
+          <article>
+            <span>Vendas do mês</span>
+            <strong>R$ 145.000</strong>
+            <small class="positive">+18% vs mês anterior</small>
+            <i data-lucide="chart-no-axes-combined"></i>
+          </article>
+          <article>
+            <span>Meta do mês</span>
+            <strong>82%</strong>
+            <small>R$ 145.000 de R$ 176.000</small>
+            <i data-lucide="goal"></i>
+          </article>
+          <article>
+            <span>Comissões pendentes</span>
+            <strong>R$ 7.500</strong>
+            <small>Valor a pagar este mês</small>
+            <i data-lucide="hand-coins"></i>
+          </article>
+          <article>
+            <span>Colaboradores</span>
+            <strong>12</strong>
+            <small>Ativos na equipe</small>
+            <i data-lucide="users-round"></i>
+          </article>
+        </section>
+
+        <section class="company-module-grid" aria-label="Áreas administrativas">
+          <a href="organograma.html"><i data-lucide="network"></i><div><h2>Organograma</h2><p>Hierarquia, cargos, arquivos, funções e comissões.</p><strong>Acessar <span>→</span></strong></div></a>
+          <a href="financeiro.html" data-visible-roles="dono,administrador,financeiro"><i data-lucide="badge-dollar-sign"></i><div><h2>Financeiro</h2><p>Entradas, saídas, caixa, contas e repasses.</p><strong>Acessar <span>→</span></strong></div></a>
+          <a href="comissoes.html" data-visible-roles="dono,administrador,financeiro"><i data-lucide="percent"></i><div><h2>Comissões</h2><p>Valores por venda, regras e pagamentos.</p><strong>Acessar <span>→</span></strong></div></a>
+          <a href="equipe.html" data-visible-roles="dono,administrador,rh"><i data-lucide="users-round"></i><div><h2>Equipe</h2><p>Colaboradores, cargos, documentos e acessos.</p><strong>Acessar <span>→</span></strong></div></a>
+          <a href="#marketing" data-visible-roles="dono,administrador,marketing"><i data-lucide="megaphone"></i><div><h2>Marketing</h2><p>Campanhas, mídias, criativos e origem dos leads.</p><strong>Acessar <span>→</span></strong></div></a>
+          <a href="documentos.html"><i data-lucide="file-text"></i><div><h2>Documentos</h2><p>Contratos, modelos, comprovantes e pastas.</p><strong>Acessar <span>→</span></strong></div></a>
+          <a href="relatorios.html" data-visible-roles="dono,administrador,financeiro,marketing,rh"><i data-lucide="chart-column"></i><div><h2>Relatórios</h2><p>Vendas, conversão, produtividade e metas.</p><strong>Acessar <span>→</span></strong></div></a>
+          <a href="permissoes.html" data-visible-roles="dono"><i data-lucide="lock-keyhole"></i><div><h2>Permissões</h2><p>Quem acessa CRM, financeiro, admin e arquivos.</p><strong>Acessar <span>→</span></strong></div></a>
+          <a href="#metas" data-visible-roles="dono,administrador,coordenador"><i data-lucide="target"></i><div><h2>Metas</h2><p>Objetivos mensais, ranking e campanhas internas.</p><strong>Acessar <span>→</span></strong></div></a>
+          <a href="historia-dono.html" data-visible-roles="dono"><i data-lucide="crown"></i><div><h2>História do Dono</h2><p>Crédito vendido, cotas, salário, totais e médias por ano.</p><strong>Acessar <span>→</span></strong></div></a>
+        </section>
+      </section>
+    </main>
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js?v=2"></script>
+    <script>lucide.createIcons();</script>
+    <script src="/admin-shell.js"></script>
+    <script src="/pwa.js"></script>
+  </body>
+</html>

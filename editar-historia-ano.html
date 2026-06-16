@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Editar Historia do Dono</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>document.documentElement.dataset.adminSidebar = localStorage.getItem("seven-gold-admin-sidebar-collapsed") === "true" ? "collapsed" : "expanded";</script>
+    <link rel="stylesheet" href="home.css?v=30" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#150126" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Seven Gold" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  </head>
+  <body class="owner-history-body" data-require-auth data-permission-area="historia_dono" data-login-page="index.html" data-allowed-roles="dono" data-denied-redirect="empresa.html" data-unified-admin>
+    <div class="history-dashboard-shell">
+      <aside class="history-sidebar">
+        <a class="history-sidebar-brand" href="empresa.html"><img src="assets/logo-copa.png" alt="Seven Gold" /><span><strong>Seven Gold</strong><small>História do Dono</small></span></a>
+        <nav class="history-sidebar-nav">
+          <a class="history-back" href="historia-dono.html"><i data-lucide="chevron-left"></i><span>Voltar à História</span></a>
+          <a href="empresa.html"><i data-lucide="house"></i><span>Painel</span></a>
+          <a class="active" href="historia-dono.html"><i data-lucide="crown"></i><span>História do Dono</span></a>
+          <a href="perfil.html?area=empresa"><i data-lucide="user-round"></i><span>Meu perfil</span></a>
+        </nav>
+        <a class="history-sidebar-profile" href="perfil.html?area=empresa"><span class="profile-avatar" data-user-avatar>U</span><span><strong data-user-name>Usuário</strong><small data-user-role>Perfil</small></span></a>
+      </aside>
+      <main class="history-dashboard-main history-shell year-editor-shell">
+
+      <section class="history-toolbar compact-toolbar year-editor-heading">
+        <div>
+          <span class="editor-eyebrow">Edicao anual</span>
+          <h1 id="editor-title">Editar ano</h1>
+          <span>Altere qualquer valor da planilha e salve tudo de uma vez.</span>
+        </div>
+        <div class="history-actions">
+          <button class="secondary-action" id="reset-year" type="button">Restaurar original</button>
+          <button id="save-year" type="button">Salvar alteracoes</button>
+        </div>
+      </section>
+
+      <section class="year-editor-panel">
+        <div class="owner-sheet-wrap">
+          <table class="owner-sheet-table year-editor-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Jan</th>
+                <th>Fev</th>
+                <th>Mar</th>
+                <th>Abr</th>
+                <th>Mai</th>
+                <th>Jun</th>
+                <th>Jul</th>
+                <th>Ago</th>
+                <th>Set</th>
+                <th>Out</th>
+                <th>Nov</th>
+                <th>Dez</th>
+                <th>Total</th>
+                <th>Média</th>
+              </tr>
+            </thead>
+            <tbody id="editor-table-body"></tbody>
+          </table>
+        </div>
+        <div class="editor-save-bar">
+          <span id="save-status">Nenhuma alteracao pendente.</span>
+          <button id="save-year-bottom" type="button">Salvar alteracoes</button>
+        </div>
+      </section>
+      </main>
+    </div>
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js?v=2"></script>
+    <script src="editar-historia-ano.js?v=12"></script>
+    <script>lucide.createIcons();</script>
+    <script src="/admin-shell.js"></script>
+    <script src="/pwa.js"></script>
+  </body>
+</html>

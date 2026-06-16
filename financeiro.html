@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Financeiro</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>document.documentElement.dataset.adminSidebar = localStorage.getItem("seven-gold-admin-sidebar-collapsed") === "true" ? "collapsed" : "expanded";</script>
+    <link rel="stylesheet" href="home.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#150126" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Seven Gold" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  </head>
+  <body class="finance-body" data-require-auth data-permission-area="financeiro" data-login-page="index.html" data-allowed-roles="dono,administrador,financeiro" data-denied-redirect="empresa.html" data-unified-admin>
+    <main class="finance-shell">
+      <header class="company-topbar">
+        <a class="back-link" href="empresa.html">Voltar</a>
+        <div class="brand-line">
+          <div class="brand-mark" aria-hidden="true">SG</div>
+          <div>
+            <strong>Seven Gold</strong>
+            <span>Financeiro</span>
+          </div>
+        </div>
+        <div class="owner-pill">
+          <span>Perfil</span>
+          <strong data-user-role>Dono</strong>
+        </div>
+      </header>
+
+      <section class="finance-toolbar" aria-label="Resumo financeiro">
+        <div>
+          <h1>Financeiro</h1>
+          <span>Entradas, saidas, pendencias e saldo da empresa.</span>
+        </div>
+        <div class="finance-period">
+          <label>
+            Periodo
+            <select data-finance-period>
+              <option value="mes">Este mes</option>
+              <option value="ano">Este ano</option>
+              <option value="todos">Todos</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="finance-summary" aria-label="Totais financeiros">
+        <article>
+          <span>Entradas</span>
+          <strong data-total-income>R$ 0,00</strong>
+        </article>
+        <article>
+          <span>Saidas</span>
+          <strong data-total-expense>R$ 0,00</strong>
+        </article>
+        <article>
+          <span>Saldo</span>
+          <strong data-total-balance>R$ 0,00</strong>
+        </article>
+        <article>
+          <span>Pendente</span>
+          <strong data-total-pending>R$ 0,00</strong>
+        </article>
+      </section>
+
+      <section class="finance-layout">
+        <section class="finance-table-panel" aria-label="Movimentacoes financeiras">
+          <div class="finance-filters">
+            <input type="search" placeholder="Buscar por descricao ou categoria" data-finance-search />
+            <select data-finance-type>
+              <option value="todos">Todos os tipos</option>
+              <option value="entrada">Entradas</option>
+              <option value="saida">Saidas</option>
+            </select>
+            <select data-finance-status>
+              <option value="todos">Todos os status</option>
+              <option value="pago">Pago</option>
+              <option value="pendente">Pendente</option>
+            </select>
+          </div>
+
+          <div class="finance-table-wrap">
+            <table class="finance-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Descricao</th>
+                  <th>Categoria</th>
+                  <th>Tipo</th>
+                  <th>Status</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody data-finance-table>
+                <tr>
+                  <td colspan="6">Carregando movimentacoes...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <form class="finance-form" data-finance-form>
+          <h2>Novo lancamento</h2>
+          <label>
+            Descricao
+            <input name="description" type="text" placeholder="Ex: Repasse de consorcio" required />
+          </label>
+          <label>
+            Valor
+            <input name="amount" type="number" min="0" step="0.01" placeholder="0,00" required />
+          </label>
+          <label>
+            Tipo
+            <select name="type">
+              <option value="entrada">Entrada</option>
+              <option value="saida">Saida</option>
+            </select>
+          </label>
+          <label>
+            Categoria
+            <select name="category">
+              <option>Venda</option>
+              <option>Comissao</option>
+              <option>Despesa fixa</option>
+              <option>Marketing</option>
+              <option>Salario</option>
+              <option>Imposto</option>
+              <option>Outros</option>
+            </select>
+          </label>
+          <label>
+            Status
+            <select name="status">
+              <option value="pago">Pago</option>
+              <option value="pendente">Pendente</option>
+            </select>
+          </label>
+          <label>
+            Data
+            <input name="movement_date" type="date" required />
+          </label>
+          <p class="finance-form-status" data-finance-message></p>
+          <button type="submit">Salvar lancamento</button>
+        </form>
+      </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="financeiro.js"></script>
+    <script src="/admin-shell.js"></script>
+    <script src="/pwa.js"></script>
+  </body>
+</html>

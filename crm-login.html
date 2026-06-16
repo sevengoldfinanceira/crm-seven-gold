@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold CRM | Login</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="home.css?v=2.0" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#150126" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Seven Gold" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  </head>
+  <body class="login-page-body crm-login-body">
+    <main class="login-shell">
+      <section class="login-copy" aria-labelledby="crm-login-title" style="display: none;">
+        <div class="brand-line">
+          <div class="brand-mark" aria-hidden="true">SG</div>
+          <div>
+            <strong>Seven Gold</strong>
+            <span>CRM comercial</span>
+          </div>
+        </div>
+
+        <div>
+          <p class="eyebrow">Acesso da equipe</p>
+          <h1 id="crm-login-title">Entre direto no CRM da Seven Gold.</h1>
+          <p>
+            Esse acesso e para vendedores e equipe comercial acompanharem leads,
+            tarefas, clientes e pipeline.
+          </p>
+        </div>
+      </section>
+
+      <section class="login-panel" aria-label="Formulario de login do CRM">
+        <form class="login-form" data-auth-form data-redirect="crm.html" data-button-text="Entrar ou criar conta">
+          <header class="login-header-layout">
+            <div class="header-circle-avatar has-user-photo" data-header-avatar style="background-image: url('assets/seven-gold-logo-header.png')"></div>
+            <div class="header-text-details">
+              <span class="header-subtitle" data-header-subtitle>CRM Comercial</span>
+              <h2 class="header-title" data-header-title>Seven Gold</h2>
+            </div>
+          </header>
+
+          <p class="login-instruction-text" data-login-instruction>
+            Use seu e-mail e senha para acessar.
+          </p>
+
+          <!-- Active Session Card Wrapper (hidden by default, shown if session exists) -->
+          <div class="active-session-card-wrapper" style="display: none;">
+            <div class="saved-account-card">
+              <div class="profile-avatar saved-avatar" data-user-avatar></div>
+              <div class="saved-details">
+                <strong class="saved-name" data-user-name>Carregando...</strong>
+                <span class="saved-email" data-user-email>...</span>
+              </div>
+            </div>
+            <button type="button" class="use-other-account-btn" data-use-other-account>
+              Usar outra conta
+            </button>
+          </div>
+
+          <button class="google-button" type="button" data-google-login data-redirect="crm.html">
+            Entrar com Google
+          </button>
+
+          <div class="login-divider"><span>ou</span></div>
+
+          <label>
+            E-mail
+            <input type="email" name="email" placeholder="vendedor@sevengold.com.br" />
+          </label>
+
+          <label>
+            Senha
+            <input type="password" name="password" placeholder="Digite sua senha" />
+          </label>
+
+          <div class="login-row">
+            <label class="remember-option">
+              <input type="checkbox" name="remember" />
+              Manter conectado
+            </label>
+            <a href="#">Esqueci a senha</a>
+          </div>
+
+          <button class="login-button" type="submit">Entrar ou criar conta</button>
+
+          <a href="#" class="bottom-action-link" data-focus-login-toggle>Escolha a conta salva para entrar ou use outra conta.</a>
+
+          <p class="login-note">
+            No sistema real, esse login vai liberar somente as permissoes do perfil
+            comercial.
+          </p>
+        </form>
+      </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="/pwa.js"></script>
+  </body>
+</html>

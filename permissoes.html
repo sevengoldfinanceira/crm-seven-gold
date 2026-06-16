@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Permissoes</title>
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>document.documentElement.dataset.adminSidebar = localStorage.getItem("seven-gold-admin-sidebar-collapsed") === "true" ? "collapsed" : "expanded";</script>
+    <link rel="stylesheet" href="home.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#150126" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Seven Gold" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  </head>
+  <body class="permissions-body" data-require-auth data-permission-area="permissoes" data-login-page="index.html" data-allowed-roles="dono" data-denied-redirect="empresa.html" data-unified-admin>
+    <main class="permissions-shell">
+      <header class="company-topbar">
+        <a class="back-link" href="empresa.html">Voltar</a>
+        <div class="brand-line">
+          <div class="brand-mark" aria-hidden="true">SG</div>
+          <div>
+            <strong>Seven Gold</strong>
+            <span>Permissoes</span>
+          </div>
+        </div>
+        <div class="owner-pill">
+          <span>Acesso</span>
+          <strong>Perfis</strong>
+        </div>
+      </header>
+
+      <section class="permissions-toolbar" aria-label="Controles de permissoes">
+        <div>
+          <h1>Permissoes do sistema</h1>
+          <span>Ative ou desative o acesso de cada cargo por area do sistema.</span>
+        </div>
+        <div class="permissions-actions">
+          <button type="button" data-save-permissions>Salvar permissoes</button>
+          <button type="button" data-reload-permissions>Recarregar</button>
+        </div>
+      </section>
+
+      <section class="permission-layout">
+        <div class="permission-table-wrap">
+          <table class="permission-table" aria-label="Matriz de permissoes">
+            <thead>
+              <tr data-permission-head></tr>
+            </thead>
+            <tbody data-permission-body></tbody>
+          </table>
+        </div>
+
+        <aside class="user-access-panel" aria-label="Usuarios e perfis">
+          <h2>Usuarios do sistema</h2>
+          <p class="permission-note">Edite o nome, confira o e-mail do login e defina o cargo de cada pessoa.</p>
+          <div class="user-search-box">
+            <input type="search" placeholder="Buscar usuario ou e-mail" data-user-search />
+          </div>
+          <div class="user-list" data-user-list></div>
+        </aside>
+      </section>
+      <p class="permission-save-status" data-permission-status></p>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="permissoes.js"></script>
+    <script src="/admin-shell.js"></script>
+    <script src="/pwa.js"></script>
+  </body>
+</html>
