@@ -198,16 +198,15 @@
     });
     document.querySelectorAll("[data-user-avatar]").forEach((element) => {
       element.textContent = initial;
+      element.style.backgroundImage = "";
+      element.classList.remove("has-user-photo");
     });
 
     const { data: avatar } = await client.storage
       .from("company-documents")
       .download(`${user.id}/profile/avatar.jpg`);
 
-    const avatarUrl = avatar ? URL.createObjectURL(avatar) : user?.user_metadata?.avatar_url;
-    if (!avatarUrl) {
-      return;
-    }
+    const avatarUrl = avatar ? URL.createObjectURL(avatar) : (user?.user_metadata?.avatar_url || 'assets/avatar-default.jpg');
 
     document.querySelectorAll("[data-user-avatar]").forEach((element) => {
       element.textContent = "";

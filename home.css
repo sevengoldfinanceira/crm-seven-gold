@@ -477,7 +477,7 @@ body[data-unified-admin] > .unified-admin-shell {
 
 .login-panel {
   width: 100% !important;
-  max-width: 420px !important;
+  max-width: 480px !important;
   background: rgba(18, 18, 24, 0.65) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
@@ -516,18 +516,21 @@ body[data-unified-admin] > .unified-admin-shell {
 
 .login-form input {
   width: 100%;
-  min-height: 48px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fbfcfa;
-  color: var(--ink);
-  padding: 0 13px;
+  min-height: 40px !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 10px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  padding: 0 12px !important;
+  font-size: 0.9rem !important;
   outline: 0;
+  transition: all 0.2s ease;
 }
 
 .login-form input:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 4px rgba(216, 173, 61, 0.16);
+  border-color: var(--gold) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(216, 173, 61, 0.2) !important;
 }
 
 .login-row {
