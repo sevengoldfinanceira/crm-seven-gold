@@ -9765,3 +9765,168 @@ body[data-unified-admin].theme-dark .metas-shell {
     justify-content: flex-start !important;
   }
 }
+
+/* Sidebar Empresa - ajuste compacto para caber no desktop */
+@media (min-width: 901px) {
+  body[data-unified-admin] .company-sidebar,
+  body[data-unified-admin] .unified-admin-sidebar {
+    padding: 14px 12px !important;
+  }
+
+  body[data-unified-admin] .unified-sidebar-header {
+    padding-bottom: 10px !important;
+    margin-bottom: 6px !important;
+  }
+
+  body[data-unified-admin] .company-sidebar-brand img {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 12px !important;
+  }
+
+  body[data-unified-admin] .company-sidebar-brand strong,
+  body[data-unified-admin] .brand-title {
+    font-size: 0.76rem !important;
+  }
+
+  body[data-unified-admin] .company-sidebar-brand small,
+  body[data-unified-admin] .brand-subtitle,
+  body[data-unified-admin] .brand-tagline {
+    font-size: 0.58rem !important;
+    line-height: 1.1 !important;
+  }
+
+  body[data-unified-admin] .sidebar-toggle,
+  body[data-unified-admin] .profile-action {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  body[data-unified-admin] .company-sidebar-nav {
+    gap: 3px !important;
+  }
+
+  body[data-unified-admin] .menu-section {
+    padding-top: 6px !important;
+  }
+
+  body[data-unified-admin] .menu-section + .menu-section {
+    margin-top: 2px !important;
+    padding-top: 7px !important;
+  }
+
+  body[data-unified-admin] .menu-section-title {
+    margin-bottom: 3px !important;
+    padding-inline: 10px !important;
+    font-size: 0.58rem !important;
+    line-height: 1 !important;
+  }
+
+  body[data-unified-admin] .company-sidebar-nav .menu-item,
+  body[data-unified-admin] .company-sidebar-nav a {
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 0 10px !important;
+    border-radius: 13px !important;
+    font-size: 0.79rem !important;
+    gap: 9px !important;
+  }
+
+  body[data-unified-admin] .company-sidebar-nav .menu-item svg,
+  body[data-unified-admin] .company-sidebar-nav a svg,
+  body[data-unified-admin] .company-sidebar-nav .menu-item i,
+  body[data-unified-admin] .company-sidebar-nav a i {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  body[data-unified-admin] .sidebar-profile-card,
+  body[data-unified-admin] .company-sidebar-profile,
+  body[data-unified-admin] .unified-sidebar-profile {
+    margin-top: 8px !important;
+    padding: 10px !important;
+    border-radius: 18px !important;
+  }
+
+  body[data-unified-admin] .profile-avatar {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 14px !important;
+  }
+
+  body[data-unified-admin] .profile-info strong {
+    font-size: 0.78rem !important;
+    line-height: 1.1 !important;
+  }
+
+  body[data-unified-admin] .profile-role,
+  body[data-unified-admin] .profile-status,
+  body[data-unified-admin] .company-sidebar-profile small {
+    font-size: 0.66rem !important;
+    line-height: 1.1 !important;
+  }
+
+  body[data-unified-admin] .profile-actions {
+    gap: 6px !important;
+    margin-top: 8px !important;
+  }
+
+  body[data-unified-admin] .sidebar-collapsed .company-sidebar,
+  body[data-unified-admin] .sidebar-collapsed .unified-admin-sidebar {
+    padding: 12px 10px !important;
+  }
+
+  body[data-unified-admin] .sidebar-collapsed .company-sidebar-nav .menu-item,
+  body[data-unified-admin] .sidebar-collapsed .company-sidebar-nav a {
+    width: 46px !important;
+    min-width: 46px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    margin: 3px auto !important;
+    border-radius: 14px !important;
+  }
+
+  body[data-unified-admin] .sidebar-collapsed .sidebar-profile-card,
+  body[data-unified-admin] .sidebar-collapsed .company-sidebar-profile,
+  body[data-unified-admin] .sidebar-collapsed .unified-sidebar-profile {
+    width: 54px !important;
+    padding: 7px 5px !important;
+  }
+
+  body[data-unified-admin] .sidebar-collapsed .profile-avatar {
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+body[data-unified-admin] .sidebar-toggle,
+body[data-unified-admin] .profile-action,
+body[data-unified-admin] .sidebar-collapsed .sidebar-toggle {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  color: #374151 !important;
+}
+
+body[data-unified-admin] .sidebar-toggle svg,
+body[data-unified-admin] .sidebar-toggle i,
+body[data-unified-admin] .profile-action svg,
+body[data-unified-admin] .profile-action i,
+body[data-unified-admin] .sidebar-collapsed .sidebar-toggle svg,
+body[data-unified-admin] .sidebar-collapsed .sidebar-toggle i {
+  color: #374151 !important;
+  stroke: #374151 !important;
+}
+
+body[data-unified-admin] .sidebar-toggle:hover,
+body[data-unified-admin] .profile-action:hover {
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+body[data-unified-admin] .sidebar-toggle:hover svg,
+body[data-unified-admin] .sidebar-toggle:hover i,
+body[data-unified-admin] .profile-action:hover svg,
+body[data-unified-admin] .profile-action:hover i {
+  color: #111827 !important;
+  stroke: #111827 !important;
+}
