@@ -5,6 +5,7 @@
   const currentPage = window.location.pathname.split("/").pop() || "empresa.html";
   const area = document.body.dataset.permissionArea || currentPage.replace(".html", "");
 
+  // ── Navegação flat (mantida para compatibilidade) ─────────────────────────
   const navigation = [
     ["empresa.html", "house", "Painel", "empresa", ""],
     ["organograma.html", "network", "Organograma", "organograma", "dono,administrador,rh"],
@@ -19,78 +20,147 @@
     ["historia-dono.html", "crown", "História do Dono", "historia_dono", "dono"],
   ];
 
+  // ── Navegação agrupada por categoria ──────────────────────────────────────
+  const navGroups = [
+    {
+      label: "PRINCIPAL",
+      items: [
+        ["empresa.html", "house", "Painel", "empresa", ""],
+        ["organograma.html", "network", "Organograma", "organograma", "dono,administrador,rh"],
+        ["#metas", "target", "Metas", "metas", "dono,administrador,coordenador"],
+      ],
+    },
+    {
+      label: "GESTÃO",
+      items: [
+        ["equipe.html", "users", "Equipe", "equipe", "dono,administrador,rh"],
+        ["permissoes.html", "lock-keyhole", "Permissões", "permissoes", "dono"],
+        ["historia-dono.html", "crown", "História do Dono", "historia_dono", "dono"],
+      ],
+    },
+    {
+      label: "FINANCEIRO",
+      items: [
+        ["financeiro.html", "badge-dollar-sign", "Financeiro", "financeiro", "dono,administrador,financeiro"],
+        ["comissoes.html", "percent", "Comissões", "comissoes", "dono,administrador,financeiro"],
+        ["relatorios.html", "chart-column", "Relatórios", "relatorios", "dono,administrador,financeiro,marketing,rh"],
+      ],
+    },
+    {
+      label: "OPERACIONAL",
+      items: [
+        ["#marketing", "megaphone", "Marketing", "marketing", "dono,administrador,marketing"],
+        ["documentos.html", "file-text", "Documentos", "documentos", ""],
+      ],
+    },
+  ];
+
+  const renderNavItem = ([href, icon, label, key, roles]) => `
+    <a href="${href}"
+       class="psb-nav-item company-sidebar-nav-item${area === key ? " active" : ""}"
+       title="${label}"
+       ${roles ? `data-visible-roles="${roles}"` : ""}>
+      <span class="psb-nav-icon"><i data-lucide="${icon}"></i></span>
+      <span class="psb-nav-label">${label}</span>
+    </a>`;
+
+  const renderNavGroup = ({ label, items }) => `
+    <div class="psb-nav-group">
+      <span class="psb-group-label">${label}</span>
+      ${items.map(renderNavItem).join("")}
+    </div>`;
+
+  // ── Criação do sidebar premium ────────────────────────────────────────────
   const createSidebar = () => {
     const sidebar = document.createElement("aside");
-    sidebar.className = "company-sidebar unified-admin-sidebar";
+    sidebar.className = "company-sidebar unified-admin-sidebar psb";
     sidebar.innerHTML = `
-      <div class="unified-sidebar-header">
-        <a class="company-sidebar-brand" href="empresa.html" aria-label="Seven Gold">
-          <img src="assets/logo-copa.png" alt="" />
-          <span><strong>Seven Gold</strong><small>Empresa</small></span>
+      <!-- ── Topo: Logo + Brand ── -->
+      <div class="psb-header">
+        <a class="company-sidebar-brand psb-brand" href="empresa.html" aria-label="Ir para o painel Seven Gold">
+          <div class="psb-logo-wrap">
+            <img class="psb-logo-img" src="assets/logo-copa.png" alt="Seven Gold" />
+          </div>
+          <div class="psb-brand-text">
+            <strong>SEVEN GOLD</strong>
+            <span>PAINEL EMPRESA</span>
+            <small>Gestão interna</small>
+          </div>
         </a>
-        <button class="sidebar-toggle" type="button" aria-label="Recolher menu" title="Recolher ou expandir menu">
+        <button class="sidebar-toggle psb-toggle" type="button"
+                aria-label="Recolher menu" title="Recolher ou expandir menu">
           <i data-lucide="menu"></i>
         </button>
       </div>
-      <nav class="company-sidebar-nav" aria-label="Navegação da empresa">
-        ${navigation
-          .map(
-            ([href, icon, label, key, roles]) => `
-              <a href="${href}" class="${area === key ? "active" : ""}" title="${label}" ${roles ? `data-visible-roles="${roles}"` : ""}>
-                <i data-lucide="${icon}"></i><span>${label}</span>
-              </a>`
-          )
-          .join("")}
+
+      <!-- ── Navegação categorizada ── -->
+      <nav class="company-sidebar-nav psb-nav" aria-label="Navegação da empresa">
+        ${navGroups.map(renderNavGroup).join("")}
       </nav>
-      <a class="unified-sidebar-profile" href="perfil.html?area=empresa">
-        <span class="profile-avatar" data-user-avatar>U</span>
-        <span><strong data-user-name>Usuário</strong><small data-user-role>Perfil</small></span>
-      </a>
+
+      <!-- ── Rodapé: Card de Perfil ── -->
+      <div class="psb-footer">
+        <div class="psb-profile-card">
+          <a class="psb-avatar-link" href="perfil.html?area=empresa" title="Ver perfil">
+            <span class="profile-avatar psb-avatar" data-user-avatar>U</span>
+            <span class="psb-online-dot" title="Online"></span>
+          </a>
+          <div class="psb-profile-info">
+            <strong class="psb-profile-name" data-user-name>Usuário</strong>
+            <small class="psb-profile-role" data-user-role>Perfil</small>
+          </div>
+          <div class="psb-profile-actions">
+            <a href="perfil.html?area=empresa" class="psb-action-btn" title="Configurações">
+              <i data-lucide="settings"></i>
+            </a>
+            <button type="button" class="psb-action-btn psb-logout-btn" title="Sair" id="psb-logout-btn">
+              <i data-lucide="log-out"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     `;
     return sidebar;
   };
 
+  // ── Render de ícones Lucide ───────────────────────────────────────────────
   const renderIcons = () => {
     if (window.lucide) {
       window.lucide.createIcons();
       return;
     }
-
     const script = document.createElement("script");
     script.src = "https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js";
     script.addEventListener("load", () => window.lucide?.createIcons());
     document.head.append(script);
   };
 
+  // ── Detecta o layout correto ──────────────────────────────────────────────
   const findLayout = () => {
     const companyLayout = document.querySelector(".company-dashboard-shell");
     if (companyLayout) {
       companyLayout.querySelector(".company-sidebar")?.remove();
       return companyLayout;
     }
-
     const historyLayout = document.querySelector(".history-dashboard-shell");
     if (historyLayout) {
       historyLayout.querySelector(".history-sidebar")?.remove();
       return historyLayout;
     }
-
     const profileLayout = document.querySelector(".profile-dashboard-shell");
     if (profileLayout) {
       profileLayout.querySelectorAll(".profile-context-sidebar").forEach((item) => item.remove());
       return profileLayout;
     }
-
     const content = document.querySelector("body > main");
     if (!content) return null;
-
     const layout = document.createElement("div");
     content.before(layout);
     layout.append(content);
     return layout;
   };
 
-  // ── Botão flutuante de tema (modo claro / escuro) ─────────────────────────
+  // ── Botão flutuante de Tema (FAB) ─────────────────────────────────────────
   const setupThemeToggle = () => {
     const THEME_KEY = "seven-gold-theme";
     const saved = localStorage.getItem(THEME_KEY);
@@ -112,8 +182,6 @@
       const dark = isDark();
       localStorage.setItem(THEME_KEY, dark ? "dark" : "light");
       btn.innerHTML = dark ? sunSVG : moonSVG;
-
-      // animação de pulso
       btn.classList.remove("theme-fab--pop");
       void btn.offsetWidth;
       btn.classList.add("theme-fab--pop");
@@ -121,8 +189,8 @@
 
     document.body.append(btn);
   };
-  // ─────────────────────────────────────────────────────────────────────────
 
+  // ── Inicialização principal ───────────────────────────────────────────────
   const initialize = () => {
     if (!document.body.matches("[data-unified-admin]")) return;
     if (currentPage === "perfil.html" && new URLSearchParams(window.location.search).get("area") === "crm") {
@@ -136,18 +204,30 @@
     const sidebar = createSidebar();
     layout.prepend(sidebar);
 
+    // Collapsed state
     const applyCollapsed = (collapsed) => {
       layout.classList.toggle("sidebar-collapsed", collapsed);
       const button = sidebar.querySelector(".sidebar-toggle");
-      button.setAttribute("aria-label", collapsed ? "Expandir menu" : "Recolher menu");
+      if (button) button.setAttribute("aria-label", collapsed ? "Expandir menu" : "Recolher menu");
     };
 
     applyCollapsed(localStorage.getItem(collapsedKey) === "true");
-    sidebar.querySelector(".sidebar-toggle").addEventListener("click", () => {
+
+    sidebar.querySelector(".sidebar-toggle")?.addEventListener("click", () => {
       const collapsed = !layout.classList.contains("sidebar-collapsed");
       localStorage.setItem(collapsedKey, String(collapsed));
       document.documentElement.dataset.adminSidebar = collapsed ? "collapsed" : "expanded";
       applyCollapsed(collapsed);
+    });
+
+    // Logout button
+    sidebar.querySelector("#psb-logout-btn")?.addEventListener("click", async () => {
+      try {
+        if (window.sevenGoldAuth?.auth?.signOut) {
+          await window.sevenGoldAuth.auth.signOut();
+        }
+      } catch (_) { /* ignore */ }
+      window.location.href = "index.html";
     });
 
     renderIcons();
