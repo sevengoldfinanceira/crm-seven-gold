@@ -39,6 +39,39 @@
     },
   ];
 
+  const createTopbar = () => {
+    const allItems = categories.flatMap((cat) => cat.items);
+    const topbar = document.createElement("header");
+    topbar.className = "empresa-topbar";
+    topbar.innerHTML = `
+      <a class="empresa-topbar-brand" href="empresa.html" aria-label="Seven Gold">
+        <img src="assets/logo-copa.png" alt="" />
+        <span class="empresa-topbar-brand-text">
+          <strong>SEVEN GOLD</strong>
+          <small>EMPRESA</small>
+        </span>
+      </a>
+      <nav class="empresa-topbar-nav" aria-label="Navegação da empresa">
+        ${allItems
+          .map(
+            ([href, icon, label, key, roles]) =>
+              `<a href="${href}" class="${area === key ? "active" : ""}" ${roles ? `data-visible-roles="${roles}"` : ""}><i data-lucide="${icon}"></i><span>${label}</span></a>`
+          )
+          .join("")}
+      </nav>
+      <div class="empresa-topbar-actions">
+        <a href="perfil.html?area=empresa" class="empresa-topbar-profile" title="Perfil">
+          <span class="empresa-topbar-avatar" data-user-avatar>U</span>
+          <span class="empresa-topbar-user">
+            <strong data-user-name>Usuário</strong>
+            <small data-user-role>Perfil</small>
+          </span>
+        </a>
+      </div>
+    `;
+    return topbar;
+  };
+
   const createSidebar = () => {
     const sidebar = document.createElement("aside");
     sidebar.className = "company-sidebar unified-admin-sidebar";
@@ -149,6 +182,8 @@
     if (!layout) return;
 
     layout.classList.add("unified-admin-shell");
+    const topbar = createTopbar();
+    layout.prepend(topbar);
     const sidebar = createSidebar();
     layout.prepend(sidebar);
 
