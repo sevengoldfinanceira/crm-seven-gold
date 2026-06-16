@@ -6849,11 +6849,14 @@ body[data-unified-admin] {
 .commission-toolbar h1,
 .reports-toolbar h1,
 .permissions-toolbar h1,
-.company-dashboard-header h1 {
+.company-dashboard-header h1,
+.goals-header h1,
+.marketing-toolbar h1 {
   color: var(--sg-text-main) !important;
-  font-size: 1.5rem !important;
+  font-size: clamp(1.55rem, 2vw, 2rem) !important;
   font-weight: 800 !important;
   margin: 0 !important;
+  line-height: 1.1 !important;
 }
 
 .org-toolbar span,
@@ -6864,10 +6867,13 @@ body[data-unified-admin] {
 .commission-toolbar span,
 .reports-toolbar span,
 .permissions-toolbar span,
-.company-dashboard-header p {
+.company-dashboard-header p,
+.goals-header p,
+.marketing-toolbar span {
   color: var(--sg-text-secondary) !important;
-  font-size: 0.88rem !important;
-  margin-top: 4px !important;
+  font-size: 0.9rem !important;
+  margin-top: 6px !important;
+  margin-bottom: 0 !important;
   display: block !important;
 }
 
@@ -8802,10 +8808,13 @@ body[data-unified-admin] .finance-toolbar,
 body[data-unified-admin] .commission-toolbar,
 body[data-unified-admin] .team-toolbar,
 body[data-unified-admin] .org-toolbar,
-body[data-unified-admin] .history-toolbar {
+body[data-unified-admin] .history-toolbar,
+body[data-unified-admin] .marketing-toolbar {
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
+  padding: 0 !important;
+  margin-bottom: 24px !important;
 }
 
 body[data-unified-admin] .company-stat-grid article,
