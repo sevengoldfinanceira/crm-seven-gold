@@ -898,10 +898,10 @@ body.theme-dark textarea:focus {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: var(--surface);
+  background: transparent;
   color: var(--ink);
-  border: 1px solid var(--line);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border: none;
+  box-shadow: none;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -910,9 +910,8 @@ body.theme-dark textarea:focus {
 }
 
 .theme-toggle-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
-  border-color: var(--gold);
+  transform: scale(1.12);
+  box-shadow: none;
 }
 
 .theme-toggle-btn svg {
