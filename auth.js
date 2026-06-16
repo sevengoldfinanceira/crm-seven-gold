@@ -276,10 +276,10 @@
       headerAvatar.classList.add("is-logged-in");
     }
     if (headerSubtitle) {
-      headerSubtitle.textContent = "Sistema Pessoal";
+      headerSubtitle.style.display = "none";
     }
     if (headerTitle) {
-      headerTitle.textContent = firstName;
+      headerTitle.textContent = "Sistema Pessoal do " + firstName;
     }
 
     // Update instructions text
