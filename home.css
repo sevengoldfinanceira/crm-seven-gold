@@ -448,18 +448,15 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .login-shell {
-  display: grid;
-  grid-template-columns: minmax(320px, 1fr) minmax(360px, 470px);
-  gap: 52px;
-  align-items: center;
-  min-height: 100vh;
-  padding: clamp(24px, 5vw, 72px);
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-height: 100vh !important;
+  padding: 24px !important;
 }
 
 .login-copy {
-  display: grid;
-  align-content: space-between;
-  min-height: min(650px, calc(100vh - 96px));
+  display: none !important;
 }
 
 .login-copy h1 {
@@ -479,8 +476,8 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .login-panel {
-  width: 100%;
-  max-width: 400px !important;
+  width: 100% !important;
+  max-width: 350px !important;
   background: rgba(18, 18, 24, 0.65) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
@@ -5494,14 +5491,14 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .header-circle-avatar {
-  width: 56px;
-  height: 56px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  border: 2px solid #ffffff;
+  border: 1px solid #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
+  font-size: 1.15rem;
   font-weight: 800;
   color: #ffffff;
   background: rgba(255, 255, 255, 0.1);
@@ -5522,41 +5519,41 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .header-subtitle {
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   color: #b3b3c6;
   font-weight: 500;
 }
 
 .header-title {
-  font-size: 1.6rem !important;
+  font-size: 1.35rem !important;
   color: #ffffff !important;
   font-weight: 800 !important;
   margin: 0 !important;
 }
 
 .login-instruction-text {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #b3b3c6;
   line-height: 1.4;
   margin-top: 0;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .active-session-card-wrapper {
   display: grid;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 14px;
   animation: fadeInSession 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .saved-account-card {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: 14px 18px;
+  padding: 10px 14px;
   transition: all 0.2s ease;
 }
 
@@ -5567,9 +5564,9 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .saved-avatar {
-  width: 44px !important;
-  height: 44px !important;
-  font-size: 1.1rem;
+  width: 38px !important;
+  height: 38px !important;
+  font-size: 0.95rem;
   border: 1.5px solid var(--gold);
   background-color: var(--brand-purple);
   color: #ffffff;
@@ -5588,7 +5585,7 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .saved-name {
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   color: #ffffff;
   font-weight: 700;
   white-space: nowrap;
@@ -5597,7 +5594,7 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .saved-email {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #b3b3c6;
   white-space: nowrap;
   overflow: hidden;
@@ -5606,12 +5603,12 @@ body[data-unified-admin] > .unified-admin-shell {
 
 .use-other-account-btn {
   width: 100%;
-  min-height: 44px;
+  min-height: 38px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
   background: transparent;
   color: #ffffff;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -5633,8 +5630,9 @@ body[data-unified-admin] > .unified-admin-shell {
   color: #000000 !important;
   border-radius: 10px !important;
   font-weight: 800 !important;
-  font-size: 0.95rem !important;
+  font-size: 0.9rem !important;
   transition: all 0.2s ease;
+  min-height: 40px !important;
 }
 
 .login-button:hover {
