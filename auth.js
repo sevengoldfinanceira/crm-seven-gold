@@ -206,7 +206,7 @@
       .from("company-documents")
       .download(`${user.id}/profile/avatar.jpg`);
 
-    const avatarUrl = avatar ? URL.createObjectURL(avatar) : (user?.user_metadata?.avatar_url || 'assets/avatar-default.jpg');
+    const avatarUrl = avatar ? URL.createObjectURL(avatar) : 'assets/avatar-default.jpg';
 
     document.querySelectorAll("[data-user-avatar]").forEach((element) => {
       element.textContent = "";
