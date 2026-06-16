@@ -19,9 +19,9 @@
     <meta name="apple-mobile-web-app-title" content="Seven Gold" />
     <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
-  <body class="crm-login-body">
+  <body class="login-page-body crm-login-body">
     <main class="login-shell">
-      <section class="login-copy" aria-labelledby="crm-login-title">
+      <section class="login-copy" aria-labelledby="crm-login-title" style="display: none;">
         <div class="brand-line">
           <div class="brand-mark" aria-hidden="true">SG</div>
           <div>
@@ -41,11 +41,32 @@
       </section>
 
       <section class="login-panel" aria-label="Formulario de login do CRM">
-        <form class="login-form" data-auth-form data-redirect="crm.html" data-button-text="Entrar no CRM">
-          <header>
-            <p class="eyebrow">CRM</p>
-            <h2>Login comercial</h2>
+        <form class="login-form" data-auth-form data-redirect="crm.html" data-button-text="Entrar ou criar conta">
+          <header class="login-header-layout">
+            <div class="header-circle-avatar" data-user-avatar data-header-avatar>SG</div>
+            <div class="header-text-details">
+              <span class="header-subtitle" data-header-subtitle>CRM Comercial</span>
+              <h2 class="header-title" data-user-name data-header-title>Seven Gold</h2>
+            </div>
           </header>
+
+          <p class="login-instruction-text" data-login-instruction>
+            Use seu e-mail e senha para acessar.
+          </p>
+
+          <!-- Active Session Card Wrapper (hidden by default, shown if session exists) -->
+          <div class="active-session-card-wrapper" style="display: none;">
+            <div class="saved-account-card">
+              <div class="profile-avatar saved-avatar" data-user-avatar></div>
+              <div class="saved-details">
+                <strong class="saved-name" data-user-name>Carregando...</strong>
+                <span class="saved-email" data-user-email>...</span>
+              </div>
+            </div>
+            <button type="button" class="use-other-account-btn" data-use-other-account>
+              Usar outra conta
+            </button>
+          </div>
 
           <button class="google-button" type="button" data-google-login data-redirect="crm.html">
             Entrar com Google
@@ -71,7 +92,9 @@
             <a href="#">Esqueci a senha</a>
           </div>
 
-          <button class="login-button" type="submit">Entrar no CRM</button>
+          <button class="login-button" type="submit">Entrar ou criar conta</button>
+
+          <a href="#" class="bottom-action-link" data-focus-login-toggle>Escolha a conta salva para entrar ou use outra conta.</a>
 
           <p class="login-note">
             No sistema real, esse login vai liberar somente as permissoes do perfil

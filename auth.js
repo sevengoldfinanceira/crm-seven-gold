@@ -223,6 +223,30 @@
       return false;
     }
 
+    // Set up "Usar outra conta" click handler and bottom link click handler
+    const useOtherBtn = form.querySelector("[data-use-other-account]");
+    if (useOtherBtn) {
+      useOtherBtn.addEventListener("click", () => {
+        const emailInput = form.querySelector("input[name='email']");
+        if (emailInput) {
+          emailInput.focus();
+          emailInput.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      });
+    }
+
+    const bottomLink = form.querySelector("[data-focus-login-toggle]");
+    if (bottomLink) {
+      bottomLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        const emailInput = form.querySelector("input[name='email']");
+        if (emailInput) {
+          emailInput.focus();
+          emailInput.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      });
+    }
+
     const { data } = await client.auth.getSession();
 
     if (!data.session) {
@@ -238,44 +262,47 @@
     if (googleBtn) googleBtn.style.display = "none";
     if (divider) divider.style.display = "none";
 
-    // Create the active session card
-    const card = document.createElement("div");
-    card.className = "active-session-card";
+    // Update Header with user profile details
+    const name = profile?.full_name || data.session.user.user_metadata?.full_name || data.session.user.email || "Usuário";
+    const firstName = name.trim().split(/\s+/)[0];
+    const initial = firstName.charAt(0).toUpperCase();
 
-    const target = getTarget(form);
-    const isCRM = target.includes("crm");
-    const buttonText = isCRM ? "Acessar o CRM" : "Acessar o Painel";
+    const headerAvatar = form.querySelector("[data-header-avatar]");
+    const headerSubtitle = form.querySelector("[data-header-subtitle]");
+    const headerTitle = form.querySelector("[data-header-title]");
 
-    card.innerHTML = `
-      <div class="session-user-info">
-        <div class="profile-avatar session-avatar" data-user-avatar></div>
-        <div class="session-details">
-          <span class="session-welcome">Você já está conectado:</span>
-          <strong class="session-name" data-user-name>Carregando...</strong>
-          <span class="session-email" data-user-email>...</span>
-        </div>
-      </div>
-      <button type="button" class="login-button continue-session-btn" data-continue-session>
-        ${buttonText}
-      </button>
-      <div class="login-divider login-divider-or"><span>ou entre com outra conta</span></div>
-    `;
-
-    // Insert the card below the header
-    const header = form.querySelector("header");
-    if (header) {
-      header.insertAdjacentElement("afterend", card);
-    } else {
-      form.insertBefore(card, form.firstChild);
+    if (headerAvatar) {
+      headerAvatar.textContent = initial;
+      headerAvatar.classList.add("is-logged-in");
+    }
+    if (headerSubtitle) {
+      headerSubtitle.textContent = "Sistema Pessoal";
+    }
+    if (headerTitle) {
+      headerTitle.textContent = firstName;
     }
 
-    // Set up navigation for the continue button
-    card.querySelector("[data-continue-session]").addEventListener("click", () => {
-      window.location.href = target;
-    });
+    // Update instructions text
+    const instruction = form.querySelector("[data-login-instruction]");
+    if (instruction) {
+      instruction.textContent = "Escolha uma conta salva ou use seu e-mail e senha para acessar.";
+    }
+
+    // Show the active session card wrapper
+    const wrapper = form.querySelector(".active-session-card-wrapper");
+    if (wrapper) {
+      wrapper.style.display = "grid";
+      
+      const savedCard = wrapper.querySelector(".saved-account-card");
+      if (savedCard) {
+        savedCard.addEventListener("click", () => {
+          window.location.href = getTarget(form);
+        });
+      }
+    }
 
     // Populate user details asynchronously
-    applyUserProfile(data.session, profile);
+    await applyUserProfile(data.session, profile);
 
     return true;
   };

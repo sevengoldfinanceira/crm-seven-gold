@@ -479,16 +479,22 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .login-panel {
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 480px;
+  background: rgba(21, 1, 38, 0.72) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.4) !important;
+  overflow: hidden;
 }
 
 .login-form {
   display: grid;
   gap: 18px;
-  padding: clamp(24px, 4vw, 36px);
+  padding: 40px 36px !important;
+  color: #ffffff !important;
 }
 
 .login-form header {
@@ -503,9 +509,11 @@ body[data-unified-admin] > .unified-admin-shell {
 .login-form label {
   display: grid;
   gap: 8px;
-  color: var(--muted);
-  font-size: 0.88rem;
-  font-weight: 700;
+  color: #e1e1e8 !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
 }
 
 .login-form input {
@@ -5262,104 +5270,417 @@ body[data-unified-admin] > .unified-admin-shell {
     padding: 10px;
   }
 
+  .owner-history-body .year-photo-gallery {
+    width: 92%;
+  }
+
+  .career-time-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .year-detail summary {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .documents-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .documents-actions,
+  .documents-actions button {
+    width: 100%;
+  }
+
+  .document-search,
+  .document-category-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .document-list a {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .team-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .team-actions,
+  .team-actions button {
+    width: 100%;
+  }
+
+  .job-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .job-card-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .permissions-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .permissions-actions,
+  .permissions-actions button {
+    width: 100%;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+    overflow-x: visible;
+  }
+
+  .finance-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .finance-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .commission-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .commission-actions,
+  .commission-actions button {
+    width: 100%;
+  }
+
+  .commission-reference article {
+    grid-template-columns: 1fr;
+  }
+
+  .reports-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .reports-actions,
+  .reports-actions button {
+    width: 100%;
+  }
+
+  .reports-actions input,
+  .reports-actions label {
+    width: 100%;
+  }
+
+  .reports-filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1000px) {
+  .history-dashboard-shell {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .history-sidebar {
+    padding-inline: 7px;
+  }
+
+  .history-sidebar-brand {
+    justify-content: center;
+  }
+
+  .history-sidebar-brand img {
+    width: 54px;
+    height: 54px;
+  }
+
+  .history-sidebar-brand span,
+  .history-sidebar-nav span,
+  .history-sidebar-profile > span:not(.profile-avatar) {
+    display: none;
+  }
+
+  .history-sidebar-nav a {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .history-sidebar-profile {
+    justify-content: center;
+  }
+
+  .history-dashboard-main .career-time-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .history-dashboard-shell {
+    display: block;
+  }
+
+  .history-sidebar {
+    position: static;
+    display: block;
+    height: auto;
+    padding: 8px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(216, 173, 61, 0.45);
+  }
+
+  .history-sidebar-brand,
+  .history-sidebar-profile {
+    display: none;
+  }
+
+  .history-sidebar-nav {
+    display: flex;
+    gap: 5px;
+    overflow-x: auto;
+  }
+
+  .history-sidebar-nav a {
+    flex: 0 0 42px;
+    min-height: 40px;
+  }
+
+  .history-sidebar-nav a.history-back {
+    margin: 0;
+  }
+
+  .history-dashboard-header {
+    min-height: 72px;
+    padding: 14px;
+  }
+
+  .history-dashboard-header h1 {
+    font-size: 1rem;
+  }
+
+  .history-dashboard-main .history-shell {
+    padding: 10px;
+  }
+
   .history-dashboard-main .career-time-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-/* Active Session Card styles on Login Pages */
-.active-session-card {
-  display: grid;
-  gap: 16px;
-  background: rgba(216, 173, 61, 0.05);
-  border: 1px solid rgba(216, 173, 61, 0.25);
-  border-radius: 12px;
-  padding: 18px;
-  margin-bottom: 8px;
-  animation: fadeInSession 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  transition: all 0.3s ease;
+/* Active Session Card and Premium Login Styles */
+.login-page-body {
+  background-position: center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
 }
 
-.active-session-card:hover {
-  background: rgba(216, 173, 61, 0.08);
-  border-color: rgba(216, 173, 61, 0.4);
+.index-login-body {
+  background-image: url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1800&q=80") !important;
 }
 
-.session-user-info {
+.crm-login-body {
+  background-image: url("https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1800&q=80") !important;
+}
+
+.login-header-layout {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
+  margin-bottom: 8px;
 }
 
-.session-avatar {
-  width: 52px !important;
-  height: 52px !important;
-  font-size: 1.2rem;
-  background-color: var(--brand-purple);
-  color: #fff;
-  border: 2px solid var(--gold);
-  box-shadow: 0 4px 12px rgba(21, 1, 38, 0.15);
+.header-circle-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.session-avatar.has-user-photo {
+.header-circle-avatar.has-user-photo {
   background-size: cover;
   background-position: center;
   border-color: var(--gold);
 }
 
-.session-details {
+.header-text-details {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+}
+
+.header-subtitle {
+  font-size: 0.8rem;
+  color: #b3b3c6;
+  font-weight: 500;
+}
+
+.header-title {
+  font-size: 1.6rem !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  margin: 0 !important;
+}
+
+.login-instruction-text {
+  font-size: 0.9rem;
+  color: #b3b3c6;
+  line-height: 1.4;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.active-session-card-wrapper {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+  animation: fadeInSession 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.saved-account-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 14px 18px;
+  transition: all 0.2s ease;
+}
+
+.saved-account-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.saved-avatar {
+  width: 44px !important;
+  height: 44px !important;
+  font-size: 1.1rem;
+  border: 1.5px solid var(--gold);
+  background-color: var(--brand-purple);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.saved-avatar.has-user-photo {
+  background-size: cover;
+  background-position: center;
+}
+
+.saved-details {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
 }
 
-.session-welcome {
-  font-size: 0.75rem;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 600;
-}
-
-.session-name {
-  font-size: 1.1rem;
-  color: var(--ink);
+.saved-name {
+  font-size: 0.95rem;
+  color: #ffffff;
   font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.session-email {
-  font-size: 0.82rem;
-  color: var(--muted);
+.saved-email {
+  font-size: 0.8rem;
+  color: #b3b3c6;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.continue-session-btn {
+.use-other-account-btn {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  background: transparent;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.use-other-account-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.login-form input:focus {
+  border-color: var(--gold) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(216, 173, 61, 0.2) !important;
+}
+
+.login-button {
   background: var(--gold) !important;
-  color: #17130a !important;
-  font-weight: 700 !important;
-  border: none !important;
-  transition: transform 0.2s ease, filter 0.2s ease !important;
+  color: #000000 !important;
+  border-radius: 10px !important;
+  font-weight: 800 !important;
+  font-size: 0.95rem !important;
+  transition: all 0.2s ease;
 }
 
-.continue-session-btn:hover {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
+.login-button:hover {
+  background: #e9bc47 !important;
+  box-shadow: 0 4px 15px rgba(216, 173, 61, 0.4);
 }
 
-.continue-session-btn:active {
-  transform: translateY(0);
+.login-row a {
+  color: var(--gold) !important;
 }
 
-.login-divider-or {
-  margin-top: 6px;
-  margin-bottom: 2px;
+.login-note {
+  color: #a5a5b4 !important;
+}
+
+.remember-option {
+  color: #e1e1e8 !important;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.remember-option input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  min-height: auto !important;
+  accent-color: var(--gold);
+  cursor: pointer;
+  margin: 0;
+}
+
+.bottom-action-link {
+  display: block;
+  text-align: center;
+  color: #4b89dc !important;
+  font-size: 0.85rem;
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: 12px;
+  transition: color 0.2s ease;
+}
+
+.bottom-action-link:hover {
+  color: #64a0f5 !important;
+  text-decoration: underline;
 }
 
 @keyframes fadeInSession {
