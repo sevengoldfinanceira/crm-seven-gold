@@ -212,11 +212,14 @@
             dragClone.style.top = (ev.clientY - 16) + "px";
             const el = document.elementFromPoint(ev.clientX, ev.clientY);
             const target = el ? el.closest(".menu-item") : null;
-            nav.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((cls) => cls.classList.remove("drag-over-top", "drag-over-bottom"));
+            const targetSec = el ? el.closest(".menu-section") : null;
+            nav.querySelectorAll(".drag-over-top, .drag-over-bottom, .drag-over-section").forEach((cls) => cls.classList.remove("drag-over-top", "drag-over-bottom", "drag-over-section"));
             if (target && target !== draggedItem) {
               const rect = target.getBoundingClientRect();
               const mid = rect.top + rect.height / 2;
               target.classList.add(ev.clientY < mid ? "drag-over-top" : "drag-over-bottom");
+            } else if (targetSec && !targetSec.contains(draggedItem)) {
+              targetSec.classList.add("drag-over-section");
             }
           }
         };
@@ -229,6 +232,7 @@
           if (isDragging && draggedItem) {
             const el = document.elementFromPoint(ev.clientX, ev.clientY);
             const target = el ? el.closest(".menu-item") : null;
+            const targetSec = el ? el.closest(".menu-section") : null;
             if (target && target !== draggedItem) {
               const rect = target.getBoundingClientRect();
               const mid = rect.top + rect.height / 2;
@@ -237,9 +241,11 @@
               } else {
                 target.parentNode.insertBefore(draggedItem, target.nextSibling);
               }
+            } else if (targetSec) {
+              targetSec.appendChild(draggedItem);
             }
             draggedItem.classList.remove("dragging");
-            nav.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((cls) => cls.classList.remove("drag-over-top", "drag-over-bottom"));
+            nav.querySelectorAll(".drag-over-top, .drag-over-bottom, .drag-over-section").forEach((cls) => cls.classList.remove("drag-over-top", "drag-over-bottom", "drag-over-section"));
             const order = [];
             nav.querySelectorAll(".menu-item").forEach((menuItem) => {
               const section = menuItem.closest(".menu-section");

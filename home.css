@@ -870,29 +870,42 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .sidebar-toggle {
-  width: 44px;
-  height: 44px;
+  position: fixed;
+  top: 18px;
+  right: 24px;
+  z-index: 1002;
+  width: 40px;
+  height: 40px;
   padding: 0;
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid rgba(212, 175, 55, 0.45);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(21, 1, 38, 0.85);
   color: #d4af37;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
   transition: all 0.25s ease;
 }
 
 .sidebar-toggle:hover {
-  background: rgba(212, 175, 55, 0.14);
-  box-shadow: 0 0 18px rgba(212, 175, 55, 0.25);
-  border-color: rgba(212, 175, 55, 0.7);
+  background: rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 18px rgba(212, 175, 55, 0.35);
+  border-color: rgba(212, 175, 55, 0.8);
 }
 
 .sidebar-toggle svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 768px) {
+  .sidebar-toggle {
+    display: none !important;
+  }
 }
 
 /* --- Navigation --- */
@@ -956,6 +969,9 @@ body[data-unified-admin] > .unified-admin-shell {
   font-weight: 600;
   text-decoration: none;
   transition: all 0.25s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
 }
 
 .menu-item svg,
@@ -1048,6 +1064,12 @@ body[data-unified-admin] > .unified-admin-shell {
   box-shadow: 0 2px 0 0 #d4af37;
   margin-bottom: -2px;
   padding-bottom: 2px;
+}
+
+.menu-section.drag-over-section {
+  background: rgba(212, 175, 55, 0.06);
+  border-radius: 12px;
+  outline: 1px dashed rgba(212, 175, 55, 0.4);
 }
 
 .profile-main {
@@ -1376,8 +1398,8 @@ body[data-unified-admin] > .unified-admin-shell {
 .company-dashboard-main {
   display: grid;
   align-content: start;
-  gap: 22px;
-  padding: 28px 32px 34px;
+  gap: 12px;
+  padding: 14px 20px;
 }
 
 .company-dashboard-header {
@@ -1393,21 +1415,21 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .company-dashboard-header h1 {
-  font-size: 1.42rem;
+  font-size: 1.25rem;
 }
 
 .company-dashboard-header p {
-  margin-top: 7px;
+  margin-top: 4px;
   color: #aaa5ad;
-  font-size: 0.82rem;
+  font-size: 0.76rem;
 }
 
 .company-profile-button {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 42px;
-  padding: 0 13px;
+  min-height: 34px;
+  padding: 0 10px;
   border: 1px solid #37373c;
   border-radius: 6px;
   background: #151618;
@@ -1418,21 +1440,22 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .company-profile-button svg {
-  width: 17px;
+  width: 15px;
+  height: 15px;
 }
 
 .company-stat-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  gap: 10px;
 }
 
 .company-stat-grid article {
   position: relative;
   display: grid;
-  gap: 8px;
-  min-height: 112px;
-  padding: 17px;
+  gap: 4px;
+  min-height: 80px;
+  padding: 10px 14px;
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--surface);
@@ -1442,18 +1465,18 @@ body[data-unified-admin] > .unified-admin-shell {
 
 .company-stat-grid span {
   color: var(--muted);
-  font-size: 0.64rem;
+  font-size: 0.6rem;
   font-weight: 800;
   text-transform: uppercase;
 }
 
 .company-stat-grid strong {
-  font-size: 1.42rem;
+  font-size: 1.2rem;
 }
 
 .company-stat-grid small {
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.65rem;
 }
 
 .company-stat-grid small.positive {
@@ -1462,25 +1485,25 @@ body[data-unified-admin] > .unified-admin-shell {
 
 .company-stat-grid svg {
   position: absolute;
-  top: 19px;
-  right: 17px;
-  width: 36px;
-  height: 36px;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
   color: #efc341;
 }
 
 .company-module-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .company-module-grid > a {
   display: grid;
-  grid-template-columns: 58px minmax(0, 1fr);
-  gap: 15px;
-  min-height: 166px;
-  padding: 18px;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 10px;
+  min-height: 108px;
+  padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--surface);
@@ -1496,8 +1519,8 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .company-module-grid > a > svg {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
   color: #efc341;
 }
 
@@ -1507,22 +1530,23 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .company-module-grid h2 {
-  font-size: 0.98rem;
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
 .company-module-grid p {
-  min-height: 48px;
-  margin-top: 8px;
+  min-height: 32px;
+  margin-top: 4px;
   color: var(--muted);
-  font-size: 0.7rem;
-  line-height: 1.55;
+  font-size: 0.65rem;
+  line-height: 1.35;
 }
 
 .company-module-grid strong {
   display: block;
-  margin-top: 16px;
+  margin-top: 6px;
   color: #efc341;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
 }
 
 .company-module-grid strong span {
