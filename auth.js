@@ -197,7 +197,11 @@
       element.textContent = user?.email || profile?.email || "";
     });
     document.querySelectorAll("[data-user-avatar]").forEach((element) => {
-      element.textContent = initial;
+      if (element.classList.contains("saved-avatar")) {
+        element.textContent = "";
+      } else {
+        element.textContent = initial;
+      }
       element.style.backgroundImage = "";
       element.classList.remove("has-user-photo");
     });
@@ -206,13 +210,14 @@
       .from("company-documents")
       .download(`${user.id}/profile/avatar.jpg`);
 
-    const avatarUrl = avatar ? URL.createObjectURL(avatar) : 'assets/avatar-default.jpg';
+    const avatarUrl = avatar ? URL.createObjectURL(avatar) : (user?.user_metadata?.avatar_url || null);
 
-    document.querySelectorAll("[data-user-avatar]").forEach((element) => {
-      element.textContent = "";
-      element.style.backgroundImage = `url("${avatarUrl}")`;
-      element.classList.add("has-user-photo");
-    });
+    if (avatarUrl) {
+      document.querySelectorAll("[data-user-avatar]").forEach((element) => {
+        element.style.backgroundImage = `url("${avatarUrl}")`;
+        element.classList.add("has-user-photo");
+      });
+    }
   };
 
   const redirectAuthenticatedLoginPage = async () => {
