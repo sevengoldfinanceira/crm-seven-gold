@@ -8306,19 +8306,19 @@ body[data-unified-admin]:not(.theme-dark) .unified-sidebar-profile small {
   color: rgba(209, 213, 219, 0.82) !important;
 }
 
-body[data-unified-admin]:not(.theme-dark) .company-dashboard-main,
-body[data-unified-admin]:not(.theme-dark) .history-dashboard-main,
-body[data-unified-admin]:not(.theme-dark) .documents-shell,
-body[data-unified-admin]:not(.theme-dark) .reports-shell,
-body[data-unified-admin]:not(.theme-dark) .permissions-shell,
-body[data-unified-admin]:not(.theme-dark) .finance-shell,
-body[data-unified-admin]:not(.theme-dark) .commission-shell,
-body[data-unified-admin]:not(.theme-dark) .team-shell,
-body[data-unified-admin]:not(.theme-dark) .org-shell,
-body[data-unified-admin]:not(.theme-dark) .history-shell,
-body[data-unified-admin]:not(.theme-dark) .profile-page-shell,
-body[data-unified-admin]:not(.theme-dark) .metas-shell,
-body[data-unified-admin]:not(.theme-dark) .marketing-shell {
+body[data-unified-admin] .company-dashboard-main,
+body[data-unified-admin] .history-dashboard-main,
+body[data-unified-admin] .documents-shell,
+body[data-unified-admin] .reports-shell,
+body[data-unified-admin] .permissions-shell,
+body[data-unified-admin] .finance-shell,
+body[data-unified-admin] .commission-shell,
+body[data-unified-admin] .team-shell,
+body[data-unified-admin] .org-shell,
+body[data-unified-admin] .history-shell,
+body[data-unified-admin] .profile-page-shell,
+body[data-unified-admin] .metas-shell,
+body[data-unified-admin] .marketing-shell {
   min-width: 0;
   min-height: calc(100vh - 44px);
   padding: clamp(22px, 3vw, 34px) !important;
