@@ -182,17 +182,88 @@
     const nav = sidebar.querySelector(".company-sidebar-nav");
     if (nav) {
       let draggedItem = null;
+      let dragClone = null;
+      let startY = 0;
+      let isDragging = false;
       let wasDragged = false;
 
-      nav.addEventListener("dragstart", (e) => {
+      nav.addEventListener("pointerdown", (e) => {
+        if (e.button !== 0) return;
         const item = e.target.closest(".menu-item");
         if (!item) return;
-        wasDragged = true;
+        startY = e.clientY;
+        isDragging = false;
+        wasDragged = false;
         draggedItem = item;
-        item.classList.add("dragging");
-        e.dataTransfer.effectAllowed = "move";
-        e.dataTransfer.setData("text/plain", item.getAttribute("href"));
-      });
+
+        const onPointerMove = (ev) => {
+          if (!draggedItem) return;
+          const dy = Math.abs(ev.clientY - startY);
+          if (!isDragging && dy > 5) {
+            isDragging = true;
+            draggedItem.classList.add("dragging");
+            dragClone = draggedItem.cloneNode(true);
+            dragClone.classList.add("drag-clone");
+            dragClone.style.cssText = "position:fixed;pointer-events:none;z-index:9999;opacity:.85;width:" + draggedItem.offsetWidth + "px;margin:0;padding:0";
+            document.body.appendChild(dragClone);
+          }
+          if (isDragging && dragClone) {
+            dragClone.style.left = (ev.clientX + 14) + "px";
+            dragClone.style.top = (ev.clientY - 16) + "px";
+            const el = document.elementFromPoint(ev.clientX, ev.clientY);
+            const target = el ? el.closest(".menu-item") : null;
+            nav.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((cls) => cls.classList.remove("drag-over-top", "drag-over-bottom"));
+            if (target && target !== draggedItem) {
+              const rect = target.getBoundingClientRect();
+              const mid = rect.top + rect.height / 2;
+              target.classList.add(ev.clientY < mid ? "drag-over-top" : "drag-over-bottom");
+            }
+          }
+        };
+
+        const onPointerUp = (ev) => {
+          document.removeEventListener("pointermove", onPointerMove);
+          document.removeEventListener("pointerup", onPointerUp);
+          document.removeEventListener("pointercancel", onPointerUp);
+
+          if (isDragging && draggedItem) {
+            const el = document.elementFromPoint(ev.clientX, ev.clientY);
+            const target = el ? el.closest(".menu-item") : null;
+            if (target && target !== draggedItem) {
+              const rect = target.getBoundingClientRect();
+              const mid = rect.top + rect.height / 2;
+              if (ev.clientY < mid) {
+                target.parentNode.insertBefore(draggedItem, target);
+              } else {
+                target.parentNode.insertBefore(draggedItem, target.nextSibling);
+              }
+            }
+            draggedItem.classList.remove("dragging");
+            nav.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((cls) => cls.classList.remove("drag-over-top", "drag-over-bottom"));
+            const order = [];
+            nav.querySelectorAll(".menu-item").forEach((menuItem) => {
+              const section = menuItem.closest(".menu-section");
+              const sectionTitle = section ? section.querySelector(".menu-section-title")?.textContent : "";
+              order.push({ href: menuItem.getAttribute("href"), section: sectionTitle });
+            });
+            localStorage.setItem("seven-gold-menu-order", JSON.stringify(order));
+            wasDragged = true;
+          } else if (draggedItem && !isDragging) {
+            wasDragged = false;
+          }
+
+          if (dragClone) {
+            dragClone.remove();
+            dragClone = null;
+          }
+          draggedItem = null;
+          isDragging = false;
+        };
+
+        document.addEventListener("pointermove", onPointerMove);
+        document.addEventListener("pointerup", onPointerUp);
+        document.addEventListener("pointercancel", onPointerUp);
+      }, { passive: false });
 
       nav.addEventListener("click", (e) => {
         if (wasDragged) {
@@ -203,71 +274,15 @@
         }
       }, true);
 
-      nav.addEventListener("dragend", () => {
-        setTimeout(() => { wasDragged = false; }, 50);
-        if (draggedItem) draggedItem.classList.remove("dragging");
-        draggedItem = null;
-        nav.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((el) => {
-          el.classList.remove("drag-over-top", "drag-over-bottom");
-        });
-      });
-
-      nav.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "move";
-        const target = e.target.closest(".menu-item");
-        nav.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((el) => {
-          el.classList.remove("drag-over-top", "drag-over-bottom");
-        });
-        if (!target || target === draggedItem) return;
-        const rect = target.getBoundingClientRect();
-        const mid = rect.top + rect.height / 2;
-        target.classList.add(e.clientY < mid ? "drag-over-top" : "drag-over-bottom");
-      });
-
-      nav.addEventListener("dragleave", (e) => {
-        const target = e.target.closest(".menu-item");
-        if (target) target.classList.remove("drag-over-top", "drag-over-bottom");
-      });
-
-      nav.addEventListener("drop", (e) => {
-        e.preventDefault();
-        const target = e.target.closest(".menu-item");
-        if (!target || target === draggedItem) return;
-        const rect = target.getBoundingClientRect();
-        const mid = rect.top + rect.height / 2;
-        if (e.clientY < mid) {
-          target.parentNode.insertBefore(draggedItem, target);
-        } else {
-          target.parentNode.insertBefore(draggedItem, target.nextSibling);
-        }
-        nav.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((el) => {
-          el.classList.remove("drag-over-top", "drag-over-bottom");
-        });
-        const order = [];
-        nav.querySelectorAll(".menu-item").forEach((item) => {
-          const section = item.closest(".menu-section");
-          const sectionTitle = section ? section.querySelector(".menu-section-title")?.textContent : "";
-          order.push({ href: item.getAttribute("href"), section: sectionTitle });
-        });
-        localStorage.setItem("seven-gold-menu-order", JSON.stringify(order));
-      });
-
-      nav.querySelectorAll(".menu-item").forEach((item) => {
-        item.setAttribute("draggable", "true");
-      });
-
       const savedOrder = JSON.parse(localStorage.getItem("seven-gold-menu-order") || "[]");
       if (savedOrder.length) {
         const allItems = {};
         nav.querySelectorAll(".menu-item").forEach((item) => {
           allItems[item.getAttribute("href")] = item;
         });
-        const orphanItems = [];
         savedOrder.forEach((entry) => {
           const item = allItems[entry.href];
           if (item) {
-            const section = nav.querySelector(`.menu-section:has(.menu-section-title)`);
             const sections = nav.querySelectorAll(".menu-section");
             sections.forEach((sec) => {
               const title = sec.querySelector(".menu-section-title");
@@ -275,8 +290,6 @@
                 sec.appendChild(item);
               }
             });
-          } else {
-            orphanItems.push(entry);
           }
         });
       }

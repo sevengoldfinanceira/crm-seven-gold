@@ -1027,6 +1027,17 @@ body[data-unified-admin] > .unified-admin-shell {
   pointer-events: none;
 }
 
+.drag-clone {
+  background: #1b002b;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 10px;
+  padding: 10px 16px;
+  color: #d4af37;
+  font-size: 14px;
+  font-family: inherit;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
 .menu-item.drag-over-top {
   box-shadow: 0 -2px 0 0 #d4af37;
   margin-top: -2px;
