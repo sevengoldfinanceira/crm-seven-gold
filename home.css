@@ -5266,3 +5266,109 @@ body[data-unified-admin] > .unified-admin-shell {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Active Session Card styles on Login Pages */
+.active-session-card {
+  display: grid;
+  gap: 16px;
+  background: rgba(216, 173, 61, 0.05);
+  border: 1px solid rgba(216, 173, 61, 0.25);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 8px;
+  animation: fadeInSession 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s ease;
+}
+
+.active-session-card:hover {
+  background: rgba(216, 173, 61, 0.08);
+  border-color: rgba(216, 173, 61, 0.4);
+}
+
+.session-user-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.session-avatar {
+  width: 52px !important;
+  height: 52px !important;
+  font-size: 1.2rem;
+  background-color: var(--brand-purple);
+  color: #fff;
+  border: 2px solid var(--gold);
+  box-shadow: 0 4px 12px rgba(21, 1, 38, 0.15);
+  flex-shrink: 0;
+}
+
+.session-avatar.has-user-photo {
+  background-size: cover;
+  background-position: center;
+  border-color: var(--gold);
+}
+
+.session-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.session-welcome {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.session-name {
+  font-size: 1.1rem;
+  color: var(--ink);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.session-email {
+  font-size: 0.82rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.continue-session-btn {
+  background: var(--gold) !important;
+  color: #17130a !important;
+  font-weight: 700 !important;
+  border: none !important;
+  transition: transform 0.2s ease, filter 0.2s ease !important;
+}
+
+.continue-session-btn:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.continue-session-btn:active {
+  transform: translateY(0);
+}
+
+.login-divider-or {
+  margin-top: 6px;
+  margin-bottom: 2px;
+}
+
+@keyframes fadeInSession {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

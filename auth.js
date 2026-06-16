@@ -230,7 +230,53 @@
     }
 
     await ensureProfile(data.session);
-    window.location.replace(getTarget(form));
+    const profile = await getProfile(data.session);
+
+    // Hide Google login button and its divider to simplify the form
+    const googleBtn = form.querySelector("[data-google-login]");
+    const divider = form.querySelector(".login-divider");
+    if (googleBtn) googleBtn.style.display = "none";
+    if (divider) divider.style.display = "none";
+
+    // Create the active session card
+    const card = document.createElement("div");
+    card.className = "active-session-card";
+
+    const target = getTarget(form);
+    const isCRM = target.includes("crm");
+    const buttonText = isCRM ? "Acessar o CRM" : "Acessar o Painel";
+
+    card.innerHTML = `
+      <div class="session-user-info">
+        <div class="profile-avatar session-avatar" data-user-avatar></div>
+        <div class="session-details">
+          <span class="session-welcome">Você já está conectado:</span>
+          <strong class="session-name" data-user-name>Carregando...</strong>
+          <span class="session-email" data-user-email>...</span>
+        </div>
+      </div>
+      <button type="button" class="login-button continue-session-btn" data-continue-session>
+        ${buttonText}
+      </button>
+      <div class="login-divider login-divider-or"><span>ou entre com outra conta</span></div>
+    `;
+
+    // Insert the card below the header
+    const header = form.querySelector("header");
+    if (header) {
+      header.insertAdjacentElement("afterend", card);
+    } else {
+      form.insertBefore(card, form.firstChild);
+    }
+
+    // Set up navigation for the continue button
+    card.querySelector("[data-continue-session]").addEventListener("click", () => {
+      window.location.href = target;
+    });
+
+    // Populate user details asynchronously
+    applyUserProfile(data.session, profile);
+
     return true;
   };
 
