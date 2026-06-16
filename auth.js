@@ -210,7 +210,8 @@
       .from("company-documents")
       .download(`${user.id}/profile/avatar.jpg`);
 
-    const avatarUrl = avatar ? URL.createObjectURL(avatar) : (user?.user_metadata?.avatar_url || null);
+    const googleAvatar = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+    const avatarUrl = avatar ? URL.createObjectURL(avatar) : (googleAvatar || null);
 
     if (avatarUrl) {
       document.querySelectorAll("[data-user-avatar]").forEach((element) => {
@@ -276,7 +277,6 @@
     const headerTitle = form.querySelector("[data-header-title]");
 
     if (headerAvatar) {
-      headerAvatar.textContent = initial;
       headerAvatar.classList.add("is-logged-in");
     }
     if (headerSubtitle) {
