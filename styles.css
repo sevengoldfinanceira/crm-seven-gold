@@ -199,6 +199,7 @@ select {
 }
 
 .user-box mark {
+  display: none !important;
   width: fit-content;
   margin-top: 4px;
   padding: 4px 9px;
@@ -390,6 +391,7 @@ select {
 }
 
 .user-box mark {
+  display: none !important;
   width: fit-content;
   margin-top: 4px;
   padding: 4px 9px;

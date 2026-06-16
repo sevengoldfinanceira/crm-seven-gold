@@ -59,9 +59,9 @@
       <nav class="company-sidebar-nav" aria-label="Navegação da empresa">
         ${categories
           .map(
-            (cat) => `
+            (cat, idx) => `
           <div class="menu-section">
-            <span class="menu-section-title">${cat.title}</span>
+            <span class="menu-section-title" data-category-index="${idx}">${cat.title}</span>
             ${cat.items
               .map(
                 ([href, icon, label, key, roles]) => `
@@ -89,6 +89,7 @@
         </div>
         <div class="profile-actions">
           <a href="perfil.html?area=empresa" class="profile-action" title="Configurações"><i data-lucide="settings"></i></a>
+          <button type="button" class="profile-action btn-edit-sidebar" title="Editar Menu"><i data-lucide="pencil"></i></button>
           <a href="painel.html" class="profile-action" title="Sair"><i data-lucide="log-out"></i></a>
         </div>
       </div>
@@ -137,6 +138,13 @@
       return;
     }
 
+    const savedCategoryTitles = JSON.parse(localStorage.getItem("seven-gold-category-titles") || "{}");
+    Object.entries(savedCategoryTitles).forEach(([idx, val]) => {
+      if (categories[idx]) {
+        categories[idx].title = val;
+      }
+    });
+
     const layout = findLayout();
     if (!layout) return;
 
@@ -180,13 +188,63 @@
 
     renderIcons();
 
+    const editBtn = sidebar.querySelector(".btn-edit-sidebar");
     const nav = sidebar.querySelector(".company-sidebar-nav");
+
+    if (editBtn && nav) {
+      editBtn.addEventListener("click", () => {
+        const isEditing = sidebar.classList.toggle("sidebar-editing");
+        editBtn.classList.toggle("active", isEditing);
+        editBtn.setAttribute("title", isEditing ? "Salvar Menu" : "Editar Menu");
+        
+        if (isEditing) {
+          editBtn.innerHTML = '<i data-lucide="check"></i>';
+        } else {
+          editBtn.innerHTML = '<i data-lucide="pencil"></i>';
+        }
+        renderIcons();
+
+        const titles = nav.querySelectorAll(".menu-section-title");
+        titles.forEach((title) => {
+          title.contentEditable = isEditing ? "true" : "false";
+          if (isEditing) {
+            title.setAttribute("title", "Clique para editar o nome da categoria");
+          } else {
+            title.removeAttribute("title");
+          }
+        });
+      });
+    }
+
     if (nav) {
       let draggedItem = null;
       let dragClone = null;
       let startY = 0;
       let isDragging = false;
       let wasDragged = false;
+
+      nav.addEventListener("blur", (e) => {
+        const title = e.target.closest(".menu-section-title");
+        if (!title) return;
+        const idx = title.dataset.categoryIndex;
+        const newTitle = title.textContent.trim() || "SEM NOME";
+        
+        const savedCategoryTitles = JSON.parse(localStorage.getItem("seven-gold-category-titles") || "{}");
+        savedCategoryTitles[idx] = newTitle;
+        localStorage.setItem("seven-gold-category-titles", JSON.stringify(savedCategoryTitles));
+        
+        if (categories[idx]) {
+          categories[idx].title = newTitle;
+        }
+      }, true);
+
+      nav.addEventListener("keydown", (e) => {
+        const title = e.target.closest(".menu-section-title");
+        if (title && e.key === "Enter") {
+          e.preventDefault();
+          title.blur();
+        }
+      });
 
       nav.addEventListener("dragstart", (e) => {
         if (e.target.closest(".menu-item")) {
@@ -195,6 +253,7 @@
       });
 
       nav.addEventListener("pointerdown", (e) => {
+        if (!sidebar.classList.contains("sidebar-editing")) return;
         if (e.button !== 0) return;
         const handle = e.target.closest(".menu-drag-handle");
         if (!handle) return;

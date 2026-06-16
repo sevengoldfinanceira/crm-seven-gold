@@ -1132,7 +1132,7 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .profile-role {
-  display: block;
+  display: none !important;
   margin-top: 2px;
   color: #f6d365;
   font-size: 0.7rem;
@@ -1230,6 +1230,7 @@ body[data-unified-admin] > .unified-admin-shell {
 }
 
 .company-sidebar-profile small {
+  display: none !important;
   margin-top: 2px;
   color: #a898b0;
   font-size: 0.62rem;
