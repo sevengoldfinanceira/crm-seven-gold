@@ -10509,3 +10509,77 @@ body.theme-dark .lead-source-bar {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   Estilo Premium de Botões de Ação do Canto Superior Direito
+   ============================================================ */
+
+.marketing-actions button,
+.documents-actions button,
+.commission-actions button,
+.reports-actions button,
+.permissions-actions button,
+.org-actions button,
+.team-actions button,
+#btn-new-campaign {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  min-height: 42px !important;
+  padding: 0 20px !important;
+  border-radius: 100px !important; /* Estilo cápsula (pill) super arredondado */
+  border: 1px solid rgba(244, 212, 111, 0.35) !important; /* Borda dourada suave */
+  background: #0f1115 !important; /* Fundo escuro idêntico em ambos os modos */
+  color: #f4d46f !important; /* Texto dourado de alto contraste */
+  font-family: inherit !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  box-shadow: 0 0 16px rgba(37, 99, 235, 0.28), 0 0 8px rgba(37, 99, 235, 0.15) !important; /* Glow azul premium */
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Estado de Hover */
+.marketing-actions button:hover,
+.documents-actions button:hover,
+.commission-actions button:hover,
+.reports-actions button:hover,
+.permissions-actions button:hover,
+.org-actions button:hover,
+.team-actions button:hover,
+#btn-new-campaign:hover {
+  transform: translateY(-1.5px) !important;
+  border-color: #f4d46f !important;
+  color: #ffffff !important; /* Muda para branco puro no hover */
+  box-shadow: 0 0 24px rgba(37, 99, 235, 0.45), 0 0 12px rgba(37, 99, 235, 0.2) !important; /* Glow azul mais intenso no hover */
+  filter: brightness(1.12) !important;
+}
+
+/* Ajuste do ícone Lucide caso exista dentro do botão */
+.marketing-actions button svg,
+.documents-actions button svg,
+.commission-actions button svg,
+.reports-actions button svg,
+.permissions-actions button svg,
+.org-actions button svg,
+.team-actions button svg,
+#btn-new-campaign svg {
+  color: #f4d46f !important;
+  stroke: #f4d46f !important;
+  width: 16px !important;
+  height: 16px !important;
+  transition: all 0.25s ease !important;
+}
+
+.marketing-actions button:hover svg,
+.documents-actions button:hover svg,
+.commission-actions button:hover svg,
+.reports-actions button:hover svg,
+.permissions-actions button:hover svg,
+.org-actions button:hover svg,
+.team-actions button:hover svg,
+#btn-new-campaign:hover svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
