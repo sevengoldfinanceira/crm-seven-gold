@@ -65,7 +65,8 @@
             ${cat.items
               .map(
                 ([href, icon, label, key, roles]) => `
-              <a href="${href}" class="menu-item${area === key ? " active" : ""}" title="${label}" ${roles ? `data-visible-roles="${roles}"` : ""}>
+              <a href="${href}" class="menu-item${area === key ? " active" : ""}" title="${label}" draggable="false" ${roles ? `data-visible-roles="${roles}"` : ""}>
+                <i data-lucide="grip-vertical" class="menu-drag-handle"></i>
                 <i data-lucide="${icon}"></i><span>${label}</span>
               </a>`
               )
@@ -187,9 +188,17 @@
       let isDragging = false;
       let wasDragged = false;
 
+      nav.addEventListener("dragstart", (e) => {
+        if (e.target.closest(".menu-item")) {
+          e.preventDefault();
+        }
+      });
+
       nav.addEventListener("pointerdown", (e) => {
         if (e.button !== 0) return;
-        const item = e.target.closest(".menu-item");
+        const handle = e.target.closest(".menu-drag-handle");
+        if (!handle) return;
+        const item = handle.closest(".menu-item");
         if (!item) return;
         startY = e.clientY;
         isDragging = false;
@@ -272,6 +281,11 @@
       }, { passive: false });
 
       nav.addEventListener("click", (e) => {
+        if (e.target.closest(".menu-drag-handle")) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
         if (wasDragged) {
           e.preventDefault();
           e.stopPropagation();

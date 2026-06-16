@@ -971,7 +971,30 @@ body[data-unified-admin] > .unified-admin-shell {
   transition: all 0.25s ease;
   user-select: none;
   -webkit-user-select: none;
+  touch-action: pan-y;
+}
+
+.menu-drag-handle {
+  width: 16px;
+  height: 16px;
+  color: rgba(212, 175, 55, 0.35);
+  cursor: grab;
   touch-action: none;
+  flex-shrink: 0;
+  margin-right: -4px;
+  transition: color 0.25s ease;
+}
+
+.menu-item:hover .menu-drag-handle {
+  color: rgba(212, 175, 55, 0.75);
+}
+
+.menu-drag-handle:active {
+  cursor: grabbing;
+}
+
+.sidebar-collapsed .menu-drag-handle {
+  display: none !important;
 }
 
 .menu-item svg,
