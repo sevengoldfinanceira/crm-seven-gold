@@ -183,6 +183,12 @@
     if (nav) {
       let draggedItem = null;
 
+      nav.addEventListener("mousedown", (e) => {
+        const item = e.target.closest(".menu-item");
+        if (!item) return;
+        e.preventDefault();
+      }, { passive: false });
+
       nav.addEventListener("dragstart", (e) => {
         const item = e.target.closest(".menu-item");
         if (!item) return;
@@ -190,6 +196,8 @@
         item.classList.add("dragging");
         e.dataTransfer.effectAllowed = "move";
         e.dataTransfer.setData("text/plain", "");
+        item.dataset.savedHref = item.getAttribute("href");
+        item.removeAttribute("href");
       });
 
       nav.addEventListener("dragover", (e) => {
@@ -228,13 +236,19 @@
         nav.querySelectorAll(".menu-item").forEach((item) => {
           const section = item.closest(".menu-section");
           const sectionTitle = section ? section.querySelector(".menu-section-title")?.textContent : "";
-          order.push({ href: item.getAttribute("href"), section: sectionTitle });
+          order.push({ href: item.getAttribute("href") || item.dataset.savedHref, section: sectionTitle });
         });
         localStorage.setItem("seven-gold-menu-order", JSON.stringify(order));
       });
 
       nav.addEventListener("dragend", () => {
-        if (draggedItem) draggedItem.classList.remove("dragging");
+        if (draggedItem) {
+          draggedItem.classList.remove("dragging");
+          if (draggedItem.dataset.savedHref) {
+            draggedItem.setAttribute("href", draggedItem.dataset.savedHref);
+            delete draggedItem.dataset.savedHref;
+          }
+        }
         draggedItem = null;
         nav.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((el) => {
           el.classList.remove("drag-over-top", "drag-over-bottom");
@@ -251,11 +265,9 @@
         nav.querySelectorAll(".menu-item").forEach((item) => {
           allItems[item.getAttribute("href")] = item;
         });
-        const orphanItems = [];
         savedOrder.forEach((entry) => {
           const item = allItems[entry.href];
           if (item) {
-            const section = nav.querySelector(`.menu-section:has(.menu-section-title)`);
             const sections = nav.querySelectorAll(".menu-section");
             sections.forEach((sec) => {
               const title = sec.querySelector(".menu-section-title");
@@ -263,8 +275,6 @@
                 sec.appendChild(item);
               }
             });
-          } else {
-            orphanItems.push(entry);
           }
         });
       }
