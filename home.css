@@ -8810,6 +8810,11 @@ body[data-unified-admin] .marketing-toolbar {
   box-shadow: none !important;
   padding: 0 !important;
   margin-bottom: 24px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 16px !important;
+  width: 100% !important;
 }
 
 body[data-unified-admin] .company-stat-grid article,
@@ -10525,6 +10530,7 @@ body.theme-dark .lead-source-bar {
 .permissions-actions button,
 .org-actions button,
 .team-actions button,
+.history-toolbar-link,
 #btn-new-campaign {
   display: inline-flex !important;
   align-items: center !important;
@@ -10542,6 +10548,7 @@ body.theme-dark .lead-source-bar {
   cursor: pointer !important;
   box-shadow: 0 0 16px rgba(37, 99, 235, 0.28), 0 0 8px rgba(37, 99, 235, 0.15) !important; /* Glow azul premium */
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  text-decoration: none !important;
 }
 
 /* Estado de Hover */
@@ -10552,6 +10559,7 @@ body.theme-dark .lead-source-bar {
 .permissions-actions button:hover,
 .org-actions button:hover,
 .team-actions button:hover,
+.history-toolbar-link:hover,
 #btn-new-campaign:hover {
   transform: translateY(-1.5px) !important;
   border-color: #f4d46f !important;
@@ -10568,6 +10576,7 @@ body.theme-dark .lead-source-bar {
 .permissions-actions button svg,
 .org-actions button svg,
 .team-actions button svg,
+.history-toolbar-link svg,
 #btn-new-campaign svg {
   color: #f4d46f !important;
   stroke: #f4d46f !important;
@@ -10583,6 +10592,7 @@ body.theme-dark .lead-source-bar {
 .permissions-actions button:hover svg,
 .org-actions button:hover svg,
 .team-actions button:hover svg,
+.history-toolbar-link:hover svg,
 #btn-new-campaign:hover svg {
   color: #ffffff !important;
   stroke: #ffffff !important;
