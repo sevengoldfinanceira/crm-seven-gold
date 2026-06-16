@@ -8818,11 +8818,19 @@ body[data-unified-admin] .sidebar-collapsed .profile-page-shell {
    Tela visual da pagina metas.html.
    ============================================================ */
 
+.metas-shell {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  min-height: 100vh;
+  padding: clamp(16px, 3vw, 30px);
+}
+
 .company-goals-section {
   scroll-margin-top: 28px;
   display: grid;
   gap: 18px;
-  margin-top: 28px;
+  margin-top: 0;
   padding-top: 4px;
 }
 
