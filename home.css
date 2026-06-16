@@ -8378,63 +8378,16 @@ body[data-unified-admin]:not(.theme-dark) .profile-dashboard-shell.unified-admin
 
 body[data-unified-admin]:not(.theme-dark) .company-sidebar,
 body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar {
-  position: sticky !important;
-  top: 20px !important;
-  width: 280px !important;
-  min-width: 280px !important;
-  max-width: 280px !important;
-  height: calc(100vh - 40px) !important;
-  padding: 20px 16px !important;
-  border: 0 !important;
-  border-radius: 30px !important;
   background:
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 34%),
-    linear-gradient(180deg, var(--company-sidebar-bg-soft), var(--company-sidebar-bg));
-  box-shadow: 0 28px 65px rgba(15, 23, 42, 0.28);
-  color: #f9fafb;
-}
-
-body[data-unified-admin]:not(.theme-dark) .sidebar-collapsed .company-sidebar,
-body[data-unified-admin]:not(.theme-dark) .sidebar-collapsed .unified-admin-sidebar {
-  padding: 20px 10px !important;
-  width: 92px !important;
-  min-width: 92px !important;
-  max-width: 92px !important;
-}
-
-body[data-unified-admin]:not(.theme-dark) .unified-sidebar-header {
-  padding-bottom: 16px;
-  margin-bottom: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-brand {
-  color: #f9fafb;
-}
-
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-brand img {
-  width: 58px;
-  height: 58px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.04);
-  object-fit: cover;
-}
-
-body[data-unified-admin]:not(.theme-dark) .brand-title,
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-brand strong {
-  color: #f4d46f !important;
-  letter-spacing: 0.04em;
-}
-
-body[data-unified-admin]:not(.theme-dark) .brand-subtitle,
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-brand small {
-  color: rgba(249, 250, 251, 0.78) !important;
+    linear-gradient(180deg, var(--company-sidebar-bg-soft), var(--company-sidebar-bg)) !important;
+  box-shadow: 0 28px 65px rgba(15, 23, 42, 0.28) !important;
+  color: #f9fafb !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .sidebar-toggle,
 body[data-unified-admin]:not(.theme-dark) .profile-action {
-  border: 1px solid rgba(212, 175, 55, 0.35) !important;
-  border-radius: 14px !important;
+  border-color: rgba(212, 175, 55, 0.35) !important;
   background: rgba(255, 255, 255, 0.06) !important;
   color: #d4af37 !important;
 }
@@ -8462,57 +8415,9 @@ body[data-unified-admin]:not(.theme-dark) .profile-action:hover i {
   stroke: #f5c84c !important;
 }
 
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav {
-  gap: 14px;
-  padding-right: 2px;
-}
-
-body[data-unified-admin]:not(.theme-dark) .menu-section-title {
-  color: rgba(209, 213, 219, 0.68) !important;
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-}
-
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav a,
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav .menu-item {
-  min-height: 48px;
-  border: 0 !important;
-  border-radius: 18px !important;
-  background: transparent !important;
-  color: #f3f4f6 !important;
-}
-
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav a svg,
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav .menu-item svg {
-  color: var(--company-sidebar-icon) !important;
-}
-
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav a:hover,
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav .menu-item:hover,
 body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav a.active,
 body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav .menu-item.active {
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: #ffffff !important;
-}
-
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav a.active,
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav .menu-item.active {
-  box-shadow: inset 3px 0 0 rgba(244, 212, 111, 0.85);
-}
-
-body[data-unified-admin]:not(.theme-dark) .sidebar-profile-card,
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-profile,
-body[data-unified-admin]:not(.theme-dark) .unified-sidebar-profile {
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 24px !important;
-  background: rgba(255, 255, 255, 0.08) !important;
-  box-shadow: none !important;
-}
-
-body[data-unified-admin]:not(.theme-dark) .profile-role,
-body[data-unified-admin]:not(.theme-dark) .company-sidebar-profile small,
-body[data-unified-admin]:not(.theme-dark) .unified-sidebar-profile small {
-  color: rgba(209, 213, 219, 0.82) !important;
+  box-shadow: inset 3px 0 0 rgba(244, 212, 111, 0.85) !important;
 }
 
 body[data-unified-admin] .company-dashboard-main,
@@ -9795,11 +9700,11 @@ body[data-unified-admin] .company-sidebar-brand {
 }
 
 body[data-unified-admin] .company-sidebar-brand img {
-  width: 42px !important;
-  height: 42px !important;
+  width: 48px !important;
+  height: 48px !important;
   border-radius: 14px !important;
   background: rgba(255, 255, 255, 0.05) !important;
-  object-fit: contain !important;
+  object-fit: cover !important;
   filter: none !important;
 }
 
@@ -9933,15 +9838,15 @@ body[data-unified-admin] .unified-admin-shell.sidebar-collapsed,
 body[data-unified-admin] .company-dashboard-shell.unified-admin-shell.sidebar-collapsed,
 body[data-unified-admin] .history-dashboard-shell.unified-admin-shell.sidebar-collapsed,
 body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell.sidebar-collapsed {
-  grid-template-columns: 88px minmax(0, 1fr) !important;
+  grid-template-columns: 92px minmax(0, 1fr) !important;
 }
 
 body[data-unified-admin] .sidebar-collapsed .company-sidebar,
 body[data-unified-admin] .sidebar-collapsed .unified-admin-sidebar {
-  width: 88px !important;
-  min-width: 88px !important;
-  max-width: 88px !important;
-  padding: 16px 10px !important;
+  width: 92px !important;
+  min-width: 92px !important;
+  max-width: 92px !important;
+  padding: 20px 10px !important;
 }
 
 body[data-unified-admin] .sidebar-collapsed .company-sidebar-brand,
@@ -9951,8 +9856,8 @@ body[data-unified-admin] .sidebar-collapsed .profile-main {
 }
 
 body[data-unified-admin] .sidebar-collapsed .company-sidebar-brand img {
-  width: 44px !important;
-  height: 44px !important;
+  width: 50px !important;
+  height: 50px !important;
 }
 
 body[data-unified-admin] .sidebar-collapsed .brand-text,
