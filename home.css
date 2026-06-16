@@ -480,14 +480,15 @@ body[data-unified-admin] > .unified-admin-shell {
 
 .login-panel {
   width: 100%;
-  max-width: 480px;
-  background: rgba(21, 1, 38, 0.72) !important;
+  max-width: 400px !important;
+  background: rgba(18, 18, 24, 0.65) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 20px !important;
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5) !important;
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .login-form {
@@ -5692,4 +5693,16 @@ body[data-unified-admin] > .unified-admin-shell {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Video Background */
+.video-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -10;
+  pointer-events: none;
 }
