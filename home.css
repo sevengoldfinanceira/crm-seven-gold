@@ -8068,3 +8068,330 @@ mark {
   font-weight: 600 !important;
 }
 
+/* ============================================================
+   Empresa SaaS Light Layout
+   Escopo: areas administrativas com barra lateral unificada.
+   ============================================================ */
+
+body[data-unified-admin]:not(.theme-dark) {
+  --company-page-bg: #e9ecef;
+  --company-sidebar-bg: #0b0d10;
+  --company-sidebar-bg-soft: #111318;
+  --company-main-bg: #ffffff;
+  --company-card-bg: #ffffff;
+  --company-text: #111827;
+  --company-muted: #6b7280;
+  --company-sidebar-icon: #d1d5db;
+  --company-line: rgba(17, 24, 39, 0.08);
+  --company-shadow-panel: 0 24px 70px rgba(15, 23, 42, 0.13);
+  --company-shadow-card: 0 16px 38px rgba(15, 23, 42, 0.08);
+  --company-shadow-card-hover: 0 22px 52px rgba(15, 23, 42, 0.12);
+  margin: 0;
+  background: var(--company-page-bg) !important;
+  color: var(--company-text) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .unified-admin-shell,
+body[data-unified-admin]:not(.theme-dark) .company-dashboard-shell.unified-admin-shell,
+body[data-unified-admin]:not(.theme-dark) .history-dashboard-shell.unified-admin-shell,
+body[data-unified-admin]:not(.theme-dark) .profile-dashboard-shell.unified-admin-shell {
+  min-height: 100vh;
+  padding: 22px;
+  gap: 22px;
+  grid-template-columns: 292px minmax(0, 1fr) !important;
+  background: var(--company-page-bg) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .unified-admin-shell.sidebar-collapsed,
+body[data-unified-admin]:not(.theme-dark) .company-dashboard-shell.unified-admin-shell.sidebar-collapsed,
+body[data-unified-admin]:not(.theme-dark) .history-dashboard-shell.unified-admin-shell.sidebar-collapsed,
+body[data-unified-admin]:not(.theme-dark) .profile-dashboard-shell.unified-admin-shell.sidebar-collapsed {
+  grid-template-columns: 96px minmax(0, 1fr) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-sidebar,
+body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar {
+  position: sticky;
+  top: 22px;
+  width: auto !important;
+  height: calc(100vh - 44px);
+  padding: 20px 16px;
+  border: 0 !important;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 34%),
+    linear-gradient(180deg, var(--company-sidebar-bg-soft), var(--company-sidebar-bg));
+  box-shadow: 0 28px 65px rgba(15, 23, 42, 0.28);
+  color: #f9fafb;
+}
+
+body[data-unified-admin]:not(.theme-dark) .sidebar-collapsed .company-sidebar,
+body[data-unified-admin]:not(.theme-dark) .sidebar-collapsed .unified-admin-sidebar {
+  padding-inline: 12px;
+}
+
+body[data-unified-admin]:not(.theme-dark) .unified-sidebar-header {
+  padding-bottom: 16px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-brand {
+  color: #f9fafb;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-brand img {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  object-fit: cover;
+}
+
+body[data-unified-admin]:not(.theme-dark) .brand-title,
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-brand strong {
+  color: #f4d46f !important;
+  letter-spacing: 0.04em;
+}
+
+body[data-unified-admin]:not(.theme-dark) .brand-subtitle,
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-brand small {
+  color: rgba(249, 250, 251, 0.78) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .sidebar-toggle,
+body[data-unified-admin]:not(.theme-dark) .profile-action {
+  border: 0 !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--company-sidebar-icon) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .sidebar-toggle:hover,
+body[data-unified-admin]:not(.theme-dark) .profile-action:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav {
+  gap: 14px;
+  padding-right: 2px;
+}
+
+body[data-unified-admin]:not(.theme-dark) .menu-section-title {
+  color: rgba(209, 213, 219, 0.68) !important;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav a,
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav .menu-item {
+  min-height: 48px;
+  border: 0 !important;
+  border-radius: 18px !important;
+  background: transparent !important;
+  color: #f3f4f6 !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav a svg,
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav .menu-item svg {
+  color: var(--company-sidebar-icon) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav a:hover,
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav .menu-item:hover,
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav a.active,
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav .menu-item.active {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav a.active,
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-nav .menu-item.active {
+  box-shadow: inset 3px 0 0 rgba(244, 212, 111, 0.85);
+}
+
+body[data-unified-admin]:not(.theme-dark) .sidebar-profile-card,
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-profile,
+body[data-unified-admin]:not(.theme-dark) .unified-sidebar-profile {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 24px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .profile-role,
+body[data-unified-admin]:not(.theme-dark) .company-sidebar-profile small,
+body[data-unified-admin]:not(.theme-dark) .unified-sidebar-profile small {
+  color: rgba(209, 213, 219, 0.82) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-dashboard-main,
+body[data-unified-admin]:not(.theme-dark) .history-dashboard-main,
+body[data-unified-admin]:not(.theme-dark) .documents-shell,
+body[data-unified-admin]:not(.theme-dark) .reports-shell,
+body[data-unified-admin]:not(.theme-dark) .permissions-shell,
+body[data-unified-admin]:not(.theme-dark) .finance-shell,
+body[data-unified-admin]:not(.theme-dark) .commission-shell,
+body[data-unified-admin]:not(.theme-dark) .team-shell,
+body[data-unified-admin]:not(.theme-dark) .org-shell,
+body[data-unified-admin]:not(.theme-dark) .history-shell,
+body[data-unified-admin]:not(.theme-dark) .profile-page-shell {
+  min-width: 0;
+  min-height: calc(100vh - 44px);
+  padding: clamp(22px, 3vw, 34px) !important;
+  border-radius: 32px;
+  background: var(--company-main-bg) !important;
+  color: var(--company-text) !important;
+  box-shadow: var(--company-shadow-panel);
+}
+
+body[data-unified-admin]:not(.theme-dark) .history-dashboard-main {
+  display: grid;
+  align-content: start;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-dashboard-header,
+body[data-unified-admin]:not(.theme-dark) .history-dashboard-header,
+body[data-unified-admin]:not(.theme-dark) .documents-toolbar,
+body[data-unified-admin]:not(.theme-dark) .reports-toolbar,
+body[data-unified-admin]:not(.theme-dark) .permissions-toolbar,
+body[data-unified-admin]:not(.theme-dark) .finance-toolbar,
+body[data-unified-admin]:not(.theme-dark) .commission-toolbar,
+body[data-unified-admin]:not(.theme-dark) .team-toolbar,
+body[data-unified-admin]:not(.theme-dark) .org-toolbar,
+body[data-unified-admin]:not(.theme-dark) .history-toolbar,
+body[data-unified-admin]:not(.theme-dark) .company-topbar {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--company-text) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) h1,
+body[data-unified-admin]:not(.theme-dark) h2,
+body[data-unified-admin]:not(.theme-dark) strong {
+  color: var(--company-text);
+}
+
+body[data-unified-admin]:not(.theme-dark) p,
+body[data-unified-admin]:not(.theme-dark) small,
+body[data-unified-admin]:not(.theme-dark) .company-dashboard-header p,
+body[data-unified-admin]:not(.theme-dark) .history-dashboard-header p,
+body[data-unified-admin]:not(.theme-dark) .company-module-grid p,
+body[data-unified-admin]:not(.theme-dark) .documents-toolbar span,
+body[data-unified-admin]:not(.theme-dark) .reports-toolbar span,
+body[data-unified-admin]:not(.theme-dark) .permissions-toolbar span,
+body[data-unified-admin]:not(.theme-dark) .finance-toolbar span,
+body[data-unified-admin]:not(.theme-dark) .commission-toolbar span,
+body[data-unified-admin]:not(.theme-dark) .team-toolbar span,
+body[data-unified-admin]:not(.theme-dark) .org-toolbar span,
+body[data-unified-admin]:not(.theme-dark) .history-toolbar span {
+  color: var(--company-muted) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-stat-grid article,
+body[data-unified-admin]:not(.theme-dark) .company-module-grid > a,
+body[data-unified-admin]:not(.theme-dark) .reports-summary article,
+body[data-unified-admin]:not(.theme-dark) .finance-summary article,
+body[data-unified-admin]:not(.theme-dark) .commission-card,
+body[data-unified-admin]:not(.theme-dark) .document-category,
+body[data-unified-admin]:not(.theme-dark) .document-main,
+body[data-unified-admin]:not(.theme-dark) .document-list a,
+body[data-unified-admin]:not(.theme-dark) .permission-table-wrap,
+body[data-unified-admin]:not(.theme-dark) .user-access-panel,
+body[data-unified-admin]:not(.theme-dark) .user-access-row,
+body[data-unified-admin]:not(.theme-dark) .team-rank,
+body[data-unified-admin]:not(.theme-dark) .role-section,
+body[data-unified-admin]:not(.theme-dark) .org-sector,
+body[data-unified-admin]:not(.theme-dark) .job-card,
+body[data-unified-admin]:not(.theme-dark) .owner-year-card,
+body[data-unified-admin]:not(.theme-dark) .year-detail,
+body[data-unified-admin]:not(.theme-dark) .year-editor-panel,
+body[data-unified-admin]:not(.theme-dark) .time-editor-panel,
+body[data-unified-admin]:not(.theme-dark) .profile-editor-card,
+body[data-unified-admin]:not(.theme-dark) .sector-sidebar,
+body[data-unified-admin]:not(.theme-dark) .sale-form {
+  border: 1px solid var(--company-line) !important;
+  border-radius: 24px !important;
+  background: var(--company-card-bg) !important;
+  color: var(--company-text) !important;
+  box-shadow: var(--company-shadow-card) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-stat-grid article:hover,
+body[data-unified-admin]:not(.theme-dark) .company-module-grid > a:hover,
+body[data-unified-admin]:not(.theme-dark) .document-list a:hover,
+body[data-unified-admin]:not(.theme-dark) .job-card:hover,
+body[data-unified-admin]:not(.theme-dark) .owner-year-card:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(17, 24, 39, 0.12) !important;
+  box-shadow: var(--company-shadow-card-hover) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-stat-grid article > svg,
+body[data-unified-admin]:not(.theme-dark) .company-stat-grid article > i,
+body[data-unified-admin]:not(.theme-dark) .company-module-grid > a > svg,
+body[data-unified-admin]:not(.theme-dark) .company-module-grid > a > i,
+body[data-unified-admin]:not(.theme-dark) .category-icon,
+body[data-unified-admin]:not(.theme-dark) .sector-icon {
+  border: 0 !important;
+  border-radius: 18px !important;
+  background: #f3f4f6 !important;
+  color: #4f46e5 !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-stat-grid article:nth-child(2) > svg,
+body[data-unified-admin]:not(.theme-dark) .company-module-grid > a:nth-child(2) > svg {
+  color: #16a34a !important;
+  background: #dcfce7 !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-stat-grid article:nth-child(3) > svg,
+body[data-unified-admin]:not(.theme-dark) .company-module-grid > a:nth-child(3) > svg {
+  color: #ea580c !important;
+  background: #ffedd5 !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-stat-grid article:nth-child(4) > svg,
+body[data-unified-admin]:not(.theme-dark) .company-module-grid > a:nth-child(4) > svg {
+  color: #2563eb !important;
+  background: #dbeafe !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) input,
+body[data-unified-admin]:not(.theme-dark) select,
+body[data-unified-admin]:not(.theme-dark) textarea,
+body[data-unified-admin]:not(.theme-dark) button,
+body[data-unified-admin]:not(.theme-dark) .company-profile-button,
+body[data-unified-admin]:not(.theme-dark) .back-link,
+body[data-unified-admin]:not(.theme-dark) .owner-pill {
+  border-radius: 16px !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .company-profile-button,
+body[data-unified-admin]:not(.theme-dark) .back-link,
+body[data-unified-admin]:not(.theme-dark) .owner-pill {
+  border: 1px solid var(--company-line) !important;
+  background: #ffffff !important;
+  color: var(--company-text) !important;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.07) !important;
+}
+
+@media (max-width: 900px) {
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-shell,
+  body[data-unified-admin]:not(.theme-dark) .company-dashboard-shell.unified-admin-shell,
+  body[data-unified-admin]:not(.theme-dark) .history-dashboard-shell.unified-admin-shell,
+  body[data-unified-admin]:not(.theme-dark) .profile-dashboard-shell.unified-admin-shell {
+    padding: 12px;
+    gap: 12px;
+    grid-template-columns: 1fr !important;
+  }
+
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar {
+    top: 12px;
+    height: calc(100vh - 24px);
+  }
+}
