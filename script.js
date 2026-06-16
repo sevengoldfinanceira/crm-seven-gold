@@ -23,6 +23,11 @@ menuButton?.addEventListener("click", () => {
   document.body.classList.toggle("menu-open");
 });
 
+const overlay = document.querySelector(".sidebar-overlay");
+overlay?.addEventListener("click", () => {
+  document.body.classList.remove("menu-open");
+});
+
 navItems.forEach((item) => {
   item.addEventListener("click", () => {
     navItems.forEach((navItem) => navItem.classList.remove("active"));

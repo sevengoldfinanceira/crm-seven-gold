@@ -1492,22 +1492,64 @@ body[data-unified-admin] > .unified-admin-shell {
   opacity: 1;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .sidebar-hamburger {
     display: flex;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .company-sidebar {
-    position: fixed;
-    left: -300px;
-    top: 0;
-    z-index: 1000;
-    width: 280px;
-    transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  body.menu-open .sidebar-hamburger {
+    left: 296px; /* Moves the toggle button to the right of the open drawer */
   }
 
-  .company-sidebar.drawer-open {
-    left: 0;
+  .company-sidebar,
+  .unified-admin-sidebar {
+    position: fixed !important;
+    left: -300px !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    z-index: 1000 !important;
+    width: 280px !important;
+    padding: 24px 18px !important;
+    transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .company-sidebar.drawer-open,
+  .unified-admin-sidebar.drawer-open {
+    left: 0 !important;
+  }
+
+  /* Force expanded content inside sidebar drawer on mobile/tablet */
+  .sidebar-collapsed .unified-admin-sidebar {
+    width: 280px !important;
+    padding: 24px 18px !important;
+  }
+
+  .sidebar-collapsed .brand-text,
+  .sidebar-collapsed .menu-section-title,
+  .sidebar-collapsed .menu-item span,
+  .sidebar-collapsed .profile-info,
+  .sidebar-collapsed .profile-actions {
+    display: block !important;
+  }
+
+  .sidebar-collapsed .menu-item {
+    justify-content: flex-start !important;
+    padding: 0 14px !important;
+    height: 50px !important;
+  }
+
+  .sidebar-collapsed .sidebar-profile-card {
+    padding: 18px !important;
+    display: block !important;
+  }
+
+  .sidebar-collapsed .profile-main {
+    justify-content: flex-start !important;
+  }
+
+  .sidebar-collapsed .company-sidebar-brand {
+    justify-content: flex-start !important;
   }
 
   body[data-unified-admin] > main,
@@ -5037,21 +5079,7 @@ body[data-unified-admin] > .unified-admin-shell {
 
 @media (max-width: 820px) {
   .profile-dashboard-shell {
-    grid-template-columns: 76px minmax(0, 1fr);
-  }
-
-  .profile-dashboard-shell .company-sidebar,
-  .profile-dashboard-shell .sidebar {
-    width: 76px;
-    padding-inline: 8px;
-  }
-
-  .profile-dashboard-shell .company-sidebar-brand span,
-  .profile-dashboard-shell .company-sidebar-nav span,
-  .profile-dashboard-shell .profile-sidebar-user > span:last-child,
-  .profile-dashboard-shell .profile-crm-brand > span:last-child,
-  .profile-dashboard-shell .nav-item:not(.active) {
-    display: none;
+    grid-template-columns: 1fr !important;
   }
 
   .profile-page-shell {
@@ -5285,41 +5313,9 @@ body[data-unified-admin] > .unified-admin-shell {
 
 @media (max-width: 900px) {
   .company-dashboard-shell {
-    grid-template-columns: 76px minmax(0, 1fr);
+    grid-template-columns: 1fr !important;
   }
 
-  .company-sidebar {
-    padding-inline: 8px;
-  }
-
-  .company-sidebar-brand {
-    justify-content: center;
-    padding: 0;
-  }
-
-  .company-sidebar-brand img {
-    width: 54px;
-    height: 54px;
-  }
-
-  .company-sidebar-brand span,
-  .company-sidebar-nav span,
-  .company-sidebar-profile > span:not(.profile-avatar),
-  .company-sidebar-profile a {
-    display: none;
-  }
-
-  .company-sidebar-nav a {
-    justify-content: center;
-    padding: 0;
-  }
-
-  .company-sidebar-profile {
-    display: grid;
-    grid-template-columns: 1fr;
-    justify-items: center;
-    padding: 8px;
-  }
 
   .company-dashboard-main {
     padding: 22px;

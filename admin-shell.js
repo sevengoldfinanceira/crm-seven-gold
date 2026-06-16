@@ -11,7 +11,7 @@
       items: [
         ["empresa.html", "house", "Painel", "empresa", ""],
         ["organograma.html", "network", "Organograma", "organograma", "dono,administrador,rh"],
-        ["#metas", "target", "Metas", "metas", "dono,administrador,coordenador"],
+        ["metas.html", "target", "Metas", "metas", "dono,administrador,coordenador"],
       ],
     },
     {
@@ -175,15 +175,16 @@
     const overlay = document.createElement("div");
     overlay.className = "sidebar-overlay";
     document.body.appendChild(overlay);
-
     hamburger.addEventListener("click", () => {
       sidebar.classList.toggle("drawer-open");
       overlay.classList.toggle("active");
+      document.body.classList.toggle("menu-open");
     });
 
     overlay.addEventListener("click", () => {
       sidebar.classList.remove("drawer-open");
       overlay.classList.remove("active");
+      document.body.classList.remove("menu-open");
     });
 
     renderIcons();
