@@ -1,10 +1,11 @@
-const CACHE_VERSION = "seven-gold-v12";
+const CACHE_VERSION = "seven-gold-v13";
 const APP_SHELL = [
   "/",
   "/index.html",
   "/painel.html",
   "/crm.html",
   "/empresa.html",
+  "/metas.html",
   "/perfil.html",
   "/home.css",
   "/styles.css",

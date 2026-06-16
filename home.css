@@ -8815,7 +8815,7 @@ body[data-unified-admin] .sidebar-collapsed .profile-page-shell {
 
 /* ============================================================
    Metas da Empresa
-   Sessao visual conectada ao link existente #metas.
+   Tela visual da pagina metas.html.
    ============================================================ */
 
 .company-goals-section {
@@ -8843,6 +8843,7 @@ body[data-unified-admin] .sidebar-collapsed .profile-page-shell {
   text-transform: uppercase;
 }
 
+.goals-header h1,
 .goals-header h2 {
   margin: 0;
   color: #111827;
@@ -9010,9 +9011,13 @@ body[data-unified-admin] .sidebar-collapsed .profile-page-shell {
   margin-bottom: 18px;
 }
 
+.goals-chart-card h2,
 .goals-chart-card h3,
+.goals-donut-card h2,
 .goals-donut-card h3,
+.goals-table-card h2,
 .goals-table-card h3,
+.goals-active-grid h2,
 .goals-active-grid h3 {
   margin: 0;
   color: #111827;
@@ -9175,6 +9180,7 @@ body[data-unified-admin] .sidebar-collapsed .profile-page-shell {
   gap: 14px;
 }
 
+.goals-active-grid h2,
 .goals-active-grid h3 {
   grid-column: 1 / -1;
 }
@@ -9198,7 +9204,9 @@ body[data-unified-admin] .sidebar-collapsed .profile-page-shell {
   font-size: 0.9rem;
 }
 
+body.theme-dark .company-goals-section .goals-header h1,
 body.theme-dark .company-goals-section .goals-header h2,
+body.theme-dark .company-goals-section h2,
 body.theme-dark .company-goals-section h3,
 body.theme-dark .goal-stat-card strong,
 body.theme-dark .goals-donut strong,
@@ -9275,5 +9283,110 @@ body.theme-dark .goals-table-card td {
   .goals-bar-chart {
     gap: 10px;
     min-height: 180px;
+  }
+}
+
+/* Mobile drawer final: a sidebar sai da tela e deixa apenas o botão de menu. */
+@media (max-width: 900px) {
+  body[data-unified-admin] .sidebar-hamburger {
+    display: flex !important;
+    position: fixed !important;
+    top: 14px !important;
+    left: 14px !important;
+    z-index: 1100 !important;
+  }
+
+  body[data-unified-admin] .sidebar-overlay {
+    z-index: 1040 !important;
+  }
+
+  body[data-unified-admin] .unified-admin-shell,
+  body[data-unified-admin] .company-dashboard-shell.unified-admin-shell,
+  body[data-unified-admin] .history-dashboard-shell.unified-admin-shell,
+  body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+    padding: 12px !important;
+  }
+
+  body[data-unified-admin] .company-sidebar,
+  body[data-unified-admin] .unified-admin-sidebar,
+  body[data-unified-admin] .sidebar-collapsed .company-sidebar,
+  body[data-unified-admin] .sidebar-collapsed .unified-admin-sidebar {
+    position: fixed !important;
+    top: 12px !important;
+    left: -320px !important;
+    bottom: auto !important;
+    z-index: 1050 !important;
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
+    height: calc(100vh - 24px) !important;
+    min-height: calc(100vh - 24px) !important;
+    max-height: calc(100vh - 24px) !important;
+    margin: 0 !important;
+    padding: 22px 16px !important;
+    overflow-y: auto !important;
+    border-radius: 28px !important;
+    transition: left 0.28s ease !important;
+  }
+
+  body[data-unified-admin] .company-sidebar.drawer-open,
+  body[data-unified-admin] .unified-admin-sidebar.drawer-open,
+  body[data-unified-admin] .sidebar-collapsed .company-sidebar.drawer-open,
+  body[data-unified-admin] .sidebar-collapsed .unified-admin-sidebar.drawer-open {
+    left: 12px !important;
+  }
+
+  body[data-unified-admin] .sidebar-collapsed .brand-text,
+  body[data-unified-admin] .sidebar-collapsed .menu-section-title,
+  body[data-unified-admin] .sidebar-collapsed .menu-item span,
+  body[data-unified-admin] .sidebar-collapsed .profile-info,
+  body[data-unified-admin] .sidebar-collapsed .profile-actions {
+    display: block !important;
+  }
+
+  body[data-unified-admin] .sidebar-collapsed .company-sidebar-brand,
+  body[data-unified-admin] .sidebar-collapsed .profile-main,
+  body[data-unified-admin] .sidebar-collapsed .company-sidebar-nav .menu-item,
+  body[data-unified-admin] .sidebar-collapsed .company-sidebar-nav a {
+    justify-content: flex-start !important;
+  }
+
+  body[data-unified-admin] .sidebar-collapsed .company-sidebar-nav .menu-item,
+  body[data-unified-admin] .sidebar-collapsed .company-sidebar-nav a {
+    width: auto !important;
+    min-width: 0 !important;
+    height: 50px !important;
+    padding: 0 14px !important;
+    margin-inline: 0 !important;
+  }
+
+  body[data-unified-admin] .sidebar-collapsed .sidebar-profile-card,
+  body[data-unified-admin] .sidebar-collapsed .company-sidebar-profile,
+  body[data-unified-admin] .sidebar-collapsed .unified-sidebar-profile {
+    width: auto !important;
+    margin-inline: 0 !important;
+    padding: 16px !important;
+  }
+
+  body[data-unified-admin] .unified-admin-shell > main,
+  body[data-unified-admin] .unified-admin-shell > section,
+  body[data-unified-admin] .company-dashboard-main,
+  body[data-unified-admin] .history-dashboard-main,
+  body[data-unified-admin] .documents-shell,
+  body[data-unified-admin] .reports-shell,
+  body[data-unified-admin] .permissions-shell,
+  body[data-unified-admin] .finance-shell,
+  body[data-unified-admin] .commission-shell,
+  body[data-unified-admin] .team-shell,
+  body[data-unified-admin] .org-shell,
+  body[data-unified-admin] .history-shell,
+  body[data-unified-admin] .profile-page-shell,
+  body[data-unified-admin] .metas-shell {
+    grid-column: 1 !important;
+    width: 100% !important;
+    min-height: calc(100vh - 24px) !important;
+    padding-top: 62px !important;
   }
 }
