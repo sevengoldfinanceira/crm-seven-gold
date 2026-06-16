@@ -799,7 +799,7 @@ body[data-unified-admin] > .unified-admin-shell {
   flex-direction: column;
   gap: 0;
   width: 280px;
-  min-height: 100vh;
+  height: 100vh;
   padding: 24px 18px;
   border-right: 1px solid rgba(212, 175, 55, 0.35);
   background:
@@ -1017,6 +1017,26 @@ body[data-unified-admin] > .unified-admin-shell {
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  flex-shrink: 0;
+}
+
+/* --- Drag and Drop --- */
+.menu-item.dragging {
+  opacity: 0.3;
+  transform: scale(0.97);
+  pointer-events: none;
+}
+
+.menu-item.drag-over-top {
+  box-shadow: 0 -2px 0 0 #d4af37;
+  margin-top: -2px;
+  padding-top: 2px;
+}
+
+.menu-item.drag-over-bottom {
+  box-shadow: 0 2px 0 0 #d4af37;
+  margin-bottom: -2px;
+  padding-bottom: 2px;
 }
 
 .profile-main {

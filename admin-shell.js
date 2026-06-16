@@ -178,6 +178,97 @@
     });
 
     renderIcons();
+
+    const nav = sidebar.querySelector(".company-sidebar-nav");
+    if (nav) {
+      let draggedItem = null;
+
+      nav.addEventListener("dragstart", (e) => {
+        const item = e.target.closest(".menu-item");
+        if (!item) return;
+        draggedItem = item;
+        item.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", "");
+      });
+
+      nav.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        const target = e.target.closest(".menu-item");
+        nav.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((el) => {
+          el.classList.remove("drag-over-top", "drag-over-bottom");
+        });
+        if (!target || target === draggedItem) return;
+        const rect = target.getBoundingClientRect();
+        const mid = rect.top + rect.height / 2;
+        target.classList.add(e.clientY < mid ? "drag-over-top" : "drag-over-bottom");
+      });
+
+      nav.addEventListener("dragleave", (e) => {
+        const target = e.target.closest(".menu-item");
+        if (target) target.classList.remove("drag-over-top", "drag-over-bottom");
+      });
+
+      nav.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const target = e.target.closest(".menu-item");
+        if (!target || target === draggedItem) return;
+        const rect = target.getBoundingClientRect();
+        const mid = rect.top + rect.height / 2;
+        if (e.clientY < mid) {
+          target.parentNode.insertBefore(draggedItem, target);
+        } else {
+          target.parentNode.insertBefore(draggedItem, target.nextSibling);
+        }
+        nav.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((el) => {
+          el.classList.remove("drag-over-top", "drag-over-bottom");
+        });
+        const order = [];
+        nav.querySelectorAll(".menu-item").forEach((item) => {
+          const section = item.closest(".menu-section");
+          const sectionTitle = section ? section.querySelector(".menu-section-title")?.textContent : "";
+          order.push({ href: item.getAttribute("href"), section: sectionTitle });
+        });
+        localStorage.setItem("seven-gold-menu-order", JSON.stringify(order));
+      });
+
+      nav.addEventListener("dragend", () => {
+        if (draggedItem) draggedItem.classList.remove("dragging");
+        draggedItem = null;
+        nav.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((el) => {
+          el.classList.remove("drag-over-top", "drag-over-bottom");
+        });
+      });
+
+      nav.querySelectorAll(".menu-item").forEach((item) => {
+        item.setAttribute("draggable", "true");
+      });
+
+      const savedOrder = JSON.parse(localStorage.getItem("seven-gold-menu-order") || "[]");
+      if (savedOrder.length) {
+        const allItems = {};
+        nav.querySelectorAll(".menu-item").forEach((item) => {
+          allItems[item.getAttribute("href")] = item;
+        });
+        const orphanItems = [];
+        savedOrder.forEach((entry) => {
+          const item = allItems[entry.href];
+          if (item) {
+            const section = nav.querySelector(`.menu-section:has(.menu-section-title)`);
+            const sections = nav.querySelectorAll(".menu-section");
+            sections.forEach((sec) => {
+              const title = sec.querySelector(".menu-section-title");
+              if (title && title.textContent === entry.section) {
+                sec.appendChild(item);
+              }
+            });
+          } else {
+            orphanItems.push(entry);
+          }
+        });
+      }
+    }
   };
 
   if (document.readyState === "loading") {
