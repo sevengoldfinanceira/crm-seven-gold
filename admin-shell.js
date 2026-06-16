@@ -33,7 +33,7 @@
     {
       title: "OPERACIONAL",
       items: [
-        ["#marketing", "megaphone", "Marketing", "marketing", "dono,administrador,marketing"],
+        ["marketing.html", "megaphone", "Marketing", "marketing", "dono,administrador,marketing"],
         ["documentos.html", "file-text", "Documentos", "documentos", ""],
       ],
     },

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Marketing</title>
+    <meta name="description" content="Painel de marketing da Seven Gold — campanhas, leads, criativos e origem dos leads." />
+    <link rel="icon" href="assets/logo-copa.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>document.documentElement.dataset.adminSidebar = localStorage.getItem("seven-gold-admin-sidebar-collapsed") === "true" ? "collapsed" : "expanded";</script>
+    <link rel="stylesheet" href="home.css?v=43" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#150126" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Seven Gold" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  </head>
+  <body class="marketing-body" data-require-auth data-permission-area="marketing" data-login-page="index.html" data-allowed-roles="dono,administrador,marketing" data-denied-redirect="empresa.html" data-unified-admin>
+    <main class="marketing-shell">
+      <header class="company-topbar">
+        <a class="back-link" href="empresa.html">Voltar</a>
+        <div class="brand-line">
+          <div class="brand-mark" aria-hidden="true">SG</div>
+          <div>
+            <strong>Seven Gold</strong>
+            <span>Marketing</span>
+          </div>
+        </div>
+        <div class="owner-pill">
+          <span>Campanhas</span>
+          <strong>Leads</strong>
+        </div>
+      </header>
+
+      <section class="marketing-toolbar" aria-label="Controles de marketing">
+        <div>
+          <h1>Marketing</h1>
+          <span>Campanhas, mídias, criativos e origem dos leads.</span>
+        </div>
+        <div class="marketing-actions">
+          <button type="button" id="btn-new-campaign"><i data-lucide="plus"></i> Nova campanha</button>
+        </div>
+      </section>
+
+      <section class="marketing-stat-grid" aria-label="Resumo de marketing">
+        <article>
+          <span>Campanhas ativas</span>
+          <strong>4</strong>
+          <small class="positive">+1 esta semana</small>
+          <i data-lucide="megaphone"></i>
+        </article>
+        <article>
+          <span>Leads captados</span>
+          <strong>237</strong>
+          <small class="positive">+32% vs mês anterior</small>
+          <i data-lucide="user-round-plus"></i>
+        </article>
+        <article>
+          <span>Custo por lead</span>
+          <strong>R$ 18,40</strong>
+          <small class="negative">+5% vs mês anterior</small>
+          <i data-lucide="circle-dollar-sign"></i>
+        </article>
+        <article>
+          <span>ROI</span>
+          <strong>3,2x</strong>
+          <small class="positive">Acima da meta</small>
+          <i data-lucide="trending-up"></i>
+        </article>
+      </section>
+
+      <section class="marketing-campaigns" aria-label="Campanhas ativas">
+        <header>
+          <h2>Campanhas ativas</h2>
+          <div class="campaign-filter">
+            <select id="campaign-status-filter">
+              <option>Todas</option>
+              <option>Ativa</option>
+              <option>Pausada</option>
+              <option>Encerrada</option>
+            </select>
+          </div>
+        </header>
+        <div class="campaign-table-wrap">
+          <table class="campaign-table">
+            <thead>
+              <tr>
+                <th>Campanha</th>
+                <th>Canal</th>
+                <th>Investido</th>
+                <th>Leads</th>
+                <th>CPL</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Consórcio Imobiliário — Junho</strong></td>
+                <td><span class="channel-badge channel-meta">Meta Ads</span></td>
+                <td>R$ 2.800,00</td>
+                <td>142</td>
+                <td>R$ 19,72</td>
+                <td><span class="status-pill status-active">Ativa</span></td>
+              </tr>
+              <tr>
+                <td><strong>Auto Contemplado — Inverno</strong></td>
+                <td><span class="channel-badge channel-google">Google Ads</span></td>
+                <td>R$ 1.500,00</td>
+                <td>58</td>
+                <td>R$ 25,86</td>
+                <td><span class="status-pill status-active">Ativa</span></td>
+              </tr>
+              <tr>
+                <td><strong>Remarketing — Site Seven Gold</strong></td>
+                <td><span class="channel-badge channel-meta">Meta Ads</span></td>
+                <td>R$ 600,00</td>
+                <td>27</td>
+                <td>R$ 22,22</td>
+                <td><span class="status-pill status-active">Ativa</span></td>
+              </tr>
+              <tr>
+                <td><strong>Indicação Premiada — Q2</strong></td>
+                <td><span class="channel-badge channel-organic">Orgânico</span></td>
+                <td>R$ 0,00</td>
+                <td>10</td>
+                <td>R$ 0,00</td>
+                <td><span class="status-pill status-active">Ativa</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="marketing-lead-sources" aria-label="Origem dos leads">
+        <header>
+          <h2>Origem dos leads</h2>
+        </header>
+        <div class="lead-source-grid">
+          <article class="lead-source-card">
+            <div class="lead-source-icon" style="--source-color: #3b82f6"><i data-lucide="globe"></i></div>
+            <div>
+              <strong>Meta Ads</strong>
+              <span>169 leads · 71%</span>
+            </div>
+            <div class="lead-source-bar"><div class="lead-source-fill" style="width:71%; background:#3b82f6"></div></div>
+          </article>
+          <article class="lead-source-card">
+            <div class="lead-source-icon" style="--source-color: #f59e0b"><i data-lucide="search"></i></div>
+            <div>
+              <strong>Google Ads</strong>
+              <span>58 leads · 24%</span>
+            </div>
+            <div class="lead-source-bar"><div class="lead-source-fill" style="width:24%; background:#f59e0b"></div></div>
+          </article>
+          <article class="lead-source-card">
+            <div class="lead-source-icon" style="--source-color: #10b981"><i data-lucide="users-round"></i></div>
+            <div>
+              <strong>Indicação / Orgânico</strong>
+              <span>10 leads · 4%</span>
+            </div>
+            <div class="lead-source-bar"><div class="lead-source-fill" style="width:4%; background:#10b981"></div></div>
+          </article>
+        </div>
+      </section>
+    </main>
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script>lucide.createIcons();</script>
+    <script src="/admin-shell.js?v=36"></script>
+    <script src="/pwa.js"></script>
+  </body>
+</html>
