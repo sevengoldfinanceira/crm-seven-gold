@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Seven Gold | Documentos</title>
+    <title>Seven Gold | Central de Documentos</title>
+    <meta name="description" content="Central de documentos Seven Gold Financeira. Gerencie contratos, arquivos internos, modelos, documentos jurídicos e materiais da empresa." />
     <link rel="icon" href="assets/logo-copa.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,95 +15,206 @@
     <script>document.documentElement.dataset.adminSidebar = localStorage.getItem("seven-gold-admin-sidebar-collapsed") === "true" ? "collapsed" : "expanded";</script>
     <link rel="stylesheet" href="home.css" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#150126" />
+    <meta name="theme-color" content="rgb(24,0,38)" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Seven Gold" />
     <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
   <body class="documents-body" data-require-auth data-permission-area="documentos" data-login-page="index.html" data-allowed-roles="dono,administrador,coordenador,representante,vendedor,financeiro,marketing,rh" data-denied-redirect="painel.html" data-unified-admin>
-    <main class="documents-shell">
-      <header class="company-topbar">
-        <a class="back-link" href="empresa.html">Voltar</a>
-        <div class="brand-line">
-          <div class="brand-mark" aria-hidden="true">SG</div>
+    <main class="documents-shell doc-premium">
+
+      <!-- ── TOP BAR ── -->
+      <header class="doc-topbar">
+        <a class="doc-back-btn back-link" href="empresa.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Voltar
+        </a>
+        <div class="doc-topbar-brand brand-line">
+          <div class="doc-topbar-logo brand-mark" aria-hidden="true">
+            <img src="assets/logo-copa.png" alt="Seven Gold" />
+          </div>
           <div>
             <strong>Seven Gold</strong>
-            <span>Documentos</span>
+            <span>DOCUMENTOS</span>
           </div>
         </div>
-        <div class="owner-pill">
+        <div class="doc-topbar-pill owner-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
           <span>Arquivos</span>
           <strong>Setores</strong>
         </div>
       </header>
 
-      <section class="documents-toolbar" aria-label="Controles de documentos">
-        <div>
-          <h1>Documentos</h1>
-          <span>Organize arquivos por setor, categoria, cargo e tipo de documento.</span>
+      <!-- ── HERO / CABEÇALHO DA PÁGINA ── -->
+      <section class="doc-hero documents-toolbar" aria-label="Cabeçalho de documentos">
+        <div class="doc-hero-content">
+          <div class="doc-hero-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div>
+            <h1 class="doc-hero-title">Central de Documentos</h1>
+            <p class="doc-hero-subtitle">Gerencie contratos, arquivos internos, modelos, documentos jurídicos e materiais da empresa.</p>
+          </div>
         </div>
-        <div class="documents-actions">
-          <button type="button" data-focus-document-form>Adicionar documento</button>
+        <div class="documents-actions doc-hero-actions">
+          <button type="button" class="doc-add-btn" data-focus-document-form>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Adicionar documento
+          </button>
         </div>
       </section>
 
-      <section class="documents-layout">
-        <aside class="sector-sidebar" aria-label="Setores">
-          <button class="sector-tab active" type="button" data-sector-filter="todos">
-            <strong>Todos</strong>
-            <span data-sector-count="todos">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="Diretoria">
-            <strong>Diretoria</strong>
-            <span data-sector-count="Diretoria">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="Comercial">
-            <strong>Comercial</strong>
-            <span data-sector-count="Comercial">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="Financeiro">
-            <strong>Financeiro</strong>
-            <span data-sector-count="Financeiro">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="Juridico">
-            <strong>Juridico</strong>
-            <span data-sector-count="Juridico">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="RH">
-            <strong>RH</strong>
-            <span data-sector-count="RH">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="Marketing">
-            <strong>Marketing</strong>
-            <span data-sector-count="Marketing">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="Pos-venda">
-            <strong>Pos-venda</strong>
-            <span data-sector-count="Pos-venda">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="Administrativo">
-            <strong>Administrativo</strong>
-            <span data-sector-count="Administrativo">0 docs</span>
-          </button>
+      <!-- ── CARDS DE RESUMO ── -->
+      <section class="doc-stats" aria-label="Resumo de documentos">
+        <div class="doc-stat-card">
+          <div class="doc-stat-icon doc-stat-icon--docs">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div>
+            <span class="doc-stat-value" data-stat-total>—</span>
+            <span class="doc-stat-label">Total de documentos</span>
+            <small class="doc-stat-sub">documentos cadastrados</small>
+          </div>
+        </div>
+        <div class="doc-stat-card">
+          <div class="doc-stat-icon doc-stat-icon--sectors">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          </div>
+          <div>
+            <span class="doc-stat-value" data-stat-sectors>—</span>
+            <span class="doc-stat-label">Setores cadastrados</span>
+            <small class="doc-stat-sub">setores ativos</small>
+          </div>
+        </div>
+        <div class="doc-stat-card">
+          <div class="doc-stat-icon doc-stat-icon--recent">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div>
+            <span class="doc-stat-value doc-stat-value--sm" data-stat-last>—</span>
+            <span class="doc-stat-label">Último documento</span>
+            <small class="doc-stat-sub" data-stat-last-date>—</small>
+          </div>
+        </div>
+        <div class="doc-stat-card">
+          <div class="doc-stat-icon doc-stat-icon--categories">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div>
+            <span class="doc-stat-value" data-stat-categories>—</span>
+            <span class="doc-stat-label">Categorias ativas</span>
+            <small class="doc-stat-sub">em uso</small>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── LAYOUT PRINCIPAL: SETORES | DOCUMENTOS | FORMULÁRIO ── -->
+      <section class="documents-layout doc-layout" aria-label="Área principal de documentos">
+
+        <!-- ── SIDEBAR DE SETORES ── -->
+        <aside class="sector-sidebar doc-sectors-panel" aria-label="Setores">
+          <div class="doc-sectors-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+            <span>Setores</span>
+          </div>
+          <div class="doc-sectors-list">
+            <button class="sector-tab doc-sector-btn active" type="button" data-sector-filter="todos">
+              <span class="doc-sector-name">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                Todos
+              </span>
+              <span class="doc-sector-badge" data-sector-count="todos">0</span>
+            </button>
+            <button class="sector-tab doc-sector-btn" type="button" data-sector-filter="Diretoria">
+              <span class="doc-sector-name">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Diretoria
+              </span>
+              <span class="doc-sector-badge" data-sector-count="Diretoria">0</span>
+            </button>
+            <button class="sector-tab doc-sector-btn" type="button" data-sector-filter="Comercial">
+              <span class="doc-sector-name">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Comercial
+              </span>
+              <span class="doc-sector-badge" data-sector-count="Comercial">0</span>
+            </button>
+            <button class="sector-tab doc-sector-btn" type="button" data-sector-filter="Financeiro">
+              <span class="doc-sector-name">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                Financeiro
+              </span>
+              <span class="doc-sector-badge" data-sector-count="Financeiro">0</span>
+            </button>
+            <button class="sector-tab doc-sector-btn" type="button" data-sector-filter="Juridico">
+              <span class="doc-sector-name">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Jurídico
+              </span>
+              <span class="doc-sector-badge" data-sector-count="Juridico">0</span>
+            </button>
+            <button class="sector-tab doc-sector-btn" type="button" data-sector-filter="RH">
+              <span class="doc-sector-name">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                RH
+              </span>
+              <span class="doc-sector-badge" data-sector-count="RH">0</span>
+            </button>
+            <button class="sector-tab doc-sector-btn" type="button" data-sector-filter="Marketing">
+              <span class="doc-sector-name">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                Marketing
+              </span>
+              <span class="doc-sector-badge" data-sector-count="Marketing">0</span>
+            </button>
+            <button class="sector-tab doc-sector-btn" type="button" data-sector-filter="Pos-venda">
+              <span class="doc-sector-name">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Pós-venda
+              </span>
+              <span class="doc-sector-badge" data-sector-count="Pos-venda">0</span>
+            </button>
+            <button class="sector-tab doc-sector-btn" type="button" data-sector-filter="Administrativo">
+              <span class="doc-sector-name">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M1 12h3M20 12h3M12 1v3M12 20v3"/></svg>
+                Administrativo
+              </span>
+              <span class="doc-sector-badge" data-sector-count="Administrativo">0</span>
+            </button>
+          </div>
         </aside>
 
-        <section class="document-main" aria-label="Categorias e documentos">
-          <div class="document-search">
-            <input type="search" placeholder="Buscar documento, setor ou categoria" data-document-search />
-            <select data-type-filter>
-              <option>Todos os tipos</option>
-              <option>Contrato</option>
-              <option>Comprovante</option>
-              <option>Modelo</option>
-              <option>Planilha</option>
-              <option>PDF</option>
-              <option>Imagem</option>
-            </select>
+        <!-- ── ÁREA CENTRAL: BUSCA + GRID ── -->
+        <section class="document-main doc-main-area" aria-label="Categorias e documentos">
+
+          <!-- Busca e filtros -->
+          <div class="document-search doc-search-bar">
+            <div class="doc-search-input-wrap">
+              <svg class="doc-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="search" class="doc-search-input" placeholder="Buscar documento, setor ou categoria…" data-document-search />
+            </div>
+            <div class="doc-filter-wrap">
+              <select class="doc-filter-select" data-type-filter>
+                <option>Todos os tipos</option>
+                <option>Contrato</option>
+                <option>Comprovante</option>
+                <option>Modelo</option>
+                <option>Planilha</option>
+                <option>PDF</option>
+                <option>Imagem</option>
+              </select>
+            </div>
+            <button type="button" class="doc-clear-btn" id="doc-clear-filters" title="Limpar filtros">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Limpar filtros
+            </button>
           </div>
 
-          <div class="document-category-grid" data-document-grid>
-            <article class="document-category">
+          <!-- Grid de categorias e documentos -->
+          <div class="document-category-grid doc-category-grid" data-document-grid>
+            <!-- Conteúdo gerado por documentos.js -->
+            <article class="document-category doc-category-card">
               <header>
                 <span class="category-icon docs-icon" aria-hidden="true"></span>
                 <div>
@@ -114,79 +226,165 @@
           </div>
         </section>
 
-        <form class="upload-panel" aria-label="Adicionar documento" data-document-form>
-          <h2>Adicionar documento</h2>
-          <label>
-            Nome do documento
-            <input name="title" type="text" placeholder="Ex: Contrato padrao" required />
-          </label>
-          <label>
-            Setor
-            <select name="sector">
-              <option>Diretoria</option>
-              <option>Comercial</option>
-              <option>Financeiro</option>
-              <option>Juridico</option>
-              <option>RH</option>
-              <option>Marketing</option>
-              <option>Pos-venda</option>
-              <option>Administrativo</option>
-            </select>
-          </label>
-          <label>
-            Categoria
-            <select name="category">
-              <option>Contratos</option>
-              <option>Financeiro</option>
-              <option>Equipe</option>
-              <option>Marketing</option>
-              <option>Modelos</option>
-              <option>Comissoes</option>
-              <option>Procedimentos</option>
-            </select>
-          </label>
-          <label>
-            Tipo
-            <select name="document_type">
-              <option>Contrato</option>
-              <option>Comprovante</option>
-              <option>Modelo</option>
-              <option>Planilha</option>
-              <option>PDF</option>
-              <option>Imagem</option>
-            </select>
-          </label>
-          <label>
-            Cargo relacionado
-            <select name="role_key">
-              <option value="">Sem cargo especifico</option>
-              <option value="diretor-ceo">Diretor / CEO</option>
-              <option value="supervisor">Supervisor</option>
-              <option value="coordenador">Coordenador</option>
-              <option value="vendedor">Vendedor</option>
-              <option value="assistente-vendas">Assistente de Vendas</option>
-              <option value="pos-vendas">Pos-vendas</option>
-              <option value="administrativo">Administrativo</option>
-              <option value="financeiro-contador">Financeiro / Contador</option>
-              <option value="advogado-juridico">Advogado / Juridico</option>
-              <option value="rh">RH</option>
-              <option value="marketing-cargo">Marketing</option>
-            </select>
-          </label>
-          <label class="file-drop">
-            <span data-file-name>Selecionar arquivo</span>
-            <input name="file" type="file" required />
-          </label>
-          <p class="document-form-status" data-document-status></p>
-          <button type="submit">Salvar documento</button>
+        <!-- ── FORMULÁRIO LATERAL ── -->
+        <form class="upload-panel doc-upload-panel" aria-label="Adicionar documento" data-document-form>
+          <div class="doc-form-header">
+            <div class="doc-form-header-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <h2 class="doc-form-title">Novo documento</h2>
+          </div>
+
+          <div class="doc-form-fields">
+            <label class="doc-field-label">
+              <span class="doc-field-text">Nome do documento</span>
+              <input class="doc-field-input" name="title" type="text" placeholder="Ex: Contrato padrão" required />
+            </label>
+
+            <label class="doc-field-label">
+              <span class="doc-field-text">Setor</span>
+              <select class="doc-field-select" name="sector">
+                <option value="" disabled selected>Selecione o setor</option>
+                <option>Diretoria</option>
+                <option>Comercial</option>
+                <option>Financeiro</option>
+                <option>Juridico</option>
+                <option>RH</option>
+                <option>Marketing</option>
+                <option>Pos-venda</option>
+                <option>Administrativo</option>
+              </select>
+            </label>
+
+            <label class="doc-field-label">
+              <span class="doc-field-text">Categoria</span>
+              <select class="doc-field-select" name="category">
+                <option value="" disabled selected>Selecione a categoria</option>
+                <option>Contratos</option>
+                <option>Financeiro</option>
+                <option>Equipe</option>
+                <option>Marketing</option>
+                <option>Modelos</option>
+                <option>Comissoes</option>
+                <option>Procedimentos</option>
+              </select>
+            </label>
+
+            <label class="doc-field-label">
+              <span class="doc-field-text">Tipo</span>
+              <select class="doc-field-select" name="document_type">
+                <option value="" disabled selected>Selecione o tipo</option>
+                <option>Contrato</option>
+                <option>Comprovante</option>
+                <option>Modelo</option>
+                <option>Planilha</option>
+                <option>PDF</option>
+                <option>Imagem</option>
+              </select>
+            </label>
+
+            <label class="doc-field-label">
+              <span class="doc-field-text">Cargo relacionado</span>
+              <select class="doc-field-select" name="role_key">
+                <option value="">Sem cargo específico</option>
+                <option value="diretor-ceo">Diretor / CEO</option>
+                <option value="supervisor">Supervisor</option>
+                <option value="coordenador">Coordenador</option>
+                <option value="vendedor">Vendedor</option>
+                <option value="assistente-vendas">Assistente de Vendas</option>
+                <option value="pos-vendas">Pós-vendas</option>
+                <option value="administrativo">Administrativo</option>
+                <option value="financeiro-contador">Financeiro / Contador</option>
+                <option value="advogado-juridico">Advogado / Jurídico</option>
+                <option value="rh">RH</option>
+                <option value="marketing-cargo">Marketing</option>
+              </select>
+            </label>
+
+            <!-- Área de upload -->
+            <div class="doc-field-label">
+              <span class="doc-field-text">Arquivo do documento</span>
+              <label class="doc-upload-area file-drop">
+                <div class="doc-upload-content">
+                  <svg class="doc-upload-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+                  <strong class="doc-upload-main" data-file-name>Arraste o arquivo aqui</strong>
+                  <span class="doc-upload-sub">ou clique para selecionar</span>
+                  <small class="doc-upload-info">Formatos: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG · Máx: 25MB</small>
+                </div>
+                <input class="doc-file-input" name="file" type="file" required />
+              </label>
+            </div>
+          </div>
+
+          <p class="document-form-status doc-form-status" data-document-status></p>
+
+          <button type="submit" class="doc-save-btn">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Salvar documento
+          </button>
         </form>
+
       </section>
     </main>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js"></script>
     <script src="documentos.js"></script>
     <script src="/admin-shell.js"></script>
     <script src="/pwa.js"></script>
+
+    <!-- Atualiza os cards de resumo após os documentos serem carregados -->
+    <script>
+      (function () {
+        const origLoad = window.__docStatsReady;
+        function updateStats(documents) {
+          const totalEl = document.querySelector("[data-stat-total]");
+          const sectorsEl = document.querySelector("[data-stat-sectors]");
+          const lastEl = document.querySelector("[data-stat-last]");
+          const lastDateEl = document.querySelector("[data-stat-last-date]");
+          const catEl = document.querySelector("[data-stat-categories]");
+
+          if (!totalEl) return;
+
+          const total = documents.length;
+          const sectors = new Set(documents.map(d => d.sector)).size;
+          const categories = new Set(documents.map(d => d.category)).size;
+          const last = documents[0];
+
+          totalEl.textContent = total;
+          sectorsEl.textContent = sectors;
+          catEl.textContent = categories;
+          if (last) {
+            lastEl.textContent = last.title;
+            const d = new Date(last.created_at);
+            lastDateEl.textContent = d.toLocaleDateString("pt-BR") + " às " + d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+          } else {
+            lastEl.textContent = "Nenhum";
+            lastDateEl.textContent = "—";
+          }
+        }
+
+        // Hook no grid para detectar re-renders
+        const grid = document.querySelector("[data-document-grid]");
+        if (grid) {
+          const obs = new MutationObserver(() => {
+            if (window.__sevenDocState) updateStats(window.__sevenDocState);
+          });
+          obs.observe(grid, { childList: true });
+        }
+
+        // Limpar filtros
+        document.getElementById("doc-clear-filters")?.addEventListener("click", () => {
+          const search = document.querySelector("[data-document-search]");
+          const typeF = document.querySelector("[data-type-filter]");
+          if (search) { search.value = ""; search.dispatchEvent(new Event("input")); }
+          if (typeF) { typeF.value = typeF.options[0].value; typeF.dispatchEvent(new Event("change")); }
+          document.querySelectorAll("[data-sector-filter]").forEach(btn => btn.classList.remove("active"));
+          const todosBtn = document.querySelector("[data-sector-filter='todos']");
+          if (todosBtn) todosBtn.click();
+        });
+      })();
+    </script>
   </body>
 </html>
