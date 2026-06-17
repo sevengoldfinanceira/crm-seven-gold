@@ -60,10 +60,18 @@
           .join("")}
       </nav>
       <div class="empresa-topbar-actions">
+        <button class="topbar-action-btn notification-trigger" type="button" title="Notificações">
+          <i data-lucide="bell"></i>
+          <span class="notification-badge">3</span>
+        </button>
+        <button class="topbar-action-btn chat-trigger" type="button" title="Chat/Mensagens">
+          <i data-lucide="message-square"></i>
+        </button>
         <a href="perfil.html?area=empresa" class="empresa-topbar-profile" title="Perfil">
           <span class="empresa-topbar-avatar" data-user-avatar>U</span>
           <span class="empresa-topbar-user">
             <strong data-user-name>Usuário</strong>
+            <small data-user-role>Administrador</small>
           </span>
         </a>
       </div>
@@ -219,6 +227,59 @@
       overlay.classList.remove("active");
       document.body.classList.remove("menu-open");
     });
+
+    // Injetar seletor de tema segmentado ao lado da busca global
+    const searchForm = document.querySelector(".company-global-search");
+    if (searchForm) {
+      let searchWrapper = searchForm.parentElement.querySelector(".company-search-wrapper");
+      if (!searchWrapper) {
+        searchWrapper = document.createElement("div");
+        searchWrapper.className = "company-search-wrapper";
+        searchForm.before(searchWrapper);
+        searchWrapper.appendChild(searchForm);
+        
+        const themeSegment = document.createElement("div");
+        themeSegment.className = "top-theme-toggle-segment";
+        themeSegment.innerHTML = `
+          <button type="button" class="segment-btn" data-theme-val="light" title="Modo Claro">
+            <i data-lucide="sun"></i>
+          </button>
+          <button type="button" class="segment-btn" data-theme-val="dark" title="Modo Escuro">
+            <i data-lucide="moon"></i>
+          </button>
+        `;
+        searchWrapper.appendChild(themeSegment);
+        
+        const updateSegmentActive = () => {
+          const currentTheme = localStorage.getItem("seven-gold-theme") || "light";
+          themeSegment.querySelectorAll(".segment-btn").forEach((btn) => {
+            const isActive = btn.dataset.themeVal === currentTheme;
+            btn.classList.toggle("active", isActive);
+          });
+        };
+        
+        updateSegmentActive();
+        
+        themeSegment.querySelectorAll(".segment-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const theme = btn.dataset.themeVal;
+            localStorage.setItem("seven-gold-theme", theme);
+            if (theme === "dark") {
+              document.body.classList.add("theme-dark");
+            } else {
+              document.body.classList.remove("theme-dark");
+            }
+            updateSegmentActive();
+            // Disparar evento para sincronizar outros switchers
+            window.dispatchEvent(new CustomEvent("themechange", { detail: theme }));
+          });
+        });
+
+        window.addEventListener("themechange", (e) => {
+          updateSegmentActive();
+        });
+      }
+    }
 
     renderIcons();
 
