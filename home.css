@@ -11356,3 +11356,27 @@ body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user small {
     background-repeat: no-repeat !important;
   }
 }
+
+/* Modo escuro: gap explícito nas abas internas da Empresa */
+@media (min-width: 1024px) {
+  html[data-theme="dark"] body[data-unified-admin] .org-shell,
+  html[data-theme="dark"] body[data-unified-admin] .metas-shell,
+  html[data-theme="dark"] body[data-unified-admin] .team-shell,
+  html[data-theme="dark"] body[data-unified-admin] .permissions-shell,
+  html[data-theme="dark"] body[data-unified-admin] .finance-shell,
+  html[data-theme="dark"] body[data-unified-admin] .commission-shell,
+  html[data-theme="dark"] body[data-unified-admin] .reports-shell,
+  html[data-theme="dark"] body[data-unified-admin] .marketing-shell,
+  html[data-theme="dark"] body[data-unified-admin] .documents-shell,
+  body[data-unified-admin].theme-dark .org-shell,
+  body[data-unified-admin].theme-dark .metas-shell,
+  body[data-unified-admin].theme-dark .team-shell,
+  body[data-unified-admin].theme-dark .permissions-shell,
+  body[data-unified-admin].theme-dark .finance-shell,
+  body[data-unified-admin].theme-dark .commission-shell,
+  body[data-unified-admin].theme-dark .reports-shell,
+  body[data-unified-admin].theme-dark .marketing-shell,
+  body[data-unified-admin].theme-dark .documents-shell {
+    margin-top: 18px !important;
+  }
+}
