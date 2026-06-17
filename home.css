@@ -11269,7 +11269,7 @@ body.theme-dark .company-module-grid>a:hover {
     box-shadow: 0 14px 35px rgba(0, 0, 0, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.06);
     position: sticky;
-    top: 0;
+    top: 18px;
     z-index: 900;
     min-height: 60px;
   }
@@ -11287,7 +11287,8 @@ body.theme-dark .company-module-grid>a:hover {
   body[data-unified-admin] .company-dashboard-shell.unified-admin-shell,
   body[data-unified-admin] .history-dashboard-shell.unified-admin-shell,
   body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell {
-    grid-template-columns: 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
     gap: 0 !important;
     padding: 0 !important;
   }
@@ -11297,7 +11298,8 @@ body.theme-dark .company-module-grid>a:hover {
   body[data-unified-admin] .company-dashboard-shell.unified-admin-shell.sidebar-collapsed,
   body[data-unified-admin] .history-dashboard-shell.unified-admin-shell.sidebar-collapsed,
   body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell.sidebar-collapsed {
-    grid-template-columns: 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
   /* Fundo do body no desktop */
