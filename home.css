@@ -9815,6 +9815,47 @@ body.theme-dark .goals-table-card td {
   }
 }
 
+/* ============================================================
+   Correção global mobile: todos os grids com minmax → 1fr
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Organograma */
+  .org-board { grid-template-columns: 1fr !important; }
+
+  /* Equipe */
+  .job-grid { grid-template-columns: 1fr !important; }
+
+  /* Comissões */
+  .commission-reference { grid-template-columns: 1fr !important; }
+  .commission-grid { grid-template-columns: 1fr !important; }
+
+  /* Marketing */
+  .marketing-stat-grid { grid-template-columns: 1fr !important; }
+
+  /* História do Dono */
+  .year-card-grid { grid-template-columns: 1fr !important; }
+
+  /* Documentos */
+  .document-category-grid { grid-template-columns: 1fr !important; }
+
+  /* Todos os shells: overflow hidden */
+  .metas-shell,
+  .org-shell,
+  .team-shell,
+  .finance-shell,
+  .commission-shell,
+  .reports-shell,
+  .marketing-shell,
+  .documents-shell,
+  .permissions-shell,
+  .history-shell,
+  .company-dashboard-main {
+    overflow-x: hidden !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
 /* Mobile drawer final: a sidebar sai da tela e deixa apenas o botão de menu. */
 @media (max-width: 900px) {
   body[data-unified-admin] .sidebar-hamburger {
