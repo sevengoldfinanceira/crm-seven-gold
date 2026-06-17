@@ -9838,6 +9838,17 @@ body.theme-dark .goals-table-card td {
   /* Documentos */
   .document-category-grid { grid-template-columns: 1fr !important; }
 
+  /* Empresa/Painel */
+  .company-stat-grid { grid-template-columns: 1fr !important; }
+  .company-module-grid { grid-template-columns: 1fr !important; }
+  .company-bottom-grid { grid-template-columns: 1fr !important; }
+
+  /* Body/HTML: impedir scroll horizontal */
+  html,
+  body[data-unified-admin] {
+    overflow-x: hidden !important;
+  }
+
   /* Todos os shells: overflow hidden */
   .metas-shell,
   .org-shell,
