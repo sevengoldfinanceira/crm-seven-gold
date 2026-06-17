@@ -12565,6 +12565,22 @@ body[data-unified-admin] .company-dashboard-main {
   overflow: clip !important;
 }
 
+/* Shell como container de scroll para topbar sticky funcionar */
+@media (min-width: 1024px) {
+  html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell {
+    height: 100vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: 0 !important;
+  }
+
+  html body[data-unified-admin] .empresa-topbar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 900 !important;
+  }
+}
+
 /* Exibir cargo do usuário na topbar */
 body[data-unified-admin] .empresa-topbar-user small,
 body[data-unified-admin].theme-dark .empresa-topbar-user small,
