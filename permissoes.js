@@ -6,6 +6,7 @@
   const statusEl = document.querySelector("[data-permission-status]");
   const saveButton = document.querySelector("[data-save-permissions]");
   const reloadButton = document.querySelector("[data-reload-permissions]");
+  const auditLog = document.querySelector("[data-audit-log]");
 
   const roles = [
     { key: "dono", label: "Dono" },
@@ -17,6 +18,28 @@
     { key: "marketing", label: "Marketing" },
     { key: "rh", label: "RH" },
   ];
+
+  const areaIcons = {
+    crm: "git-branch",
+    empresa: "building-2",
+    financeiro: "banknote",
+    comissoes: "percent",
+    documentos: "file-text",
+    equipe: "users",
+    organograma: "network",
+    relatorios: "bar-chart-3",
+    historia_dono: "book-open",
+    permissoes: "shield-check",
+  };
+
+  const areaFilters = {
+    all: null,
+    core: ["crm", "financeiro", "comissoes", "documentos"],
+    management: ["empresa", "equipe", "organograma", "permissoes"],
+    admin: ["permissoes", "empresa", "equipe"],
+    data: ["relatorios", "financeiro", "comissoes"],
+    content: ["documentos", "historia_dono", "marketing"],
+  };
 
   const areas = [
     { key: "crm", label: "CRM / Pipeline" },
@@ -46,6 +69,7 @@
     permissions: new Map(),
     profiles: [],
     userSearch: "",
+    activeFilter: "all",
   };
 
   const getClient = () => window.sevenGoldAuth;
@@ -54,6 +78,40 @@
     if (!statusEl) return;
     statusEl.textContent = message;
     statusEl.dataset.type = type;
+  };
+
+  const addAuditEntry = (text, dotClass) => {
+    if (!auditLog) return;
+    const entry = document.createElement("div");
+    entry.className = "perm-audit-entry";
+    entry.innerHTML =
+      '<div class="perm-audit-dot ' + dotClass + '"></div>' +
+      '<div><div class="perm-audit-text">' + text + '</div>' +
+      '<div class="perm-audit-time">Agora</div></div>';
+    auditLog.prepend(entry);
+    while (auditLog.children.length > 6) {
+      auditLog.removeChild(auditLog.lastChild);
+    }
+  };
+
+  const updateStats = () => {
+    const statActive = document.querySelector("[data-stat-active]");
+    const statBlocked = document.querySelector("[data-stat-blocked]");
+    if (!statActive || !statBlocked) return;
+
+    let active = 0;
+    let blocked = 0;
+    areas.forEach((area) => {
+      roles.forEach((role) => {
+        if (canAccess(role.key, area.key)) {
+          active++;
+        } else {
+          blocked++;
+        }
+      });
+    });
+    statActive.textContent = active;
+    statBlocked.textContent = blocked;
   };
 
   const permissionKey = (role, area) => `${role}:${area}`;
@@ -75,10 +133,22 @@
     });
 
     body.innerHTML = "";
-    areas.forEach((area) => {
+    const filterKeys = areaFilters[state.activeFilter];
+    const filteredAreas = filterKeys
+      ? areas.filter((a) => filterKeys.includes(a.key))
+      : areas;
+
+    filteredAreas.forEach((area) => {
       const row = document.createElement("tr");
+      row.dataset.areaIcon = area.key;
       const label = document.createElement("th");
-      label.textContent = area.label;
+
+      const icon = areaIcons[area.key] || "circle";
+      label.innerHTML =
+        '<div class="perm-area-label">' +
+        '<span class="perm-area-icon"><i data-lucide="' + icon + '"></i></span>' +
+        area.label +
+        '</div>';
       row.append(label);
 
       roles.forEach((role) => {
@@ -93,20 +163,29 @@
         input.dataset.role = role.key;
         input.dataset.area = area.key;
 
+        const track = document.createElement("span");
+        track.className = "perm-switch-track";
+
         const text = document.createElement("span");
-        text.textContent = input.checked ? "Ativo" : "Bloqueado";
+        text.className = "perm-switch-label " + (input.checked ? "on-label" : "off-label");
+        text.textContent = input.checked ? "Ativo" : "Off";
 
         input.addEventListener("change", () => {
-          text.textContent = input.checked ? "Ativo" : "Bloqueado";
+          text.textContent = input.checked ? "Ativo" : "Off";
+          text.className = "perm-switch-label " + (input.checked ? "on-label" : "off-label");
+          updateStats();
         });
 
-        toggle.append(input, text);
+        toggle.append(input, track, text);
         cell.append(toggle);
         row.append(cell);
       });
 
       body.append(row);
     });
+
+    if (window.lucide) lucide.createIcons();
+    updateStats();
   };
 
   const renderUsers = () => {
@@ -183,10 +262,12 @@
 
     if (permissionsResult.error || profilesResult.error) {
       setStatus("Crie a tabela app_permissions e ajuste as politicas no Supabase.");
+      addAuditEntry("<strong>Erro</strong> ao carregar permissoes", "warning");
       return;
     }
 
     setStatus("Permissoes carregadas.", "success");
+    addAuditEntry("<strong>Sistema</strong> Permissoes carregadas", "success");
   };
 
   const collectPermissions = () =>
@@ -213,7 +294,8 @@
     if (!client) return;
 
     saveButton.disabled = true;
-    saveButton.textContent = "Salvando...";
+    saveButton.innerHTML = '<i data-lucide="loader-2" style="width:16px;height:16px;animation:perm-spin 1s linear infinite;"></i> Salvando...';
+    if (window.lucide) lucide.createIcons();
     setStatus("Salvando permissoes...", "success");
 
     const permissions = collectPermissions();
@@ -234,23 +316,74 @@
           .eq("id", update.id);
         if (error) {
           saveButton.disabled = false;
-          saveButton.textContent = "Salvar permissoes";
+          saveButton.innerHTML = '<i data-lucide="save" style="width:16px;height:16px;"></i> Salvar permissoes';
+          if (window.lucide) lucide.createIcons();
           setStatus("Nao consegui atualizar um usuario. Confira as politicas do Supabase.");
+          addAuditEntry("<strong>Erro</strong> ao atualizar usuario", "warning");
           return;
         }
       }
     }
 
     saveButton.disabled = false;
-    saveButton.textContent = "Salvar permissoes";
+    saveButton.innerHTML = '<i data-lucide="save" style="width:16px;height:16px;"></i> Salvar permissoes';
+    if (window.lucide) lucide.createIcons();
 
     if (permissionError) {
       setStatus("Nao consegui salvar as permissoes. Confira a tabela app_permissions.");
+      addAuditEntry("<strong>Erro</strong> ao salvar permissoes", "warning");
       return;
     }
 
     await loadData();
     setStatus("Permissoes salvas com sucesso.", "success");
+    addAuditEntry("<strong>Permissoes</strong> salvas com sucesso", "success");
+  };
+
+  const initFilters = () => {
+    const chips = document.querySelectorAll("[data-filter]");
+    chips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        chips.forEach((c) => c.classList.remove("is-active"));
+        chip.classList.add("is-active");
+        state.activeFilter = chip.dataset.filter;
+        renderMatrix();
+      });
+    });
+
+    const filterToggle = document.querySelector("[data-filter-toggle]");
+    const extraChipsHTML =
+      '<button type="button" class="perm-filter-chip" data-filter="admin">' +
+      '<i data-lucide="shield" style="width:14px;height:14px;"></i> Admin' +
+      '</button>' +
+      '<button type="button" class="perm-filter-chip" data-filter="data">' +
+      '<i data-lucide="trending-up" style="width:14px;height:14px;"></i> Dados' +
+      '</button>' +
+      '<button type="button" class="perm-filter-chip" data-filter="content">' +
+      '<i data-lucide="file-stack" style="width:14px;height:14px;"></i> Conteudo' +
+      '</button>';
+
+    if (filterToggle) {
+      let expanded = false;
+      filterToggle.addEventListener("click", () => {
+        const container = document.querySelector("[data-filter-chips]");
+        if (!container) return;
+        if (!expanded) {
+          container.insertAdjacentHTML("beforeend", extraChipsHTML);
+          expanded = true;
+          filterToggle.style.display = "none";
+          if (window.lucide) lucide.createIcons();
+          container.querySelectorAll("[data-filter]").forEach((chip) => {
+            chip.addEventListener("click", () => {
+              container.querySelectorAll("[data-filter]").forEach((c) => c.classList.remove("is-active"));
+              chip.classList.add("is-active");
+              state.activeFilter = chip.dataset.filter;
+              renderMatrix();
+            });
+          });
+        }
+      });
+    }
   };
 
   saveButton?.addEventListener("click", saveData);
@@ -259,5 +392,9 @@
     state.userSearch = userSearch.value;
     renderUsers();
   });
-  document.addEventListener("DOMContentLoaded", loadData);
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadData();
+    initFilters();
+  });
 })();
