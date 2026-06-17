@@ -62,7 +62,7 @@
         ${allItems
           .map(
             ([href, icon, label, key, roles]) =>
-              `<a href="${href}" class="${area === key ? "active" : ""}" ${roles ? `data-visible-roles="${roles}"` : ""}><i data-lucide="${icon}"></i><span>${label}</span></a>`
+              `<a href="${href}" class="${area === key ? "active" : ""}" draggable="false" ${roles ? `data-visible-roles="${roles}"` : ""}><i data-lucide="${icon}"></i><span>${label}</span></a>`
           )
           .join("")}
       </nav>
@@ -202,6 +202,12 @@
 
     const topbarNav = topbar.querySelector(".empresa-topbar-nav");
     if (topbarNav) {
+      topbarNav.addEventListener("dragstart", (e) => {
+        if (e.target.closest("a")) {
+          e.preventDefault();
+        }
+      });
+
       let draggedLink = null;
       let dragClone = null;
       let startX = 0;
