@@ -12561,8 +12561,7 @@ body.theme-dark .quick-access-group a {
 
 /* Sobrescrever regras de overflow para permitir scroll vertical e sticky funcionar */
 body[data-unified-admin] .company-dashboard-main {
-  overflow: hidden !important;
-  overflow-y: auto !important;
+  overflow: clip !important;
 }
 
 /* Exibir cargo do usuário na topbar */
