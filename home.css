@@ -12565,19 +12565,24 @@ body[data-unified-admin] .company-dashboard-main {
   overflow: clip !important;
 }
 
-/* Shell como container de scroll para topbar sticky funcionar */
+/* Topbar fixa no desktop - position fixed garante fixação no viewport */
 @media (min-width: 1024px) {
-  html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell {
-    height: 100vh !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    padding: 0 !important;
+  html body[data-unified-admin] .empresa-topbar {
+    position: fixed !important;
+    top: 18px !important;
+    left: 18px !important;
+    right: 18px !important;
+    z-index: 900 !important;
+    margin: 0 !important;
+    border-radius: 28px !important;
   }
 
-  html body[data-unified-admin] .empresa-topbar {
-    position: sticky !important;
-    top: 0 !important;
-    z-index: 900 !important;
+  html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell {
+    padding-top: 108px !important;
+  }
+
+  html body[data-unified-admin] .company-dashboard-main {
+    overflow-y: auto !important;
   }
 }
 
