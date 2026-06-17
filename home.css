@@ -9771,6 +9771,44 @@ body.theme-dark .goals-table-card td {
     grid-template-columns: 1fr;
   }
 
+  .goal-stat-card {
+    grid-template-columns: auto 1fr auto;
+    padding: 16px;
+    overflow: hidden;
+  }
+
+  .goal-stat-card>div:first-of-type {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .goal-stat-card span {
+    font-size: 0.7rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .goal-stat-card strong {
+    font-size: 1.15rem;
+  }
+
+  .goal-stat-card small {
+    font-size: 0.65rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .metas-shell {
+    padding: 12px;
+    overflow-x: hidden;
+  }
+
+  .company-goals-section {
+    overflow: hidden;
+  }
+
   .goals-bar-chart {
     gap: 10px;
     min-height: 180px;
