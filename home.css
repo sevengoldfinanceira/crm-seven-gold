@@ -12575,33 +12575,28 @@ body[data-unified-admin] .company-dashboard-main {
     z-index: 900 !important;
     margin: 0 !important;
     border-radius: 28px !important;
+    min-height: 70px !important;
+    width: auto !important;
+    flex: none !important;
   }
 
   html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell {
-    padding-top: 108px !important;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    padding-top: 110px !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
   }
 
   html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell::-webkit-scrollbar {
-    display: none;
+    display: none !important;
   }
 
   html body[data-unified-admin] {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
   }
 
   html body[data-unified-admin]::-webkit-scrollbar {
-    display: none;
-  }
-
-  html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell {
-    padding-top: 108px !important;
-  }
-
-  html body[data-unified-admin] .company-dashboard-main {
-    overflow-y: auto !important;
+    display: none !important;
   }
 }
 
