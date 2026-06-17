@@ -11790,6 +11790,7 @@ body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user small {
   html body[data-unified-admin].theme-dark .unified-admin-shell {
     background: #1f2329 !important;
     padding: 18px !important;
+    padding-top: 110px !important;
     gap: 18px !important;
   }
 
@@ -11871,6 +11872,7 @@ body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user small {
     height: auto !important;
     margin: 0 !important;
     padding: 18px !important;
+    padding-top: 110px !important;
     gap: 18px !important;
     background: #1f2329 !important;
     box-sizing: border-box !important;
@@ -11879,17 +11881,18 @@ body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user small {
 
   html[data-theme="dark"] body[data-unified-admin] .empresa-topbar,
   body[data-unified-admin].theme-dark .empresa-topbar {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    right: auto !important;
-    width: 100% !important;
+    position: fixed !important;
+    top: 18px !important;
+    left: 18px !important;
+    right: 18px !important;
+    width: auto !important;
     max-width: none !important;
     min-height: 70px !important;
     margin: 0 !important;
     padding: 10px 18px !important;
     border-radius: 28px !important;
     box-sizing: border-box !important;
+    z-index: 900 !important;
   }
 
   html[data-theme="dark"] body[data-unified-admin] .company-dashboard-main,
@@ -12565,9 +12568,12 @@ body[data-unified-admin] .company-dashboard-main {
   overflow: clip !important;
 }
 
-/* Topbar fixa no desktop - position fixed garante fixação no viewport */
+/* Topbar fixa no desktop - position fixed garante fixação no viewport (LIGHT + DARK) */
 @media (min-width: 1024px) {
-  html body[data-unified-admin] .empresa-topbar {
+  html body[data-unified-admin] .empresa-topbar,
+  html body[data-unified-admin].theme-dark .empresa-topbar,
+  html[data-theme="dark"] body[data-unified-admin] .empresa-topbar,
+  body.theme-dark .empresa-topbar {
     position: fixed !important;
     top: 18px !important;
     left: 18px !important;
@@ -12580,10 +12586,13 @@ body[data-unified-admin] .company-dashboard-main {
     flex: none !important;
   }
 
-  html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell {
+  html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin].theme-dark .company-dashboard-shell.unified-admin-shell,
+  html[data-theme="dark"] body[data-unified-admin] .company-dashboard-shell.unified-admin-shell,
+  body.theme-dark .company-dashboard-shell.unified-admin-shell {
+    padding-top: 110px !important;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
-    padding-top: 110px !important;
   }
 
   html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell::-webkit-scrollbar {
@@ -12597,11 +12606,6 @@ body[data-unified-admin] .company-dashboard-main {
 
   html body[data-unified-admin]::-webkit-scrollbar {
     display: none !important;
-  }
-
-  html body[data-unified-admin] .company-dashboard-main,
-  html body[data-unified-admin] .company-premium-dashboard {
-    margin-top: 0 !important;
   }
 }
 
