@@ -11646,8 +11646,9 @@ body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user small {
     width: 100% !important;
     min-height: 70px !important;
     margin: 0 !important;
-    position: relative !important;
-    z-index: 20 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 900 !important;
   }
 
   body[data-unified-admin] .company-dashboard-main,
