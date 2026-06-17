@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" style="background-color: #151a2e;">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,6 +20,14 @@
     <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
   <body data-require-auth data-permission-area="crm" data-login-page="crm-login.html" data-allowed-roles="dono,administrador,coordenador,representante,vendedor,financeiro,marketing" data-denied-redirect="crm-login.html">
+    <script>
+      (function() {
+        const theme = localStorage.getItem("seven-gold-theme") || "light";
+        if (theme === "dark") {
+          document.body.classList.add("theme-dark");
+        }
+      })();
+    </script>
     <div class="app-shell">
       <div class="sidebar-overlay"></div>
       <aside class="sidebar" aria-label="Menu do CRM">

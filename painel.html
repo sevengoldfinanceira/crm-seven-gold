@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" style="background-color: #151a2e;">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,7 +11,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="home.css?v=62" />
+    <link rel="stylesheet" href="home.css?v=63" />
     <link rel="stylesheet" href="painel.css?v=34" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
@@ -21,6 +21,14 @@
     <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
   <body class="entry-premium-body" data-require-auth data-login-page="index.html">
+    <script>
+      (function() {
+        const theme = localStorage.getItem("seven-gold-theme") || "light";
+        if (theme === "dark") {
+          document.body.classList.add("theme-dark");
+        }
+      })();
+    </script>
     <main class="premium-entry-shell">
       <header class="premium-entry-brand" aria-label="Seven Gold Financeira">
         <img src="assets/logo-copa.png" alt="Seven Gold Financeira" />
