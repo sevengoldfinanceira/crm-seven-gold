@@ -929,33 +929,23 @@ body.theme-dark textarea:focus {
   bottom: 28px;
   right: 28px;
   z-index: 99999;
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background: rgba(212, 175, 55, 0.12);
+  background: transparent;
   color: #d4af37;
-  border: 2.5px solid #d4af37;
-  box-shadow:
-    0 0 12px rgba(212, 175, 55, 0.45),
-    0 0 28px rgba(212, 175, 55, 0.20),
-    0 8px 24px rgba(0, 0, 0, 0.25);
+  border: none;
+  box-shadow: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
 }
 
 .theme-toggle-btn:hover {
-  transform: scale(1.12) translateY(-3px);
-  background: rgba(212, 175, 55, 0.22);
-  border-color: #f5c84c;
-  box-shadow:
-    0 0 18px rgba(212, 175, 55, 0.60),
-    0 0 40px rgba(212, 175, 55, 0.30),
-    0 12px 30px rgba(0, 0, 0, 0.35);
+  transform: scale(1.15) translateY(-3px);
+  background: rgba(212, 175, 55, 0.10);
 }
 
 .theme-toggle-btn:active {
@@ -963,37 +953,37 @@ body.theme-dark textarea:focus {
 }
 
 .theme-toggle-btn svg {
-  width: 26px;
-  height: 26px;
-  stroke-width: 2;
+  width: 48px;
+  height: 48px;
   cursor: pointer;
   transition: all 0.2s ease;
-  filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.5));
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
 }
 
-/* Modo escuro CRM: borda dourada neon mais intensa */
+/* Modo escuro CRM: glow dourado */
 body.theme-dark .theme-toggle-btn {
-  background: rgba(212, 175, 55, 0.10);
-  border-color: #d4af37;
-  box-shadow:
-    0 0 14px rgba(212, 175, 55, 0.55),
-    0 0 32px rgba(212, 175, 55, 0.25),
-    0 8px 24px rgba(0, 0, 0, 0.40);
+  background: transparent;
+  color: #d4af37;
+  border: none;
+  box-shadow: none;
 }
 
 body.theme-dark .theme-toggle-btn:hover {
-  background: rgba(212, 175, 55, 0.18);
-  border-color: #f5c84c;
-  box-shadow:
-    0 0 22px rgba(212, 175, 55, 0.70),
-    0 0 48px rgba(212, 175, 55, 0.35),
-    0 12px 30px rgba(0, 0, 0, 0.45);
+  background: rgba(212, 175, 55, 0.12);
+}
+
+body.theme-dark .theme-toggle-btn svg {
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.7));
 }
 
 @media (max-width: 768px) {
   .theme-toggle-btn {
     bottom: 16px;
     right: 16px;
+    width: 50px;
+    height: 50px;
+  }
+  .theme-toggle-btn svg {
     width: 42px;
     height: 42px;
   }
