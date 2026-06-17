@@ -200,6 +200,10 @@
     const sidebar = createSidebar();
     layout.prepend(sidebar);
 
+    if (window.matchMedia("(min-width: 1024px)").matches) {
+      layout.style.paddingTop = "110px";
+    }
+
     const topbarNav = topbar.querySelector(".empresa-topbar-nav");
     if (topbarNav) {
       topbarNav.addEventListener("dragstart", (e) => {

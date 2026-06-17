@@ -12581,9 +12581,9 @@ body[data-unified-admin] .company-dashboard-main {
   }
 
   html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell {
-    padding-top: 110px !important;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
+    padding-top: 110px !important;
   }
 
   html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell::-webkit-scrollbar {
@@ -12597,6 +12597,11 @@ body[data-unified-admin] .company-dashboard-main {
 
   html body[data-unified-admin]::-webkit-scrollbar {
     display: none !important;
+  }
+
+  html body[data-unified-admin] .company-dashboard-main,
+  html body[data-unified-admin] .company-premium-dashboard {
+    margin-top: 0 !important;
   }
 }
 
