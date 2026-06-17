@@ -11079,3 +11079,87 @@ body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user small {
     display: none !important;
   }
 }
+
+/* Correção final desktop: Empresa em topbar horizontal, sem coluna lateral */
+@media (min-width: 1024px) {
+  html body[data-unified-admin] > main.company-dashboard-shell,
+  html body[data-unified-admin] > main.company-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin] > main.history-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin] > main.profile-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin] .history-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: none !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 18px !important;
+    gap: 18px !important;
+  }
+
+  html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell.sidebar-collapsed,
+  html body[data-unified-admin] .history-dashboard-shell.unified-admin-shell.sidebar-collapsed,
+  html body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell.sidebar-collapsed {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: none !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+
+  html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell > aside.company-sidebar,
+  html body[data-unified-admin] .history-dashboard-shell.unified-admin-shell > aside.company-sidebar,
+  html body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell > aside.company-sidebar,
+  html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell > aside.unified-admin-sidebar,
+  html body[data-unified-admin] .history-dashboard-shell.unified-admin-shell > aside.unified-admin-sidebar,
+  html body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell > aside.unified-admin-sidebar {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+  }
+
+  html body[data-unified-admin] .empresa-topbar {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    order: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 70px !important;
+    margin: 0 !important;
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+  }
+
+  html body[data-unified-admin] .company-dashboard-main,
+  html body[data-unified-admin] .history-dashboard-main,
+  html body[data-unified-admin] .profile-page-shell,
+  html body[data-unified-admin] .documents-shell,
+  html body[data-unified-admin] .reports-shell,
+  html body[data-unified-admin] .permissions-shell,
+  html body[data-unified-admin] .finance-shell,
+  html body[data-unified-admin] .commission-shell,
+  html body[data-unified-admin] .team-shell,
+  html body[data-unified-admin] .org-shell,
+  html body[data-unified-admin] .metas-shell,
+  html body[data-unified-admin] .marketing-shell {
+    flex: 1 1 auto !important;
+    order: 1 !important;
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    justify-self: stretch !important;
+  }
+}
