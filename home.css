@@ -12579,6 +12579,25 @@ body[data-unified-admin] .company-dashboard-main {
 
   html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell {
     padding-top: 108px !important;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell::-webkit-scrollbar {
+    display: none;
+  }
+
+  html body[data-unified-admin] {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  html body[data-unified-admin]::-webkit-scrollbar {
+    display: none;
+  }
+
+  html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell {
+    padding-top: 108px !important;
   }
 
   html body[data-unified-admin] .company-dashboard-main {
