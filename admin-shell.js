@@ -64,7 +64,6 @@
           <span class="empresa-topbar-avatar" data-user-avatar>U</span>
           <span class="empresa-topbar-user">
             <strong data-user-name>Usuário</strong>
-            <small data-user-role>Perfil</small>
           </span>
         </a>
       </div>
