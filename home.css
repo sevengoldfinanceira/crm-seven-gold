@@ -6493,34 +6493,68 @@ body.theme-dark .career-time-toolbar a:hover {
 /* Botão Alternador de Tema */
 .theme-toggle-btn {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 28px;
+  right: 28px;
   z-index: 9999;
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--surface);
-  color: var(--gold);
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  background: rgba(212, 175, 55, 0.12);
+  color: #d4af37;
+  border: 2.5px solid #d4af37;
+  box-shadow:
+    0 0 12px rgba(212, 175, 55, 0.45),
+    0 0 28px rgba(212, 175, 55, 0.20),
+    0 8px 24px rgba(0, 0, 0, 0.25);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .theme-toggle-btn:hover {
-  transform: scale(1.1) translateY(-3px);
-  background: var(--surface-soft);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
-  border-color: var(--gold);
+  transform: scale(1.12) translateY(-3px);
+  background: rgba(212, 175, 55, 0.22);
+  border-color: #f5c84c;
+  box-shadow:
+    0 0 18px rgba(212, 175, 55, 0.60),
+    0 0 40px rgba(212, 175, 55, 0.30),
+    0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.theme-toggle-btn:active {
+  transform: scale(0.95);
 }
 
 .theme-toggle-btn svg {
-  font-weight: 700;
+  width: 26px;
+  height: 26px;
+  stroke-width: 2;
   cursor: pointer;
   transition: all 0.2s ease;
+  filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.5));
+}
+
+/* Modo escuro: borda dourada neon mais intensa */
+body.theme-dark .theme-toggle-btn {
+  background: rgba(212, 175, 55, 0.10);
+  border-color: #d4af37;
+  box-shadow:
+    0 0 14px rgba(212, 175, 55, 0.55),
+    0 0 32px rgba(212, 175, 55, 0.25),
+    0 8px 24px rgba(0, 0, 0, 0.40);
+}
+
+body.theme-dark .theme-toggle-btn:hover {
+  background: rgba(212, 175, 55, 0.18);
+  border-color: #f5c84c;
+  box-shadow:
+    0 0 22px rgba(212, 175, 55, 0.70),
+    0 0 48px rgba(212, 175, 55, 0.35),
+    0 12px 30px rgba(0, 0, 0, 0.45);
 }
 
 .use-other-account-btn:hover {
