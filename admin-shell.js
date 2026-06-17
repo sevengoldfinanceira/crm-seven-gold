@@ -40,7 +40,18 @@
   ];
 
   const createTopbar = () => {
-    const allItems = categories.flatMap((cat) => cat.items);
+    let allItems = categories.flatMap((cat) => cat.items);
+    const savedOrder = JSON.parse(localStorage.getItem("seven-gold-topbar-order") || "[]");
+    if (savedOrder.length) {
+      allItems.sort((a, b) => {
+        const idxA = savedOrder.indexOf(a[0]);
+        const idxB = savedOrder.indexOf(b[0]);
+        if (idxA === -1 && idxB === -1) return 0;
+        if (idxA === -1) return 1;
+        if (idxB === -1) return -1;
+        return idxA - idxB;
+      });
+    }
     const topbar = document.createElement("header");
     topbar.className = "empresa-topbar";
     topbar.innerHTML = `
@@ -188,6 +199,104 @@
     layout.prepend(topbar);
     const sidebar = createSidebar();
     layout.prepend(sidebar);
+
+    const topbarNav = topbar.querySelector(".empresa-topbar-nav");
+    if (topbarNav) {
+      let draggedLink = null;
+      let dragClone = null;
+      let startX = 0;
+      let isDragging = false;
+      let wasDragged = false;
+
+      topbarNav.addEventListener("pointerdown", (e) => {
+        const link = e.target.closest("a");
+        if (!link) return;
+        if (e.button !== 0) return;
+        startX = e.clientX;
+        isDragging = false;
+        wasDragged = false;
+        draggedLink = link;
+
+        const onPointerMove = (ev) => {
+          if (!draggedLink) return;
+          const dx = Math.abs(ev.clientX - startX);
+          if (!isDragging && dx > 8) {
+            isDragging = true;
+            draggedLink.classList.add("dragging");
+            dragClone = draggedLink.cloneNode(true);
+            dragClone.classList.add("drag-clone");
+            dragClone.style.cssText = "position:fixed;pointer-events:none;z-index:9999;opacity:.85;margin:0;padding:8px 14px;background:#151a2e;border:1px solid rgba(212,175,55,0.4);border-radius:12px;color:#fff;";
+            document.body.appendChild(dragClone);
+          }
+          if (isDragging && dragClone) {
+            dragClone.style.left = (ev.clientX - dragClone.offsetWidth / 2) + "px";
+            dragClone.style.top = (ev.clientY - dragClone.offsetHeight / 2) + "px";
+            
+            const el = document.elementFromPoint(ev.clientX, ev.clientY);
+            const target = el ? el.closest("a") : null;
+            if (target && target !== draggedLink && target.parentNode === topbarNav) {
+              const rect = target.getBoundingClientRect();
+              const mid = rect.left + rect.width / 2;
+              topbarNav.querySelectorAll(".drag-over-left, .drag-over-right").forEach((cls) => cls.classList.remove("drag-over-left", "drag-over-right"));
+              target.classList.add(ev.clientX < mid ? "drag-over-left" : "drag-over-right");
+            } else {
+              topbarNav.querySelectorAll(".drag-over-left, .drag-over-right").forEach((cls) => cls.classList.remove("drag-over-left", "drag-over-right"));
+            }
+          }
+        };
+
+        const onPointerUp = (ev) => {
+          document.removeEventListener("pointermove", onPointerMove);
+          document.removeEventListener("pointerup", onPointerUp);
+          document.removeEventListener("pointercancel", onPointerUp);
+
+          if (isDragging && draggedLink) {
+            const el = document.elementFromPoint(ev.clientX, ev.clientY);
+            const target = el ? el.closest("a") : null;
+            if (target && target !== draggedLink && target.parentNode === topbarNav) {
+              const rect = target.getBoundingClientRect();
+              const mid = rect.left + rect.width / 2;
+              if (ev.clientX < mid) {
+                topbarNav.insertBefore(draggedLink, target);
+              } else {
+                topbarNav.insertBefore(draggedLink, target.nextSibling);
+              }
+            }
+            draggedLink.classList.remove("dragging");
+            topbarNav.querySelectorAll(".drag-over-left, .drag-over-right").forEach((cls) => cls.classList.remove("drag-over-left", "drag-over-right"));
+            
+            const newOrder = [];
+            topbarNav.querySelectorAll("a").forEach((a) => {
+              const href = a.getAttribute("href");
+              if (href) newOrder.push(href);
+            });
+            localStorage.setItem("seven-gold-topbar-order", JSON.stringify(newOrder));
+            wasDragged = true;
+          } else {
+            wasDragged = false;
+          }
+
+          if (dragClone) {
+            dragClone.remove();
+            dragClone = null;
+          }
+          draggedLink = null;
+          isDragging = false;
+        };
+
+        document.addEventListener("pointermove", onPointerMove);
+        document.addEventListener("pointerup", onPointerUp);
+        document.addEventListener("pointercancel", onPointerUp);
+      });
+
+      topbarNav.addEventListener("click", (e) => {
+        if (wasDragged) {
+          e.preventDefault();
+          e.stopPropagation();
+          wasDragged = false;
+        }
+      }, true);
+    }
 
     const applyCollapsed = (collapsed) => {
       layout.classList.toggle("sidebar-collapsed", collapsed);

@@ -11419,6 +11419,18 @@ body.theme-dark .company-module-grid>a:hover {
   border-color: rgba(212, 175, 55, 0.22);
 }
 
+.empresa-topbar-nav a.drag-over-left {
+  box-shadow: -2px 0 0 0 #d4af37 !important;
+}
+
+.empresa-topbar-nav a.drag-over-right {
+  box-shadow: 2px 0 0 0 #d4af37 !important;
+}
+
+.empresa-topbar-nav a.dragging {
+  opacity: 0.35 !important;
+}
+
 /* --- Profile / Actions (direita) --- */
 .empresa-topbar-actions {
   display: flex;
