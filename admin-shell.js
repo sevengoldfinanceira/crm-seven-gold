@@ -46,10 +46,6 @@
     topbar.innerHTML = `
       <a class="empresa-topbar-brand" href="empresa.html" aria-label="Seven Gold">
         <img src="assets/logo-copa.png" alt="" />
-        <span class="empresa-topbar-brand-text">
-          <strong>SEVEN GOLD</strong>
-          <small>EMPRESA</small>
-        </span>
       </a>
       <nav class="empresa-topbar-nav" aria-label="Navegação da empresa">
         ${allItems

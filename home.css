@@ -916,8 +916,8 @@ body[data-unified-admin]>.unified-admin-shell {
   border-right: 1px solid rgba(212, 175, 55, 0.35);
   background:
     radial-gradient(circle at top left, rgba(212, 175, 55, 0.08), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(128, 0, 180, 0.18), transparent 35%),
-    linear-gradient(180deg, #08000f 0%, #12001f 45%, #1b002b 100%);
+    radial-gradient(circle at bottom right, rgba(90, 120, 255, 0.08), transparent 35%),
+    linear-gradient(180deg, #151a2e 0%, #0d1120 100%);
   box-shadow: 12px 0 35px rgba(0, 0, 0, 0.35);
   overflow: hidden;
 }
@@ -8831,8 +8831,8 @@ mark {
 
 body[data-unified-admin]:not(.theme-dark) {
   --company-page-bg: #ededeb;
-  --company-sidebar-bg: #0b0d10;
-  --company-sidebar-bg-soft: #111318;
+  --company-sidebar-bg: #151a2e;
+  --company-sidebar-bg-soft: #1f2642;
   --company-main-bg: #f5f6f8;
   --company-card-bg: #ffffff;
   --company-text: #111827;
@@ -9119,7 +9119,7 @@ body[data-unified-admin].theme-dark .company-sidebar,
 body[data-unified-admin].theme-dark .unified-admin-sidebar {
   background:
     radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.07), transparent 30%),
-    linear-gradient(180deg, #0d0f12 0%, #07080a 100%) !important;
+    linear-gradient(180deg, #151a2e 0%, #0d1120 100%) !important;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35) !important;
 }
 
@@ -10220,7 +10220,7 @@ body[data-unified-admin] .unified-admin-sidebar {
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
   border-radius: 30px !important;
   overflow: hidden !important;
-  background: linear-gradient(180deg, #0b0d10 0%, #111318 100%) !important;
+  background: linear-gradient(180deg, #151a2e 0%, #0d1120 100%) !important;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22) !important;
   color: #e5e7eb !important;
   transition: width 0.25s ease, min-width 0.25s ease, max-width 0.25s ease, padding 0.25s ease !important;
@@ -10228,7 +10228,7 @@ body[data-unified-admin] .unified-admin-sidebar {
 
 body[data-unified-admin].theme-dark .company-sidebar,
 body[data-unified-admin].theme-dark .unified-admin-sidebar {
-  background: linear-gradient(180deg, #07090c 0%, #0d0f12 100%) !important;
+  background: linear-gradient(180deg, #151a2e 0%, #0d1120 100%) !important;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35) !important;
 }
 
@@ -11265,7 +11265,7 @@ body.theme-dark .company-module-grid>a:hover {
     margin: 18px 18px 0 18px;
     padding: 10px 18px;
     border-radius: 28px;
-    background: #150126;
+    background: #151a2e;
     box-shadow: 0 14px 35px rgba(0, 0, 0, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.06);
     position: sticky;
@@ -11481,7 +11481,7 @@ body.theme-dark .company-module-grid>a:hover {
    ============================================================ */
 body.theme-dark .empresa-topbar,
 [data-theme="dark"] .empresa-topbar {
-  background: #101216 !important;
+  background: #151a2e !important;
   border-color: rgba(255, 255, 255, 0.06) !important;
   box-shadow: 0 14px 35px rgba(0, 0, 0, 0.4) !important;
 }
@@ -11548,7 +11548,7 @@ body.theme-dark .empresa-topbar-user small,
    Modo Claro — Empresa Topbar (body[data-unified-admin] scope)
    ============================================================ */
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar {
-  background: #150126 !important;
+  background: #151a2e !important;
   border-color: rgba(255, 255, 255, 0.06) !important;
   box-shadow: 0 14px 35px rgba(15, 23, 42, 0.28) !important;
 }
@@ -11951,7 +11951,7 @@ body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user small {
   }
 
   body[data-unified-admin] .empresa-topbar-brand {
-    min-width: 220px !important;
+    min-width: auto !important;
   }
 
   body[data-unified-admin] .empresa-topbar-brand img {
@@ -12568,35 +12568,35 @@ body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user small {
   height: 42px !important;
   padding: 0 !important;
   border-radius: 50% !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(15, 23, 42, 0.15) !important;
-  color: #475569 !important;
+  background: transparent !important;
+  border: 1px solid rgba(212, 175, 55, 0.35) !important;
+  color: #d4af37 !important;
   cursor: pointer !important;
   transition: all 0.2s ease-in-out !important;
   margin-right: 8px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: none !important;
 }
 
 body.theme-dark .topbar-action-btn,
 [data-theme="dark"] .topbar-action-btn {
-  background: rgba(30, 41, 59, 0.9) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
-  color: #f1f5f9 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  background: transparent !important;
+  border-color: rgba(212, 175, 55, 0.35) !important;
+  color: #d4af37 !important;
+  box-shadow: none !important;
 }
 
 .topbar-action-btn:hover {
-  background: #ffffff !important;
-  color: #0f172a !important;
+  background: rgba(212, 175, 55, 0.12) !important;
+  color: #f5c84c !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
+  border-color: #f5c84c !important;
 }
 
 body.theme-dark .topbar-action-btn:hover,
 [data-theme="dark"] .topbar-action-btn:hover {
-  background: #1e293b !important;
-  color: #ffffff !important;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+  background: rgba(212, 175, 55, 0.12) !important;
+  color: #f5c84c !important;
+  border-color: #f5c84c !important;
 }
 
 .topbar-action-btn svg,
