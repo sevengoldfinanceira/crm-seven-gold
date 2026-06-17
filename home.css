@@ -11163,3 +11163,84 @@ body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user small {
     justify-self: stretch !important;
   }
 }
+
+/* Ajuste de respiro e scroll: modo escuro igual ao claro, sem rolagem fantasma */
+@media (min-width: 1024px) {
+  html,
+  body[data-unified-admin] {
+    min-height: 100% !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  html body[data-unified-admin] > main.company-dashboard-shell,
+  html body[data-unified-admin] > main.company-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin] > main.history-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin] > main.profile-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin] .company-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin] .history-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell {
+    min-height: 100vh !important;
+    height: auto !important;
+    padding: 18px !important;
+    gap: 18px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  html body[data-unified-admin].theme-dark > main.company-dashboard-shell,
+  html body[data-unified-admin].theme-dark > main.company-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin].theme-dark > main.history-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin].theme-dark > main.profile-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin].theme-dark .company-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin].theme-dark .history-dashboard-shell.unified-admin-shell,
+  html body[data-unified-admin].theme-dark .profile-dashboard-shell.unified-admin-shell {
+    background: #1f2329 !important;
+    padding: 18px !important;
+    gap: 18px !important;
+  }
+
+  html body[data-unified-admin] .empresa-topbar,
+  html body[data-unified-admin].theme-dark .empresa-topbar {
+    min-height: 70px !important;
+    border-radius: 28px !important;
+    padding: 10px 18px !important;
+    box-sizing: border-box !important;
+  }
+
+  html body[data-unified-admin] .company-dashboard-main,
+  html body[data-unified-admin] .history-dashboard-main,
+  html body[data-unified-admin] .profile-page-shell,
+  html body[data-unified-admin] .documents-shell,
+  html body[data-unified-admin] .reports-shell,
+  html body[data-unified-admin] .permissions-shell,
+  html body[data-unified-admin] .finance-shell,
+  html body[data-unified-admin] .commission-shell,
+  html body[data-unified-admin] .team-shell,
+  html body[data-unified-admin] .org-shell,
+  html body[data-unified-admin] .metas-shell,
+  html body[data-unified-admin] .marketing-shell {
+    min-height: auto !important;
+    height: auto !important;
+    border-radius: 32px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  html body[data-unified-admin].theme-dark .company-dashboard-main,
+  html body[data-unified-admin].theme-dark .history-dashboard-main,
+  html body[data-unified-admin].theme-dark .profile-page-shell,
+  html body[data-unified-admin].theme-dark .documents-shell,
+  html body[data-unified-admin].theme-dark .reports-shell,
+  html body[data-unified-admin].theme-dark .permissions-shell,
+  html body[data-unified-admin].theme-dark .finance-shell,
+  html body[data-unified-admin].theme-dark .commission-shell,
+  html body[data-unified-admin].theme-dark .team-shell,
+  html body[data-unified-admin].theme-dark .org-shell,
+  html body[data-unified-admin].theme-dark .metas-shell,
+  html body[data-unified-admin].theme-dark .marketing-shell {
+    background: #0f1115 !important;
+    border-radius: 32px !important;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35) !important;
+  }
+}
