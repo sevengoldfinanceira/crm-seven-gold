@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.dataset.adminSidebar = localStorage.getItem("seven-gold-admin-sidebar-collapsed") === "true" ? "collapsed" : "expanded";</script>
-    <link rel="stylesheet" href="home.css?v=50" />
+    <link rel="stylesheet" href="home.css?v=51" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -95,6 +95,103 @@
           <a href="permissoes.html" data-visible-roles="dono"><i data-lucide="lock-keyhole"></i><div><h2>Permissões</h2><p>Quem acessa CRM, financeiro, admin e arquivos.</p><strong>Acessar <span>→</span></strong></div></a>
           <a href="metas.html" data-visible-roles="dono,administrador,coordenador"><i data-lucide="target"></i><div><h2>Metas</h2><p>Objetivos mensais, ranking e campanhas internas.</p><strong>Acessar <span>→</span></strong></div></a>
           <a href="historia-dono.html" data-visible-roles="dono"><i data-lucide="crown"></i><div><h2>História do Dono</h2><p>Crédito vendido, cotas, salário, totais e médias por ano.</p><strong>Acessar <span>→</span></strong></div></a>
+        </section>
+
+        <section class="company-bottom-grid" aria-label="Dados do painel">
+          <article class="panel-card panel-vendas">
+            <header>
+              <div>
+                <h2>Desempenho de vendas</h2>
+              </div>
+              <span class="badge-filter">Este mês</span>
+            </header>
+            <div class="vendas-legend">
+              <span><i class="dot dot-blue"></i> Realizado (R$)</span>
+              <span><i class="dot dot-gray"></i> Meta (R$)</span>
+            </div>
+            <div class="vendas-chart">
+              <div class="chart-y-axis">
+                <span>200k</span><span>150k</span><span>100k</span><span>50k</span><span>0</span>
+              </div>
+              <div class="chart-bars">
+                <div class="chart-col"><div class="bar-group"><div class="bar bar-blue" style="height:50%"><span>100k</span></div><div class="bar bar-gray" style="height:55%"></div></div><label>Jan</label></div>
+                <div class="chart-col"><div class="bar-group"><div class="bar bar-blue" style="height:55%"><span>110k</span></div><div class="bar bar-gray" style="height:60%"></div></div><label>Fev</label></div>
+                <div class="chart-col"><div class="bar-group"><div class="bar bar-blue" style="height:65%"><span>130k</span></div><div class="bar bar-gray" style="height:68%"></div></div><label>Mar</label></div>
+                <div class="chart-col"><div class="bar-group"><div class="bar bar-blue" style="height:70%"><span>140k</span></div><div class="bar bar-gray" style="height:72%"></div></div><label>Abr</label></div>
+                <div class="chart-col"><div class="bar-group"><div class="bar bar-blue" style="height:80%"><span>160k</span></div><div class="bar bar-gray" style="height:82%"></div></div><label>Mai</label></div>
+                <div class="chart-col"><div class="bar-group"><div class="bar bar-blue" style="height:85%"><span>170k</span></div><div class="bar bar-gray" style="height:88%"></div></div><label>Jun</label></div>
+                <div class="chart-col"><div class="bar-group"><div class="bar bar-blue" style="height:88%"><span>176k</span></div><div class="bar bar-gray" style="height:90%"></div></div><label>Jul</label></div>
+              </div>
+            </div>
+            <div class="vendas-footer">
+              <div><small>Total realizado</small><strong>R$ 145.000</strong></div>
+              <div><small>Meta do mês</small><strong>R$ 176.000</strong></div>
+              <div class="meta-circle"><span>82%</span></div>
+            </div>
+          </article>
+
+          <article class="panel-card panel-financeiro">
+            <header>
+              <div><h2>Resumo financeiro</h2></div>
+              <span class="badge-filter">Este mês</span>
+            </header>
+            <div class="finance-rows">
+              <div class="finance-row">
+                <span class="finance-icon fi-green"><i data-lucide="trending-up"></i></span>
+                <div><small>Receitas</small><strong>R$ 230.000</strong></div>
+                <span class="positive">+18%</span>
+              </div>
+              <div class="finance-row">
+                <span class="finance-icon fi-red"><i data-lucide="trending-down"></i></span>
+                <div><small>Despesas</small><strong>R$ 85.000</strong></div>
+                <span class="negative">-8%</span>
+              </div>
+              <div class="finance-row">
+                <span class="finance-icon fi-blue"><i data-lucide="wallet"></i></span>
+                <div><small>Lucro líquido</small><strong>R$ 145.000</strong></div>
+                <span class="positive">+24%</span>
+              </div>
+            </div>
+            <div class="meta-mensal">
+              <div class="meta-mensal-header"><span>Meta mensal</span><strong>82%</strong></div>
+              <div class="meta-bar"><div class="meta-bar-fill" style="width:82%"></div></div>
+              <small>R$ 145.000 de R$ 176.000</small>
+            </div>
+          </article>
+
+          <article class="panel-card panel-atividades">
+            <header>
+              <div><h2>Atividades recentes</h2></div>
+              <a href="#" class="badge-filter">Ver todas</a>
+            </header>
+            <ul class="atividade-lista">
+              <li>
+                <span class="atividade-icon ai-green"><i data-lucide="dollar-sign"></i></span>
+                <div><strong>Nova venda realizada</strong><small>Valor: R$ 4.500,00</small></div>
+                <time>Hoje, 14:30</time>
+              </li>
+              <li>
+                <span class="atividade-icon ai-blue"><i data-lucide="user-plus"></i></span>
+                <div><strong>Novo lead cadastrado</strong><small>Origem: Instagram</small></div>
+                <time>Hoje, 11:15</time>
+              </li>
+              <li>
+                <span class="atividade-icon ai-yellow"><i data-lucide="percent"></i></span>
+                <div><strong>Comissão pendente criada</strong><small>Valor: R$ 1.250,00</small></div>
+                <time>Ontem, 16:45</time>
+              </li>
+              <li>
+                <span class="atividade-icon ai-purple"><i data-lucide="file-text"></i></span>
+                <div><strong>Documento enviado</strong><small>Contrato Cliente João Silva</small></div>
+                <time>Ontem, 10:20</time>
+              </li>
+              <li>
+                <span class="atividade-icon ai-pink"><i data-lucide="megaphone"></i></span>
+                <div><strong>Campanha iniciada</strong><small>Campanha Verão 2024</small></div>
+                <time>17/05/2024</time>
+              </li>
+            </ul>
+          </article>
         </section>
       </section>
     </main>

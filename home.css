@@ -6490,6 +6490,266 @@ body.theme-dark .career-time-toolbar a:hover {
   border-color: var(--gold) !important;
 }
 
+/* ============================================================
+   Painel Inicial — Grid inferior
+   ============================================================ */
+.company-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.panel-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.panel-card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.panel-card header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.badge-filter {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* --- Gráfico de Vendas --- */
+.vendas-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.vendas-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-blue { background: #3b82f6; }
+.dot-gray { background: #d1d5db; }
+
+.vendas-chart {
+  display: flex;
+  gap: 10px;
+  height: 180px;
+  margin-bottom: 16px;
+}
+
+.chart-y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #9ca3af;
+  text-align: right;
+  min-width: 36px;
+  padding-top: 4px;
+}
+
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex: 1;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 4px;
+}
+
+.chart-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.bar-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 150px;
+  width: 100%;
+  justify-content: center;
+}
+
+.bar {
+  width: 18px;
+  border-radius: 5px 5px 0 0;
+  position: relative;
+  min-height: 4px;
+  transition: height 0.4s ease;
+}
+
+.bar-blue { background: linear-gradient(180deg, #3b82f6, #2563eb); }
+.bar-gray { background: #e5e7eb; width: 14px; }
+
+.bar span {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.chart-col label {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.vendas-footer {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding-top: 14px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.vendas-footer small {
+  display: block;
+  font-size: 11px;
+  color: #9ca3af;
+  margin-bottom: 2px;
+}
+
+.vendas-footer strong {
+  font-size: 16px;
+  color: #111827;
+}
+
+.meta-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 4px solid #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  position: relative;
+}
+
+.meta-circle::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 4px solid #e5e7eb;
+  z-index: -1;
+}
+
+.meta-circle span {
+  font-size: 13px;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+/* --- Resumo Financeiro --- */
+.finance-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.finance-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.finance-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.finance-icon i, .finance-icon svg { width: 18px; height: 18px; }
+
+.fi-green { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
+.fi-red { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+.fi-blue { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+
+.finance-row div { flex: 1; }
+.finance-row small { display: block; font-size: 12px; color: #9ca3af; }
+.finance-row strong { font-size: 18px; color: #111827; }
+.positive { font-size: 12px; font-weight: 600; color: #22c55e; }
+.negative { font-size: 12px; font-weight: 600; color: #ef4444; }
+
+/* --- Meta Mensal --- */
+.meta-mensal { padding-top: 16px; border-top: 1px solid #f3f4f6; }
+.meta-mensal-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.meta-mensal-header span { font-size: 13px; color: #6b7280; }
+.meta-mensal-header strong { font-size: 14px; color: #3b82f6; }
+.meta-bar { height: 8px; background: #e5e7eb; border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
+.meta-bar-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); border-radius: 99px; }
+.meta-mensal small { font-size: 12px; color: #9ca3af; }
+
+/* --- Atividades Recentes --- */
+.atividade-lista { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+.atividade-lista li { display: flex; align-items: center; gap: 12px; }
+.atividade-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.atividade-icon i, .atividade-icon svg { width: 16px; height: 16px; }
+.ai-green { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
+.ai-blue { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+.ai-yellow { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+.ai-purple { background: rgba(139, 92, 246, 0.12); color: #8b5cf6; }
+.ai-pink { background: rgba(236, 72, 153, 0.12); color: #ec4899; }
+.atividade-lista li div { flex: 1; min-width: 0; }
+.atividade-lista li strong { display: block; font-size: 13px; color: #111827; }
+.atividade-lista li small { display: block; font-size: 12px; color: #9ca3af; }
+.atividade-lista li time { font-size: 11px; color: #9ca3af; white-space: nowrap; }
+
+/* --- Responsivo --- */
+@media (max-width: 1200px) { .company-bottom-grid { grid-template-columns: 1fr 1fr; } .panel-atividades { grid-column: 1 / -1; } }
+@media (max-width: 768px) { .company-bottom-grid { grid-template-columns: 1fr; } }
+
+/* --- Modo Escuro — Painel --- */
+body.theme-dark .panel-card { background: #111318 !important; border-color: rgba(255,255,255,0.06) !important; box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important; }
+body.theme-dark .panel-card header h2, body.theme-dark .finance-row strong, body.theme-dark .atividade-lista li strong, body.theme-dark .vendas-footer strong { color: #f3f4f6 !important; }
+body.theme-dark .chart-y-axis span, body.theme-dark .chart-col label, body.theme-dark .vendas-legend, body.theme-dark .finance-row small, body.theme-dark .atividade-lista li small, body.theme-dark .atividade-lista li time, body.theme-dark .meta-mensal-header span, body.theme-dark .meta-mensal small { color: #9ca3af !important; }
+body.theme-dark .badge-filter { background: rgba(255,255,255,0.06) !important; color: #9ca3af !important; }
+body.theme-dark .bar-gray { background: #2a2d35 !important; }
+body.theme-dark .vendas-footer { border-top-color: rgba(255,255,255,0.06) !important; }
+body.theme-dark .meta-bar { background: #2a2d35 !important; }
+body.theme-dark .meta-mensal { border-top-color: rgba(255,255,255,0.06) !important; }
+
 /* Botão Alternador de Tema */
 .theme-toggle-btn {
   position: fixed;
@@ -10712,9 +10972,9 @@ body.theme-dark .company-module-grid>a:hover {
     margin: 18px 18px 0 18px;
     padding: 10px 18px;
     border-radius: 28px;
-    background: #ffffff;
-    box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    background: #151a2e;
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     position: sticky;
     top: 0;
     z-index: 900;
