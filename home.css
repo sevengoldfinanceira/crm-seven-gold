@@ -11656,9 +11656,9 @@ body.theme-dark .company-module-grid>a:hover {
     margin: 18px 18px 0 18px;
     padding: 10px 18px;
     border-radius: 28px;
-    background: #151a2e;
-    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(135deg, #080B18 0%, #10162A 55%, #151B33 100%) !important;
+    border: 1px solid rgba(212, 175, 55, 0.18) !important;
+    box-shadow: 0 18px 45px rgba(8, 11, 24, 0.28) !important;
     position: sticky;
     top: 18px;
     z-index: 900;
@@ -11748,14 +11748,14 @@ body.theme-dark .company-module-grid>a:hover {
 .empresa-topbar-brand-text strong {
   font-size: 14px;
   font-weight: 800;
-  color: #111827;
+  color: #D7DEEA;
   letter-spacing: 0.5px;
 }
 
 .empresa-topbar-brand-text small {
   font-size: 10px;
   font-weight: 600;
-  color: #9ca3af;
+  color: #9CA6B8;
   letter-spacing: 1.2px;
   text-transform: uppercase;
 }
@@ -11787,7 +11787,7 @@ body.theme-dark .company-module-grid>a:hover {
   font-size: 13px;
   font-weight: 500;
   text-decoration: none;
-  color: #6b7280;
+  color: #9CA6B8 !important;
   white-space: nowrap;
   transition: all 0.2s ease;
   border: 1px solid transparent;
@@ -11798,18 +11798,34 @@ body.theme-dark .company-module-grid>a:hover {
   width: 16px;
   height: 16px;
   stroke-width: 1.8;
+  color: #9CA6B8 !important;
+  stroke: #9CA6B8 !important;
+  transition: all 0.2s ease;
 }
 
 .empresa-topbar-nav a:hover {
-  background: rgba(0, 0, 0, 0.04);
-  color: #111827;
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #FFFFFF !important;
+}
+
+.empresa-topbar-nav a:hover i,
+.empresa-topbar-nav a:hover svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
 }
 
 .empresa-topbar-nav a.active {
-  background: rgba(212, 175, 55, 0.14);
-  color: #b8941e;
+  background: rgba(212, 175, 55, 0.13) !important;
+  color: #F5D46B !important;
   font-weight: 700;
-  border-color: rgba(212, 175, 55, 0.22);
+  border: 1px solid rgba(212, 175, 55, 0.35) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03) !important;
+}
+
+.empresa-topbar-nav a.active i,
+.empresa-topbar-nav a.active svg {
+  color: #F5D46B !important;
+  stroke: #F5D46B !important;
 }
 
 .empresa-topbar-nav a.drag-over-left {
@@ -11840,14 +11856,14 @@ body.theme-dark .company-module-grid>a:hover {
   color: inherit;
   padding: 6px 12px 6px 6px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
   transition: all 0.2s ease;
 }
 
 .empresa-topbar-profile:hover {
-  background: rgba(0, 0, 0, 0.05);
-  border-color: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 .empresa-topbar-avatar {
@@ -11873,12 +11889,12 @@ body.theme-dark .company-module-grid>a:hover {
 .empresa-topbar-user strong {
   font-size: 13px;
   font-weight: 600;
-  color: #111827;
+  color: #D7DEEA !important;
 }
 
 .empresa-topbar-user small {
   font-size: 11px;
-  color: #9ca3af;
+  color: #9CA6B8 !important;
 }
 
 /* ============================================================
@@ -11886,45 +11902,61 @@ body.theme-dark .company-module-grid>a:hover {
    ============================================================ */
 body.theme-dark .empresa-topbar,
 [data-theme="dark"] .empresa-topbar {
-  background: #151a2e !important;
-  border-color: rgba(255, 255, 255, 0.06) !important;
-  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.4) !important;
+  background: linear-gradient(135deg, #080B18 0%, #10162A 55%, #151B33 100%) !important;
+  border-color: rgba(212, 175, 55, 0.18) !important;
+  box-shadow: 0 18px 45px rgba(8, 11, 24, 0.28) !important;
 }
 
 body.theme-dark .empresa-topbar-brand-text strong,
 [data-theme="dark"] .empresa-topbar-brand-text strong {
-  color: #f4d46f !important;
+  color: #F5D46B !important;
 }
 
 body.theme-dark .empresa-topbar-brand-text small,
 [data-theme="dark"] .empresa-topbar-brand-text small {
-  color: #6b7280 !important;
+  color: #9CA6B8 !important;
 }
 
 body.theme-dark .empresa-topbar-nav a,
 [data-theme="dark"] .empresa-topbar-nav a {
-  color: #9ca3af !important;
+  color: #9CA6B8 !important;
 }
 
 body.theme-dark .empresa-topbar-nav a i,
 body.theme-dark .empresa-topbar-nav a svg,
 [data-theme="dark"] .empresa-topbar-nav a i,
 [data-theme="dark"] .empresa-topbar-nav a svg {
-  color: #9ca3af !important;
-  stroke: #9ca3af !important;
+  color: #9CA6B8 !important;
+  stroke: #9CA6B8 !important;
 }
 
 body.theme-dark .empresa-topbar-nav a:hover,
 [data-theme="dark"] .empresa-topbar-nav a:hover {
   background: rgba(255, 255, 255, 0.06) !important;
-  color: #f4f4f5 !important;
+  color: #FFFFFF !important;
+}
+
+body.theme-dark .empresa-topbar-nav a:hover i,
+body.theme-dark .empresa-topbar-nav a:hover svg,
+[data-theme="dark"] .empresa-topbar-nav a:hover i,
+[data-theme="dark"] .empresa-topbar-nav a:hover svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
 }
 
 body.theme-dark .empresa-topbar-nav a.active,
 [data-theme="dark"] .empresa-topbar-nav a.active {
-  background: rgba(212, 175, 55, 0.18) !important;
-  color: #d4af37 !important;
-  border-color: rgba(212, 175, 55, 0.3) !important;
+  background: rgba(212, 175, 55, 0.13) !important;
+  color: #F5D46B !important;
+  border-color: rgba(212, 175, 55, 0.35) !important;
+}
+
+body.theme-dark .empresa-topbar-nav a.active i,
+body.theme-dark .empresa-topbar-nav a.active svg,
+[data-theme="dark"] .empresa-topbar-nav a.active i,
+[data-theme="dark"] .empresa-topbar-nav a.active svg {
+  color: #F5D46B !important;
+  stroke: #F5D46B !important;
 }
 
 body.theme-dark .empresa-topbar-profile,
@@ -11941,56 +11973,62 @@ body.theme-dark .empresa-topbar-profile:hover,
 
 body.theme-dark .empresa-topbar-user strong,
 [data-theme="dark"] .empresa-topbar-user strong {
-  color: #f4f4f5 !important;
+  color: #D7DEEA !important;
 }
 
 body.theme-dark .empresa-topbar-user small,
 [data-theme="dark"] .empresa-topbar-user small {
-  color: #6b7280 !important;
+  color: #9CA6B8 !important;
 }
 
 /* ============================================================
    Modo Claro — Empresa Topbar (body[data-unified-admin] scope)
    ============================================================ */
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar {
-  background: #151a2e !important;
-  border-color: rgba(255, 255, 255, 0.06) !important;
-  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.28) !important;
+  background: linear-gradient(135deg, #080B18 0%, #10162A 55%, #151B33 100%) !important;
+  border-color: rgba(212, 175, 55, 0.18) !important;
+  box-shadow: 0 18px 45px rgba(8, 11, 24, 0.28) !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-brand-text strong {
-  color: #f4d46f !important;
+  color: #F5D46B !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-brand-text small {
-  color: #6b7280 !important;
+  color: #9CA6B8 !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a {
-  color: #9ca3af !important;
+  color: #9CA6B8 !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a i,
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a svg {
-  color: #9ca3af !important;
-  stroke: #9ca3af !important;
+  color: #9CA6B8 !important;
+  stroke: #9CA6B8 !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a:hover {
   background: rgba(255, 255, 255, 0.06) !important;
-  color: #f4f4f5 !important;
+  color: #FFFFFF !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a:hover i,
+body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a:hover svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a.active {
-  background: rgba(212, 175, 55, 0.18) !important;
-  color: #d4af37 !important;
-  border-color: rgba(212, 175, 55, 0.3) !important;
+  background: rgba(212, 175, 55, 0.13) !important;
+  color: #F5D46B !important;
+  border-color: rgba(212, 175, 55, 0.35) !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a.active i,
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-nav a.active svg {
-  color: #d4af37 !important;
-  stroke: #d4af37 !important;
+  color: #F5D46B !important;
+  stroke: #F5D46B !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-profile {
@@ -12004,11 +12042,11 @@ body[data-unified-admin]:not(.theme-dark) .empresa-topbar-profile:hover {
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user strong {
-  color: #f4f4f5 !important;
+  color: #D7DEEA !important;
 }
 
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user small {
-  color: #6b7280 !important;
+  color: #9CA6B8 !important;
 }
 
 /* Desktop Empresa: topbar horizontal como padrão, sem sidebar lateral fantasma */
