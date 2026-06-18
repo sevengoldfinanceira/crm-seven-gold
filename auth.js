@@ -219,7 +219,13 @@
         }
 
         button.disabled = true;
-        button.textContent = "Entrando...";
+        const buttonIcon = button.querySelector("i");
+        if (buttonIcon) {
+          button.innerHTML = `<i data-lucide="${buttonIcon.getAttribute("data-lucide")}"></i> Entrando...`;
+          if (window.lucide) window.lucide.createIcons();
+        } else {
+          button.textContent = "Entrando...";
+        }
 
         const { data, error } = await client.auth.signInWithPassword({
           email,
@@ -229,7 +235,12 @@
         if (error) {
           showMessage(form, "Login nao autorizado. Confira e-mail e senha.");
           button.disabled = false;
-          button.textContent = form.dataset.buttonText || "Entrar";
+          if (buttonIcon) {
+            button.innerHTML = `<i data-lucide="${buttonIcon.getAttribute("data-lucide")}"></i> ${form.dataset.buttonText || "Entrar no sistema"}`;
+            if (window.lucide) window.lucide.createIcons();
+          } else {
+            button.textContent = form.dataset.buttonText || "Entrar";
+          }
           return;
         }
 
@@ -345,17 +356,9 @@
     const initial = firstName.charAt(0).toUpperCase();
 
     const headerAvatar = form.querySelector("[data-header-avatar]");
-    const headerSubtitle = form.querySelector("[data-header-subtitle]");
-    const headerTitle = form.querySelector("[data-header-title]");
 
     if (headerAvatar) {
       headerAvatar.classList.add("is-logged-in");
-    }
-    if (headerSubtitle) {
-      headerSubtitle.style.display = "none";
-    }
-    if (headerTitle) {
-      headerTitle.textContent = "Sistema Pessoal do " + firstName;
     }
 
     // Update instructions text

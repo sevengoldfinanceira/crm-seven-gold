@@ -49,31 +49,38 @@
       </section>
 
       <section class="login-panel" aria-label="Formulario de login do CRM">
-        <form class="login-form" data-auth-form data-redirect="crm.html" data-button-text="Entrar ou criar conta">
+        <form class="login-form" data-auth-form data-redirect="crm.html" data-button-text="Entrar no sistema">
           <header class="login-header-layout">
-            <div class="header-circle-avatar has-user-photo" data-header-avatar style="background-image: url('assets/seven-gold-logo-header.png')"></div>
+            <div class="header-circle-avatar" data-header-avatar style="background-image: url('assets/seven-gold-logo-header.png')"></div>
             <div class="header-text-details">
-              <span class="header-subtitle" data-header-subtitle>CRM Comercial</span>
-              <h2 class="header-title" data-header-title>Seven Gold</h2>
+              <h1 class="header-title" data-header-title>CRM Comercial <span class="highlight-gold">Seven Gold</span></h1>
+              <p class="header-subtitle" data-header-subtitle>Acesse com segurança sua área comercial.</p>
             </div>
           </header>
 
-          <p class="login-instruction-text" data-login-instruction>
-            Use seu e-mail e senha para acessar.
-          </p>
-
           <!-- Active Session Card Wrapper (hidden by default, shown if session exists) -->
           <div class="active-session-card-wrapper" style="display: none;">
+            <div class="saved-account-label"><i data-lucide="user"></i> Conta salva</div>
+            
             <div class="saved-account-card">
-              <div class="profile-avatar saved-avatar" data-user-avatar></div>
-              <div class="saved-details">
-                <strong class="saved-name" data-user-name>Carregando...</strong>
-                <span class="saved-email" data-user-email>...</span>
+              <div class="saved-account-info">
+                <div class="profile-avatar saved-avatar" data-user-avatar></div>
+                <div class="saved-details">
+                  <strong class="saved-name" data-user-name>Carregando...</strong>
+                  <span class="saved-email" data-user-email>...</span>
+                </div>
               </div>
+              
+              <button type="button" class="use-saved-account-btn">
+                <i data-lucide="user"></i> Entrar com esta conta
+              </button>
             </div>
-            <button type="button" class="use-other-account-btn" data-use-other-account>
+            
+            <button type="button" class="use-other-account-btn" data-use-other-account style="display: none;">
               Usar outra conta
             </button>
+
+            <div class="divider">ou</div>
           </div>
 
           <button class="google-button" type="button" data-google-login data-redirect="crm.html">
@@ -82,38 +89,64 @@
 
           <div class="login-divider"><span>ou</span></div>
 
-          <label>
-            E-mail
-            <input type="email" name="email" placeholder="vendedor@sevengold.com.br" />
-          </label>
+          <div class="manual-login-title">
+            <i data-lucide="lock"></i> Ou entre com e-mail e senha
+          </div>
 
-          <label>
-            Senha
-            <input type="password" name="password" placeholder="Digite sua senha" />
-          </label>
+          <div class="input-group">
+            <div class="input-wrapper">
+              <i data-lucide="mail" class="input-icon-left"></i>
+              <input type="email" name="email" placeholder="vendedor@sevengold.com.br" required />
+            </div>
 
-          <div class="login-row">
+            <div class="input-wrapper">
+              <i data-lucide="lock" class="input-icon-left"></i>
+              <input type="password" name="password" placeholder="Digite sua senha" required />
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility(this)" aria-label="Mostrar/ocultar senha">
+                <i data-lucide="eye" class="eye-icon"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="login-options">
             <label class="remember-option">
               <input type="checkbox" name="remember" />
               Manter conectado
             </label>
-            <a href="#">Esqueci a senha</a>
+            <a href="#">Esqueci minha senha</a>
           </div>
 
-          <button class="login-button" type="submit">Entrar ou criar conta</button>
+          <button class="primary-button" type="submit"><i data-lucide="lock"></i> Entrar no sistema</button>
 
-          <a href="#" class="bottom-action-link" data-focus-login-toggle>Escolha a conta salva para entrar ou use outra conta.</a>
+          <a href="#" class="bottom-info-text" data-focus-login-toggle>
+            <i data-lucide="shield-check"></i> Use uma conta salva ou acesse com suas credenciais corporativas.
+          </a>
 
-          <p class="login-note">
-            No sistema real, esse login vai liberar somente as permissoes do perfil
-            comercial.
-          </p>
+          <div class="login-footer">
+            <i data-lucide="shield-alert"></i> Acesso restrito a usuários autorizados da Seven Gold Financeira.
+          </div>
         </form>
       </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js"></script>
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script>
+      lucide.createIcons();
+      function togglePasswordVisibility(btn) {
+        const input = btn.previousElementSibling;
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.setAttribute('data-lucide', 'eye-off');
+        } else {
+          input.type = 'password';
+          icon.setAttribute('data-lucide', 'eye');
+        }
+        lucide.createIcons();
+      }
+    </script>
     <script src="/pwa.js"></script>
   </body>
 </html>
