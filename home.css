@@ -15343,10 +15343,11 @@ body.theme-dark .modal-role-row {
 .login-page-body {
   background:
     linear-gradient(
-      rgba(3, 4, 8, 0.78),
-      rgba(3, 4, 8, 0.88)
+      rgba(21, 1, 38, 0.82),
+      rgba(21, 1, 38, 0.92)
     ),
     url("assets/login-background-new.png") !important;
+  background-color: #150126 !important;
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
