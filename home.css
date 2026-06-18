@@ -13597,7 +13597,7 @@ body[data-unified-admin] .unified-admin-shell {
 .eq-search-input-wrapper i,
 .eq-search-input-wrapper svg {
   position: absolute;
-  left: 10px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
   color: #94a3b8;
@@ -13611,7 +13611,7 @@ body[data-unified-admin] .unified-admin-shell {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  padding: 12px 12px 12px 34px;
+  padding: 12px 12px 12px 40px;
   font-size: 0.82rem;
   line-height: 1;
   outline: none;
