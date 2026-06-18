@@ -15360,6 +15360,8 @@ body.theme-dark .modal-role-row {
   min-height: 100vh !important;
   padding: 16px !important;
   background: transparent !important;
+  position: relative !important;
+  z-index: 10 !important;
 }
 
 .login-panel {
@@ -15802,7 +15804,7 @@ body.theme-dark .modal-role-row {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  z-index: -1;
+  z-index: 1 !important;
   pointer-events: none;
   background: transparent;
 }
@@ -15810,10 +15812,10 @@ body.theme-dark .modal-role-row {
 .bubble {
   position: absolute;
   bottom: -150px;
-  background: radial-gradient(circle, rgba(218, 180, 68, 0.08) 0%, rgba(218, 180, 68, 0.01) 70%, transparent 100%);
+  background: radial-gradient(circle, rgba(218, 180, 68, 0.22) 0%, rgba(218, 180, 68, 0.05) 70%, transparent 100%);
   border-radius: 50%;
   animation: floatUp 25s infinite linear;
-  box-shadow: inset 0 0 12px rgba(218, 180, 68, 0.04), 0 0 8px rgba(218, 180, 68, 0.02);
+  box-shadow: inset 0 0 12px rgba(218, 180, 68, 0.1), 0 0 8px rgba(218, 180, 68, 0.05);
 }
 
 @keyframes floatUp {
@@ -15822,10 +15824,10 @@ body.theme-dark .modal-role-row {
     opacity: 0;
   }
   10% {
-    opacity: 0.8;
+    opacity: 0.65;
   }
   90% {
-    opacity: 0.8;
+    opacity: 0.65;
   }
   100% {
     transform: translateY(-120vh) scale(1.2) rotate(360deg);
