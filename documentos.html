@@ -29,62 +29,194 @@
         }
       })();
     </script>
-    <main class="documents-shell">
+    
+    <main class="documents-shell" style="padding: 20px; box-sizing: border-box; max-width: 1400px; margin: 0 auto;">
 
-      <section class="documents-toolbar" aria-label="Controles de documentos">
-        <div>
-          <h1>Documentos</h1>
-          <span>Organize arquivos por setor, categoria, cargo e tipo de documento.</span>
+      <!-- 1. Header Row -->
+      <section class="documents-toolbar" aria-label="Controles de documentos" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="eq-header-icon-box" style="background: rgba(212, 175, 55, 0.1); color: #d4af37; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;">
+            <i data-lucide="file-text"></i>
+          </div>
+          <div>
+            <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--ink); margin: 0;">Documentos</h1>
+            <span style="font-size: 0.8rem; color: var(--muted);">Organize arquivos por setor, pasta, cargo, categoria e tipo de documento.</span>
+          </div>
         </div>
-        <div class="documents-actions">
-          <button type="button" data-focus-document-form><i data-lucide="plus"></i> Adicionar documento</button>
+        <div class="documents-actions" style="display: flex; gap: 8px;">
+          <button type="button" class="eq-btn-outline" id="btn-new-folder" style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; font-weight: 600; font-size: 0.8rem; border: 1.5px solid #d4af37; color: #d4af37; background: #ffffff; border-radius: 8px; cursor: pointer; transition: all 0.2s;"><i data-lucide="plus"></i> Nova pasta</button>
+          <button type="button" class="eq-btn-gold" data-focus-document-form style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; font-weight: 600; font-size: 0.8rem; border: none; color: #ffffff; background: #d4af37; border-radius: 8px; cursor: pointer; transition: all 0.2s;"><i data-lucide="plus"></i> Adicionar documento</button>
         </div>
       </section>
 
+      <!-- 2. Summary Cards -->
+      <section class="eq-summary-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <article class="eq-summary-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+          <div class="eq-summary-icon" style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+            <i data-lucide="file-text"></i>
+          </div>
+          <div class="eq-summary-info">
+            <strong id="sum-docs-count" style="display: block; font-size: 1.25rem; font-weight: 800; color: #0f172a;">0</strong>
+            <span class="label" style="display: block; font-size: 0.72rem; font-weight: 600; color: #64748b;">Total de documentos</span>
+            <span class="desc" style="display: block; font-size: 0.65rem; color: #94a3b8;">Arquivos cadastrados</span>
+          </div>
+        </article>
+        <article class="eq-summary-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+          <div class="eq-summary-icon" style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: rgba(16, 185, 129, 0.1); color: #10b981;">
+            <i data-lucide="folder"></i>
+          </div>
+          <div class="eq-summary-info">
+            <strong id="sum-folders-count" style="display: block; font-size: 1.25rem; font-weight: 800; color: #0f172a;">0</strong>
+            <span class="label" style="display: block; font-size: 0.72rem; font-weight: 600; color: #64748b;">Pastas</span>
+            <span class="desc" style="display: block; font-size: 0.65rem; color: #94a3b8;">Pastas criadas</span>
+          </div>
+        </article>
+        <article class="eq-summary-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+          <div class="eq-summary-icon" style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+            <i data-lucide="network"></i>
+          </div>
+          <div class="eq-summary-info">
+            <strong id="sum-sectors-count" style="display: block; font-size: 1.25rem; font-weight: 800; color: #0f172a;">0</strong>
+            <span class="label" style="display: block; font-size: 0.72rem; font-weight: 600; color: #64748b;">Setores com documentos</span>
+            <span class="desc" style="display: block; font-size: 0.65rem; color: #94a3b8;">Departamentos vinculados</span>
+          </div>
+        </article>
+        <article class="eq-summary-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+          <div class="eq-summary-icon" style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+            <i data-lucide="alert-circle"></i>
+          </div>
+          <div class="eq-summary-info">
+            <strong id="sum-unlinked-count" style="display: block; font-size: 1.25rem; font-weight: 800; color: #0f172a;">0</strong>
+            <span class="label" style="display: block; font-size: 0.72rem; font-weight: 600; color: #64748b;">Sem vínculo</span>
+            <span class="desc" style="display: block; font-size: 0.65rem; color: #94a3b8;">Sem setor ou cargo vinculado</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- 3. Layout Grid -->
       <section class="documents-layout">
-        <aside class="sector-sidebar" aria-label="Setores">
-          <button class="sector-tab active" type="button" data-sector-filter="todos">
-            <strong>Todos</strong>
-            <span data-sector-count="todos">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="Diretoria">
-            <strong>Diretoria</strong>
-            <span data-sector-count="Diretoria">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="Comercial">
-            <strong>Comercial</strong>
-            <span data-sector-count="Comercial">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="Financeiro">
-            <strong>Financeiro</strong>
-            <span data-sector-count="Financeiro">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="Juridico">
-            <strong>Juridico</strong>
-            <span data-sector-count="Juridico">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="RH">
-            <strong>RH</strong>
-            <span data-sector-count="RH">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="Marketing">
-            <strong>Marketing</strong>
-            <span data-sector-count="Marketing">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="Pos-venda">
-            <strong>Pos-venda</strong>
-            <span data-sector-count="Pos-venda">0 docs</span>
-          </button>
-          <button class="sector-tab" type="button" data-sector-filter="Administrativo">
-            <strong>Administrativo</strong>
-            <span data-sector-count="Administrativo">0 docs</span>
-          </button>
+        
+        <!-- Coluna Esquerda: Filtros -->
+        <aside class="sector-sidebar" aria-label="Setores" style="padding: 14px;">
+          <h3 style="font-size: 0.85rem; font-weight: 700; color: var(--ink); margin: 0 0 12px 0;">Filtros por setor</h3>
+          <div class="sector-list" style="display: flex; flex-direction: column; gap: 4px;">
+            <button class="sector-tab active" type="button" data-sector-filter="todos">
+              <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="folder-open" style="width: 16px; height: 16px;"></i> <strong>Todos</strong></span>
+              <span data-sector-count="todos" style="font-size: 0.72rem;">0 docs</span>
+            </button>
+            <button class="sector-tab" type="button" data-sector-filter="Diretoria">
+              <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="crown" style="width: 16px; height: 16px;"></i> <strong>Diretoria</strong></span>
+              <span data-sector-count="Diretoria" style="font-size: 0.72rem;">0 docs</span>
+            </button>
+            <button class="sector-tab" type="button" data-sector-filter="Comercial">
+              <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="trending-up" style="width: 16px; height: 16px;"></i> <strong>Comercial</strong></span>
+              <span data-sector-count="Comercial" style="font-size: 0.72rem;">0 docs</span>
+            </button>
+            <button class="sector-tab" type="button" data-sector-filter="Financeiro">
+              <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="dollar-sign" style="width: 16px; height: 16px;"></i> <strong>Financeiro</strong></span>
+              <span data-sector-count="Financeiro" style="font-size: 0.72rem;">0 docs</span>
+            </button>
+            <button class="sector-tab" type="button" data-sector-filter="Juridico">
+              <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="scale" style="width: 16px; height: 16px;"></i> <strong>Jurídico</strong></span>
+              <span data-sector-count="Juridico" style="font-size: 0.72rem;">0 docs</span>
+            </button>
+            <button class="sector-tab" type="button" data-sector-filter="RH">
+              <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="users" style="width: 16px; height: 16px;"></i> <strong>RH</strong></span>
+              <span data-sector-count="RH" style="font-size: 0.72rem;">0 docs</span>
+            </button>
+            <button class="sector-tab" type="button" data-sector-filter="Marketing">
+              <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="megaphone" style="width: 16px; height: 16px;"></i> <strong>Marketing</strong></span>
+              <span data-sector-count="Marketing" style="font-size: 0.72rem;">0 docs</span>
+            </button>
+            <button class="sector-tab" type="button" data-sector-filter="Pos-venda">
+              <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="message-circle" style="width: 16px; height: 16px;"></i> <strong>Pós-venda</strong></span>
+              <span data-sector-count="Pos-venda" style="font-size: 0.72rem;">0 docs</span>
+            </button>
+            <button class="sector-tab" type="button" data-sector-filter="Administrativo">
+              <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="briefcase" style="width: 16px; height: 16px;"></i> <strong>Administrativo</strong></span>
+              <span data-sector-count="Administrativo" style="font-size: 0.72rem;">0 docs</span>
+            </button>
+          </div>
+          
+          <h3 style="font-size: 0.85rem; font-weight: 700; color: var(--ink); margin: 20px 0 12px 0;">Outros filtros</h3>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569;">
+              Categoria
+              <select id="filter-category" style="width: 100%; margin-top: 4px; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; background: #fff; color: #0f172a;">
+                <option value="todos">Todos</option>
+                <option>Contratos</option>
+                <option>Financeiro</option>
+                <option>Equipe</option>
+                <option>Marketing</option>
+                <option>Modelos</option>
+                <option>Comissoes</option>
+                <option>Procedimentos</option>
+              </select>
+            </label>
+            <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569;">
+              Tipo de documento
+              <select id="filter-type" style="width: 100%; margin-top: 4px; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; background: #fff; color: #0f172a;">
+                <option value="todos">Todos</option>
+                <option>Contrato</option>
+                <option>Comprovante</option>
+                <option>Modelo</option>
+                <option>Planilha</option>
+                <option>PDF</option>
+                <option>Imagem</option>
+              </select>
+            </label>
+            <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569;">
+              Cargo relacionado
+              <select id="filter-role" style="width: 100%; margin-top: 4px; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; background: #fff; color: #0f172a;">
+                <option value="todos">Todos</option>
+                <option value="diretor-ceo">Diretor / CEO</option>
+                <option value="supervisor-comercial">Supervisor Comercial</option>
+                <option value="coordenador-comercial">Coordenador Comercial</option>
+                <option value="vendedor">Vendedor</option>
+                <option value="assistente-vendas">Assistente de Vendas</option>
+                <option value="coordenador-posvenda">Coordenador Pós-venda</option>
+                <option value="analista-posvenda">Analista Pós-venda</option>
+                <option value="pos-vendas">Suporte ao cliente</option>
+                <option value="assistente-adm">Assistente Adm.</option>
+                <option value="analista-adm">Analista Adm.</option>
+                <option value="coordenador-adm">Coordenador Adm.</option>
+                <option value="financeiro">Financeiro</option>
+                <option value="auxiliar-financeiro">Auxiliar Financeiro</option>
+                <option value="coordenador-financeiro">Coord. Financeiro</option>
+                <option value="assistente-mkt">Assistente Mkt.</option>
+                <option value="analista-mkt">Auxilista Mkt.</option>
+                <option value="coordenador-mkt">Coord. Marketing</option>
+                <option value="advogado-juridico">Advogado / Jurídico</option>
+                <option value="assistente-rh">Assistente de RH</option>
+                <option value="analista-rh">Analista de RH</option>
+                <option value="coordenador-rh">Coordenador de RH</option>
+              </select>
+            </label>
+            <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569;">
+              Data
+              <select id="filter-date" style="width: 100%; margin-top: 4px; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; background: #fff; color: #0f172a;">
+                <option value="todos">Todas as datas</option>
+                <option value="hoje">Hoje</option>
+                <option value="semana">Esta semana</option>
+                <option value="mes">Este mês</option>
+                <option value="ano">Este ano</option>
+              </select>
+            </label>
+            <button type="button" id="btn-clear-all-filters" style="width: 100%; margin-top: 6px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.8rem; font-weight: 600; background: #ffffff; color: #475569; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;">
+              <i data-lucide="rotate-ccw" style="width: 14px; height: 14px;"></i> Limpar filtros
+            </button>
+          </div>
         </aside>
 
-        <section class="document-main" aria-label="Categorias e documentos">
-          <div class="document-search">
-            <input type="search" placeholder="Buscar documento, setor ou categoria" data-document-search />
-            <select data-type-filter>
+        <!-- Coluna Central: Listagem de Pastas e Arquivos -->
+        <section class="document-main" style="padding: 16px;">
+          <!-- Barra de Busca Superior -->
+          <div class="document-search" style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center;">
+            <div style="position: relative; flex: 1;">
+              <i data-lucide="search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #94a3b8;"></i>
+              <input type="search" placeholder="Buscar documento, pasta, setor, cargo ou categoria..." data-document-search style="width: 100%; padding: 8px 10px 8px 34px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;" />
+            </div>
+            <select id="filter-type-upper" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff; color: #475569;">
               <option>Todos os tipos</option>
               <option>Contrato</option>
               <option>Comprovante</option>
@@ -93,30 +225,32 @@
               <option>PDF</option>
               <option>Imagem</option>
             </select>
+            <select id="filter-sort-upper" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff; color: #475569;">
+              <option value="recentes">Mais recentes</option>
+              <option value="antigos">Mais antigos</option>
+              <option value="nome">Nome (A-Z)</option>
+            </select>
+            <button type="button" style="padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: #475569; display: flex; align-items: center; justify-content: center; cursor: pointer;"><i data-lucide="layout-grid" style="width: 16px; height: 16px;"></i></button>
           </div>
 
-          <div class="document-category-grid" data-document-grid>
-            <article class="document-category">
-              <header>
-                <span class="category-icon docs-icon" aria-hidden="true"></span>
-                <div>
-                  <h2>Carregando documentos</h2>
-                  <p>Buscando arquivos cadastrados na Seven Gold.</p>
-                </div>
-              </header>
-            </article>
+          <!-- Conteúdo central injetado via JavaScript -->
+          <div class="document-category-grid" data-document-grid style="display: flex; flex-direction: column;">
+            <!-- Renderizado dinamicamente -->
           </div>
         </section>
 
-        <form class="upload-panel" aria-label="Adicionar documento" data-document-form>
-          <h2>Adicionar documento</h2>
-          <label>
+        <!-- Coluna Direita: Painel Adicionar / Editar Documento -->
+        <form class="upload-panel" aria-label="Adicionar documento" data-document-form style="padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+          <h2 id="form-title" style="font-size: 1rem; font-weight: 700; color: var(--ink); margin: 0 0 10px 0; display: flex; align-items: center; gap: 6px;"><i data-lucide="file-plus" style="color: #d4af37;"></i> Adicionar documento</h2>
+          
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
             Nome do documento
-            <input name="title" type="text" placeholder="Ex: Contrato padrao" required />
+            <input name="title" type="text" placeholder="Ex: Contrato padrao" required style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;" />
           </label>
-          <label>
+          
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
             Setor
-            <select name="sector">
+            <select name="sector" style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;">
               <option>Diretoria</option>
               <option>Comercial</option>
               <option>Financeiro</option>
@@ -127,9 +261,20 @@
               <option>Administrativo</option>
             </select>
           </label>
-          <label>
+          
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
+              Pasta
+              <select name="folder_id" id="form-folder-select" style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;">
+                <!-- Populado dinamicamente com base no setor -->
+              </select>
+            </label>
+            <button type="button" id="btn-create-folder-shortcut" style="align-self: flex-start; background: none; border: none; font-size: 0.72rem; font-weight: 600; color: #d4af37; cursor: pointer; padding: 2px 0;">+ Criar nova pasta</button>
+          </div>
+          
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
             Categoria
-            <select name="category">
+            <select name="category" style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;">
               <option>Contratos</option>
               <option>Financeiro</option>
               <option>Equipe</option>
@@ -139,9 +284,10 @@
               <option>Procedimentos</option>
             </select>
           </label>
-          <label>
+          
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
             Tipo
-            <select name="document_type">
+            <select name="document_type" style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;">
               <option>Contrato</option>
               <option>Comprovante</option>
               <option>Modelo</option>
@@ -150,32 +296,120 @@
               <option>Imagem</option>
             </select>
           </label>
-          <label>
-            Cargo relacionado
-            <select name="role_key">
-              <option value="">Sem cargo especifico</option>
+          
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
+            Cargo relacionado (opcional)
+            <select name="role_key" style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;">
+              <option value="">Sem cargo específico</option>
               <option value="diretor-ceo">Diretor / CEO</option>
-              <option value="supervisor">Supervisor</option>
-              <option value="coordenador">Coordenador</option>
+              <option value="supervisor-comercial">Supervisor Comercial</option>
+              <option value="coordenador-comercial">Coordenador Comercial</option>
               <option value="vendedor">Vendedor</option>
               <option value="assistente-vendas">Assistente de Vendas</option>
-              <option value="pos-vendas">Pos-vendas</option>
-              <option value="administrativo">Administrativo</option>
-              <option value="financeiro-contador">Financeiro / Contador</option>
-              <option value="advogado-juridico">Advogado / Juridico</option>
-              <option value="rh">RH</option>
-              <option value="marketing-cargo">Marketing</option>
+              <option value="coordenador-posvenda">Coordenador Pós-venda</option>
+              <option value="analista-posvenda">Analista Pós-venda</option>
+              <option value="pos-vendas">Suporte ao cliente</option>
+              <option value="assistente-adm">Assistente Adm.</option>
+              <option value="analista-adm">Analista Adm.</option>
+              <option value="coordenador-adm">Coordenador Adm.</option>
+              <option value="financeiro">Financeiro</option>
+              <option value="auxiliar-financeiro">Auxiliar Financeiro</option>
+              <option value="coordenador-financeiro">Coord. Financeiro</option>
+              <option value="assistente-mkt">Assistente Mkt.</option>
+              <option value="analista-mkt">Auxilista Mkt.</option>
+              <option value="coordenador-mkt">Coord. Marketing</option>
+              <option value="advogado-juridico">Advogado / Jurídico</option>
+              <option value="assistente-rh">Assistente de RH</option>
+              <option value="analista-rh">Analista de RH</option>
+              <option value="coordenador-rh">Coordenador de RH</option>
             </select>
           </label>
-          <label class="file-drop">
-            <span data-file-name>Selecionar arquivo</span>
-            <input name="file" type="file" required />
-          </label>
-          <p class="document-form-status" data-document-status></p>
-          <button type="submit">Salvar documento</button>
+          
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-size: 0.8rem; font-weight: 600; color: #475569;">Selecionar arquivo</span>
+            <div class="file-drop-zone" id="drop-zone">
+              <i data-lucide="upload-cloud"></i>
+              <span id="drop-zone-text">Arraste e solte ou clique para escolher</span>
+              <p style="font-size: 0.62rem; margin: 0; color: #94a3b8;">PDF, DOC, DOCX, XLS, XLSX, PNG, JPG (máx. 20MB)</p>
+              <input name="file" type="file" id="file-input" style="display: none;" />
+            </div>
+            <!-- Exibição do arquivo atual se for modo edição -->
+            <div id="edit-file-info" style="display: none; font-size: 0.72rem; color: #b58d16; font-weight: 600; background: #fffef0; padding: 6px; border-radius: 6px; border: 1.5px solid #f8e8a6; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></div>
+          </div>
+          
+          <p class="document-form-status" data-document-status style="font-size: 0.75rem; margin: 0;"></p>
+          
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <button type="button" id="btn-cancel-edit" class="eq-btn-outline" style="display: none; flex: 1; padding: 10px; border-radius: 8px; font-weight: 600; font-size: 0.82rem; border: 1.5px solid #cbd5e1; background: #ffffff; color: #64748b; cursor: pointer; text-align: center;">Cancelar</button>
+            <button type="submit" id="btn-submit-doc" style="flex: 2; padding: 10px; border-radius: 8px; font-weight: 600; font-size: 0.82rem; border: none; background: #d4af37; color: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="save" style="width: 16px; height: 16px;"></i> Salvar documento</button>
+          </div>
         </form>
       </section>
+
+      <!-- Modal: Nova pasta -->
+      <div id="new-folder-modal" class="eq-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="eq-modal-content" style="background: #ffffff; border-radius: 12px; width: 450px; max-width: 90%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); position: relative;">
+          <button type="button" id="btn-close-folder-modal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #94a3b8; transition: color 0.2s;"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;"><i data-lucide="folder-plus" style="color: #d4af37;"></i> Criar nova pasta</h2>
+          <form id="new-folder-form" style="display: flex; flex-direction: column; gap: 14px;">
+            <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
+              Nome da pasta
+              <input type="text" name="folderName" placeholder="Ex: Scripts de venda" required style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;" />
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
+              Setor relacionado
+              <select name="folderSector" required style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;">
+                <option>Diretoria</option>
+                <option>Comercial</option>
+                <option>Financeiro</option>
+                <option>Juridico</option>
+                <option>RH</option>
+                <option>Marketing</option>
+                <option>Pos-venda</option>
+                <option>Administrativo</option>
+              </select>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
+              Cargo relacionado (opcional)
+              <select name="folderRole" style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;">
+                <option value="">Sem cargo específico</option>
+                <option value="diretor-ceo">Diretor / CEO</option>
+                <option value="supervisor-comercial">Supervisor Comercial</option>
+                <option value="coordenador-comercial">Coordenador Comercial</option>
+                <option value="vendedor">Vendedor</option>
+                <option value="assistente-vendas">Assistente de Vendas</option>
+                <option value="coordenador-posvenda">Coordenador Pós-venda</option>
+                <option value="analista-posvenda">Analista Pós-venda</option>
+                <option value="pos-vendas">Suporte ao cliente</option>
+                <option value="assistente-adm">Assistente Adm.</option>
+                <option value="analista-adm">Analista Adm.</option>
+                <option value="coordenador-adm">Coordenador Adm.</option>
+                <option value="financeiro">Financeiro</option>
+                <option value="auxiliar-financeiro">Auxiliar Financeiro</option>
+                <option value="coordenador-financeiro">Coord. Financeiro</option>
+                <option value="assistente-mkt">Assistente Mkt.</option>
+                <option value="analista-mkt">Auxilista Mkt.</option>
+                <option value="coordenador-mkt">Coord. Marketing</option>
+                <option value="advogado-juridico">Advogado / Jurídico</option>
+                <option value="assistente-rh">Assistente de RH</option>
+                <option value="analista-rh">Analista de RH</option>
+                <option value="coordenador-rh">Coordenador de RH</option>
+              </select>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
+              Descrição (opcional)
+              <textarea name="folderDesc" placeholder="Descrição curta da pasta..." rows="3" style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff; resize: vertical; font-family: inherit;"></textarea>
+            </label>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+              <button type="button" id="btn-cancel-folder" style="padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; font-weight: 600; background: #fff; color: #475569; cursor: pointer;">Cancelar</button>
+              <button type="submit" style="padding: 8px 16px; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; background: #d4af37; color: #fff; cursor: pointer;">Criar pasta</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
     </main>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js"></script>

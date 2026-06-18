@@ -29,68 +29,388 @@
         }
       })();
     </script>
+    
     <main class="team-shell">
-
-      <section class="team-toolbar" aria-label="Controles da equipe">
-        <div>
-          <h1>Equipe por hierarquia</h1>
-          <span>Cargos, funcoes numeradas e documentos relacionados.</span>
+      
+      <!-- 1. Header Row -->
+      <header class="eq-header">
+        <div class="eq-header-left">
+          <div class="eq-header-icon-box">
+            <i data-lucide="users"></i>
+          </div>
+          <div class="eq-header-title">
+            <h1>Equipe</h1>
+            <p>Gestão de equipe, hierarquia, cargos, funções e colaboradores.</p>
+          </div>
         </div>
-        <div class="team-actions">
-          <button type="button" data-expand-roles>Expandir tudo</button>
-          <button type="button" data-collapse-roles>Fechar tudo</button>
+        <div class="eq-header-actions">
+          <button class="eq-btn-outline btn-new-sector" type="button"><i data-lucide="plus"></i> Novo setor</button>
+          <button class="eq-btn-outline btn-new-role" type="button"><i data-lucide="plus"></i> Novo cargo</button>
+          <button class="eq-btn-gold btn-new-colab" id="btn-new-colab-header" type="button"><i data-lucide="plus"></i> Novo colaborador</button>
+        </div>
+      </header>
+
+      <!-- 2. Summary Grid -->
+      <section class="eq-summary-grid" aria-label="Resumo da equipe">
+        <article class="eq-summary-card">
+          <div class="eq-summary-icon eq-sum-sectors">
+            <i data-lucide="folder-git-2"></i>
+          </div>
+          <div class="eq-summary-info">
+            <strong id="sum-sectors-count">8</strong>
+            <span class="label">Setores</span>
+            <span class="desc">Departamentos ativos</span>
+          </div>
+        </article>
+
+        <article class="eq-summary-card">
+          <div class="eq-summary-icon eq-sum-roles">
+            <i data-lucide="briefcase"></i>
+          </div>
+          <div class="eq-summary-info">
+            <strong id="sum-roles-count">20</strong>
+            <span class="label">Cargos</span>
+            <span class="desc">Posições cadastradas</span>
+          </div>
+        </article>
+
+        <article class="eq-summary-card">
+          <div class="eq-summary-icon eq-sum-members">
+            <i data-lucide="user-check"></i>
+          </div>
+          <div class="eq-summary-info">
+            <strong id="sum-members-count">48</strong>
+            <span class="label">Colaboradores</span>
+            <span class="desc">Ativos na equipe</span>
+          </div>
+        </article>
+
+        <article class="eq-summary-card">
+          <div class="eq-summary-icon eq-sum-levels">
+            <i data-lucide="git-merge"></i>
+          </div>
+          <div class="eq-summary-info">
+            <strong id="sum-levels-count">5</strong>
+            <span class="label">Níveis</span>
+            <span class="desc">Hierarquia da empresa</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- 3. Tabs and Search Row -->
+      <section class="eq-toolbar-row">
+        <div class="eq-tabs">
+          <button class="eq-tab-btn active" data-tab="hierarquia" type="button">
+            <i data-lucide="network"></i> Visão hierárquica
+          </button>
+          <button class="eq-tab-btn" data-tab="funcoes" type="button">
+            <i data-lucide="briefcase"></i> Cargos e funções
+          </button>
+          <button class="eq-tab-btn" data-tab="lista" type="button">
+            <i data-lucide="list"></i> Visualização em lista
+          </button>
+        </div>
+        <div class="eq-search-box">
+          <div class="eq-search-input-wrapper">
+            <i data-lucide="search"></i>
+            <input type="text" id="eq-search-input" class="eq-search-input" placeholder="Buscar setor, cargo ou colaborador...">
+          </div>
+          <button class="eq-btn-outline" id="eq-filter-btn" type="button">
+            <i data-lucide="sliders-horizontal"></i> Filtros
+          </button>
         </div>
       </section>
 
-      <section class="team-layout">
-        <aside class="team-rank" aria-label="Ordem hierarquica">
-          <a class="rank-link active" href="#diretoria">
-            <strong>1. Diretoria</strong>
-            <span>Diretor / CEO</span>
-          </a>
-          <a class="rank-link" href="#comercial">
-            <strong>2. Comercial</strong>
-            <span>Supervisor, coordenador, vendedor</span>
-          </a>
-          <a class="rank-link" href="#pos-venda">
-            <strong>3. Pos-venda</strong>
-            <span>Relacionamento</span>
-          </a>
-          <a class="rank-link" href="#administrativo">
-            <strong>4. Administrativo</strong>
-            <span>Processos internos</span>
-          </a>
-          <a class="rank-link" href="#financeiro">
-            <strong>5. Financeiro</strong>
-            <span>Caixa e repasses</span>
-          </a>
-          <a class="rank-link" href="#juridico">
-            <strong>6. Juridico</strong>
-            <span>Contratos</span>
-          </a>
-          <a class="rank-link" href="#rh">
-            <strong>7. RH</strong>
-            <span>Pessoas</span>
-          </a>
-          <a class="rank-link" href="#marketing">
-            <strong>8. Marketing</strong>
-            <span>Campanhas</span>
-          </a>
+      <!-- 4. Main Grid: Content (Left) + Sidebar Details (Right) -->
+      <section class="eq-main-grid">
+        
+        <!-- Left content column -->
+        <div class="eq-content-card" id="eq-main-content">
+          
+          <!-- Aba 1: Visão Hierárquica (Default content, generated dynamically or statical fallback) -->
+          <div class="tab-pane" id="pane-hierarquia">
+            <div class="eq-org-tree">
+              <header class="eq-tree-header">
+                <h2>Organograma da empresa</h2>
+                <i data-lucide="info" title="Arraste horizontalmente para visualizar todos os setores"></i>
+              </header>
+              
+              <!-- Diretoria (Topo) -->
+              <div class="eq-dir-wrapper">
+                <article class="eq-dir-card" data-dir-card>
+                  <header>
+                    <div class="eq-dir-icon">
+                      <i data-lucide="crown"></i>
+                    </div>
+                    <div>
+                      <h3>Diretoria</h3>
+                      <p>Comando principal da empresa</p>
+                    </div>
+                  </header>
+                  <div class="eq-dir-profile">
+                    <div class="eq-profile-left">
+                      <div class="eq-avatar" id="dir-avatar">J</div>
+                      <div class="eq-profile-text">
+                        <strong id="dir-name">Jonatã</strong>
+                        <span>Diretor / CEO</span>
+                      </div>
+                    </div>
+                    <span class="eq-profile-tag">1 pessoa</span>
+                  </div>
+                </article>
+              </div>
+              
+              <!-- Setores horizontais (Conectados) -->
+              <div class="eq-sectors-wrapper" id="eq-sectors-scroll">
+                <div class="eq-sectors-row" id="eq-sectors-row">
+                  <!-- Will be loaded dynamically by JS to keep code clean and allow interactive clicks -->
+                </div>
+              </div>
+            </div>
+            
+            <!-- Rodapé de Ações Rápidas -->
+            <div class="eq-actions-strip">
+              <span class="eq-actions-strip-label">Ações rápidas:</span>
+              <button class="eq-btn-strip btn-action-add-member" type="button"><i data-lucide="user-plus"></i> Adicionar colaborador</button>
+              <button class="eq-btn-strip btn-action-transfer" type="button"><i data-lucide="move"></i> Transferir colaborador</button>
+              <button class="eq-btn-strip btn-action-manage-roles" type="button"><i data-lucide="settings"></i> Gerenciar cargos</button>
+              <button class="eq-btn-strip btn-action-docs" type="button"><i data-lucide="file-text"></i> Ver documentos</button>
+            </div>
+            
+            <!-- Rodapé informativo de dicas -->
+            <div class="eq-tip-box">
+              <i data-lucide="help-circle"></i>
+              <p><strong>Dica:</strong> Clique em um setor ou cargo para ver funções, colaboradores e acessar documentos relacionados. Use a visualização em lista para gerenciar cargos, funções e permissões.</p>
+            </div>
+          </div>
+
+          <!-- Aba 2: Cargos e Funções -->
+          <div class="tab-pane" id="pane-funcoes" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+              <h2 style="font-size: 1.25rem; font-weight: 700; margin: 0; color: #0f172a;">Cargos e Funções</h2>
+              <div class="team-actions" style="display: flex; gap: 8px;">
+                <button type="button" class="eq-btn-outline" id="btn-expand-all" style="padding: 6px 12px; font-size: 0.8rem;">Expandir tudo</button>
+                <button type="button" class="eq-btn-outline" id="btn-collapse-all" style="padding: 6px 12px; font-size: 0.8rem;">Fechar tudo</button>
+              </div>
+            </div>
+            <div class="team-role-board" data-role-board>
+              <!-- Populated dynamically by JS matching the original team functions interface -->
+            </div>
+          </div>
+
+          <!-- Aba 3: Visualização em lista -->
+          <div class="tab-pane" id="pane-lista" style="display: none;">
+            <div class="visualizacao-lista-layout">
+              
+              <!-- Coluna 1: Lista de colaboradores -->
+              <div class="lista-colaboradores-col">
+                <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">Colaboradores</h2>
+                <div class="eq-table-wrapper">
+                  <table class="eq-table">
+                    <thead>
+                      <tr>
+                        <th>Colaborador</th>
+                        <th>Funções</th>
+                        <th>Status</th>
+                        <th>Documentos</th>
+                        <th style="text-align: right;">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="eq-list-table-body">
+                      <!-- Populated dynamically by JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Coluna 2: Filtros da lista -->
+              <aside class="eq-sidebar-card list-filters-column" id="list-filters-sidebar">
+                <div class="eq-sidebar-content">
+                  <div class="eq-sidebar-header">
+                    <div class="eq-sidebar-title-box">
+                      <h2>Filtros da lista</h2>
+                      <span class="eq-sidebar-tag eq-tag-sector">Gerenciamento</span>
+                    </div>
+                  </div>
+
+                  <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 10px;">
+                    <div>
+                      <label class="eq-side-section-title" style="display: block; margin-bottom: 4px;">Buscar colaborador</label>
+                      <input type="text" id="filter-search" class="eq-search-input" style="padding-left: 10px;" placeholder="Nome ou e-mail...">
+                    </div>
+
+                    <div>
+                      <label class="eq-side-section-title" style="display: block; margin-bottom: 4px;">Setor</label>
+                      <select id="filter-sector" style="width: 100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.8rem; background: var(--company-main-bg); color: var(--company-text);">
+                        <option value="todos">Todos os setores</option>
+                        <option value="diretoria">Diretoria</option>
+                        <option value="comercial">Comercial</option>
+                        <option value="pos-venda">Pós-venda</option>
+                        <option value="administrativo">Administrativo</option>
+                        <option value="financeiro">Financeiro</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="juridico">Jurídico</option>
+                        <option value="rh">RH</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="eq-side-section-title" style="display: block; margin-bottom: 4px;">Cargo</label>
+                      <select id="filter-role" style="width: 100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.8rem; background: var(--company-main-bg); color: var(--company-text);">
+                        <option value="todos">Todos os cargos</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="eq-side-section-title" style="display: block; margin-bottom: 4px;">Status</label>
+                      <select id="filter-status" style="width: 100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.8rem; background: var(--company-main-bg); color: var(--company-text);">
+                        <option value="todos">Todos os status</option>
+                        <option value="ativo">Ativo</option>
+                        <option value="inativo">Inativo</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                    <h4 class="eq-side-section-title">Resumo</h4>
+                    <ul style="margin: 0; padding-left: 14px; font-size: 0.78rem; display: flex; flex-direction: column; gap: 6px; list-style-type: disc; color: #475569;">
+                      <li><strong>Total:</strong> <span id="summary-total">0</span></li>
+                      <li><strong>Ativos:</strong> <span id="summary-active">0</span></li>
+                      <li><strong>Sem documentos:</strong> <span id="summary-no-docs">0</span></li>
+                      <li><strong>Sem cargo vinculado:</strong> <span id="summary-no-role">0</span></li>
+                    </ul>
+                  </div>
+
+                  <div class="eq-side-actions" style="margin-top: 20px; display: flex; flex-direction: column; gap: 8px;">
+                    <button class="eq-btn-side-dark" id="btn-add-colab-list" type="button" style="width: 100%;">
+                      <i data-lucide="user-plus"></i> Adicionar colaborador
+                    </button>
+                    <button class="eq-btn-side-outline" id="btn-clear-filters" type="button" style="width: 100%;">
+                      <i data-lucide="rotate-ccw"></i> Limpar filtros
+                    </button>
+                  </div>
+                </div>
+              </aside>
+
+              <!-- Coluna 3: Painel do colaborador selecionado -->
+              <aside class="eq-sidebar-card colab-details-column" id="eq-list-sidebar">
+                <div class="eq-sidebar-placeholder" id="eq-list-sidebar-placeholder">
+                  <i data-lucide="info"></i>
+                  <p>Selecione um colaborador para visualizar detalhes.</p>
+                </div>
+                <div class="eq-sidebar-content" id="eq-list-sidebar-content" style="display: none;">
+                  <!-- Populated dynamically by JS -->
+                </div>
+              </aside>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right sidebar column -->
+        <aside class="eq-sidebar-card" id="eq-sidebar">
+          <div class="eq-sidebar-placeholder" id="eq-sidebar-placeholder">
+            <i data-lucide="info"></i>
+            <p>Selecione um setor ou cargo para visualizar detalhes.</p>
+          </div>
+          <div class="eq-sidebar-content" id="eq-sidebar-content" style="display: none;">
+            <!-- Populated dynamically by JS -->
+          </div>
         </aside>
 
-        <section class="team-role-board" aria-label="Cargos e funcoes" data-role-board>
-          <article class="role-section">
-            <header>
-              <span>...</span>
-              <div>
-                <h2>Carregando cargos</h2>
-                <p>Buscando funcoes salvas da equipe.</p>
-              </div>
-            </header>
-          </article>
-        </section>
       </section>
+
     </main>
+
+    <!-- Modal: Colaborador (Adicionar / Editar) -->
+    <div id="colab-modal" class="eq-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center;">
+      <div class="eq-modal-content" style="background: #ffffff; border-radius: 12px; width: 850px; max-width: 95%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); position: relative; max-height: 90vh; overflow-y: auto;">
+        <button type="button" id="btn-close-colab-modal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #94a3b8; transition: color 0.2s;"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
+        <h2 id="colab-modal-title" style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;"><i data-lucide="user-plus" style="color: #d4af37;"></i> Novo colaborador</h2>
+        
+        <form id="colab-form" style="display: flex; flex-direction: column; gap: 16px;">
+          <input type="hidden" name="colabId" />
+          
+          <div class="modal-form-grid" style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 28px;">
+            <!-- Coluna Esquerda: Dados do colaborador -->
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <h3 style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #475569; margin: 0 0 4px 0; letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">Dados do colaborador</h3>
+              
+              <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
+                Nome completo *
+                <input type="text" name="colabName" placeholder="Ex: João da Silva" required style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;" />
+              </label>
+              
+              <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
+                E-mail *
+                <input type="email" name="colabEmail" placeholder="exemplo@email.com" required style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;" />
+              </label>
+
+              <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
+                Status *
+                <select name="colabStatus" style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff; color: #0f172a;">
+                  <option value="ativo">Ativo</option>
+                  <option value="inativo">Inativo</option>
+                </select>
+              </label>
+            </div>
+
+            <!-- Coluna Direita: Funções do colaborador -->
+            <div style="display: flex; flex-direction: column; gap: 14px; border-left: 1px solid #e2e8f0; padding-left: 24px;">
+              <h3 style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #475569; margin: 0 0 4px 0; letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">Funções do colaborador</h3>
+              
+              <div id="modal-roles-container" style="display: flex; flex-direction: column; gap: 12px; max-height: 260px; overflow-y: auto; padding-right: 4px;">
+                <!-- Injetado dinamicamente -->
+              </div>
+
+              <button type="button" id="btn-modal-add-role" style="align-self: flex-start; background: #fff; border: 1.5px solid #d4af37; border-radius: 8px; padding: 8px 16px; font-size: 0.8rem; font-weight: 700; color: #d4af37; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px;">
+                + Adicionar outra função
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+            <button type="button" id="btn-cancel-colab" style="padding: 10px 20px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; font-weight: 600; background: #fff; color: #475569; cursor: pointer;">Cancelar</button>
+            <button type="submit" style="padding: 10px 20px; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 700; background: #d4af37; color: #fff; cursor: pointer;">Salvar colaborador</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Adicionar Função Rápida -->
+    <div id="quick-role-modal" class="eq-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1100; align-items: center; justify-content: center;">
+      <div class="eq-modal-content" style="background: #ffffff; border-radius: 12px; width: 400px; max-width: 90%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); position: relative;">
+        <button type="button" id="btn-close-quick-role" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #94a3b8; transition: color 0.2s;"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
+        <h2 style="font-size: 1.15rem; font-weight: 700; color: #0f172a; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;"><i data-lucide="plus-circle" style="color: #d4af37;"></i> Vincular nova função</h2>
+        <form id="quick-role-form" style="display: flex; flex-direction: column; gap: 14px;">
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
+            Setor
+            <select name="quickSector" required style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;">
+              <!-- Populados dinamicamente -->
+            </select>
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569;">
+            Cargo
+            <select name="quickRole" required style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;">
+              <!-- Populados dinamicamente baseado no setor -->
+            </select>
+          </label>
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 600; color: #475569; cursor: pointer;">
+            <input type="checkbox" name="quickPrimary" style="width: 16px; height: 16px;" />
+            Definir como função principal?
+          </label>
+          
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+            <button type="button" id="btn-cancel-quick-role" style="padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; font-weight: 600; background: #fff; color: #475569; cursor: pointer;">Cancelar</button>
+            <button type="submit" style="padding: 8px 16px; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; background: #d4af37; color: #fff; cursor: pointer;">Vincular</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    </main>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js"></script>

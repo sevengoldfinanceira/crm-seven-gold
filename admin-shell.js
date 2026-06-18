@@ -10,7 +10,6 @@
       title: "PRINCIPAL",
       items: [
         ["empresa.html", "house", "Painel", "empresa", ""],
-        ["organograma.html", "network", "Organograma", "organograma", "dono,administrador,rh"],
         ["metas.html", "target", "Metas", "metas", "dono,administrador,coordenador"],
       ],
     },

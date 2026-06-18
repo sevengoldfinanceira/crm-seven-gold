@@ -454,85 +454,33 @@
       document.body.classList.remove("theme-dark");
     }
 
-    // Criar container do helper flutuante
-    const helperContainer = document.createElement("div");
-    helperContainer.className = "floating-helper-container";
+    const fab = document.createElement("button");
+    fab.type = "button";
+    fab.className = "theme-fab";
+    fab.title = "Alternar tema";
+    fab.setAttribute("aria-label", "Alternar entre modo claro e escuro");
 
-    // Criar o card popover do helper
-    const helperCard = document.createElement("div");
-    helperCard.className = "floating-helper-card";
-    
-    // Criar o botão redondo dourado de raio
-    const helperBtn = document.createElement("button");
-    helperBtn.type = "button";
-    helperBtn.className = "floating-helper-btn";
-    helperBtn.title = "Alternar Tema";
-    helperBtn.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap">
-        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-      </svg>
-    `;
+    const sunSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+    const moonSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 
-    const updateHelperCard = (theme) => {
-      if (theme === "dark") {
-        // Exibir sol para ir ao modo claro
-        helperCard.innerHTML = `
-          <span class="helper-card-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="lucide lucide-sun">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </span>
-          <div class="helper-card-info">
-            <strong class="helper-card-title">Modo claro</strong>
-            <span class="helper-card-subtitle">Alternar tema</span>
-          </div>
-        `;
-      } else {
-        // Exibir lua para ir ao modo escuro
-        helperCard.innerHTML = `
-          <span class="helper-card-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="lucide lucide-moon">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-            </svg>
-          </span>
-          <div class="helper-card-info">
-            <strong class="helper-card-title">Modo escuro</strong>
-            <span class="helper-card-subtitle">Alternar tema</span>
-          </div>
-        `;
-      }
+    const updateFab = (theme) => {
+      fab.innerHTML = theme === "dark" ? sunSvg : moonSvg;
     };
+    updateFab(savedTheme);
 
-    updateHelperCard(savedTheme);
-
-    const toggleAction = () => {
+    fab.addEventListener("click", () => {
       const isDark = document.body.classList.toggle("theme-dark");
-      const currentTheme = isDark ? "dark" : "light";
-      localStorage.setItem("seven-gold-theme", currentTheme);
-      updateHelperCard(currentTheme);
-      // Disparar evento para sincronizar outros switchers
-      window.dispatchEvent(new CustomEvent("themechange", { detail: currentTheme }));
-    };
-
-    helperBtn.addEventListener("click", toggleAction);
-    helperCard.addEventListener("click", toggleAction);
-
-    // Escutar eventos externos de alteração de tema para manter o estado sincronizado
-    window.addEventListener("themechange", (e) => {
-      updateHelperCard(e.detail);
+      const theme = isDark ? "dark" : "light";
+      localStorage.setItem("seven-gold-theme", theme);
+      updateFab(theme);
+      window.dispatchEvent(new CustomEvent("themechange", { detail: theme }));
     });
 
-    helperContainer.appendChild(helperCard);
-    helperContainer.appendChild(helperBtn);
-    document.body.appendChild(helperContainer);
+    window.addEventListener("themechange", (e) => {
+      updateFab(e.detail);
+    });
+
+    document.body.appendChild(fab);
   };
 
   document.addEventListener("DOMContentLoaded", async () => {

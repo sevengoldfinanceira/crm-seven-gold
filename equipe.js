@@ -1,387 +1,2544 @@
 (function () {
-  const board = document.querySelector("[data-role-board]");
-  const expandButton = document.querySelector("[data-expand-roles]");
-  const collapseButton = document.querySelector("[data-collapse-roles]");
-  const rankLinks = Array.from(document.querySelectorAll(".rank-link"));
-
-  const sectors = [
+  // Sector definitions
+  let sectors = [
     {
       id: "diretoria",
-      order: 1,
       title: "Diretoria",
-      description: "Comando, decisao e acesso total.",
+      icon: "crown",
+      description: "Comando principal da empresa",
       roles: [
-        {
-          key: "diretor-ceo",
-          title: "Diretor / CEO",
-          functions: [
-            "Definir direcao da empresa.",
-            "Acompanhar financeiro, equipe e operacao.",
-            "Aprovar permissoes, cargos e regras internas.",
-          ],
-        },
-      ],
+        { key: "diretor-ceo", title: "Diretor / CEO", sub: "Dono" }
+      ]
     },
     {
       id: "comercial",
-      order: 2,
       title: "Comercial",
-      description: "Atendimento, venda e conversao de leads.",
+      icon: "trending-up",
+      description: "Vendas, atendimento e leads",
       roles: [
-        {
-          key: "supervisor",
-          title: "Supervisor",
-          functions: [
-            "Acompanhar o desempenho do time comercial.",
-            "Validar rotina, metas e prioridade dos atendimentos.",
-            "Apoiar coordenadores em decisoes comerciais.",
-          ],
-        },
-        {
-          key: "coordenador",
-          title: "Coordenador",
-          functions: [
-            "Distribuir leads e acompanhar retorno.",
-            "Orientar vendedores sobre proposta e fechamento.",
-            "Reportar resultados para a diretoria.",
-          ],
-        },
-        {
-          key: "vendedor",
-          title: "Vendedor",
-          functions: [
-            "Atender leads do CRM.",
-            "Registrar andamento e observacoes no pipeline.",
-            "Enviar proposta e conduzir fechamento.",
-          ],
-        },
-        {
-          key: "assistente-vendas",
-          title: "Assistente de Vendas",
-          functions: [
-            "Organizar dados iniciais do lead.",
-            "Confirmar contato e documentos basicos.",
-            "Encaminhar oportunidade para vendedor.",
-          ],
-        },
-      ],
+        { key: "supervisor-comercial", title: "Supervisor", sub: "Acompanhamento" },
+        { key: "coordenador-comercial", title: "Coordenador", sub: "Gestão comercial" },
+        { key: "vendedor", title: "Vendedor", sub: "Negociação" },
+        { key: "assistente-vendas", title: "Assistente de Vendas", sub: "Pré-atendimento" }
+      ]
     },
     {
       id: "pos-venda",
-      order: 3,
-      title: "Pos-venda",
-      description: "Acompanhamento depois do fechamento.",
+      title: "Pós-venda",
+      icon: "message-circle",
+      description: "Relacionamento pós venda",
       roles: [
-        {
-          key: "pos-vendas",
-          title: "Pos-vendas",
-          functions: [
-            "Acompanhar cliente apos venda.",
-            "Registrar pendencias e retornos.",
-            "Acionar financeiro ou comercial quando necessario.",
-          ],
-        },
-      ],
+        { key: "coordenador-posvenda", title: "Coordenador", sub: "Gestão de pós-venda" },
+        { key: "analista-posvenda", title: "Analista", sub: "Fidelização" },
+        { key: "pos-vendas", title: "Suporte ao cliente", sub: "Atendimento pós-venda" }
+      ]
     },
     {
       id: "administrativo",
-      order: 4,
       title: "Administrativo",
-      description: "Organizacao interna e apoio operacional.",
+      icon: "briefcase",
+      description: "Rotina interna e organização",
       roles: [
-        {
-          key: "administrativo",
-          title: "Administrativo",
-          functions: [
-            "Organizar processos internos.",
-            "Controlar cadastros e arquivos administrativos.",
-            "Apoiar diretoria, financeiro e equipe.",
-          ],
-        },
-      ],
+        { key: "assistente-adm", title: "Assistente Adm.", sub: "Rotinas internas" },
+        { key: "analista-adm", title: "Analista Adm.", sub: "Processos" },
+        { key: "coordenador-adm", title: "Coordenador Adm.", sub: "Gestão de processos" }
+      ]
     },
     {
       id: "financeiro",
-      order: 5,
       title: "Financeiro",
-      description: "Controle de valores, contas e repasses.",
+      icon: "dollar-sign",
+      description: "Caixa, contabilidade e repasses",
       roles: [
-        {
-          key: "financeiro-contador",
-          title: "Financeiro / Contador",
-          functions: [
-            "Controlar entradas, saidas e caixa.",
-            "Conferir comissoes, repasses e comprovantes.",
-            "Manter documentos financeiros organizados.",
-          ],
-        },
-      ],
-    },
-    {
-      id: "juridico",
-      order: 6,
-      title: "Juridico",
-      description: "Contratos, analises e seguranca legal.",
-      roles: [
-        {
-          key: "advogado-juridico",
-          title: "Advogado / Juridico",
-          functions: [
-            "Analisar contratos e documentos juridicos.",
-            "Apoiar a diretoria em decisoes legais.",
-            "Manter modelos e pareceres atualizados.",
-          ],
-        },
-      ],
-    },
-    {
-      id: "rh",
-      order: 7,
-      title: "RH",
-      description: "Gestao de pessoas e documentacao.",
-      roles: [
-        {
-          key: "rh",
-          title: "RH",
-          functions: [
-            "Organizar dados e documentos da equipe.",
-            "Acompanhar entrada, saida e mudanca de cargo.",
-            "Apoiar regras internas e comunicados.",
-          ],
-        },
-      ],
+        { key: "financeiro", title: "Financeiro", sub: "Gestão financeira" },
+        { key: "auxiliar-financeiro", title: "Auxiliar Financeiro", sub: "Apoio financeiro" },
+        { key: "coordenador-financeiro", title: "Coord. Financeiro", sub: "Gestão de caixa" }
+      ]
     },
     {
       id: "marketing",
-      order: 8,
       title: "Marketing",
-      description: "Campanhas, materiais e captacao.",
+      icon: "megaphone",
+      description: "Campanhas e captação",
       roles: [
-        {
-          key: "marketing-cargo",
-          title: "Marketing",
-          functions: [
-            "Criar campanhas e materiais de divulgacao.",
-            "Acompanhar origem dos leads.",
-            "Organizar identidade visual e criativos.",
-          ],
-        },
-      ],
+        { key: "assistente-mkt", title: "Assistente Mkt.", sub: "Conteúdo" },
+        { key: "analista-mkt", title: "Auxilista Mkt.", sub: "Campanhas" },
+        { key: "coordenador-mkt", title: "Coord. Marketing", sub: "Gestão de tráfego" }
+      ]
     },
+    {
+      id: "juridico",
+      title: "Jurídico",
+      icon: "scale",
+      description: "Contratos e conformidade legal",
+      roles: [
+        { key: "advogado-juridico", title: "Advogado / Jurídico", sub: "Legal" }
+      ]
+    },
+    {
+      id: "rh",
+      title: "RH",
+      icon: "users",
+      description: "Gestão de pessoas e clima",
+      roles: [
+        { key: "assistente-rh", title: "Assistente de RH", sub: "DP" },
+        { key: "analista-rh", title: "Analista de RH", sub: "Recrutamento" },
+        { key: "coordenador-rh", title: "Coordenador de RH", sub: "Gestão de pessoas" }
+      ]
+    }
   ];
 
-  const getClient = () => window.sevenGoldAuth;
-  const roleMap = new Map(sectors.flatMap((sector) => sector.roles.map((role) => [role.key, role])));
+  // Drag and drop state variables
+  let draggedSectorId = null;
+  let draggedRoleKey = null;
+  let draggedRoleOriginSectorId = null;
 
-  const waitForUser = async () => {
-    const client = getClient();
+  // Persist order to localStorage
+  const saveOrderToLocalStorage = () => {
+    // 1. Sector IDs (excluding diretoria)
+    const otherSectorsIds = sectors.filter(s => s.id !== "diretoria").map(s => s.id);
+    localStorage.setItem("seven-gold-sectors-order", JSON.stringify(otherSectorsIds));
 
-    if (!client) {
-      return null;
-    }
+    // 2. Roles mapping per sector
+    const rolesMap = {};
+    sectors.forEach(sec => {
+      rolesMap[sec.id] = sec.roles.map(r => r.key);
+    });
+    localStorage.setItem("seven-gold-roles-order", JSON.stringify(rolesMap));
+  };
 
-    for (let attempt = 0; attempt < 12; attempt += 1) {
-      const { data } = await client.auth.getUser();
-
-      if (data.user) {
-        return data.user;
+  // Load and apply saved order from localStorage
+  const applySavedOrder = () => {
+    // 1. Reorder sectors if customized
+    const savedSectorsOrder = localStorage.getItem("seven-gold-sectors-order");
+    if (savedSectorsOrder) {
+      try {
+        const orderIds = JSON.parse(savedSectorsOrder);
+        const diretoriaSec = sectors.find(s => s.id === "diretoria");
+        const otherSecs = sectors.filter(s => s.id !== "diretoria");
+        
+        otherSecs.sort((a, b) => {
+          const indexA = orderIds.indexOf(a.id);
+          const indexB = orderIds.indexOf(b.id);
+          if (indexA === -1 && indexB === -1) return 0;
+          if (indexA === -1) return 1;
+          if (indexB === -1) return -1;
+          return indexA - indexB;
+        });
+        
+        sectors.length = 0;
+        if (diretoriaSec) sectors.push(diretoriaSec);
+        sectors.push(...otherSecs);
+      } catch (e) {
+        console.error("Error applying saved sectors order:", e);
       }
-
-      await new Promise((resolve) => setTimeout(resolve, 250));
     }
 
-    return null;
+    // 2. Reorder/Re-map roles if customized
+    const savedRolesOrder = localStorage.getItem("seven-gold-roles-order");
+    if (savedRolesOrder) {
+      try {
+        const rolesMap = JSON.parse(savedRolesOrder); // { sectorId: [roleKey, ...] }
+        
+        // Collect all role objects from current structure to avoid losing metadata
+        const allRolesByKey = new Map();
+        const originalSectorOfRole = new Map();
+        sectors.forEach(sec => {
+          sec.roles.forEach(role => {
+            allRolesByKey.set(role.key, role);
+            originalSectorOfRole.set(role.key, sec.id);
+          });
+        });
+
+        // Rebuild role arrays for each sector
+        sectors.forEach(sec => {
+          const keys = rolesMap[sec.id];
+          if (Array.isArray(keys)) {
+            const newRoles = [];
+            keys.forEach(k => {
+              if (allRolesByKey.has(k)) {
+                newRoles.push(allRolesByKey.get(k));
+                allRolesByKey.delete(k); // consumed
+              }
+            });
+            sec.roles = newRoles;
+          }
+        });
+
+        // Put back any roles that weren't consumed (safety backup for newly defined roles)
+        allRolesByKey.forEach((roleObj, key) => {
+          const origSectorId = originalSectorOfRole.get(key) || "comercial";
+          const sec = sectors.find(s => s.id === origSectorId);
+          if (sec) {
+            sec.roles.push(roleObj);
+          }
+        });
+      } catch (e) {
+        console.error("Error applying saved roles order:", e);
+      }
+    }
   };
 
-  const parseFunctions = (value) =>
-    String(value || "")
-      .split("\n")
-      .map((item) => item.replace(/^\s*\d+[\).\-\s]+/, "").trim())
-      .filter(Boolean);
-
-  const createFunctionList = (functions) => {
-    const list = document.createElement("ol");
-    functions.forEach((item) => {
-      const li = document.createElement("li");
-      li.textContent = item;
-      list.append(li);
-    });
-    return list;
+  // Roles Metadata mapping
+  const rolesData = {
+    "diretor-ceo": {
+      desc: "Dono da empresa, com acesso total ao sistema e visão completa da operação.",
+      access: ["CRM", "Empresa", "Financeiro", "Permissões", "Documentos", "Relatórios"],
+      files: ["Estatuto Social", "Acordo de Sócios", "Planejamento Estratégico"],
+      commission: "Campo reservado para regra de comissão ou retirada.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Hoje, 16:42"
+    },
+    "supervisor-comercial": {
+      desc: "Supervisiona as ligações, qualidade de atendimento, fluxos de leads e auxilia na capacitação da equipe.",
+      access: ["CRM", "Empresa", "Documentos", "Relatórios"],
+      files: ["Manual de processos comerciais", "Script de Vendas", "Metas de Conversão"],
+      commission: "Comissão de 0.3% sobre o faturamento global da equipe sob supervisão.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Ontem, 17:30"
+    },
+    "coordenador-comercial": {
+      desc: "Responsável por acompanhar as metas da equipe comercial, dar suporte aos vendedores e reportar à diretoria.",
+      access: ["CRM", "Empresa", "Documentos", "Relatórios"],
+      files: ["Planilhas de metas mensais", "Relatórios comerciais", "Contratos de parceria"],
+      commission: "Comissão de 0.5% sobre o faturamento global da equipe comercial.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Hoje, 14:02"
+    },
+    "vendedor": {
+      desc: "Responsável por apresentar propostas comerciais, negociar condições e realizar o fechamento das vendas.",
+      access: ["CRM", "Documentos"],
+      files: ["Modelos de propostas", "Tabela de preços de consórcio", "Regras de descontos"],
+      commission: "Comissão padrão de 2.0% sobre o valor total da venda faturada.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Hoje, 10:15"
+    },
+    "assistente-vendas": {
+      desc: "Responsável pelo primeiro contato com leads, triagem inicial, qualificação e agendamento de reuniões.",
+      access: ["CRM", "Documentos"],
+      files: ["Script de pré-atendimento", "Regras de qualificação de leads", "Termos de uso"],
+      commission: "Comissão de 0.5% sobre o valor das vendas qualificadas e fechadas.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Hoje, 11:20"
+    },
+    "coordenador-posvenda": {
+      desc: "Gerencia a área de atendimento pós-venda, resolvendo incidentes complexos e acompanhando a retenção.",
+      access: ["CRM", "Documentos", "Relatórios"],
+      files: ["Pesquisa de satisfação consolidada", "Relatórios de cancelamentos"],
+      commission: "Comissão sobre métricas de satisfação (NPS) e retenção.",
+      lastEdit: "Jonatã atualizou",
+      lastTime: "Há 1 semana"
+    },
+    "analista-posvenda": {
+      desc: "Analisa índices de satisfação dos clientes pós-assinatura, atende reclamações e ajuda na retenção de leads.",
+      access: ["CRM", "Documentos"],
+      files: ["Manual do NPS", "Checklist pós-venda"],
+      commission: "Bônus mensal baseado no atingimento de metas de NPS da equipe.",
+      lastEdit: "Jonatã atualizou",
+      lastTime: "Há 4 dias"
+    },
+    "pos-vendas": {
+      desc: "Responsável por dar assistência aos clientes pós-assinatura de contrato, tirar dúvidas e acompanhar a fidelização.",
+      access: ["CRM", "Documentos"],
+      files: ["Checklist de boas-vindas", "Formulário de satisfação (NPS)", "Termos de garantia"],
+      commission: "Bônus mensal por atingimento de meta de NPS e índice de retenção.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Há 2 dias"
+    },
+    "assistente-adm": {
+      desc: "Responsável pela rotina administrativa geral, compras de insumos da empresa, controle de ponto e arquivamento.",
+      access: ["Empresa", "Documentos"],
+      files: ["Documentação fiscal de fornecedores", "Inventário patrimonial", "Controle de contas de consumo"],
+      commission: "Remuneração fixa conforme acordo de CLT. Sem comissão de vendas.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Há 1 semana"
+    },
+    "analista-adm": {
+      desc: "Responsável pela modelagem e auditoria de processos internos, fluxogramas de atividades e controles de qualidade.",
+      access: ["Empresa", "Documentos", "Relatórios"],
+      files: ["Manual de conduta interno, organograma detalhado, fluxogramas de processos"],
+      commission: "Remuneração fixa conforme acordo de CLT. Sem comissão de vendas.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Há 3 dias"
+    },
+    "coordenador-adm": {
+      desc: "Coordena a área administrativa e de processos internos, garantindo a eficiência operacional e compliance da empresa.",
+      access: ["Empresa", "Documentos", "Relatórios", "Permissões"],
+      files: ["Planejamento estratégico anual", "Contratos corporativos com prestadores"],
+      commission: "Participação nos Lucros e Resultados (PLR) conforme atingimento de metas operacionais.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Há 4 dias"
+    },
+    "financeiro": {
+      desc: "Responsável por contas a pagar e receber, fluxo de caixa diário e conciliação bancária da empresa.",
+      access: ["Financeiro", "Documentos"],
+      files: ["Extratos bancários, comprovantes de pagamento, planilhas de fluxo de caixa"],
+      commission: "Remuneração fixa conforme CLT. Sem comissão de vendas.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Hoje, 09:45"
+    },
+    "auxiliar-financeiro": {
+      desc: "Dá suporte no lançamento de notas fiscais, cobrança de clientes inadimplentes e conciliação de comprovantes.",
+      access: ["Financeiro", "Documentos"],
+      files: ["Relatório de cobrança, arquivos de notas fiscais de entrada, recibos de despesas"],
+      commission: "Remuneração fixa conforme CLT. Sem comissão de vendas.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Ontem, 14:15"
+    },
+    "coordenador-financeiro": {
+      desc: "Responsável por relatórios consolidados de faturamento, conciliação de comissões de parceiros e planejamento tributário.",
+      access: ["Financeiro", "Empresa", "Documentos", "Relatórios"],
+      files: ["Demonstrações financeiras mensais, planejamento tributário anual"],
+      commission: "Remuneração fixa mais PLR semestral por performance e redução de despesas.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Hoje, 16:30"
+    },
+    "assistente-mkt": {
+      desc: "Cria posts para as redes sociais, escreve cópias de anúncios e cuida do design das mídias da empresa.",
+      access: ["Marketing", "Documentos"],
+      files: ["Banco de imagens, calendário editorial de posts, manual de identidade visual"],
+      commission: "Bônus por crescimento de engajamento orgânico nas redes sociais.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Ontem, 11:40"
+    },
+    "analista-mkt": {
+      desc: "Analisa métricas de anúncios, cria novas campanhas de captação de leads e monitora o custo por lead (CPL).",
+      access: ["Marketing", "Documentos", "Relatórios"],
+      files: ["Planilhas de gastos de anúncios, relatórios de conversão de landing pages"],
+      commission: "Bônus trimestral atrelado ao volume de leads qualificados gerados e CPL ideal.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Há 1 dia"
+    },
+    "coordenador-mkt": {
+      desc: "Gere o orçamento de tráfego pago da empresa nas principais plataformas e define a estratégia de branding.",
+      access: ["Marketing", "Empresa", "Documentos", "Relatórios"],
+      files: ["Planejamento de investimentos in tráfego, relatórios consolidados de marketing"],
+      commission: "Participação nos lucros com base no ROI (Retorno sobre Investimento) das campanhas.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Hoje, 15:10"
+    },
+    "advogado-juridico": {
+      desc: "Analisar contratos e documentos jurídicos, apoiar a diretoria em decisões legais e manter modelos atualizados.",
+      access: ["Financeiro", "Documentos", "Relatórios"],
+      files: ["Modelos de contratos", "Auditoria de processos cíveis", "Normas regulatórias"],
+      commission: "Remuneração fixa conforme acordo de honorários/CLT.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Há 3 dias"
+    },
+    "assistente-rh": {
+      desc: "Responsável por agendar entrevistas, coletar documentos para novas contratações e controlar os benefícios.",
+      access: ["Empresa", "Documentos"],
+      files: ["Fichas de novos funcionários, formulários de benefícios corporativos"],
+      commission: "Remuneração fixa de acordo com a CLT.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Ontem, 15:40"
+    },
+    "analista-rh": {
+      desc: "Processa a folha de pagamento, gerencia férias, rescisões e cuida das obrigações sindicais e legais do RH.",
+      access: ["Empresa", "Documentos", "Relatórios"],
+      files: ["Planilhas de controle de folha, convenção coletiva dos colaboradores"],
+      commission: "Remuneração fixa de acordo com a CLT.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Hoje, 11:42"
+    },
+    "coordenador-rh": {
+      desc: "Gere o setor de Recursos Humanos, planeja treinamentos internos, políticas de cargos e salários e avaliações de desempenho.",
+      access: ["Empresa", "Documentos", "Relatórios", "Permissões"],
+      files: ["Plano de cargos e salários consolidado, avaliações de desempenho anuais"],
+      commission: "PLR anual vinculada ao índice de retenção de talentos (turnover baixo) e engajamento da equipe.",
+      lastEdit: "Jonatã atualizou este cargo",
+      lastTime: "Hoje, 16:35"
+    }
   };
 
-  const setCardStatus = (card, message, type = "error") => {
-    const status = card.querySelector("[data-role-status]");
-    status.textContent = message;
-    status.dataset.type = type;
+  // State Management
+  const state = {
+    profiles: [],
+    functions: new Map(), // role_key -> array of string
+    selectedItem: null, // { type: 'sector'|'role', id: string, sectorId: string }
+    activeTab: 'hierarquia',
+    searchQuery: ''
   };
 
-  const saveRoleFunctions = async (card, roleKey, functions) => {
-    const client = getClient();
-    const user = await waitForUser();
+  // Selectors
+  const searchInput = document.getElementById("eq-search-input");
+  const sectorsRow = document.getElementById("eq-sectors-row");
+  const listTableBody = document.getElementById("eq-list-table-body");
+  const roleBoard = document.querySelector("[data-role-board]");
+  const sidebarPlaceholder = document.getElementById("eq-sidebar-placeholder");
+  const sidebarContent = document.getElementById("eq-sidebar-content");
 
-    if (!client || !user) {
-      setCardStatus(card, "Faca login novamente antes de salvar.");
-      return;
+  // Helper function to resolve profile roles to hierarchy role keys
+  const getRoleKeyForProfile = (profileRole) => {
+    if (!profileRole) return 'vendedor';
+    const cleanRole = profileRole.toLowerCase().trim();
+    if (cleanRole === 'dono') return 'diretor-ceo';
+    if (cleanRole === 'administrador') return 'coordenador-adm';
+    if (cleanRole === 'coordenador') return 'coordenador-comercial';
+
+    // Direct search
+    for (const sec of sectors) {
+      for (const r of sec.roles) {
+        if (r.key === cleanRole) {
+          return r.key;
+        }
+      }
     }
 
-    const role = roleMap.get(roleKey);
-    const saveButton = card.querySelector("[data-save-functions]");
-    saveButton.disabled = true;
-    saveButton.textContent = "Salvando...";
+    // Fallbacks
+    if (cleanRole.includes('vendedor')) return 'vendedor';
+    if (cleanRole.includes('financeiro')) return 'financeiro';
+    if (cleanRole.includes('rh')) return 'coordenador-rh';
+    if (cleanRole.includes('marketing')) return 'coordenador-mkt';
+    if (cleanRole.includes('adm') || cleanRole.includes('administrativo')) return 'analista-adm';
+    if (cleanRole.includes('pos-venda') || cleanRole.includes('posvenda')) return 'pos-vendas';
 
-    const { error } = await client.from("company_role_functions").upsert(
+    return 'vendedor';
+  };
+
+  const getClient = () => window.sevenGoldAuth;
+
+  const refreshIcons = () => {
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  };
+
+  // Employee roles/functions helpers
+  const loadEmployeeFunctionsMap = () => {
+    const saved = localStorage.getItem("seven-gold-employee-roles");
+    return saved ? JSON.parse(saved) : {};
+  };
+
+  const saveEmployeeFunctionsMap = (map) => {
+    localStorage.setItem("seven-gold-employee-roles", JSON.stringify(map));
+  };
+
+  const getEmployeeFunctions = (profile) => {
+    const map = loadEmployeeFunctionsMap();
+    if (map[profile.id] && map[profile.id].length > 0) {
+      return map[profile.id];
+    }
+    
+    // Auto-migrate old single role/sector logic
+    const roleKey = getRoleKeyForProfile(profile.role);
+    const sectorObj = sectors.find(s => s.roles.some(r => r.key === roleKey));
+    const sectorId = sectorObj ? sectorObj.id : "comercial";
+    
+    const initialFuncs = [
       {
-        role_key: roleKey,
-        role_title: role.title,
-        functions,
-        updated_by: user.id,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "role_key" }
-    );
+        sectorId: sectorId,
+        roleKey: roleKey,
+        primary: true
+      }
+    ];
+    map[profile.id] = initialFuncs;
+    saveEmployeeFunctionsMap(map);
+    return initialFuncs;
+  };
 
-    saveButton.disabled = false;
-    saveButton.textContent = "Salvar funcoes";
+  const saveEmployeeFunctions = (profileId, funcs) => {
+    const map = loadEmployeeFunctionsMap();
+    map[profileId] = funcs;
+    saveEmployeeFunctionsMap(map);
+    
+    // Keep main role key synchronized with primary function to ensure backward compatibility
+    const primaryFunc = funcs.find(f => f.primary) || funcs[0];
+    const profile = state.profiles.find(p => p.id === profileId);
+    if (profile && primaryFunc) {
+      profile.role = primaryFunc.roleKey;
+    }
+  };
 
-    if (error) {
-      setCardStatus(card, "Nao consegui salvar. Confira se a tabela foi criada no Supabase.");
-      return;
+  const getSectorColorClass = (sectorId) => {
+    const clean = sectorId.toLowerCase().replace("-", "");
+    if (clean === "administrativo" || clean === "admin") return "eq-sec-bg-admin";
+    if (clean === "diretoria") return "eq-sec-bg-comercial"; // fallback
+    return `eq-sec-bg-${clean}`;
+  };
+
+  const renderEmployeeRolesChips = (profile) => {
+    const funcs = getEmployeeFunctions(profile);
+    const sortedFuncs = [...funcs].sort((a, b) => (b.primary ? 1 : 0) - (a.primary ? 1 : 0));
+    
+    const limit = 2;
+    const visibleFuncs = sortedFuncs.slice(0, limit);
+    const remainingCount = sortedFuncs.length - limit;
+    
+    let html = `<div class="eq-chips-container" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; max-width: 450px;">`;
+    
+    visibleFuncs.forEach(f => {
+      const secObj = sectors.find(s => s.id === f.sectorId);
+      const roleObj = secObj?.roles.find(r => r.key === f.roleKey);
+      const sectorTitle = secObj ? secObj.title : f.sectorId;
+      const roleTitle = roleObj ? roleObj.title : f.roleKey;
+      
+      const chipText = `${sectorTitle} / ${roleTitle}`;
+      if (f.primary) {
+        html += `<span class="eq-role-chip primary" title="Função Principal">${chipText} <span class="eq-chip-badge-gold">Principal</span></span>`;
+      } else {
+        html += `<span class="eq-role-chip" title="Função Vinculada">${chipText}</span>`;
+      }
+    });
+    
+    if (remainingCount > 0) {
+      html += `<span class="eq-role-chip-more" data-colab-id="${profile.id}" title="Ver todas as funções no painel lateral">+${remainingCount} ${remainingCount === 1 ? 'função' : 'funções'}</span>`;
+    }
+    
+    html += `</div>`;
+    return html;
+  };
+
+  // Load active profiles from Supabase profiles
+  const loadProfiles = async () => {
+    const client = getClient();
+    let data = [];
+
+    if (client) {
+      try {
+        const { data: profiles, error } = await client
+          .from("profiles")
+          .select("id, full_name, email, role")
+          .order("full_name", { ascending: true });
+        if (!error && profiles && profiles.length > 0) {
+          data = profiles;
+        }
+      } catch (e) {
+        console.error("Supabase load error:", e);
+      }
     }
 
-    role.functions = functions;
-    card.querySelector(".role-functions").replaceChildren(createFunctionList(functions));
-    card.classList.remove("editing");
-    setCardStatus(card, "Funcoes salvas com sucesso.", "success");
-  };
-
-  const createRoleCard = (role) => {
-    const card = document.createElement("div");
-    card.className = "job-card";
-    card.dataset.roleKey = role.key;
-
-    const head = document.createElement("div");
-    head.className = "job-card-head";
-
-    const title = document.createElement("h3");
-    title.textContent = role.title;
-
-    const actions = document.createElement("div");
-    actions.className = "job-actions";
-
-    const docsLink = document.createElement("a");
-    docsLink.href = `documentos.html#${role.key}`;
-    docsLink.textContent = "Ver documentos";
-
-    const editButton = document.createElement("button");
-    editButton.type = "button";
-    editButton.textContent = "Editar funcoes";
-    editButton.addEventListener("click", () => {
-      card.classList.toggle("editing");
-      setCardStatus(card, "");
-    });
-
-    actions.append(docsLink, editButton);
-    head.append(title, actions);
-
-    const functionsWrap = document.createElement("div");
-    functionsWrap.className = "role-functions";
-    functionsWrap.append(createFunctionList(role.functions));
-
-    const editor = document.createElement("div");
-    editor.className = "role-editor";
-
-    const textarea = document.createElement("textarea");
-    textarea.rows = 7;
-    textarea.value = role.functions.map((item, index) => `${index + 1}. ${item}`).join("\n");
-
-    const saveButton = document.createElement("button");
-    saveButton.type = "button";
-    saveButton.dataset.saveFunctions = "";
-    saveButton.textContent = "Salvar funcoes";
-    saveButton.addEventListener("click", () => {
-      saveRoleFunctions(card, role.key, parseFunctions(textarea.value));
-    });
-
-    const status = document.createElement("p");
-    status.className = "role-save-status";
-    status.dataset.roleStatus = "";
-
-    editor.append(textarea, saveButton, status);
-    card.append(head, functionsWrap, editor);
-
-    return card;
-  };
-
-  const renderSectors = () => {
-    if (!board) {
-      return;
+    const localProfiles = localStorage.getItem("seven-gold-profiles-local");
+    if (localProfiles) {
+      data = JSON.parse(localProfiles);
+    } else if (data.length === 0) {
+      data = [
+        { id: "1", full_name: "Jonatã", email: "jonata@sevengold.com.br", role: "dono", status: "ativo" },
+        { id: "2", full_name: "Maria Silva", email: "maria@sevengold.com.br", role: "supervisor-comercial", status: "ativo" },
+        { id: "3", full_name: "Lucas Santos", email: "lucas@sevengold.com.br", role: "coordenador-comercial", status: "ativo" },
+        { id: "4", full_name: "Ana Oliveira", email: "ana@sevengold.com.br", role: "vendedor", status: "ativo" },
+        { id: "5", full_name: "João Souza", email: "joao@sevengold.com.br", role: "vendedor", status: "ativo" },
+        { id: "6", full_name: "Mariana Costa", email: "mariana@sevengold.com.br", role: "assistente-vendas", status: "ativo" },
+        { id: "7", full_name: "Paula Souza", email: "paula@sevengold.com.br", role: "coordenador-posvenda", status: "ativo" },
+        { id: "8", full_name: "Roberto Dias", email: "roberto@sevengold.com.br", role: "coordenador-adm", status: "ativo" },
+        { id: "9", full_name: "Beatriz Lima", email: "beatriz@sevengold.com.br", role: "coordenador-financeiro", status: "ativo" },
+        { id: "10", full_name: "Thiago Rocha", email: "thiago@sevengold.com.br", role: "coordenador-mkt", status: "ativo" },
+        { id: "11", full_name: "Fernanda Melo", email: "fernanda@sevengold.com.br", role: "coordenador-rh", status: "ativo" },
+        { id: "12", full_name: "Carlos Eduardo", email: "carlos@sevengold.com.br", role: "advogado-juridico", status: "ativo" }
+      ];
+      localStorage.setItem("seven-gold-profiles-local", JSON.stringify(data));
+    } else {
+      data.forEach(p => {
+        if (!p.status) p.status = "ativo";
+      });
+      localStorage.setItem("seven-gold-profiles-local", JSON.stringify(data));
     }
 
-    board.innerHTML = "";
-
-    sectors.forEach((sector) => {
-      const section = document.createElement("article");
-      section.className = "role-section";
-      section.id = sector.id;
-
-      const header = document.createElement("header");
-      const order = document.createElement("span");
-      order.textContent = sector.order;
-
-      const copy = document.createElement("div");
-      const title = document.createElement("h2");
-      title.textContent = sector.title;
-      const description = document.createElement("p");
-      description.textContent = sector.description;
-      copy.append(title, description);
-      header.append(order, copy);
-
-      const roleGrid = document.createElement("div");
-      roleGrid.className = sector.roles.length > 1 ? "job-grid" : "";
-      sector.roles.forEach((role) => roleGrid.append(createRoleCard(role)));
-
-      section.append(header, roleGrid);
-      board.append(section);
-    });
+    state.profiles = data;
   };
 
+  const saveProfiles = () => {
+    localStorage.setItem("seven-gold-profiles-local", JSON.stringify(state.profiles));
+  };
+
+  // Load functions from company_role_functions
   const loadSavedFunctions = async () => {
     const client = getClient();
+    state.functions.clear();
 
-    if (!client) {
-      renderSectors();
+    if (client) {
+      const { data, error } = await client
+        .from("company_role_functions")
+        .select("role_key, functions");
+      if (!error && data) {
+        data.forEach(item => {
+          if (Array.isArray(item.functions)) {
+            state.functions.set(item.role_key, item.functions);
+          }
+        });
+      }
+    }
+
+    // Set defaults from static metadata if not in DB
+    sectors.forEach(sec => {
+      sec.roles.forEach(role => {
+        if (!state.functions.has(role.key)) {
+          // Set standard defaults
+          let def = [];
+          if (role.key === 'diretor-ceo') def = ["Definir direção da empresa.", "Acompanhar financeiro, equipe e operação.", "Aprovar permissões, cargos e regras internas."];
+          else if (role.key === 'vendedor') def = ["Atender leads do CRM.", "Negociar com clientes.", "Apresentar propostas.", "Registrar andamento dos atendimentos.", "Reportar resultados ao coordenador."];
+          else if (role.key === 'coordenador-comercial') def = ["Distribuir leads e acompanhar retorno.", "Orientar vendedores sobre propostas e fechamentos.", "Reportar resultados para a diretoria."];
+          else if (role.key === 'supervisor-comercial') def = ["Acompanhar o desempenho do time comercial.", "Validar rotina, metas e prioridade dos atendimentos.", "Apoiar coordenadores em decisões comerciais."];
+          else if (role.key === 'assistente-vendas') def = ["Organizar dados iniciais do lead.", "Confirmar contato e documentos básicos.", "Encaminhar oportunidade para vendedor."];
+          else def = [`Responsabilidade 1 do cargo ${role.title}.`, `Responsabilidade 2 do cargo ${role.title}.`, `Reportar andamento de metas do setor.`];
+          state.functions.set(role.key, def);
+        }
+      });
+    });
+  };
+
+  // Get profiles grouped by role
+  const getProfilesForRole = (roleKey) => {
+    return state.profiles.filter(p => {
+      const funcs = getEmployeeFunctions(p);
+      return funcs.some(f => f.roleKey === roleKey);
+    });
+  };
+
+  // Get total members in a sector
+  const getMembersInSector = (sector) => {
+    const sectorRoleKeys = sector.roles.map(r => r.key);
+    const uniqueProfiles = state.profiles.filter(p => {
+      const funcs = getEmployeeFunctions(p);
+      return funcs.some(f => sectorRoleKeys.includes(f.roleKey));
+    });
+    return uniqueProfiles.length;
+  };
+
+  // Render summary cards
+  const renderSummaryCards = () => {
+    document.getElementById("sum-sectors-count").textContent = sectors.length;
+    
+    let rolesCount = 0;
+    sectors.forEach(s => rolesCount += s.roles.length);
+    document.getElementById("sum-roles-count").textContent = rolesCount;
+
+    document.getElementById("sum-members-count").textContent = state.profiles.length;
+    document.getElementById("sum-levels-count").textContent = "5"; // Fixed level hierarchy
+  };
+
+  // Render Organograma View (Aba 1)
+  const renderOrganograma = () => {
+    if (!sectorsRow) return;
+    sectorsRow.innerHTML = "";
+
+    // Diretoria Card (Jonatã)
+    const dirCard = document.querySelector("[data-dir-card]");
+    if (dirCard) {
+      const dirRoleKey = 'diretor-ceo';
+      const dirMembers = getProfilesForRole(dirRoleKey);
+      
+      const ceoName = dirMembers[0]?.full_name || "Jonatã";
+      document.getElementById("dir-name").textContent = ceoName;
+      document.getElementById("dir-avatar").textContent = ceoName.charAt(0);
+      dirCard.querySelector(".eq-profile-tag").textContent = `${dirMembers.length} ${dirMembers.length === 1 ? 'pessoa' : 'pessoas'}`;
+
+      // Reset selection state
+      dirCard.classList.remove("selected");
+      if (state.selectedItem && state.selectedItem.id === dirRoleKey) {
+        dirCard.classList.add("selected");
+      }
+
+      // Add click listener
+      dirCard.onclick = (e) => {
+        e.stopPropagation();
+        selectItem('role', dirRoleKey, 'diretoria');
+      };
+    }
+
+    // Other sectors
+    sectors.forEach(sector => {
+      if (sector.id === "diretoria") return; // Diretoria is on top
+
+      const sectorMembersCount = getMembersInSector(sector);
+
+      const sectorCard = document.createElement("article");
+      sectorCard.className = `eq-sector-card`;
+      sectorCard.dataset.sectorId = sector.id;
+      if (state.selectedItem && state.selectedItem.type === 'sector' && state.selectedItem.id === sector.id) {
+        sectorCard.classList.add("selected");
+      }
+
+      sectorCard.innerHTML = `
+        <header class="eq-sector-header">
+          <i data-lucide="grip-vertical" class="eq-drag-handle" title="Arraste para mover setor"></i>
+          <div class="eq-sec-icon eq-sec-bg-${sector.id.replace("-", "")}">
+            <i data-lucide="${sector.icon || 'folder'}"></i>
+          </div>
+          <div class="eq-sector-title-wrapper">
+            <h4>${sector.title}</h4>
+            <span>${sector.description}</span>
+          </div>
+          <span class="eq-sector-count">${sectorMembersCount}</span>
+        </header>
+        <div class="eq-sector-roles">
+          ${sector.roles.map(role => {
+            const roleMembers = getProfilesForRole(role.key);
+            const isRoleSelected = state.selectedItem && state.selectedItem.type === 'role' && state.selectedItem.id === role.key;
+            return `
+              <button class="eq-role-pill ${isRoleSelected ? 'selected' : ''}" data-role-key="${role.key}" draggable="true" type="button">
+                <div class="eq-role-pill-grip" title="Arraste para mover cargo">
+                  <i data-lucide="grip-vertical"></i>
+                </div>
+                <div class="eq-role-pill-info">
+                  <strong>${role.title}</strong>
+                  <span>${roleMembers.length} ${roleMembers.length === 1 ? 'pessoa' : 'pessoas'}</span>
+                </div>
+                <i data-lucide="chevron-right"></i>
+              </button>
+            `;
+          }).join("")}
+        </div>
+        <button class="eq-sec-add-role-btn" type="button">+ Adicionar cargo</button>
+      `;
+
+      // Event listener for clicking sector itself
+      sectorCard.addEventListener("click", (e) => {
+        if (e.target.closest(".eq-role-pill") || e.target.closest(".eq-sec-add-role-btn") || e.target.closest(".eq-drag-handle")) return;
+        selectItem('sector', sector.id);
+      });
+
+      // Event listener for clicking role pills inside sector
+      sectorCard.querySelectorAll(".eq-role-pill").forEach(pill => {
+        pill.addEventListener("click", (e) => {
+          if (e.target.closest(".eq-role-pill-grip")) return;
+          e.stopPropagation();
+          const rKey = pill.getAttribute("data-role-key");
+          selectItem('role', rKey, sector.id);
+        });
+      });
+
+      // Event listener for adding cargo
+      sectorCard.querySelector(".eq-sec-add-role-btn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        openNewRoleModal(sector.id);
+      });
+
+      // --- Sector Drag and Drop Events (to reorder sectors) ---
+      sectorCard.setAttribute("draggable", "true");
+      
+      sectorCard.addEventListener("dragstart", (e) => {
+        if (e.target.closest(".eq-role-pill")) {
+          // If we drag from a role pill, prevent the sector card from initiating drag
+          return;
+        }
+        draggedSectorId = sector.id;
+        draggedRoleKey = null;
+        sectorCard.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+      });
+
+      sectorCard.addEventListener("dragend", () => {
+        draggedSectorId = null;
+        sectorCard.classList.remove("dragging");
+        document.querySelectorAll(".eq-sector-card").forEach(c => {
+          c.classList.remove("drag-over");
+          c.classList.remove("drag-over-sector");
+        });
+      });
+
+      sectorCard.addEventListener("dragover", (e) => {
+        if (draggedSectorId && draggedSectorId !== sector.id) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+          sectorCard.classList.add("drag-over");
+        } else if (draggedRoleKey) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+          sectorCard.classList.add("drag-over-sector");
+        }
+      });
+
+      sectorCard.addEventListener("dragleave", () => {
+        sectorCard.classList.remove("drag-over");
+        sectorCard.classList.remove("drag-over-sector");
+      });
+
+      sectorCard.addEventListener("drop", (e) => {
+        if (draggedSectorId && draggedSectorId !== sector.id) {
+          e.preventDefault();
+          const fromIndex = sectors.findIndex(s => s.id === draggedSectorId);
+          const toIndex = sectors.findIndex(s => s.id === sector.id);
+          if (fromIndex !== -1 && toIndex !== -1) {
+            const [draggedSec] = sectors.splice(fromIndex, 1);
+            sectors.splice(toIndex, 0, draggedSec);
+            saveOrderToLocalStorage();
+            renderOrganograma();
+          }
+        } else if (draggedRoleKey) {
+          e.preventDefault();
+          const targetSectorId = sector.id;
+          
+          let draggedRoleObj = null;
+          let originSector = null;
+          for (const sec of sectors) {
+            const idx = sec.roles.findIndex(r => r.key === draggedRoleKey);
+            if (idx !== -1) {
+              originSector = sec;
+              [draggedRoleObj] = sec.roles.splice(idx, 1);
+              break;
+            }
+          }
+          
+          if (draggedRoleObj) {
+            sector.roles.push(draggedRoleObj);
+            saveOrderToLocalStorage();
+            
+            renderSummaryCards();
+            renderOrganograma();
+            
+            if (state.selectedItem && state.selectedItem.type === 'role' && state.selectedItem.id === draggedRoleKey) {
+              state.selectedItem.sectorId = targetSectorId;
+              renderSidebarDetails();
+            } else if (state.selectedItem && state.selectedItem.type === 'sector' && (state.selectedItem.id === targetSectorId || state.selectedItem.id === originSector?.id)) {
+              renderSidebarDetails();
+            }
+          }
+        }
+      });
+
+      // --- Role Pills Drag and Drop Events (to reorder roles or move across sectors) ---
+      sectorCard.querySelectorAll(".eq-role-pill").forEach(pill => {
+        const rKey = pill.getAttribute("data-role-key");
+        
+        pill.addEventListener("dragstart", (e) => {
+          draggedRoleKey = rKey;
+          draggedRoleOriginSectorId = sector.id;
+          draggedSectorId = null;
+          pill.classList.add("dragging");
+          e.dataTransfer.effectAllowed = "move";
+          e.stopPropagation(); // prevent parent sector from dragging
+        });
+
+        pill.addEventListener("dragend", () => {
+          draggedRoleKey = null;
+          draggedRoleOriginSectorId = null;
+          pill.classList.remove("dragging");
+          document.querySelectorAll(".eq-role-pill").forEach(p => p.classList.remove("drag-over-top", "drag-over-bottom"));
+          document.querySelectorAll(".eq-sector-card").forEach(c => c.classList.remove("drag-over-sector"));
+        });
+
+        pill.addEventListener("dragover", (e) => {
+          if (draggedRoleKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.dataTransfer.dropEffect = "move";
+            
+            const rect = pill.getBoundingClientRect();
+            const relativeY = e.clientY - rect.top;
+            if (relativeY < rect.height / 2) {
+              pill.classList.add("drag-over-top");
+              pill.classList.remove("drag-over-bottom");
+            } else {
+              pill.classList.add("drag-over-bottom");
+              pill.classList.remove("drag-over-top");
+            }
+          }
+        });
+
+        pill.addEventListener("dragleave", () => {
+          pill.classList.remove("drag-over-top", "drag-over-bottom");
+        });
+
+        pill.addEventListener("drop", (e) => {
+          if (draggedRoleKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const targetSectorId = sector.id;
+            
+            let draggedRoleObj = null;
+            let originSector = null;
+            for (const sec of sectors) {
+              const idx = sec.roles.findIndex(r => r.key === draggedRoleKey);
+              if (idx !== -1) {
+                originSector = sec;
+                [draggedRoleObj] = sec.roles.splice(idx, 1);
+                break;
+              }
+            }
+            
+            if (draggedRoleObj) {
+              const targetRoleIndex = sector.roles.findIndex(r => r.key === rKey);
+              
+              const rect = pill.getBoundingClientRect();
+              const relativeY = e.clientY - rect.top;
+              const insertAfter = relativeY >= rect.height / 2;
+              const insertIndex = insertAfter ? targetRoleIndex + 1 : targetRoleIndex;
+              
+              sector.roles.splice(insertIndex, 0, draggedRoleObj);
+              saveOrderToLocalStorage();
+              
+              renderSummaryCards();
+              renderOrganograma();
+              
+              if (state.selectedItem && state.selectedItem.type === 'role' && state.selectedItem.id === draggedRoleKey) {
+                state.selectedItem.sectorId = targetSectorId;
+                renderSidebarDetails();
+              } else if (state.selectedItem && state.selectedItem.type === 'sector' && (state.selectedItem.id === targetSectorId || state.selectedItem.id === originSector?.id)) {
+                renderSidebarDetails();
+              }
+            }
+          }
+        });
+      });
+
+      sectorsRow.appendChild(sectorCard);
+    });
+
+    refreshIcons();
+  };
+
+  // Render list view of roles & functions (Aba 2)
+  const renderRolesAndFunctions = () => {
+    if (!roleBoard) return;
+    roleBoard.innerHTML = "";
+
+    sectors.forEach(sector => {
+      const article = document.createElement("article");
+      article.className = "role-section";
+      article.id = `functions-${sector.id}`;
+
+      article.innerHTML = `
+        <header style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <span style="font-weight: 800; background: #d4af37; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">
+            ${sector.title.charAt(0)}
+          </span>
+          <div>
+            <h2 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: #0f172a;">${sector.title}</h2>
+            <p style="font-size: 0.8rem; color: #64748b; margin: 2px 0 0 0;">${sector.description}</p>
+          </div>
+        </header>
+        <div class="job-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+          ${sector.roles.map(role => {
+            const funcList = state.functions.get(role.key) || [];
+            const roleMembers = getProfilesForRole(role.key);
+            const membersNames = roleMembers.map(m => m.full_name).join(", ");
+            const membersText = roleMembers.length === 0
+              ? "Sem colaboradores"
+              : `Colaboradores: ${roleMembers.length > 2 ? `${roleMembers.slice(0, 2).map(m => m.full_name).join(", ")} +${roleMembers.length - 2}` : membersNames}`;
+
+            return `
+              <div class="job-card" data-role-key="${role.key}" ${sector.id !== "diretoria" ? 'draggable="true"' : ''} style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; background: #ffffff;">
+                <div class="job-card-head" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
+                  <h3 style="font-size: 0.9rem; font-weight: 700; margin: 0; color: #0f172a;">${role.title}</h3>
+                  <div class="job-actions" style="display: flex; gap: 8px; font-size: 0.75rem;">
+                    <a href="documentos.html?setor=${sector.id}&cargo=${role.key}" class="ver-docs-link" style="color: #d4af37; font-weight: 600; text-decoration: none;">Documentos</a>
+                    <button type="button" class="btn-edit-funcs" style="background: none; border: none; color: #3b82f6; cursor: pointer; font-weight: 600;">Editar</button>
+                  </div>
+                </div>
+                
+                <div class="role-functions">
+                  <ol style="margin: 0; padding-left: 16px; font-size: 0.8rem; color: #475569; line-height: 1.4;">
+                    ${funcList.map(item => `<li>${item}</li>`).join("")}
+                  </ol>
+                  <div style="margin-top: 10px; font-size: 0.72rem; color: #64748b; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                    <i data-lucide="users" style="width: 12px; height: 12px; color: #d4af37;"></i>
+                    <span>${membersText}</span>
+                  </div>
+                </div>
+                
+                <div class="role-editor" style="display: none; margin-top: 12px;">
+                  <textarea rows="6" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.8rem; font-family: inherit; resize: vertical;">${funcList.map((item, index) => `${index + 1}. ${item}`).join("\n")}</textarea>
+                  <button type="button" class="btn-save-funcs" style="margin-top: 8px; background: #d4af37; border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">Salvar funções</button>
+                  <span class="role-save-status" style="font-size: 0.7rem; margin-left: 8px;"></span>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+
+      // Bind edit and save buttons inside card
+      article.querySelectorAll(".job-card").forEach(card => {
+        const roleKey = card.getAttribute("data-role-key");
+        const editBtn = card.querySelector(".btn-edit-funcs");
+        const saveBtn = card.querySelector(".btn-save-funcs");
+        const editor = card.querySelector(".role-editor");
+        const viewArea = card.querySelector(".role-functions");
+        const textarea = card.querySelector("textarea");
+        const statusSpan = card.querySelector(".role-save-status");
+
+        // --- Drag events for job cards ---
+        if (sector.id !== "diretoria") {
+          card.addEventListener("dragstart", (e) => {
+            if (e.target.closest("textarea, button, a")) {
+              e.preventDefault();
+              return;
+            }
+            draggedRoleKey = roleKey;
+            draggedRoleOriginSectorId = sector.id;
+            draggedSectorId = null;
+            card.classList.add("dragging");
+            e.dataTransfer.effectAllowed = "move";
+          });
+
+          card.addEventListener("dragend", () => {
+            draggedRoleKey = null;
+            draggedRoleOriginSectorId = null;
+            card.classList.remove("dragging");
+            document.querySelectorAll(".job-card").forEach(c => c.classList.remove("drag-over-top", "drag-over-bottom"));
+            document.querySelectorAll(".role-section").forEach(s => s.classList.remove("drag-over-sector"));
+          });
+
+          card.addEventListener("dragover", (e) => {
+            if (draggedRoleKey) {
+              e.preventDefault();
+              e.stopPropagation();
+              e.dataTransfer.dropEffect = "move";
+              
+              const rect = card.getBoundingClientRect();
+              const relativeY = e.clientY - rect.top;
+              if (relativeY < rect.height / 2) {
+                card.classList.add("drag-over-top");
+                card.classList.remove("drag-over-bottom");
+              } else {
+                card.classList.add("drag-over-bottom");
+                card.classList.remove("drag-over-top");
+              }
+            }
+          });
+
+          card.addEventListener("dragleave", () => {
+            card.classList.remove("drag-over-top", "drag-over-bottom");
+          });
+
+          card.addEventListener("drop", (e) => {
+            if (draggedRoleKey) {
+              e.preventDefault();
+              e.stopPropagation();
+              
+              let draggedRoleObj = null;
+              for (const sec of sectors) {
+                const idx = sec.roles.findIndex(r => r.key === draggedRoleKey);
+                if (idx !== -1) {
+                  [draggedRoleObj] = sec.roles.splice(idx, 1);
+                  break;
+                }
+              }
+              
+              if (draggedRoleObj) {
+                const targetRoleIndex = sector.roles.findIndex(r => r.key === roleKey);
+                const rect = card.getBoundingClientRect();
+                const relativeY = e.clientY - rect.top;
+                const insertAfter = relativeY >= rect.height / 2;
+                const insertIndex = insertAfter ? targetRoleIndex + 1 : targetRoleIndex;
+                
+                sector.roles.splice(insertIndex, 0, draggedRoleObj);
+                saveOrderToLocalStorage();
+                
+                renderSummaryCards();
+                renderRolesAndFunctions();
+              }
+            }
+          });
+        }
+
+        editBtn.addEventListener("click", () => {
+          if (editor.style.display === "none") {
+            editor.style.display = "block";
+            viewArea.style.display = "none";
+            editBtn.textContent = "Cancelar";
+          } else {
+            editor.style.display = "none";
+            viewArea.style.display = "block";
+            editBtn.textContent = "Editar";
+            const list = state.functions.get(roleKey) || [];
+            textarea.value = list.map((item, index) => `${index + 1}. ${item}`).join("\n");
+          }
+        });
+
+        saveBtn.addEventListener("click", async () => {
+          saveBtn.disabled = true;
+          saveBtn.textContent = "Salvando...";
+          statusSpan.textContent = "";
+
+          const parsedFuncs = textarea.value
+            .split("\n")
+            .map(item => item.replace(/^\s*\d+[\).\-\s]+/, "").trim())
+            .filter(Boolean);
+
+          const client = getClient();
+          let success = true;
+
+          if (client) {
+            const { data: userData } = await client.auth.getUser();
+            const userId = userData?.user?.id || null;
+
+            const { error } = await client.from("company_role_functions").upsert(
+              {
+                role_key: roleKey,
+                role_title: sectors.flatMap(s => s.roles).find(r => r.key === roleKey)?.title || roleKey,
+                functions: parsedFuncs,
+                updated_by: userId,
+                updated_at: new Date().toISOString()
+              },
+              { onConflict: "role_key" }
+            );
+
+            if (error) {
+              success = false;
+              console.error(error);
+            }
+          }
+
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Salvar funções";
+
+          if (success) {
+            state.functions.set(roleKey, parsedFuncs);
+            viewArea.innerHTML = `
+              <ol style="margin: 0; padding-left: 16px; font-size: 0.8rem; color: #475569; line-height: 1.4;">
+                ${parsedFuncs.map(item => `<li>${item}</li>`).join("")}
+              </ol>
+            `;
+            editor.style.display = "none";
+            viewArea.style.display = "block";
+            editBtn.textContent = "Editar";
+            statusSpan.style.color = "green";
+            statusSpan.textContent = "Salvo!";
+            setTimeout(() => { statusSpan.textContent = ""; }, 2000);
+          } else {
+            statusSpan.style.color = "red";
+            statusSpan.textContent = "Erro ao salvar no Supabase.";
+          }
+        });
+      });
+
+      // --- Drag events for the sector section (to drop a card directly into this sector) ---
+      if (sector.id !== "diretoria") {
+        article.addEventListener("dragover", (e) => {
+          if (draggedRoleKey) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+            article.classList.add("drag-over-sector");
+          }
+        });
+
+        article.addEventListener("dragleave", () => {
+          article.classList.remove("drag-over-sector");
+        });
+
+        article.addEventListener("drop", (e) => {
+          if (draggedRoleKey) {
+            e.preventDefault();
+            
+            let draggedRoleObj = null;
+            for (const sec of sectors) {
+              const idx = sec.roles.findIndex(r => r.key === draggedRoleKey);
+              if (idx !== -1) {
+                [draggedRoleObj] = sec.roles.splice(idx, 1);
+                break;
+              }
+            }
+            
+            if (draggedRoleObj) {
+              sector.roles.push(draggedRoleObj);
+              saveOrderToLocalStorage();
+              
+              renderSummaryCards();
+              renderRolesAndFunctions();
+            }
+          }
+        });
+      }
+
+      roleBoard.appendChild(article);
+    });
+  };
+
+  // Helper to determine if collaborator has documents
+  const hasDocuments = (profile) => {
+    // Simulated rule: profiles with IDs '1', '2', '4', '8' have documents
+    return ['1', '2', '4', '8'].includes(profile.id);
+  };
+
+  const listFilters = {
+    search: '',
+    sector: 'todos',
+    role: 'todos',
+    status: 'todos',
+  };
+
+  const populateFilterCargos = (sectorId = 'todos') => {
+    const cargoSelect = document.getElementById("filter-role");
+    if (!cargoSelect) return;
+
+    cargoSelect.innerHTML = '<option value="todos">Todos os cargos</option>';
+    
+    let rolesToPopulate = [];
+    if (sectorId === 'todos') {
+      rolesToPopulate = sectors.flatMap(s => s.roles);
+    } else {
+      const sectorObj = sectors.find(s => s.id === sectorId);
+      if (sectorObj) {
+        rolesToPopulate = sectorObj.roles;
+      }
+    }
+
+    const seen = new Set();
+    rolesToPopulate.forEach(role => {
+      if (!seen.has(role.key)) {
+        seen.add(role.key);
+        const opt = document.createElement("option");
+        opt.value = role.key;
+        opt.textContent = role.title;
+        cargoSelect.appendChild(opt);
+      }
+    });
+  };
+
+  const updateListSummary = (filteredProfiles) => {
+    const totalEl = document.getElementById("summary-total");
+    const activeEl = document.getElementById("summary-active");
+    const noDocsEl = document.getElementById("summary-no-docs");
+    const noRoleEl = document.getElementById("summary-no-role");
+
+    if (!totalEl) return;
+
+    totalEl.textContent = `${filteredProfiles.length} de ${state.profiles.length}`;
+    activeEl.textContent = filteredProfiles.filter(p => p.status !== 'inativo').length;
+    noDocsEl.textContent = filteredProfiles.filter(p => !hasDocuments(p)).length;
+
+    const allRoleKeys = new Set(sectors.flatMap(s => s.roles).map(r => r.key));
+    const noRoleCount = filteredProfiles.filter(p => !p.role || !allRoleKeys.has(getRoleKeyForProfile(p.role))).length;
+    noRoleEl.textContent = noRoleCount;
+  };
+
+  const applyListFilters = () => {
+    const query = listFilters.search.toLowerCase().trim();
+    const sector = listFilters.sector;
+    const role = listFilters.role;
+    const status = listFilters.status;
+
+    const filtered = state.profiles.filter(p => {
+      const funcs = getEmployeeFunctions(p);
+
+      const matchesSearch = !query || 
+                            p.full_name.toLowerCase().includes(query) || 
+                            p.email.toLowerCase().includes(query) ||
+                            funcs.some(f => {
+                              const secObj = sectors.find(s => s.id === f.sectorId);
+                              const roleObj = secObj?.roles.find(r => r.key === f.roleKey);
+                              return (secObj && secObj.title.toLowerCase().includes(query)) ||
+                                     (roleObj && roleObj.title.toLowerCase().includes(query));
+                            });
+      const matchesSector = sector === 'todos' || funcs.some(f => f.sectorId === sector);
+      const matchesRole = role === 'todos' || funcs.some(f => f.roleKey === role);
+      const matchesStatus = status === 'todos' || 
+                            (status === 'ativo' && p.status !== 'inativo') || 
+                            (status === 'inativo' && p.status === 'inativo');
+
+      return matchesSearch && matchesSector && matchesRole && matchesStatus;
+    });
+
+    renderListView(filtered);
+    updateListSummary(filtered);
+  };
+
+  // Render list view of users (Aba 3)
+  const renderListView = (profilesList = null) => {
+    if (!listTableBody) return;
+    listTableBody.innerHTML = "";
+
+    const listToRender = profilesList || state.profiles;
+
+    listToRender.forEach(p => {
+      const tr = document.createElement("tr");
+      tr.style.cursor = "pointer";
+      
+      const isActive = p.status !== "inativo";
+      const statusBadge = isActive 
+        ? `<span class="eq-status-badge eq-status-active" style="background: rgba(16, 185, 129, 0.08); color: #10b981; padding: 4px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 600;">Ativo</span>`
+        : `<span class="eq-status-badge eq-status-inactive" style="background: rgba(239, 68, 68, 0.08); color: #ef4444; padding: 4px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 600;">Inativo</span>`;
+
+      const hasDocs = hasDocuments(p);
+      const docHtml = hasDocs 
+        ? `<a href="documentos.html?colaborador=${encodeURIComponent(p.full_name)}" style="color: #d4af37; font-weight: 600; text-decoration: none; font-size: 0.8rem;">Ver documentos (8)</a>`
+        : `<span style="color: #94a3b8; font-weight: 500; font-size: 0.8rem;">Sem documentos</span>`;
+
+      tr.innerHTML = `
+        <td>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="eq-avatar">${p.full_name.charAt(0)}</div>
+            <div>
+              <strong style="display: block; font-size: 0.85rem;">${p.full_name}</strong>
+              <small style="color: #64748b; font-size: 0.75rem;">${p.email}</small>
+            </div>
+          </div>
+        </td>
+        <td>
+          ${renderEmployeeRolesChips(p)}
+        </td>
+        <td>
+          ${statusBadge}
+        </td>
+        <td>
+          ${docHtml}
+        </td>
+        <td style="text-align: right; position: relative;">
+          <div style="display: inline-flex; align-items: center; gap: 8px;">
+            <button class="eq-btn-outline btn-edit-colab" data-id="${p.id}" style="padding: 6px 12px; font-size: 0.75rem; border: 1.5px solid #d4af37; color: #d4af37; border-radius: 6px; background: #fff; font-weight: 600; cursor: pointer;" type="button">Editar</button>
+            <button class="eq-folder-menu-btn colab-row-menu-btn" data-id="${p.id}" type="button">
+              <i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i>
+            </button>
+            <div class="eq-context-menu" style="display: none; min-width: 140px; right: 0; top: 32px;">
+              <button type="button" class="delete btn-delete-colab" data-id="${p.id}"><i data-lucide="trash-2"></i> Excluir</button>
+            </div>
+          </div>
+        </td>
+      `;
+
+      // Row click selects collaborator and displays sidebar details
+      tr.addEventListener("click", (e) => {
+        if (e.target.closest("button") || e.target.closest("a") || e.target.closest(".eq-context-menu")) return;
+        selectItem('colaborador', p.id);
+      });
+
+      // Edit click opens modal
+      tr.querySelector(".btn-edit-colab").addEventListener("click", (e) => {
+        e.stopPropagation();
+        openEditColabModal(p.id);
+      });
+
+      // Three vertical dots menu
+      const menuBtn = tr.querySelector(".colab-row-menu-btn");
+      const ctxMenu = tr.querySelector(".eq-context-menu");
+      menuBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".eq-context-menu").forEach(el => {
+          if (el !== ctxMenu) el.style.display = "none";
+        });
+        ctxMenu.style.display = ctxMenu.style.display === "flex" ? "none" : "flex";
+      });
+
+      // Delete action inside context menu
+      tr.querySelector(".btn-delete-colab").addEventListener("click", (e) => {
+        e.stopPropagation();
+        ctxMenu.style.display = "none";
+        if (confirm(`Tem certeza de que deseja excluir o colaborador "${p.full_name}"?`)) {
+          state.profiles = state.profiles.filter(item => item.id !== p.id);
+          saveProfiles();
+          
+          // Clear employee roles mapping
+          const map = loadEmployeeFunctionsMap();
+          delete map[p.id];
+          saveEmployeeFunctionsMap(map);
+
+          if (state.selectedItem && state.selectedItem.type === 'colaborador' && state.selectedItem.id === p.id) {
+            state.selectedItem = null;
+            renderSidebarDetails();
+          }
+
+          renderSummaryCards();
+          renderListView();
+          if (state.activeTab === 'hierarquia') renderOrganograma();
+        }
+      });
+
+      // Bind click on remaining count chip to select collaborator
+      tr.querySelector(".eq-role-chip-more")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        selectItem('colaborador', p.id);
+      });
+
+      listTableBody.appendChild(tr);
+    });
+  };
+
+  // Perform search / filtering on the active view
+  const performSearch = () => {
+    state.searchQuery = searchInput.value || '';
+    if (state.activeTab === 'lista') {
+      renderListView();
+    } else if (state.activeTab === 'hierarquia') {
+      const query = state.searchQuery.toLowerCase().trim();
+      document.querySelectorAll(".eq-sector-card").forEach(card => {
+        const sectorId = card.getAttribute("data-sector-id");
+        const sectorObj = sectors.find(s => s.id === sectorId);
+        if (!sectorObj) return;
+
+        let sectorMatches = sectorObj.title.toLowerCase().includes(query) || sectorObj.description.toLowerCase().includes(query);
+        let roleMatches = false;
+
+        card.querySelectorAll(".eq-role-pill").forEach(pill => {
+          const roleKey = pill.getAttribute("data-role-key");
+          const roleObj = sectorObj.roles.find(r => r.key === roleKey);
+          if (!roleObj) return;
+
+          const members = getProfilesForRole(roleKey);
+          const nameMatches = members.some(m => m.full_name.toLowerCase().includes(query));
+
+          if (roleObj.title.toLowerCase().includes(query) || nameMatches) {
+            pill.style.display = "flex";
+            roleMatches = true;
+          } else {
+            pill.style.display = "none";
+          }
+        });
+
+        if (query === '' || sectorMatches || roleMatches) {
+          card.style.display = "block";
+          if (query !== '' && !roleMatches) {
+            card.querySelectorAll(".eq-role-pill").forEach(p => p.style.display = "flex");
+          }
+        } else {
+          card.style.display = "none";
+        }
+      });
+    } else if (state.activeTab === 'funcoes') {
+      const query = state.searchQuery.toLowerCase().trim();
+      document.querySelectorAll(".role-section").forEach(sec => {
+        let secMatches = sec.querySelector("h2").textContent.toLowerCase().includes(query);
+        let cardMatches = false;
+
+        sec.querySelectorAll(".job-card").forEach(card => {
+          const roleKey = card.getAttribute("data-role-key");
+          const titleText = card.querySelector("h3").textContent.toLowerCase();
+          const funcs = state.functions.get(roleKey) || [];
+          const funcsText = funcs.join(" ").toLowerCase();
+
+          if (titleText.includes(query) || funcsText.includes(query)) {
+            card.style.display = "block";
+            cardMatches = true;
+          } else {
+            card.style.display = "none";
+          }
+        });
+
+        if (query === '' || secMatches || cardMatches) {
+          sec.style.display = "block";
+          if (query !== '' && !cardMatches) {
+            sec.querySelectorAll(".job-card").forEach(c => c.style.display = "block");
+          }
+        } else {
+          sec.style.display = "none";
+        }
+      });
+    }
+  };
+
+  // Toggle dynamic Sidebar Details (Right column)
+  const selectItem = (type, id, sectorId = null) => {
+    state.selectedItem = { type, id, sectorId };
+    
+    // Highlight selections visually
+    document.querySelectorAll(".eq-sector-card").forEach(c => c.classList.remove("selected"));
+    document.querySelectorAll(".eq-role-pill").forEach(p => p.classList.remove("selected"));
+    const dirCard = document.querySelector("[data-dir-card]");
+    if (dirCard) dirCard.classList.remove("selected");
+
+    if (type === 'sector') {
+      const card = document.querySelector(`.eq-sector-card[data-sector-id="${id}"]`);
+      if (card) card.classList.add("selected");
+    } else if (type === 'role') {
+      if (id === 'diretor-ceo') {
+        if (dirCard) dirCard.classList.add("selected");
+      } else {
+        const pill = document.querySelector(`.eq-role-pill[data-role-key="${id}"]`);
+        if (pill) {
+          pill.classList.add("selected");
+        }
+      }
+    }
+
+    renderSidebarDetails();
+  };
+
+  // Render Sidebar Details Panel
+  const renderSidebarDetails = () => {
+    let activePlaceholder = sidebarPlaceholder;
+    let activeContent = sidebarContent;
+
+    if (state.activeTab === 'lista') {
+      activePlaceholder = document.getElementById("eq-list-sidebar-placeholder") || sidebarPlaceholder;
+      activeContent = document.getElementById("eq-list-sidebar-content") || sidebarContent;
+    }
+
+    if (!activePlaceholder || !activeContent) return;
+
+    if (!state.selectedItem) {
+      activePlaceholder.style.display = "flex";
+      activeContent.style.display = "none";
       return;
     }
 
-    const { data } = await client
-      .from("company_role_functions")
-      .select("role_key, functions");
+    activePlaceholder.style.display = "none";
+    activeContent.style.display = "block";
 
-    (data || []).forEach((row) => {
-      const role = roleMap.get(row.role_key);
+    const { type, id, sectorId } = state.selectedItem;
 
-      if (role && Array.isArray(row.functions) && row.functions.length > 0) {
-        role.functions = row.functions;
+    if (type === 'sector') {
+      const sectorObj = sectors.find(s => s.id === id);
+      if (!sectorObj) return;
+
+      const sectorMembersCount = getMembersInSector(sectorObj);
+      const rolesCount = sectorObj.roles.length;
+
+      // Find first coordinator/manager as responsable
+      const leadRole = sectorObj.roles[0];
+      const leadProfiles = leadRole ? getProfilesForRole(leadRole.key) : [];
+      const managerName = leadProfiles[0]?.full_name || "Não definido";
+
+      activeContent.innerHTML = `
+        <div class="eq-sidebar-header" style="position: relative; padding-bottom: 16px;">
+          <button type="button" id="btn-close-sidebar" style="position: absolute; top: 0; right: 0; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #94a3b8;"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
+          <div class="eq-sidebar-title-box" style="margin-top: 10px;">
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0;">${sectorObj.title}</h2>
+            <span class="eq-sidebar-tag eq-tag-sector" style="background: rgba(99, 102, 241, 0.08); color: #6366f1; font-weight: 600; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">Setor selecionado</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <h4 class="eq-side-section-title" style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 6px;">Descrição</h4>
+          <p style="font-size: 0.78rem; line-height: 1.4; margin: 0; color: #475569;">${sectorObj.description}</p>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <h4 class="eq-side-section-title" style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 6px;">Resumo</h4>
+          <ul style="margin: 0; padding-left: 14px; font-size: 0.78rem; display: flex; flex-direction: column; gap: 4px; color: #475569;">
+            <li><strong>Total de cargos:</strong> ${rolesCount}</li>
+            <li><strong>Total de colaboradores:</strong> ${sectorMembersCount}</li>
+            <li><strong>Nível hierárquico:</strong> Nível 2 (Abaixo da Diretoria)</li>
+            <li><strong>Responsável:</strong> ${managerName}</li>
+          </ul>
+        </div>
+
+        <div class="eq-side-actions" style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+          <button class="eq-btn-side-dark" id="side-btn-ver-funcs" type="button" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; cursor: pointer; background: #0f172a; color: #fff; border: none;">
+            <i data-lucide="list"></i> Ver funções do setor
+          </button>
+          <a href="documentos.html?setor=${id}" class="eq-btn-side-outline" style="text-decoration: none; box-sizing: border-box; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; border: 1.5px solid #cbd5e1; color: #475569; background: #fff;">
+            <i data-lucide="folder-open"></i> Ver documentos do setor
+          </a>
+          <button class="eq-btn-side-outline" id="side-shortcut-edit" type="button" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; border: 1.5px solid #cbd5e1; color: #475569; background: #fff; cursor: pointer;">
+            <i data-lucide="edit"></i> Editar setor
+          </button>
+          <button class="eq-btn-side-dashed" id="side-btn-add-role-sector" type="button" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; border: 1px dashed #cbd5e1; background: transparent; cursor: pointer; color: #64748b;">
+            + Adicionar cargo
+          </button>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <h4 class="eq-side-section-title" style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 6px;">Cargos do setor</h4>
+          <div class="eq-side-list" style="display: flex; flex-direction: column; gap: 6px;">
+            ${sectorObj.roles.map(role => {
+              const members = getProfilesForRole(role.key);
+              return `
+                <div class="eq-side-list-item side-role-item-link" data-role-link-key="${role.key}" style="cursor: pointer; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;">
+                  <div class="eq-side-list-item-left">
+                    <strong style="font-size: 0.8rem; color: #0f172a; display: block;">${role.title}</strong>
+                    <span style="font-size: 0.72rem; color: #64748b;">${members.length} ${members.length === 1 ? 'pessoa' : 'pessoas'}</span>
+                  </div>
+                  <i data-lucide="chevron-right" style="color: #94a3b8; font-size: 0.7rem;"></i>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      `;
+
+      // Binds
+      activeContent.querySelector("#btn-close-sidebar").onclick = () => {
+        state.selectedItem = null;
+        renderSidebarDetails();
+      };
+
+      activeContent.querySelectorAll(".side-role-item-link").forEach(link => {
+        link.addEventListener("click", () => {
+          const rKey = link.getAttribute("data-role-link-key");
+          selectItem('role', rKey, id);
+        });
+      });
+
+      activeContent.querySelector("#side-btn-ver-funcs")?.addEventListener("click", () => {
+        switchTab('funcoes');
+        const element = document.getElementById(`functions-${id}`);
+        if (element) element.scrollIntoView({ behavior: 'smooth' });
+      });
+
+      activeContent.querySelector("#side-shortcut-edit")?.addEventListener("click", () => {
+        openEditSectorModal(id);
+      });
+
+      activeContent.querySelector("#side-btn-add-role-sector")?.addEventListener("click", () => {
+        openNewRoleModal(id);
+      });
+
+    } else if (type === 'role') {
+      const roleObj = sectors.flatMap(s => s.roles).find(r => r.key === id);
+      if (!roleObj) return;
+
+      const sectorObj = sectors.find(s => s.roles.some(r => r.key === id));
+      const sectorId = sectorObj ? sectorObj.id : "comercial";
+
+      const members = getProfilesForRole(id);
+      const functionsList = state.functions.get(id) || [];
+
+      activeContent.innerHTML = `
+        <div class="eq-sidebar-header" style="position: relative; padding-bottom: 16px;">
+          <button type="button" id="btn-close-sidebar" style="position: absolute; top: 0; right: 0; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #94a3b8;"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
+          <div class="eq-sidebar-title-box" style="margin-top: 10px;">
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0;">${roleObj.title}</h2>
+            <span class="eq-sidebar-tag eq-tag-role" style="background: rgba(212, 175, 55, 0.08); color: #b58d16; font-weight: 600; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">Cargo selecionado</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 12px; font-size: 0.78rem; color: #475569;">
+          <strong>Setor:</strong> <span>${sectorObj ? sectorObj.title : 'Diretoria'}</span>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <h4 class="eq-side-section-title" style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 6px;">Funções</h4>
+          <ol class="eq-functions-list" style="margin: 0; padding-left: 16px; font-size: 0.78rem; color: #475569; line-height: 1.4;">
+            ${functionsList.map(func => `<li>${func}</li>`).join("")}
+            ${functionsList.length === 0 ? '<li style="list-style:none; margin-left:-16px; color:#94a3b8;">Nenhuma função cadastrada.</li>' : ''}
+          </ol>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <h4 class="eq-side-section-title" style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 6px;">Colaboradores vinculados</h4>
+          <div class="eq-side-list" style="display: flex; flex-direction: column; gap: 6px;">
+            ${members.map(m => `
+              <div class="eq-side-list-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;">
+                <div class="eq-side-list-item-left">
+                  <strong style="font-size: 0.8rem; color: #0f172a; display: block;">${m.full_name}</strong>
+                  <span style="font-size: 0.72rem; color: #64748b;">${m.email}</span>
+                </div>
+                <div class="eq-avatar" style="width: 32px; height: 32px; font-size: 0.85rem; font-weight: 700; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #cbd5e1; color: #475569;">${m.full_name.charAt(0)}</div>
+              </div>
+            `).join("")}
+            ${members.length === 0 ? '<p style="color:#94a3b8; font-size:0.75rem; margin: 0; font-style: italic;">Nenhum colaborador vinculado.</p>' : ''}
+          </div>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <h4 class="eq-side-section-title" style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 6px;">Documentos relacionados</h4>
+          <a href="documentos.html?setor=${sectorId}&cargo=${id}" class="eq-btn-side-outline" style="text-decoration: none; width: 100%; box-sizing: border-box; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; border: 1.5px solid #cbd5e1; color: #475569; background: #fff;">
+            <i data-lucide="file-text"></i> Ver documentos do cargo
+          </a>
+        </div>
+
+        <div class="eq-side-actions" style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+          <button class="eq-btn-side-dark" id="side-btn-edit-funcs" type="button" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; cursor: pointer; background: #0f172a; color: #fff; border: none;">
+            <i data-lucide="edit-3"></i> Editar funções
+          </button>
+          <button class="eq-btn-side-outline" id="side-btn-add-colab" type="button" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; border: 1.5px solid #cbd5e1; color: #475569; background: #fff; cursor: pointer;">
+            <i data-lucide="user-plus"></i> Adicionar colaborador
+          </button>
+          <button class="eq-btn-side-outline" id="side-btn-edit-role" type="button" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; border: 1.5px solid #cbd5e1; color: #475569; background: #fff; cursor: pointer;">
+            <i data-lucide="edit"></i> Editar cargo
+          </button>
+        </div>
+      `;
+
+      // Binds
+      activeContent.querySelector("#btn-close-sidebar").onclick = () => {
+        state.selectedItem = null;
+        renderSidebarDetails();
+      };
+
+      activeContent.querySelector("#side-btn-edit-funcs")?.addEventListener("click", () => {
+        switchTab('funcoes');
+        const element = document.querySelector(`.job-card[data-role-key="${id}"]`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+          element.querySelector(".btn-edit-funcs")?.click();
+        }
+      });
+
+      activeContent.querySelector("#side-btn-add-colab")?.addEventListener("click", () => {
+        openAddColabModal(sectorId, id);
+      });
+
+      activeContent.querySelector("#side-btn-edit-role")?.addEventListener("click", () => {
+        openEditRoleModal(id);
+      });
+
+    } else if (type === 'colaborador') {
+      const profile = state.profiles.find(p => p.id === id);
+      if (!profile) return;
+
+      const funcs = getEmployeeFunctions(profile);
+      const isActive = profile.status !== "inativo";
+
+      const activeSidebarTab = state.activeSidebarTab || 'detalhes';
+
+      activeContent.innerHTML = `
+        <div class="eq-sidebar-header" style="position: relative; padding-bottom: 16px;">
+          <button type="button" id="btn-close-sidebar" style="position: absolute; top: 0; right: 0; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #94a3b8;"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
+          <div style="display: flex; align-items: center; gap: 12px; margin-top: 10px;">
+            <div class="eq-avatar" style="width: 44px; height: 44px; font-size: 1.1rem; font-weight: 700; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #cbd5e1; color: #475569;">${profile.full_name.charAt(0)}</div>
+            <div>
+              <h2 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0;">${profile.full_name}</h2>
+              <span class="eq-sidebar-tag" style="background: ${isActive ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)'}; color: ${isActive ? '#10b981' : '#ef4444'}; font-weight: 600; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">
+                ${isActive ? 'Colaborador ativo' : 'Colaborador inativo'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="eq-sidebar-tabs" style="display: flex; border-bottom: 1.5px solid #e2e8f0; margin-bottom: 16px; gap: 16px;">
+          <button type="button" class="eq-sidebar-tab-btn ${activeSidebarTab === 'detalhes' ? 'active' : ''}" data-sidebar-tab="detalhes" style="background:none; border:none; padding:8px 0; font-size:0.8rem; font-weight:600; color:${activeSidebarTab === 'detalhes' ? '#d4af37' : '#64748b'}; cursor:pointer; position:relative;">Detalhes</button>
+          <button type="button" class="eq-sidebar-tab-btn ${activeSidebarTab === 'documentos' ? 'active' : ''}" data-sidebar-tab="documentos" style="background:none; border:none; padding:8px 0; font-size:0.8rem; font-weight:600; color:${activeSidebarTab === 'documentos' ? '#d4af37' : '#64748b'}; cursor:pointer; position:relative;">Documentos</button>
+        </div>
+
+        <div id="sidebar-tab-pane-content" style="margin-top: 14px;">
+          <!-- Populated below -->
+        </div>
+
+        <div style="margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+          <button class="eq-btn-side-dark" id="side-btn-edit-colab" type="button" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; background: #fff; border: 1.5px solid #d4af37; color: #d4af37; font-weight: 700; padding: 10px; border-radius: 8px; cursor: pointer;">
+            <i data-lucide="edit"></i> Editar colaborador
+          </button>
+        </div>
+      `;
+
+      const pane = activeContent.querySelector("#sidebar-tab-pane-content");
+
+      if (activeSidebarTab === 'detalhes') {
+        pane.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h4 class="eq-side-section-title" style="margin: 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569;">Funções Vinculadas</h4>
+            <button type="button" id="side-btn-add-role-shortcut" style="background: none; border: none; font-size: 0.75rem; font-weight: 600; color: #d4af37; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+              <i data-lucide="plus" style="width: 12px; height: 12px;"></i> Adicionar função
+            </button>
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            ${funcs.map(f => {
+              const secObj = sectors.find(s => s.id === f.sectorId);
+              const roleObj = secObj?.roles.find(r => r.key === f.roleKey);
+              const sectorTitle = secObj ? secObj.title : f.sectorId;
+              const roleTitle = roleObj ? roleObj.title : f.roleKey;
+              const sectorIcon = secObj ? secObj.icon : "folder";
+              
+              const bgClass = getSectorColorClass(f.sectorId);
+              
+              return `
+                <div class="eq-sidebar-function-card" data-sector-id="${f.sectorId}" data-role-key="${f.roleKey}" style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; position: relative;">
+                  <div class="eq-sidebar-function-card-left" style="display: flex; align-items: center; gap: 12px;">
+                    <div class="eq-sidebar-function-icon-box ${bgClass}" style="width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                      <i data-lucide="${sectorIcon}" style="width: 16px; height: 16px;"></i>
+                    </div>
+                    <div class="eq-sidebar-function-text" style="display: flex; flex-direction: column;">
+                      <span style="font-size: 0.7rem; color: #64748b;">${sectorTitle}</span>
+                      <strong style="font-size: 0.82rem; color: #0f172a; font-weight: 700;">${roleTitle}</strong>
+                    </div>
+                  </div>
+                  <div class="eq-sidebar-function-right" style="display: flex; align-items: center; gap: 8px;">
+                    ${f.primary ? `<span class="eq-chip-badge-gold" style="font-size: 0.6rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: #d4af37; color: #ffffff; text-transform: uppercase;">Principal</span>` : ''}
+                    <button type="button" class="eq-folder-menu-btn side-role-menu-btn" data-sector-id="${f.sectorId}" data-role-key="${f.roleKey}">
+                      <i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i>
+                    </button>
+                    <div class="eq-context-menu" style="display: none; min-width: 160px; right: 12px; top: 32px; position: absolute; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); flex-direction: column; padding: 4px; z-index: 50;">
+                      ${!f.primary ? `<button type="button" class="set-primary-role" data-sector-id="${f.sectorId}" data-role-key="${f.roleKey}" style="background: none; border: none; padding: 6px 8px; font-size: 0.74rem; font-weight: 600; color: #475569; text-align: left; cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 6px;"><i data-lucide="star" style="width:14px; height:14px;"></i> Definir como principal</button>` : ''}
+                      <a href="documentos.html?setor=${f.sectorId}&cargo=${f.roleKey}&colaborador=${encodeURIComponent(profile.full_name)}" class="view-role-docs" style="display: flex; align-items: center; gap: 6px; padding: 6px 8px; font-size: 0.74rem; font-weight: 600; color: #475569; text-decoration: none;"><i data-lucide="file-text" style="width: 14px; height: 14px;"></i> Ver documentos</a>
+                      ${funcs.length > 1 ? `<button type="button" class="delete remove-role" data-sector-id="${f.sectorId}" data-role-key="${f.roleKey}" style="background: none; border: none; padding: 6px 8px; font-size: 0.74rem; font-weight: 600; color: #ef4444; text-align: left; cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 6px;"><i data-lucide="trash-2" style="width:14px; height:14px;"></i> Remover função</button>` : ''}
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        `;
+
+        pane.querySelectorAll(".side-role-menu-btn").forEach(btn => {
+          const card = btn.closest(".eq-sidebar-function-card");
+          const menu = card.querySelector(".eq-context-menu");
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            document.querySelectorAll(".eq-context-menu").forEach(el => {
+              if (el !== menu) el.style.display = "none";
+            });
+            menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+          };
+        });
+
+        pane.querySelectorAll(".set-primary-role").forEach(btn => {
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            const secId = btn.dataset.sectorId;
+            const rKey = btn.dataset.roleKey;
+            
+            const updatedFuncs = funcs.map(f => ({
+              ...f,
+              primary: f.sectorId === secId && f.roleKey === rKey
+            }));
+            
+            saveEmployeeFunctions(profile.id, updatedFuncs);
+            saveProfiles();
+            renderOrganograma();
+            renderListView();
+            renderSidebarDetails();
+          };
+        });
+
+        pane.querySelectorAll(".remove-role").forEach(btn => {
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            const secId = btn.dataset.sectorId;
+            const rKey = btn.dataset.roleKey;
+            
+            const removed = funcs.find(f => f.sectorId === secId && f.roleKey === rKey);
+            let updatedFuncs = funcs.filter(f => !(f.sectorId === secId && f.roleKey === rKey));
+            
+            if (removed && removed.primary && updatedFuncs.length > 0) {
+              updatedFuncs[0].primary = true;
+            }
+            
+            saveEmployeeFunctions(profile.id, updatedFuncs);
+            saveProfiles();
+            renderOrganograma();
+            renderListView();
+            renderSidebarDetails();
+          };
+        });
+
+        pane.querySelector("#side-btn-add-role-shortcut").onclick = () => {
+          openQuickRoleModal(profile.id);
+        };
+
+      } else {
+        pane.innerHTML = `
+          <h4 class="eq-side-section-title" style="margin: 0 0 10px 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569;">Documentação</h4>
+          <p style="font-size: 0.78rem; line-height: 1.4; margin-bottom: 12px; color: #475569;">Visualizar todos os documentos vinculados ao colaborador.</p>
+          
+          <a href="documentos.html?colaborador=${encodeURIComponent(profile.full_name)}" class="eq-btn-side-outline" style="text-decoration: none; width: 100%; box-sizing: border-box; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; border: 1.5px solid #cbd5e1; color: #475569; background: #fff;">
+            <i data-lucide="file-text"></i> Ver todos os documentos (${hasDocuments(profile) ? '8' : '0'})
+          </a>
+        `;
+      }
+
+      activeContent.querySelector("#btn-close-sidebar").onclick = () => {
+        state.selectedItem = null;
+        renderSidebarDetails();
+      };
+
+      activeContent.querySelectorAll(".eq-sidebar-tab-btn").forEach(btn => {
+        btn.onclick = () => {
+          state.activeSidebarTab = btn.dataset.sidebarTab;
+          renderSidebarDetails();
+        };
+      });
+
+      activeContent.querySelector("#side-btn-edit-colab").onclick = () => {
+        openColabModal(profile.id);
+      };
+    }
+
+    refreshIcons();
+  };
+
+  // Switch between Left Main tabs ("hierarquia", "funcoes", "lista")
+  const switchTab = (tabName) => {
+    state.activeTab = tabName;
+
+    // Toggle active classes on tab buttons
+    document.querySelectorAll(".eq-tab-btn").forEach(btn => {
+      if (btn.getAttribute("data-tab") === tabName) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
       }
     });
 
-    renderSectors();
+    // Toggle tab pane visibility
+    document.getElementById("pane-hierarquia").style.display = tabName === 'hierarquia' ? 'block' : 'none';
+    document.getElementById("pane-funcoes").style.display = tabName === 'funcoes' ? 'block' : 'none';
+    document.getElementById("pane-lista").style.display = tabName === 'lista' ? 'block' : 'none';
+
+    // Sidebar toggles
+    const mainGrid = document.querySelector(".eq-main-grid");
+    const detailsSidebarContent = document.getElementById("eq-sidebar-content");
+    const detailsSidebarPlaceholder = document.getElementById("eq-sidebar-placeholder");
+    const listFiltersSidebar = document.getElementById("list-filters-sidebar");
+    const sidebar = document.getElementById("eq-sidebar");
+
+    if (tabName === 'hierarquia') {
+      // Show sidebar with Details layout
+      if (mainGrid) mainGrid.classList.remove("hide-sidebar");
+      if (sidebar) sidebar.style.display = "block";
+      if (listFiltersSidebar) listFiltersSidebar.style.display = "none";
+      
+      // Show details placeholder or active content
+      if (state.selectedItem) {
+        if (detailsSidebarPlaceholder) detailsSidebarPlaceholder.style.display = "none";
+        if (detailsSidebarContent) detailsSidebarContent.style.display = "block";
+      } else {
+        if (detailsSidebarPlaceholder) detailsSidebarPlaceholder.style.display = "flex";
+        if (detailsSidebarContent) detailsSidebarContent.style.display = "none";
+      }
+      
+      renderOrganograma();
+    } else if (tabName === 'funcoes') {
+      // Hide right sidebar completely, making cargos board 100% width
+      if (mainGrid) mainGrid.classList.add("hide-sidebar");
+      if (sidebar) sidebar.style.display = "none";
+      
+      renderRolesAndFunctions();
+    } else if (tabName === 'lista') {
+      // Hide the main right sidebar completely, making the main content area 100% width
+      if (mainGrid) mainGrid.classList.add("hide-sidebar");
+      if (sidebar) sidebar.style.display = "none";
+      if (listFiltersSidebar) listFiltersSidebar.style.display = "block";
+
+      // Reset and apply filters for the list
+      populateFilterCargos('todos');
+      applyListFilters();
+    }
+
+    performSearch(); // Reapply search filter if any
+    renderSidebarDetails();
   };
 
-  rankLinks.forEach((link) => {
-    link.addEventListener("click", () => {
-      rankLinks.forEach((item) => item.classList.remove("active"));
-      link.classList.add("active");
+  // Drag-scroll for hierarchical sectors container
+  const setupDragScroll = () => {
+    const container = document.getElementById("eq-sectors-scroll");
+    if (!container) return;
+
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    container.addEventListener("mousedown", (e) => {
+      if (e.target.closest("button, a, input, select, .eq-sector-card, .eq-role-pill")) return;
+      isDown = true;
+      container.classList.add("active");
+      startX = e.pageX - container.offsetLeft;
+      scrollLeft = container.scrollLeft;
     });
-  });
 
-  expandButton?.addEventListener("click", () => {
-    document.querySelectorAll(".job-card").forEach((card) => card.classList.add("editing"));
-  });
+    container.addEventListener("mouseleave", () => {
+      isDown = false;
+      container.classList.remove("active");
+    });
 
-  collapseButton?.addEventListener("click", () => {
-    document.querySelectorAll(".job-card").forEach((card) => card.classList.remove("editing"));
-  });
+    container.addEventListener("mouseup", () => {
+      isDown = false;
+      container.classList.remove("active");
+    });
 
-  document.addEventListener("DOMContentLoaded", loadSavedFunctions);
+    container.addEventListener("mousemove", (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - container.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      container.scrollLeft = scrollLeft - walk;
+    });
+  };
+
+  // Modals & Flows
+  const openNewSectorModal = () => {
+    const name = prompt("Nome do novo setor:");
+    if (!name) return;
+    const desc = prompt("Descrição curta do setor:");
+    alert(`Setor "${name}" criado com sucesso! (Fluxo visual simulado)`);
+  };
+
+  const openNewRoleModal = (sectorId = "comercial") => {
+    const title = prompt("Nome do novo cargo:");
+    if (!title) return;
+    alert(`Cargo "${title}" criado com sucesso no setor "${sectorId}"! (Fluxo visual simulado)`);
+  };
+
+  const openColabModal = (profileId = null) => {
+    const modal = document.getElementById("colab-modal");
+    const formEl = document.getElementById("colab-form");
+    const modalTitle = document.getElementById("colab-modal-title");
+    const rolesContainer = document.getElementById("modal-roles-container");
+    
+    if (!modal || !formEl || !rolesContainer) return;
+    
+    modal.style.display = "flex";
+    formEl.reset();
+    rolesContainer.innerHTML = "";
+    
+    let tempRolesList = []; // Holds temporary roles array during editing
+    
+    const renderModalRolesList = () => {
+      rolesContainer.innerHTML = "";
+      
+      if (tempRolesList.length === 0) {
+        rolesContainer.innerHTML = `<p style="color:#94a3b8; font-size:0.75rem; margin:0; font-style:italic;">Nenhuma função vinculada.</p>`;
+        return;
+      }
+      
+      tempRolesList.forEach((item, index) => {
+        const row = document.createElement("div");
+        row.className = "modal-role-row";
+        row.style.display = "grid";
+        row.style.gridTemplateColumns = "1fr 1fr auto auto";
+        row.style.gap = "10px";
+        row.style.alignItems = "end";
+        row.style.padding = "10px";
+        row.style.border = "1px solid #e2e8f0";
+        row.style.borderRadius = "8px";
+        row.style.background = "#f8fafc";
+        row.style.marginBottom = "8px";
+        
+        // 1. Setor Selector wrapper
+        const secWrapper = document.createElement("div");
+        secWrapper.style.display = "flex";
+        secWrapper.style.flexDirection = "column";
+        secWrapper.style.gap = "4px";
+        
+        const secLabel = document.createElement("span");
+        secLabel.textContent = "Setor *";
+        secLabel.style.fontSize = "0.72rem";
+        secLabel.style.fontWeight = "600";
+        secLabel.style.color = "#475569";
+        secWrapper.appendChild(secLabel);
+        
+        const secSelect = document.createElement("select");
+        secSelect.style.width = "100%";
+        secSelect.style.padding = "6px 8px";
+        secSelect.style.fontSize = "0.78rem";
+        secSelect.style.borderRadius = "6px";
+        secSelect.style.border = "1px solid #cbd5e1";
+        secSelect.style.background = "#fff";
+        secSelect.style.color = "#0f172a";
+        
+        sectors.forEach(s => {
+          const opt = document.createElement("option");
+          opt.value = s.id;
+          opt.textContent = s.title;
+          secSelect.appendChild(opt);
+        });
+        secSelect.value = item.sectorId;
+        secWrapper.appendChild(secSelect);
+        
+        // 2. Cargo Selector wrapper
+        const roleWrapper = document.createElement("div");
+        roleWrapper.style.display = "flex";
+        roleWrapper.style.flexDirection = "column";
+        roleWrapper.style.gap = "4px";
+        
+        const roleLabel = document.createElement("span");
+        roleLabel.textContent = "Cargo *";
+        roleLabel.style.fontSize = "0.72rem";
+        roleLabel.style.fontWeight = "600";
+        roleLabel.style.color = "#475569";
+        roleWrapper.appendChild(roleLabel);
+        
+        const roleSelect = document.createElement("select");
+        roleSelect.style.width = "100%";
+        roleSelect.style.padding = "6px 8px";
+        roleSelect.style.fontSize = "0.78rem";
+        roleSelect.style.borderRadius = "6px";
+        roleSelect.style.border = "1px solid #cbd5e1";
+        roleSelect.style.background = "#fff";
+        roleSelect.style.color = "#0f172a";
+        
+        const updateRolesDropdown = () => {
+          roleSelect.innerHTML = "";
+          const chosenSectorId = secSelect.value;
+          const sectorObj = sectors.find(s => s.id === chosenSectorId);
+          if (sectorObj) {
+            sectorObj.roles.forEach(r => {
+              const opt = document.createElement("option");
+              opt.value = r.key;
+              opt.textContent = r.title;
+              roleSelect.appendChild(opt);
+            });
+          }
+        };
+        
+        secSelect.onchange = () => {
+          item.sectorId = secSelect.value;
+          updateRolesDropdown();
+          item.roleKey = roleSelect.value;
+        };
+        
+        updateRolesDropdown();
+        roleSelect.value = item.roleKey;
+        roleSelect.onchange = () => {
+          item.roleKey = roleSelect.value;
+        };
+        roleWrapper.appendChild(roleSelect);
+        
+        // 3. Primary Switch wrapper
+        const switchLabelWrapper = document.createElement("div");
+        switchLabelWrapper.style.display = "flex";
+        switchLabelWrapper.style.flexDirection = "column";
+        switchLabelWrapper.style.gap = "6px";
+        switchLabelWrapper.style.alignItems = "center";
+        switchLabelWrapper.style.paddingBottom = "4px";
+        
+        const switchLabel = document.createElement("span");
+        switchLabel.textContent = "Função principal";
+        switchLabel.style.fontSize = "0.72rem";
+        switchLabel.style.fontWeight = "600";
+        switchLabel.style.color = "#475569";
+        switchLabelWrapper.appendChild(switchLabel);
+        
+        const switchWrapper = document.createElement("label");
+        switchWrapper.className = "eq-switch";
+        
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = item.primary;
+        
+        const slider = document.createElement("span");
+        slider.className = "eq-slider";
+        
+        checkbox.onchange = () => {
+          if (checkbox.checked) {
+            tempRolesList.forEach((r, idx) => {
+              r.primary = (idx === index);
+            });
+          } else {
+            // Force active at least one
+            checkbox.checked = true;
+          }
+          renderModalRolesList();
+        };
+        
+        switchWrapper.appendChild(checkbox);
+        switchWrapper.appendChild(slider);
+        switchLabelWrapper.appendChild(switchWrapper);
+        
+        // 4. Delete button (Trash icon)
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.style.background = "none";
+        delBtn.style.border = "none";
+        delBtn.style.color = "#ef4444";
+        delBtn.style.cursor = "pointer";
+        delBtn.style.padding = "8px 4px";
+        delBtn.style.display = "flex";
+        delBtn.style.alignItems = "center";
+        delBtn.style.justifyContent = "center";
+        delBtn.style.alignSelf = "end";
+        delBtn.style.paddingBottom = "6px";
+        delBtn.innerHTML = `<i data-lucide="trash-2" style="width: 18px; height: 18px;"></i>`;
+        
+        delBtn.onclick = () => {
+          const removedPrimary = item.primary;
+          tempRolesList.splice(index, 1);
+          if (removedPrimary && tempRolesList.length > 0) {
+            tempRolesList[0].primary = true;
+          }
+          renderModalRolesList();
+        };
+        
+        // Assemble row
+        row.appendChild(secWrapper);
+        row.appendChild(roleWrapper);
+        row.appendChild(switchLabelWrapper);
+        row.appendChild(delBtn);
+        
+        rolesContainer.appendChild(row);
+      });
+      
+      refreshIcons();
+    };
+    
+    if (profileId) {
+      // Edit Mode
+      const profile = state.profiles.find(p => p.id === profileId);
+      if (!profile) return;
+      
+      modalTitle.innerHTML = `<i data-lucide="edit" style="color: #d4af37;"></i> Editar colaborador`;
+      formEl.elements.colabId.value = profile.id;
+      formEl.elements.colabName.value = profile.full_name;
+      formEl.elements.colabEmail.value = profile.email;
+      formEl.elements.colabStatus.value = profile.status === "inativo" ? "inativo" : "ativo";
+      
+      // Load current functions
+      const currentFuncs = getEmployeeFunctions(profile);
+      tempRolesList = currentFuncs.map(f => ({ ...f }));
+      
+    } else {
+      // Add Mode
+      modalTitle.innerHTML = `<i data-lucide="user-plus" style="color: #d4af37;"></i> Adicionar colaborador`;
+      formEl.elements.colabId.value = "";
+      formEl.elements.colabName.value = "";
+      formEl.elements.colabEmail.value = "";
+      formEl.elements.colabStatus.value = "ativo";
+      
+      // Add one default function
+      tempRolesList = [
+        {
+          sectorId: "comercial",
+          roleKey: "vendedor",
+          primary: true
+        }
+      ];
+    }
+    
+    renderModalRolesList();
+    
+    // Add role button inside modal
+    document.getElementById("btn-modal-add-role").onclick = () => {
+      const sectorObj = sectors[0];
+      const roleKey = sectorObj ? sectorObj.roles[0]?.key : "vendedor";
+      
+      const duplicate = tempRolesList.some(r => r.sectorId === sectorObj.id && r.roleKey === roleKey);
+      if (duplicate && tempRolesList.length > 0) {
+        alert("Esta função já está vinculada. Modifique a função existente.");
+        return;
+      }
+      
+      tempRolesList.push({
+        sectorId: sectorObj.id,
+        roleKey: roleKey,
+        primary: tempRolesList.length === 0
+      });
+      renderModalRolesList();
+    };
+    
+    // Form submission
+    formEl.onsubmit = (e) => {
+      e.preventDefault();
+      
+      const idVal = formEl.elements.colabId.value;
+      const nameVal = formEl.elements.colabName.value.trim();
+      const emailVal = formEl.elements.colabEmail.value.trim();
+      const statusVal = formEl.elements.colabStatus.value;
+      
+      if (tempRolesList.length === 0) {
+        alert("O colaborador deve possuir pelo menos uma função vinculada.");
+        return;
+      }
+      
+      const seenCombinations = new Set();
+      let hasDuplicates = false;
+      tempRolesList.forEach(r => {
+        const key = `${r.sectorId}-${r.roleKey}`;
+        if (seenCombinations.has(key)) {
+          hasDuplicates = true;
+        }
+        seenCombinations.add(key);
+      });
+      
+      if (hasDuplicates) {
+        alert("Não é permitido adicionar a mesma combinação de setor e cargo duas vezes.");
+        return;
+      }
+      
+      const primaryCount = tempRolesList.filter(r => r.primary).length;
+      if (primaryCount === 0 && tempRolesList.length > 0) {
+        tempRolesList[0].primary = true;
+      } else if (primaryCount > 1) {
+        let foundFirst = false;
+        tempRolesList.forEach(r => {
+          if (r.primary) {
+            if (foundFirst) r.primary = false;
+            foundFirst = true;
+          }
+        });
+      }
+      
+      if (idVal) {
+        // Edit Mode saving
+        const profile = state.profiles.find(p => p.id === idVal);
+        if (profile) {
+          profile.full_name = nameVal;
+          profile.email = emailVal;
+          profile.status = statusVal;
+          
+          saveEmployeeFunctions(profile.id, tempRolesList);
+        }
+      } else {
+        // Add Mode saving
+        const newId = `colab-${Date.now()}`;
+        const newProfile = {
+          id: newId,
+          full_name: nameVal,
+          email: emailVal,
+          status: statusVal,
+          role: tempRolesList.find(r => r.primary)?.roleKey || "vendedor"
+        };
+        state.profiles.push(newProfile);
+        saveEmployeeFunctions(newId, tempRolesList);
+      }
+      
+      saveProfiles();
+      modal.style.display = "none";
+      
+      // Refresh UI
+      renderSummaryCards();
+      if (state.activeTab === 'hierarquia') renderOrganograma();
+      else if (state.activeTab === 'lista') {
+        populateFilterCargos('todos');
+        applyListFilters();
+      }
+      
+      if (state.selectedItem) {
+        renderSidebarDetails();
+      }
+      
+      alert(idVal ? "Colaborador atualizado com sucesso!" : "Colaborador criado com sucesso!");
+    };
+    
+    document.getElementById("btn-close-colab-modal").onclick = () => {
+      modal.style.display = "none";
+    };
+    document.getElementById("btn-cancel-colab").onclick = () => {
+      modal.style.display = "none";
+    };
+  };
+
+  const openQuickRoleModal = (profileId) => {
+    const modal = document.getElementById("quick-role-modal");
+    const formEl = document.getElementById("quick-role-form");
+    if (!modal || !formEl) return;
+    
+    modal.style.display = "flex";
+    formEl.reset();
+    
+    const secSelect = formEl.elements.quickSector;
+    const roleSelect = formEl.elements.quickRole;
+    
+    secSelect.innerHTML = "";
+    sectors.forEach(s => {
+      const opt = document.createElement("option");
+      opt.value = s.id;
+      opt.textContent = s.title;
+      secSelect.appendChild(opt);
+    });
+    
+    const updateRolesList = () => {
+      roleSelect.innerHTML = "";
+      const chosenSectorId = secSelect.value;
+      const sectorObj = sectors.find(s => s.id === chosenSectorId);
+      if (sectorObj) {
+        sectorObj.roles.forEach(r => {
+          const opt = document.createElement("option");
+          opt.value = r.key;
+          opt.textContent = r.title;
+          roleSelect.appendChild(opt);
+        });
+      }
+    };
+    
+    secSelect.onchange = updateRolesList;
+    updateRolesList();
+    
+    formEl.onsubmit = (e) => {
+      e.preventDefault();
+      const sectorId = secSelect.value;
+      const roleKey = roleSelect.value;
+      const isPrimary = formEl.elements.quickPrimary.checked;
+      
+      const profile = state.profiles.find(p => p.id === profileId);
+      if (!profile) return;
+      
+      const funcs = getEmployeeFunctions(profile);
+      
+      const duplicate = funcs.some(f => f.sectorId === sectorId && f.roleKey === roleKey);
+      if (duplicate) {
+        alert("Este colaborador já possui esta função vinculada.");
+        return;
+      }
+      
+      let updatedFuncs = [...funcs];
+      if (isPrimary) {
+        updatedFuncs = updatedFuncs.map(f => ({ ...f, primary: false }));
+      }
+      
+      updatedFuncs.push({
+        sectorId,
+        roleKey,
+        primary: isPrimary || updatedFuncs.length === 0
+      });
+      
+      saveEmployeeFunctions(profile.id, updatedFuncs);
+      saveProfiles();
+      
+      modal.style.display = "none";
+      renderOrganograma();
+      renderListView();
+      renderSidebarDetails();
+    };
+    
+    document.getElementById("btn-close-quick-role").onclick = () => {
+      modal.style.display = "none";
+    };
+    document.getElementById("btn-cancel-quick-role").onclick = () => {
+      modal.style.display = "none";
+    };
+    
+    refreshIcons();
+  };
+
+  const openAddColabModal = (sectorId = null, roleKey = null) => {
+    openColabModal();
+    
+    if (sectorId || roleKey) {
+      const modal = document.getElementById("colab-modal");
+      const rolesContainer = document.getElementById("modal-roles-container");
+      if (modal && rolesContainer) {
+        const secSelect = rolesContainer.querySelector("select");
+        if (secSelect) {
+          if (sectorId) secSelect.value = sectorId;
+          secSelect.dispatchEvent(new Event('change'));
+          const roleSelect = rolesContainer.querySelectorAll("select")[1];
+          if (roleSelect && roleKey) {
+            roleSelect.value = roleKey;
+            roleSelect.dispatchEvent(new Event('change'));
+          }
+        }
+      }
+    }
+  };
+
+  const openEditColabModal = (profileId) => {
+    renderListView();
+  };
+
+  const openEditSectorModal = (sectorId) => {
+    const sector = sectors.find(s => s.id === sectorId);
+    if (!sector) return;
+    const newTitle = prompt("Editar nome do setor:", sector.title);
+    if (newTitle) sector.title = newTitle;
+    const newDesc = prompt("Editar descrição curta:", sector.description);
+    if (newDesc) sector.description = newDesc;
+
+    alert("Setor atualizado!");
+    renderOrganograma();
+    renderSidebarDetails();
+  };
+
+  const openEditRoleModal = (roleKey) => {
+    const role = sectors.flatMap(s => s.roles).find(r => r.key === roleKey);
+    if (!role) return;
+    const newTitle = prompt("Editar nome do cargo:", role.title);
+    if (newTitle) role.title = newTitle;
+    alert("Cargo atualizado!");
+    renderOrganograma();
+    renderSidebarDetails();
+  };
+
+  // Bind initial page load
+  const init = async () => {
+    // 1. Setup Tab switching click listeners
+    document.querySelectorAll(".eq-tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        switchTab(btn.getAttribute("data-tab"));
+      });
+    });
+
+    // 2. Setup Top right actions
+    document.querySelector(".btn-new-sector")?.addEventListener("click", openNewSectorModal);
+    document.querySelector(".btn-new-role")?.addEventListener("click", () => openNewRoleModal("comercial"));
+    document.getElementById("btn-new-colab-header")?.addEventListener("click", () => openColabModal());
+
+    // 3. Setup Bottom quick actions strip
+    document.querySelector(".btn-action-add-member")?.addEventListener("click", () => openAddColabModal());
+    document.querySelector(".btn-action-transfer")?.addEventListener("click", () => {
+      const email = prompt("Digite o e-mail do colaborador a transferir:");
+      if (!email) return;
+      const targetRole = prompt("Digite a chave do novo cargo (ex: coordenador-comercial):");
+      if (!targetRole) return;
+
+      const profile = state.profiles.find(p => p.email.toLowerCase() === email.toLowerCase().trim());
+      if (profile) {
+        const sectorObj = sectors.find(s => s.roles.some(r => r.key === targetRole));
+        const sectorId = sectorObj ? sectorObj.id : "comercial";
+
+        const updatedFuncs = [
+          {
+            sectorId: sectorId,
+            roleKey: targetRole,
+            primary: true
+          }
+        ];
+        saveEmployeeFunctions(profile.id, updatedFuncs);
+        saveProfiles();
+
+        alert(`Colaborador ${profile.full_name} transferido para ${targetRole}!`);
+        renderOrganograma();
+        renderListView();
+      } else {
+        alert("Colaborador não encontrado.");
+      }
+    });
+
+    document.querySelector(".btn-action-manage-roles")?.addEventListener("click", () => {
+      switchTab('funcoes');
+    });
+
+    document.querySelector(".btn-action-docs")?.addEventListener("click", () => {
+      window.location.href = "documentos.html";
+    });
+
+    // 4. Setup search keyup listener
+    searchInput?.addEventListener("input", performSearch);
+
+    // 5. Expand / Collapse all actions in Aba 2
+    document.getElementById("btn-expand-all")?.addEventListener("click", () => {
+      document.querySelectorAll(".job-card").forEach(card => {
+        const editor = card.querySelector(".role-editor");
+        const viewArea = card.querySelector(".role-functions");
+        const editBtn = card.querySelector(".btn-edit-funcs");
+        if (editor && viewArea && editBtn) {
+          editor.style.display = "block";
+          viewArea.style.display = "none";
+          editBtn.textContent = "Cancelar";
+        }
+      });
+    });
+
+    document.getElementById("btn-collapse-all")?.addEventListener("click", () => {
+      document.querySelectorAll(".job-card").forEach(card => {
+        const editor = card.querySelector(".role-editor");
+        const viewArea = card.querySelector(".role-functions");
+        const editBtn = card.querySelector(".btn-edit-funcs");
+        if (editor && viewArea && editBtn) {
+          editor.style.display = "none";
+          viewArea.style.display = "block";
+          editBtn.textContent = "Editar";
+        }
+      });
+    });
+
+    // 5.5 Setup List Sidebar Filter listeners
+    const filterSearch = document.getElementById("filter-search");
+    const filterSector = document.getElementById("filter-sector");
+    const filterRole = document.getElementById("filter-role");
+    const filterStatus = document.getElementById("filter-status");
+    const btnClearFilters = document.getElementById("btn-clear-filters");
+    const btnAddColabList = document.getElementById("btn-add-colab-list");
+
+    const onFilterChange = () => {
+      listFilters.search = filterSearch ? filterSearch.value : '';
+      listFilters.sector = filterSector ? filterSector.value : 'todos';
+      listFilters.role = filterRole ? filterRole.value : 'todos';
+      listFilters.status = filterStatus ? filterStatus.value : 'todos';
+      applyListFilters();
+    };
+
+    filterSearch?.addEventListener("input", onFilterChange);
+    filterSector?.addEventListener("change", (e) => {
+      populateFilterCargos(e.target.value);
+      onFilterChange();
+    });
+    filterRole?.addEventListener("change", onFilterChange);
+    filterStatus?.addEventListener("change", onFilterChange);
+
+    btnClearFilters?.addEventListener("click", () => {
+      if (filterSearch) filterSearch.value = '';
+      if (filterSector) filterSector.value = 'todos';
+      populateFilterCargos('todos');
+      if (filterRole) filterRole.value = 'todos';
+      if (filterStatus) filterStatus.value = 'todos';
+      listFilters.search = '';
+      listFilters.sector = 'todos';
+      listFilters.role = 'todos';
+      listFilters.status = 'todos';
+      applyListFilters();
+    });
+
+    btnAddColabList?.addEventListener("click", () => {
+      openAddColabModal();
+    });
+
+    // 6. Fetch profiles and functions
+    await loadProfiles();
+    await loadSavedFunctions();
+    applySavedOrder();
+
+    // 7. Render summary metric counts
+    renderSummaryCards();
+
+    // 8. Render active view
+    switchTab('hierarquia');
+
+    // 9. Setup Drag scroll support
+    setupDragScroll();
+  };
+
+  document.addEventListener("DOMContentLoaded", init);
 })();

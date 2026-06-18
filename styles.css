@@ -923,19 +923,19 @@ body.theme-dark textarea:focus {
   border-color: var(--gold) !important;
 }
 
-/* Botão Alternador de Tema */
-.theme-toggle-btn {
+/* Floating Theme Toggle */
+.theme-fab {
   position: fixed;
   bottom: 28px;
   right: 28px;
-  z-index: 99999;
-  width: 56px;
-  height: 56px;
+  z-index: 9999;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  background: transparent;
+  background: #ffffff;
   color: #d4af37;
-  border: none;
-  box-shadow: none;
+  border: 1.5px solid rgba(212, 175, 55, 0.35);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10), 0 0 0 0 rgba(212, 175, 55, 0);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -943,77 +943,45 @@ body.theme-dark textarea:focus {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.theme-toggle-btn:hover {
-  transform: scale(1.15) translateY(-3px);
-  background: rgba(212, 175, 55, 0.10);
+.theme-fab:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14), 0 0 0 4px rgba(212, 175, 55, 0.10);
+  background: rgba(212, 175, 55, 0.06);
 }
 
-.theme-toggle-btn:active {
+.theme-fab:active {
   transform: scale(0.95);
 }
 
-.theme-toggle-btn svg {
-  width: 48px;
-  height: 48px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+.theme-fab svg {
+  width: 22px;
+  height: 22px;
+  transition: transform 0.3s ease, opacity 0.2s ease;
 }
 
-/* Modo escuro CRM: glow dourado */
-body.theme-dark .theme-toggle-btn {
-  background: transparent;
+body.theme-dark .theme-fab {
+  background: #1e2340;
   color: #d4af37;
-  border: none;
-  box-shadow: none;
+  border-color: rgba(212, 175, 55, 0.30);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.30);
 }
 
-body.theme-dark .theme-toggle-btn:hover {
-  background: rgba(212, 175, 55, 0.12);
-}
-
-body.theme-dark .theme-toggle-btn svg {
-  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.7));
+body.theme-dark .theme-fab:hover {
+  background: rgba(212, 175, 55, 0.10);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35), 0 0 0 4px rgba(212, 175, 55, 0.12);
 }
 
 @media (max-width: 768px) {
-  .theme-toggle-btn {
+  .theme-fab {
     bottom: 16px;
     right: 16px;
-    width: 50px;
-    height: 50px;
+    width: 44px;
+    height: 44px;
   }
-  .theme-toggle-btn svg {
-    width: 42px;
-    height: 42px;
+  .theme-fab svg {
+    width: 18px;
+    height: 18px;
   }
-}
-
-/* Botao de tema flutuante, fora da barra superior */
-.theme-toggle-btn {
-  position: fixed !important;
-  right: 24px !important;
-  bottom: 24px !important;
-  z-index: 99999 !important;
-  width: 52px !important;
-  height: 52px !important;
-  border: 1px solid rgba(212, 175, 55, 0.38) !important;
-  border-radius: 18px !important;
-  background: #0f1115 !important;
-  color: #f4d46f !important;
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28) !important;
-}
-
-.theme-toggle-btn svg {
-  width: 25px !important;
-  height: 25px !important;
-  filter: none !important;
-}
-
-.theme-toggle-btn:hover {
-  transform: translateY(-3px) !important;
-  background: #171a20 !important;
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.34) !important;
 }
 
 .user-profile-link small,

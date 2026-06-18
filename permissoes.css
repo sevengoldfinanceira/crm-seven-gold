@@ -30,40 +30,46 @@
   min-width: 0;
 }
 
-.permissions-toolbar h1 {
-  font-size: clamp(1.5rem, 2.5vw, 2rem) !important;
-  font-weight: 800 !important;
-  margin: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-  line-height: 1.1 !important;
+.permissions-toolbar .eq-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
 }
 
-.permissions-toolbar h1 .perm-header-icon {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 42px;
-  height: 42px;
+.permissions-toolbar .eq-header-icon-box {
+  width: 48px;
+  height: 48px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: #ffffff;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
-.permissions-toolbar h1 .perm-header-icon svg {
-  width: 22px;
-  height: 22px;
-  stroke: #ffffff;
+.permissions-toolbar .eq-header-icon-box i,
+.permissions-toolbar .eq-header-icon-box svg {
+  width: 24px;
+  height: 24px;
+  color: #ef4444;
 }
 
-.permissions-toolbar span {
+.permissions-toolbar .eq-header-title h1 {
+  font-size: clamp(1.5rem, 2.5vw, 2rem) !important;
+  font-weight: 800 !important;
+  margin: 0 !important;
+  line-height: 1.1 !important;
+  color: #0f172a;
+}
+
+.permissions-toolbar .eq-header-title p {
   color: var(--sg-text-secondary, #6b7280) !important;
-  font-size: 0.92rem !important;
-  margin-top: 6px !important;
-  margin-bottom: 0 !important;
-  display: block !important;
+  font-size: 0.85rem !important;
+  margin: 2px 0 0 0 !important;
 }
 
 .permissions-actions {
