@@ -118,7 +118,70 @@
     return Boolean(data.can_access);
   };
 
-  const applyRoleVisibility = (role) => {
+  const cargoDisplayNames = {
+    "diretor-ceo": "Diretor CEO",
+    "supervisor-comercial": "Supervisor Comercial",
+    "coordenador-comercial": "Coordenador Comercial",
+    "vendedor": "Vendedor",
+    "assistente-vendas": "Assistente de Vendas",
+    "coordenador-posvenda": "Coordenador Pós-Venda",
+    "analista-posvenda": "Analista Pós-Venda",
+    "pos-vendas": "Pós-Vendas",
+    "assistente-adm": "Assistente Administrativo",
+    "analista-adm": "Analista Administrativo",
+    "coordenador-adm": "Coordenador Administrativo",
+    "financeiro": "Financeiro",
+    "auxiliar-financeiro": "Auxiliar Financeiro",
+    "coordenador-financeiro": "Coordenador Financeiro",
+    "assistente-mkt": "Assistente de Marketing",
+    "analista-mkt": "Analista de Marketing",
+    "coordenador-mkt": "Coordenador de Marketing",
+    "advogado-juridico": "Advogado Jurídico",
+    "assistente-rh": "Assistente de RH",
+    "analista-rh": "Analista de RH",
+    "coordenador-rh": "Coordenador de RH",
+  };
+
+  const cargoHierarchy = [
+    "diretor-ceo",
+    "supervisor-comercial",
+    "coordenador-comercial", "coordenador-adm", "coordenador-financeiro",
+    "coordenador-mkt", "coordenador-rh", "coordenador-posvenda",
+    "advogado-juridico",
+    "analista-adm", "analista-mkt", "analista-rh", "analista-posvenda",
+    "financeiro",
+    "vendedor",
+    "pos-vendas",
+    "assistente-vendas", "assistente-adm", "assistente-mkt", "assistente-rh",
+    "auxiliar-financeiro",
+  ];
+
+  const resolveCargoForUser = (userId) => {
+    try {
+      const saved = localStorage.getItem("seven-gold-employee-roles");
+      if (!saved) return null;
+      const map = JSON.parse(saved);
+      const funcs = map[userId];
+      if (!funcs || funcs.length === 0) return null;
+      if (funcs.length === 1) return funcs[0].roleKey;
+      let best = funcs[0].roleKey;
+      let bestIdx = cargoHierarchy.indexOf(best);
+      if (bestIdx === -1) bestIdx = cargoHierarchy.length;
+      for (let i = 1; i < funcs.length; i++) {
+        const idx = cargoHierarchy.indexOf(funcs[i].roleKey);
+        const compareIdx = idx === -1 ? cargoHierarchy.length : idx;
+        if (compareIdx < bestIdx) {
+          best = funcs[i].roleKey;
+          bestIdx = compareIdx;
+        }
+      }
+      return best;
+    } catch {
+      return null;
+    }
+  };
+
+  const applyRoleVisibility = (role, profile) => {
     document.querySelectorAll("[data-visible-roles]").forEach((element) => {
       const roles = parseRoles(element.dataset.visibleRoles);
 
@@ -127,8 +190,16 @@
       }
     });
 
+    let displayRole = role || "sem perfil";
+    if (profile?.id) {
+      const cargoKey = resolveCargoForUser(profile.id);
+      if (cargoKey && cargoDisplayNames[cargoKey]) {
+        displayRole = cargoDisplayNames[cargoKey];
+      }
+    }
+
     document.querySelectorAll("[data-user-role]").forEach((element) => {
-      element.textContent = role || "sem perfil";
+      element.textContent = displayRole;
     });
   };
 
@@ -429,7 +500,7 @@
       return;
     }
 
-    applyRoleVisibility(role);
+    applyRoleVisibility(role, profile);
     await applyUserProfile(session, profile);
   };
 
