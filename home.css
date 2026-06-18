@@ -13586,33 +13586,54 @@ body[data-unified-admin] .unified-admin-shell {
   align-items: center;
   gap: 8px;
   flex: 1;
-  max-width: 300px;
+  max-width: 340px;
 }
 .eq-search-input-wrapper {
   position: relative;
   flex: 1;
+  display: flex;
+  align-items: center;
 }
-.eq-search-input-wrapper i {
+.eq-search-input-wrapper i,
+.eq-search-input-wrapper svg {
   position: absolute;
   left: 10px;
   top: 50%;
   transform: translateY(-50%);
   color: #94a3b8;
-  font-size: 0.8rem;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  flex-shrink: 0;
 }
 .eq-search-input {
   width: 100%;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  padding: 5px 10px 5px 28px;
-  font-size: 0.78rem;
+  padding: 7px 10px 7px 32px;
+  font-size: 0.8rem;
   outline: none;
   transition: all 0.2s ease;
+  height: 36px;
+  box-sizing: border-box;
 }
 .eq-search-input:focus {
-  border-color: #cbd5e1;
+  border-color: #d4af37;
   box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+}
+.eq-search-box .eq-btn-outline {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 0.8rem;
+  border-radius: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.eq-search-box .eq-btn-outline svg,
+.eq-search-box .eq-btn-outline i {
+  width: 15px;
+  height: 15px;
 }
 
 /* Main Grid Layout */
