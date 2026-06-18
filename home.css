@@ -13611,11 +13611,12 @@ body[data-unified-admin] .unified-admin-shell {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  padding: 7px 10px 7px 32px;
-  font-size: 0.8rem;
+  padding: 10px 12px 10px 34px;
+  font-size: 0.82rem;
+  line-height: 1.4;
   outline: none;
   transition: all 0.2s ease;
-  height: 36px;
+  height: 40px;
   box-sizing: border-box;
 }
 .eq-search-input:focus {
@@ -13623,7 +13624,7 @@ body[data-unified-admin] .unified-admin-shell {
   box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
 }
 .eq-search-box .eq-btn-outline {
-  height: 36px;
+  height: 40px;
   padding: 0 14px;
   font-size: 0.8rem;
   border-radius: 8px;
