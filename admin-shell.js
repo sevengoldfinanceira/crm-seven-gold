@@ -426,18 +426,7 @@
     }
 
     // ── Page Transition: suavizar navegação entre abas ──
-    document.body.classList.add("page-ready");
-
-    const safeTransition = (url) => {
-      if (document.startViewTransition) {
-        document.startViewTransition(() => {
-          window.location.href = url;
-        });
-      } else {
-        document.body.classList.add("page-leaving");
-        setTimeout(() => { window.location.href = url; }, 180);
-      }
-    };
+    const supportsViewTransition = !!document.startViewTransition;
 
     document.addEventListener("click", (e) => {
       const link = e.target.closest("a[href]");
@@ -455,7 +444,14 @@
       if (link.classList.contains("edit-year-link")) return;
 
       e.preventDefault();
-      safeTransition(link.href);
+
+      if (supportsViewTransition) {
+        document.startViewTransition(() => {
+          window.location.href = link.href;
+        });
+      } else {
+        window.location.href = link.href;
+      }
     });
 
     if (nav) {
