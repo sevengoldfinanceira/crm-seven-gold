@@ -279,11 +279,7 @@
       element.textContent = user?.email || profile?.email || "";
     });
     document.querySelectorAll("[data-user-avatar]").forEach((element) => {
-      if (element.classList.contains("saved-avatar")) {
-        element.textContent = "";
-      } else {
-        element.textContent = initial;
-      }
+      element.textContent = initial;
       element.style.backgroundImage = "";
       element.classList.remove("has-user-photo");
     });
