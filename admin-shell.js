@@ -55,7 +55,7 @@
     topbar.className = "empresa-topbar";
     topbar.innerHTML = `
       <a class="empresa-topbar-brand" href="empresa.html" aria-label="Seven Gold">
-        <img src="assets/logo-copa.png" alt="" />
+        <img src="assets/icons/LOGO COPA.png?v=1" alt="" />
       </a>
       <nav class="empresa-topbar-nav" aria-label="Navegação da empresa">
         ${allItems
@@ -91,7 +91,7 @@
     sidebar.innerHTML = `
       <div class="unified-sidebar-header">
         <a class="company-sidebar-brand" href="empresa.html" aria-label="Seven Gold">
-          <img src="assets/logo-copa.png" alt="" />
+          <img src="assets/icons/LOGO COPA.png?v=1" alt="" />
           <span class="brand-text">
             <strong class="brand-title">SEVEN GOLD</strong>
             <small class="brand-subtitle">PAINEL EMPRESA</small>
