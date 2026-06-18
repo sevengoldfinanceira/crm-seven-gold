@@ -7146,6 +7146,34 @@ body.theme-dark .vendas-footer { border-top-color: rgba(255,255,255,0.06) !impor
 body.theme-dark .meta-bar { background: #2a2d35 !important; }
 body.theme-dark .meta-mensal { border-top-color: rgba(255,255,255,0.06) !important; }
 
+/* ── Page Transitions ── */
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pageFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-4px); }
+}
+
+body:not(.page-ready) {
+  opacity: 0;
+}
+body.page-ready {
+  animation: pageFadeIn 0.28s ease-out forwards;
+}
+body.page-leaving {
+  animation: pageFadeOut 0.18s ease-in forwards;
+  pointer-events: none;
+}
+
+::view-transition-old(root) {
+  animation: pageFadeOut 0.2s ease-in forwards;
+}
+::view-transition-new(root) {
+  animation: pageFadeIn 0.25s ease-out forwards;
+}
+
 /* Floating Theme Toggle */
 .theme-fab {
   position: fixed;

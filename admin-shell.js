@@ -425,6 +425,39 @@
       });
     }
 
+    // ── Page Transition: suavizar navegação entre abas ──
+    document.body.classList.add("page-ready");
+
+    const safeTransition = (url) => {
+      if (document.startViewTransition) {
+        document.startViewTransition(() => {
+          window.location.href = url;
+        });
+      } else {
+        document.body.classList.add("page-leaving");
+        setTimeout(() => { window.location.href = url; }, 180);
+      }
+    };
+
+    document.addEventListener("click", (e) => {
+      const link = e.target.closest("a[href]");
+      if (!link) return;
+      if (link.closest(".drag-clone")) return;
+      if (link.target === "_blank") return;
+      if (link.hasAttribute("download")) return;
+      if (link.href.startsWith("javascript:")) return;
+
+      const url = new URL(link.href, window.location.origin);
+      if (url.origin !== window.location.origin) return;
+      if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+      if (link.closest(".empresa-topbar-actions")) return;
+      if (link.closest(".profile-actions")) return;
+      if (link.classList.contains("edit-year-link")) return;
+
+      e.preventDefault();
+      safeTransition(link.href);
+    });
+
     if (nav) {
       let draggedItem = null;
       let dragClone = null;
