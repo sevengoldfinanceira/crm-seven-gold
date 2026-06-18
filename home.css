@@ -2287,198 +2287,574 @@ body[data-unified-admin]>.unified-admin-shell {
   justify-content: flex-end;
 }
 
+/* --- Cabeçalho Interno --- */
+.org-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.org-title-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.org-title-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(212, 175, 55, 0.12) !important;
+  color: var(--sg-gold) !important;
+}
+
+.org-title-icon-box i,
+.org-title-icon-box svg {
+  width: 24px;
+  height: 24px;
+}
+
+.org-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .org-actions button {
-  min-height: 40px;
-  border: 1px solid #3b3f39;
-  border-radius: 8px;
-  background: #2b2e2a;
-  color: #f8f6ef;
-  padding: 0 13px;
-  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 12px !important;
+  transition: all 0.2s ease !important;
 }
 
-.org-actions button:first-child {
-  background: var(--gold);
-  color: #17130a;
-  border-color: var(--gold);
+.org-actions .btn-new-sector {
+  background: var(--sg-card-bg) !important;
+  color: var(--sg-text-main) !important;
+  border: 1px solid var(--sg-border) !important;
+  box-shadow: var(--sg-shadow-soft) !important;
 }
 
+.org-actions .btn-new-sector:hover {
+  background: var(--sg-card-hover) !important;
+  border-color: var(--sg-border-gold) !important;
+}
+
+.org-actions .btn-new-role {
+  background: var(--sg-gold) !important;
+  color: #08090b !important;
+  border: none !important;
+  box-shadow: var(--sg-shadow-gold) !important;
+}
+
+.org-actions .btn-new-role:hover {
+  background: var(--sg-gold-dark) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--sg-shadow-gold) !important;
+}
+
+/* --- Cards de Resumo --- */
+.org-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.org-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--sg-card-bg) !important;
+  border: 1px solid var(--sg-border) !important;
+  border-radius: 18px !important;
+  padding: 16px 20px !important;
+  box-shadow: var(--sg-shadow-card) !important;
+}
+
+.org-summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.org-summary-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.org-summary-info strong {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--sg-text-main) !important;
+  line-height: 1.2;
+}
+
+.org-summary-info .label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sg-text-secondary) !important;
+  margin: 2px 0;
+}
+
+.org-summary-info .desc {
+  font-size: 0.75rem;
+  color: var(--sg-text-muted) !important;
+}
+
+/* Cores dos ícones dos cards */
+.org-sum-blue { background: rgba(59, 130, 246, 0.08); color: #3b82f6; }
+.org-sum-purple { background: rgba(147, 51, 234, 0.08); color: #9333ea; }
+.org-sum-green { background: rgba(34, 197, 94, 0.08); color: #22c55e; }
+.org-sum-orange { background: rgba(249, 115, 22, 0.08); color: #f97316; }
+
+/* --- Layout Principal --- */
 .org-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 330px;
-  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  gap: 24px;
   align-items: start;
 }
 
-.org-board {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(280px, 1fr));
-  gap: 14px;
+/* --- Árvore Hierárquica --- */
+.org-tree-wrapper {
+  display: flex;
+  flex-direction: column;
+  background: var(--sg-card-bg-soft) !important;
+  border-radius: 24px !important;
+  border: 1px solid var(--sg-border) !important;
+  padding: 32px 16px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.02) !important;
 }
 
-.org-sector {
-  display: grid;
-  gap: 18px;
-  min-height: 170px;
-  padding: 18px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
-}
-
-.director-sector {
-  grid-column: 1 / -1;
-  justify-self: center;
-  width: min(560px, 100%);
-  min-height: 144px;
-}
-
-.org-sector header {
-  display: grid;
-  grid-template-columns: 36px 1fr;
-  gap: 12px;
+.org-tree-root {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-}
-
-.org-sector h2,
-.org-sector p {
-  margin: 0;
-}
-
-.org-sector h2 {
-  font-size: 1.08rem;
-}
-
-.org-sector p {
-  margin-top: 5px;
-  color: #c8cec6;
-  font-size: 0.84rem;
-}
-
-.sector-icon {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: var(--surface-soft);
   position: relative;
 }
 
-.sector-icon::before {
+.org-directory-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+}
+
+.org-directory-wrapper::after {
   content: "";
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  background: currentColor;
+  width: 2px;
+  height: 24px;
+  background: var(--sg-gold);
+  display: block;
 }
 
-.director-dot {
-  color: var(--gold);
+.org-directory-card {
+  width: 280px;
+  background: var(--sg-card-bg) !important;
+  border: 1.5px solid var(--sg-gold) !important;
+  border-radius: 20px !important;
+  padding: 16px;
+  box-shadow: var(--sg-shadow-gold) !important;
+  text-align: center;
+  transition: all 0.2s ease;
 }
 
-.commercial-dot {
-  color: #db6b3b;
+.org-directory-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sg-shadow-gold) !important;
 }
 
-.aftersale-dot {
-  color: #54a8ff;
+.org-directory-card header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
-.admin-dot {
-  color: #f1d274;
+.org-directory-card .dir-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.12);
+  color: var(--sg-gold);
 }
 
-.finance-dot {
-  color: #efc052;
-}
-
-.legal-dot {
-  color: #d99b2b;
-}
-
-.rh-dot {
-  color: #7fca62;
-}
-
-.mkt-dot {
-  color: #54a8ff;
-}
-
-.role-list {
-  display: grid;
-  gap: 9px;
-}
-
-.role-pill {
-  display: grid;
-  gap: 4px;
-  width: 100%;
-  min-height: 56px;
-  border: 1px solid #454942;
-  border-radius: 8px;
-  background: #292c28;
-  color: #f8f6ef;
-  padding: 10px 12px;
-  text-align: left;
-}
-
-.role-pill:hover,
-.role-pill.active {
-  border-color: var(--gold);
-  background: #20231f;
-}
-
-.role-pill strong {
-  font-size: 0.9rem;
-}
-
-.role-pill span {
-  color: #abb2aa;
-  font-size: 0.78rem;
-}
-
-.role-detail {
-  position: sticky;
-  top: 18px;
-  display: grid;
-  gap: 14px;
-  padding: 20px;
-  border: 1px solid #30332f;
-  border-radius: 8px;
-  background: #20231f;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
-}
-
-.detail-kicker {
-  color: var(--gold);
-  font-size: 0.76rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.role-detail h2,
-.role-detail p {
+.org-directory-card h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--sg-text-main) !important;
   margin: 0;
 }
 
-.role-detail p,
-.detail-group span {
-  color: #c8cec6;
+.org-directory-card p {
+  font-size: 0.8rem;
+  color: var(--sg-text-secondary) !important;
+  margin: 4px 0 0 0;
+}
+
+.org-directory-card .dir-role-box {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--sg-border) !important;
+}
+
+/* Árvore de Setores (Horizontal com Scroll) */
+.org-tree-sectors {
+  position: relative;
+  display: flex;
+  gap: 20px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding: 24px 12px 12px 12px;
+  width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sg-border) transparent;
+}
+
+/* Estilo do Scrollbar para a área de setores */
+.org-tree-sectors::-webkit-scrollbar {
+  height: 6px;
+}
+.org-tree-sectors::-webkit-scrollbar-track {
+  background: transparent;
+}
+.org-tree-sectors::-webkit-scrollbar-thumb {
+  background: var(--sg-border);
+  border-radius: 3px;
+}
+
+.org-tree-sectors::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 137px; /* Alinha com o centro exato do primeiro card considerando o padding */
+  right: 137px; /* Alinha com o centro exato do último card considerando o padding */
+  height: 2px;
+  background: var(--sg-gold);
+}
+
+/* --- Card de Setor --- */
+.org-sector-card {
+  position: relative;
+  flex-shrink: 0;
+  width: 250px;
+  background: var(--sg-card-bg) !important;
+  border: 1px solid var(--sg-border) !important;
+  border-radius: 18px !important;
+  padding: 18px !important;
+  box-shadow: var(--sg-shadow-card) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.org-sector-card::before {
+  content: "";
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 24px;
+  background: var(--sg-gold);
+}
+
+.org-sector-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: var(--sg-shadow-card) !important;
+}
+
+.org-sector-card.selected {
+  border-color: var(--sg-gold) !important;
+  background: rgba(212, 175, 55, 0.03) !important;
+  box-shadow: var(--sg-shadow-gold) !important;
+}
+
+.org-sector-card header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.org-sector-card .sec-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.org-sector-card h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sg-text-main) !important;
+  margin: 0;
+}
+
+.org-sector-card p.sec-desc {
+  font-size: 0.78rem;
+  color: var(--sg-text-secondary) !important;
+  margin: 2px 0 0 0;
+  line-height: 1.3;
+}
+
+.org-sector-card .role-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+  border-top: 1px solid var(--sg-border) !important;
+  padding-top: 14px;
+}
+
+/* --- Pills de Cargos --- */
+.org-role-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--sg-border) !important;
+  border-radius: 12px !important;
+  background: var(--sg-card-bg-soft) !important;
+  color: var(--sg-text-main) !important;
+  padding: 8px 12px !important;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease !important;
+}
+
+.org-role-pill:hover {
+  border-color: var(--sg-gold) !important;
+  background: var(--sg-card-hover) !important;
+  transform: translateY(-1px);
+}
+
+.org-role-pill.active {
+  border-color: var(--sg-gold) !important;
+  background: var(--sg-gold-soft) !important;
+  box-shadow: var(--sg-shadow-gold) !important;
+}
+
+.org-role-pill .role-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sg-text-secondary);
+  flex-shrink: 0;
+}
+
+.org-role-pill.active .role-icon {
+  color: var(--sg-gold);
+}
+
+.org-role-pill .role-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.org-role-pill strong {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sg-text-main) !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.org-role-pill span {
+  font-size: 0.7rem;
+  color: var(--sg-text-secondary) !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- Painel Lateral (Detalhes) --- */
+.org-detail-sidebar {
+  position: sticky;
+  top: 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px !important;
+  background: var(--sg-card-bg) !important;
+  border: 1px solid var(--sg-border) !important;
+  border-left: 4px solid var(--sg-gold) !important;
+  border-radius: 22px !important;
+  box-shadow: var(--sg-shadow-card) !important;
+  transition: all 0.3s ease;
+}
+
+.org-detail-sidebar .detail-kicker {
+  color: var(--sg-gold) !important;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.org-detail-sidebar h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--sg-text-main) !important;
+  margin: 4px 0 0 0;
+}
+
+.org-detail-sidebar .detail-role-tag {
+  align-self: flex-start;
+  background: var(--sg-gold-soft) !important;
+  color: var(--sg-gold) !important;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  margin-top: 6px;
+}
+
+.org-detail-sidebar p.detail-desc {
+  font-size: 0.85rem;
+  color: var(--sg-text-secondary) !important;
   line-height: 1.5;
+  margin: 4px 0 0 0;
 }
 
-.detail-group {
-  display: grid;
+.org-detail-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--sg-border) !important;
+}
+
+.org-detail-group strong {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--sg-text-main) !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.org-detail-group strong i,
+.org-detail-group strong svg {
+  width: 16px;
+  height: 16px;
+}
+
+.org-detail-group span {
+  font-size: 0.82rem;
+  color: var(--sg-text-secondary) !important;
+  line-height: 1.4;
+}
+
+/* Acessos Chips */
+.org-access-chips {
+  display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  padding-top: 13px;
-  border-top: 1px solid #30332f;
+  margin-top: 4px;
 }
 
-.detail-group strong {
-  color: #f8f6ef;
+.org-access-chip {
+  background: var(--sg-card-bg-soft) !important;
+  color: var(--sg-text-secondary) !important;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border: 1px solid var(--sg-border) !important;
 }
+
+/* Card de Última Alteração */
+.org-detail-update-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--sg-card-bg-soft) !important;
+  border: 1px solid var(--sg-border) !important;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-top: 8px;
+}
+
+.org-detail-update-card strong {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--sg-text-secondary) !important;
+}
+
+.org-detail-update-card span {
+  font-size: 0.72rem;
+  color: var(--sg-text-muted) !important;
+}
+
+.org-detail-update-card time {
+  font-size: 0.72rem;
+  color: var(--sg-text-muted) !important;
+}
+
+/* --- Rodapé Informativo / Dica --- */
+.org-tip-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(59, 130, 246, 0.06) !important;
+  border: 1px solid rgba(59, 130, 246, 0.12) !important;
+  border-radius: 18px !important;
+  padding: 14px 20px !important;
+  margin-top: 24px;
+}
+
+.org-tip-bar i,
+.org-tip-bar svg {
+  color: #3b82f6;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.org-tip-bar p {
+  font-size: 0.85rem;
+  color: var(--sg-text-secondary) !important;
+  margin: 0;
+}
+
+/* --- Cores Específicas dos Setores (Fundo do ícone) --- */
+.sec-bg-comercial { background: rgba(59, 130, 246, 0.08); color: #3b82f6; }
+.sec-bg-posvenda { background: rgba(34, 197, 94, 0.08); color: #22c55e; }
+.sec-bg-admin { background: rgba(147, 51, 234, 0.08); color: #9333ea; }
+.sec-bg-financeiro { background: rgba(249, 115, 22, 0.08); color: #f97316; }
+.sec-bg-marketing { background: rgba(236, 72, 153, 0.08); color: #ec4899; }
+.sec-bg-documentos { background: rgba(14, 165, 233, 0.08); color: #0ea5e9; }
+.sec-bg-rh { background: rgba(244, 63, 94, 0.08); color: #f43f5e; }
+.sec-bg-permissoes { background: rgba(20, 184, 166, 0.08); color: #14b8a6; }
 
 .history-shell {
   display: grid;
@@ -5560,6 +5936,16 @@ body.theme-dark .reports-summary article:nth-child(8)>i {
     grid-template-columns: 1fr;
   }
 
+  .org-detail-sidebar {
+    position: static !important;
+    margin-top: 24px;
+  }
+
+  .org-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+  }
+
   .role-detail {
     position: static;
   }
@@ -5637,6 +6023,11 @@ body.theme-dark .reports-summary article:nth-child(8)>i {
 }
 
 @media (max-width: 640px) {
+  .org-summary-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
   .company-dashboard-shell {
     display: block;
   }
