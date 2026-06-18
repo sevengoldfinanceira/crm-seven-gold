@@ -13586,7 +13586,7 @@ body[data-unified-admin] .unified-admin-shell {
   align-items: center;
   gap: 8px;
   flex: 1;
-  max-width: 340px;
+  max-width: 480px;
 }
 .eq-search-input-wrapper {
   position: relative;
@@ -14420,6 +14420,9 @@ body.theme-dark .eq-table tbody tr:hover { background: #0f172a; }
   }
   .eq-search-box {
     max-width: none;
+  }
+  .eq-search-box .eq-btn-outline {
+    flex-shrink: 0;
   }
 }
 @media (max-width: 480px) {
