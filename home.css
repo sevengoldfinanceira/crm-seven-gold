@@ -11628,7 +11628,7 @@ body.theme-dark .company-module-grid>a:hover {
     margin: 18px 18px 0 18px;
     padding: 10px 18px;
     border-radius: 28px;
-    background: linear-gradient(135deg, #080B18 0%, #10162A 55%, #151B33 100%) !important;
+    background: linear-gradient(135deg, #090012 0%, #150126 55%, #24023a 100%) !important;
     border: 1px solid rgba(212, 175, 55, 0.18) !important;
     box-shadow: 0 18px 45px rgba(8, 11, 24, 0.28) !important;
     position: sticky;
@@ -11874,7 +11874,7 @@ body.theme-dark .company-module-grid>a:hover {
    ============================================================ */
 body.theme-dark .empresa-topbar,
 [data-theme="dark"] .empresa-topbar {
-  background: linear-gradient(135deg, #080B18 0%, #10162A 55%, #151B33 100%) !important;
+  background: linear-gradient(135deg, #090012 0%, #150126 55%, #24023a 100%) !important;
   border-color: rgba(212, 175, 55, 0.18) !important;
   box-shadow: 0 18px 45px rgba(8, 11, 24, 0.28) !important;
 }
@@ -11957,7 +11957,7 @@ body.theme-dark .empresa-topbar-user small,
    Modo Claro — Empresa Topbar (body[data-unified-admin] scope)
    ============================================================ */
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar {
-  background: linear-gradient(135deg, #080B18 0%, #10162A 55%, #151B33 100%) !important;
+  background: linear-gradient(135deg, #090012 0%, #150126 55%, #24023a 100%) !important;
   border-color: rgba(212, 175, 55, 0.18) !important;
   box-shadow: 0 18px 45px rgba(8, 11, 24, 0.28) !important;
 }
