@@ -13596,15 +13596,17 @@ body[data-unified-admin] .unified-admin-shell {
 }
 .eq-search-input-wrapper i,
 .eq-search-input-wrapper svg {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8;
-  width: 16px;
-  height: 16px;
-  pointer-events: none;
-  flex-shrink: 0;
+  position: absolute !important;
+  left: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: #94a3b8 !important;
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  max-width: 16px !important;
+  pointer-events: none !important;
+  flex-shrink: 0 !important;
 }
 .eq-search-input {
   width: 100%;
