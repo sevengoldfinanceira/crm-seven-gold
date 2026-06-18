@@ -1907,10 +1907,15 @@ body[data-unified-admin]>.unified-admin-shell {
   height: 17px;
 }
 
-.history-dashboard-main .history-shell {
+.history-dashboard-main .history-shell,
+body[data-unified-admin] .history-dashboard-main .history-shell {
   gap: 12px;
-  min-height: auto;
-  padding: 12px 14px 24px;
+  min-height: auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
 }
 
 .history-dashboard-main .career-time-toolbar {
