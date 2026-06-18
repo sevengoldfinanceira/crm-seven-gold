@@ -916,8 +916,8 @@ body[data-unified-admin]>.unified-admin-shell {
   border-right: 1px solid rgba(212, 175, 55, 0.35);
   background:
     radial-gradient(circle at top left, rgba(212, 175, 55, 0.08), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(90, 120, 255, 0.08), transparent 35%),
-    linear-gradient(180deg, #151a2e 0%, #0d1120 100%);
+    radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.08), transparent 35%),
+    linear-gradient(180deg, #150126 0%, #0a0012 100%);
   box-shadow: 12px 0 35px rgba(0, 0, 0, 0.35);
   overflow: hidden;
 }
@@ -9194,8 +9194,8 @@ mark {
 
 body[data-unified-admin]:not(.theme-dark) {
   --company-page-bg: #ededeb;
-  --company-sidebar-bg: #151a2e;
-  --company-sidebar-bg-soft: #1f2642;
+  --company-sidebar-bg: #150126;
+  --company-sidebar-bg-soft: #24023a;
   --company-main-bg: #f5f6f8;
   --company-card-bg: #ffffff;
   --company-text: #111827;
@@ -9482,7 +9482,7 @@ body[data-unified-admin].theme-dark .company-sidebar,
 body[data-unified-admin].theme-dark .unified-admin-sidebar {
   background:
     radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.07), transparent 30%),
-    linear-gradient(180deg, #151a2e 0%, #0d1120 100%) !important;
+    linear-gradient(180deg, #150126 0%, #0a0012 100%) !important;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35) !important;
 }
 
@@ -10583,7 +10583,7 @@ body[data-unified-admin] .unified-admin-sidebar {
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
   border-radius: 30px !important;
   overflow: hidden !important;
-  background: linear-gradient(180deg, #151a2e 0%, #0d1120 100%) !important;
+  background: linear-gradient(180deg, #150126 0%, #0a0012 100%) !important;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22) !important;
   color: #e5e7eb !important;
   transition: width 0.25s ease, min-width 0.25s ease, max-width 0.25s ease, padding 0.25s ease !important;
@@ -10591,7 +10591,7 @@ body[data-unified-admin] .unified-admin-sidebar {
 
 body[data-unified-admin].theme-dark .company-sidebar,
 body[data-unified-admin].theme-dark .unified-admin-sidebar {
-  background: linear-gradient(180deg, #151a2e 0%, #0d1120 100%) !important;
+  background: linear-gradient(180deg, #150126 0%, #0a0012 100%) !important;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35) !important;
 }
 
