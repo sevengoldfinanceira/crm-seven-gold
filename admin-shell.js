@@ -85,6 +85,25 @@
     return topbar;
   };
 
+  const createGlobalSearch = () => {
+    const form = document.createElement("form");
+    form.className = "company-global-search";
+    form.setAttribute("role", "search");
+    form.innerHTML = `
+      <i data-lucide="search"></i>
+      <input type="search" placeholder="Pesquisar colaborador, contrato, comissão, documento, cliente..." aria-label="Busca global da empresa" />
+      <kbd>Ctrl + K</kbd>
+    `;
+    form.addEventListener("submit", (event) => event.preventDefault());
+    document.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        form.querySelector("input")?.focus();
+      }
+    });
+    return form;
+  };
+
   const createSidebar = () => {
     const sidebar = document.createElement("aside");
     sidebar.className = "company-sidebar unified-admin-sidebar";
@@ -196,11 +215,17 @@
     layout.classList.add("unified-admin-shell");
     const topbar = createTopbar();
     layout.prepend(topbar);
+    const existingSearch = layout.querySelector(".company-global-search");
+    const searchForm = existingSearch || createGlobalSearch();
+    const searchWrapper = document.createElement("div");
+    searchWrapper.className = "company-search-wrapper";
+    searchWrapper.appendChild(searchForm);
+    topbar.after(searchWrapper);
     const sidebar = createSidebar();
     layout.prepend(sidebar);
 
     if (window.matchMedia("(min-width: 1024px)").matches) {
-      layout.style.setProperty("padding-top", "110px", "important");
+      layout.style.setProperty("padding-top", "178px", "important");
     }
 
     const topbarNav = topbar.querySelector(".empresa-topbar-nav");
@@ -343,15 +368,7 @@
     });
 
     // Injetar seletor de tema segmentado ao lado da busca global
-    const searchForm = document.querySelector(".company-global-search");
-    if (searchForm) {
-      let searchWrapper = searchForm.parentElement.querySelector(".company-search-wrapper");
-      if (!searchWrapper) {
-        searchWrapper = document.createElement("div");
-        searchWrapper.className = "company-search-wrapper";
-        searchForm.before(searchWrapper);
-        searchWrapper.appendChild(searchForm);
-        
+    if (searchWrapper && searchForm) {
         const themeSegment = document.createElement("div");
         themeSegment.className = "top-theme-toggle-segment";
         themeSegment.innerHTML = `
@@ -392,7 +409,6 @@
         window.addEventListener("themechange", (e) => {
           updateSegmentActive();
         });
-      }
     }
 
     renderIcons();

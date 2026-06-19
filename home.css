@@ -11698,6 +11698,22 @@ body.theme-dark .company-module-grid>a:hover {
     min-height: 60px;
   }
 
+  .company-search-wrapper {
+    position: sticky;
+    top: 92px;
+    z-index: 880;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 18px 0;
+    padding: 0;
+  }
+
+  .company-search-wrapper .company-global-search {
+    width: min(100%, 760px);
+    margin: 0;
+  }
+
   /* Esconde sidebar no desktop */
   .empresa-topbar ~ .company-sidebar,
   .empresa-topbar ~ .unified-admin-sidebar,
@@ -12502,6 +12518,10 @@ body[data-unified-admin] .company-premium-dashboard {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.86);
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.07);
+}
+
+body[data-unified-admin] > .company-global-search {
+  display: none;
 }
 
 .company-global-search svg {
