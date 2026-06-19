@@ -225,7 +225,7 @@
     layout.prepend(sidebar);
 
     if (window.matchMedia("(min-width: 1024px)").matches) {
-      layout.style.setProperty("padding-top", "130px", "important");
+      layout.style.setProperty("padding-top", "0px", "important");
     }
 
     const topbarNav = topbar.querySelector(".empresa-topbar-nav");

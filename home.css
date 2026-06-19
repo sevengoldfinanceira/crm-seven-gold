@@ -11881,7 +11881,7 @@ body.theme-dark .company-module-grid>a:hover {
     display: flex !important;
     align-items: center;
     gap: 16px;
-    margin: 12px 18px 0 18px;
+    margin: 12px 18px 12px 18px;
     padding: 10px 18px;
     border-radius: 28px;
     background: linear-gradient(135deg, #090012 0%, #150126 55%, #24023a 100%) !important;
@@ -11895,12 +11895,12 @@ body.theme-dark .company-module-grid>a:hover {
 
   .company-search-wrapper {
     position: sticky;
-    top: 80px;
+    top: 84px;
     z-index: 880;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 6px 18px 0;
+    margin: 0 18px 12px 18px;
     padding: 0;
   }
 
