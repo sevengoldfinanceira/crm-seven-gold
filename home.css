@@ -7146,18 +7146,79 @@ body.theme-dark .vendas-footer { border-top-color: rgba(255,255,255,0.06) !impor
 body.theme-dark .meta-bar { background: #2a2d35 !important; }
 body.theme-dark .meta-mensal { border-top-color: rgba(255,255,255,0.06) !important; }
 
-/* ── Page Transitions (View Transitions API — Chrome/Edge) ── */
-::view-transition-old(root) {
-  animation: none;
-  opacity: 0;
-}
-::view-transition-new(root) {
-  animation: pageFadeIn 0.3s ease-out;
+/* Transicoes suaves entre paginas reais da area Empresa */
+@media (prefers-reduced-motion: no-preference) {
+  body[data-unified-admin] .company-dashboard-main,
+  body[data-unified-admin] .history-dashboard-main,
+  body[data-unified-admin] .profile-page-shell,
+  body[data-unified-admin] .documents-shell,
+  body[data-unified-admin] .reports-shell,
+  body[data-unified-admin] .permissions-shell,
+  body[data-unified-admin] .finance-shell,
+  body[data-unified-admin] .commission-shell,
+  body[data-unified-admin] .team-shell,
+  body[data-unified-admin] .org-shell,
+  body[data-unified-admin] .metas-shell,
+  body[data-unified-admin] .marketing-shell {
+    will-change: opacity, transform, filter;
+  }
+
+  body[data-unified-admin].admin-route-entering .company-dashboard-main,
+  body[data-unified-admin].admin-route-entering .history-dashboard-main,
+  body[data-unified-admin].admin-route-entering .profile-page-shell,
+  body[data-unified-admin].admin-route-entering .documents-shell,
+  body[data-unified-admin].admin-route-entering .reports-shell,
+  body[data-unified-admin].admin-route-entering .permissions-shell,
+  body[data-unified-admin].admin-route-entering .finance-shell,
+  body[data-unified-admin].admin-route-entering .commission-shell,
+  body[data-unified-admin].admin-route-entering .team-shell,
+  body[data-unified-admin].admin-route-entering .org-shell,
+  body[data-unified-admin].admin-route-entering .metas-shell,
+  body[data-unified-admin].admin-route-entering .marketing-shell {
+    animation: adminRouteEnter 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  body[data-unified-admin].admin-route-leaving .company-dashboard-main,
+  body[data-unified-admin].admin-route-leaving .history-dashboard-main,
+  body[data-unified-admin].admin-route-leaving .profile-page-shell,
+  body[data-unified-admin].admin-route-leaving .documents-shell,
+  body[data-unified-admin].admin-route-leaving .reports-shell,
+  body[data-unified-admin].admin-route-leaving .permissions-shell,
+  body[data-unified-admin].admin-route-leaving .finance-shell,
+  body[data-unified-admin].admin-route-leaving .commission-shell,
+  body[data-unified-admin].admin-route-leaving .team-shell,
+  body[data-unified-admin].admin-route-leaving .org-shell,
+  body[data-unified-admin].admin-route-leaving .metas-shell,
+  body[data-unified-admin].admin-route-leaving .marketing-shell {
+    pointer-events: none;
+    animation: adminRouteLeave 150ms cubic-bezier(0.4, 0, 1, 1) both;
+  }
 }
 
-@keyframes pageFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes adminRouteEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.992);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes adminRouteLeave {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.994);
+    filter: blur(2px);
+  }
 }
 
 /* Floating Theme Toggle */

@@ -425,8 +425,17 @@
       });
     }
 
-    // ── Page Transition: suavizar navegação entre abas ──
-    const supportsViewTransition = !!document.startViewTransition;
+    // Transicao leve entre paginas reais da area Empresa, sem alterar rotas.
+    const transitionKey = "seven-gold-admin-route-transition";
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (!prefersReducedMotion && sessionStorage.getItem(transitionKey) === "1") {
+      sessionStorage.removeItem(transitionKey);
+      document.body.classList.add("admin-route-entering");
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => document.body.classList.remove("admin-route-entering"));
+      });
+    }
 
     document.addEventListener("click", (e) => {
       const link = e.target.closest("a[href]");
@@ -445,13 +454,18 @@
 
       e.preventDefault();
 
-      if (supportsViewTransition) {
-        document.startViewTransition(() => {
-          window.location.href = link.href;
-        });
-      } else {
-        window.location.href = link.href;
+      const navigate = () => {
+        sessionStorage.setItem(transitionKey, "1");
+        window.location.assign(link.href);
+      };
+
+      if (prefersReducedMotion) {
+        navigate();
+        return;
       }
+
+      document.body.classList.add("admin-route-leaving");
+      window.setTimeout(navigate, 150);
     });
 
     if (nav) {
