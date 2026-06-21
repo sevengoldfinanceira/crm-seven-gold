@@ -582,12 +582,100 @@ select {
   background: #e6ae00;
 }
 
-.dot.green {
-  background: var(--green);
-}
+  .dot.green {
+    background: var(--green);
+  }
+  
+  /* Estilo padrão para todos os botões de ação */
+  .two-action-row button:first-child,
+  .three-action-row button:first-child {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 42px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--gold);
+    color: #17130a;
+    box-shadow: 0 8px 18px rgba(155, 113, 27, 0.22);
+    font-weight: 800;
+  }
+  
+  .two-action-row button:first-child span,
+  .three-action-row button:first-child span {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+  
+  .three-action-row button:first-child {
+    min-height: 52px;
+    border-radius: 88px;
+  }
 
-.card-stack {
-  display: grid;
+  .card-stack {
+    display: grid;
+    
+  /* Estilo para todos os botões de ação padrão */
+  button:where(.button-padrao),
+  a:where(.button-padrao) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 52px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 88px;
+    background: var(--gold);
+    color: #17130a;
+    box-shadow: 0 8px 18px rgba(155, 113, 27, 0.22);
+    font-weight: 800;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  button:where(.button-padrao):hover,
+  a:where(.button-padrao):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(155, 113, 27, 0.3);
+  }
+  
+  /* Estilo padrão para dois botões lado a lado */
+  .two-action-row {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .two-action-row button,
+  .two-action-row a {
+    flex: 1;
+    min-height: 42px;
+    border-radius: 8px;
+    background: var(--gold);
+    color: #17130a;
+    box-shadow: 0 8px 18px rgba(155, 113, 27, 0.22);
+    font-weight: 800;
+    text-decoration: none;
+  }
+  
+  .three-action-row {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .three-action-row button,
+  .three-action-row a {
+    flex: 1;
+    min-height: 52px;
+    border-radius: 88px;
+    background: var(--gold);
+    color: #17130a;
+    box-shadow: 0 8px 18px rgba(155, 113, 27, 0.22);
+    font-weight: 800;
+    text-decoration: none;
+  }
   align-content: start;
   gap: 10px;
   min-height: 510px;

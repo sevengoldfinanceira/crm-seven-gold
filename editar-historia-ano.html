@@ -23,10 +23,7 @@
   <body class="owner-history-body" data-require-auth data-permission-area="historia_dono" data-login-page="index.html" data-allowed-roles="dono" data-denied-redirect="empresa.html" data-unified-admin>
     <script>
       (function() {
-        const theme = localStorage.getItem("seven-gold-theme") || "light";
-        if (theme === "dark") {
-          document.body.classList.add("theme-dark");
-        }
+        document.body.classList.add("theme-dark");
       })();
     </script>
     <div class="history-dashboard-shell">

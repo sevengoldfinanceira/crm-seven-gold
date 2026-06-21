@@ -24,10 +24,7 @@
   <body class="marketing-body" data-require-auth data-permission-area="marketing" data-login-page="index.html" data-allowed-roles="dono,administrador,marketing" data-denied-redirect="empresa.html" data-unified-admin>
     <script>
       (function() {
-        const theme = localStorage.getItem("seven-gold-theme") || "light";
-        if (theme === "dark") {
-          document.body.classList.add("theme-dark");
-        }
+        document.body.classList.add("theme-dark");
       })();
     </script>
     <main class="marketing-shell">
@@ -42,9 +39,9 @@
             <p>Campanhas, mídias, criativos e origem dos leads.</p>
           </div>
         </div>
-        <div class="marketing-actions">
-          <button type="button" id="btn-new-campaign"><i data-lucide="plus"></i> Nova campanha</button>
-        </div>
+      <div class="marketing-actions three-action-row">
+      <button type="button" class="button-padrao" id="btn-new-campaign"><i data-lucide="plus"></i> Nova campanha</button>
+      </div>
       </section>
 
       <section class="marketing-stat-grid" aria-label="Resumo de marketing">

@@ -23,10 +23,7 @@
   <body class="finance-body" data-require-auth data-permission-area="financeiro" data-login-page="index.html" data-allowed-roles="dono,administrador,financeiro" data-denied-redirect="empresa.html" data-unified-admin>
     <script>
       (function() {
-        const theme = localStorage.getItem("seven-gold-theme") || "light";
-        if (theme === "dark") {
-          document.body.classList.add("theme-dark");
-        }
+        document.body.classList.add("theme-dark");
       })();
     </script>
     <main class="finance-shell">

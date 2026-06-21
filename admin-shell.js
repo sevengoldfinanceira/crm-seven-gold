@@ -367,49 +367,7 @@
       document.body.classList.remove("menu-open");
     });
 
-    // Injetar seletor de tema segmentado ao lado da busca global
-    if (searchWrapper && searchForm) {
-        const themeSegment = document.createElement("div");
-        themeSegment.className = "top-theme-toggle-segment";
-        themeSegment.innerHTML = `
-          <button type="button" class="segment-btn" data-theme-val="light" title="Modo Claro">
-            <i data-lucide="sun"></i>
-          </button>
-          <button type="button" class="segment-btn" data-theme-val="dark" title="Modo Escuro">
-            <i data-lucide="moon"></i>
-          </button>
-        `;
-        searchWrapper.appendChild(themeSegment);
-        
-        const updateSegmentActive = () => {
-          const currentTheme = localStorage.getItem("seven-gold-theme") || "light";
-          themeSegment.querySelectorAll(".segment-btn").forEach((btn) => {
-            const isActive = btn.dataset.themeVal === currentTheme;
-            btn.classList.toggle("active", isActive);
-          });
-        };
-        
-        updateSegmentActive();
-        
-        themeSegment.querySelectorAll(".segment-btn").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const theme = btn.dataset.themeVal;
-            localStorage.setItem("seven-gold-theme", theme);
-            if (theme === "dark") {
-              document.body.classList.add("theme-dark");
-            } else {
-              document.body.classList.remove("theme-dark");
-            }
-            updateSegmentActive();
-            // Disparar evento para sincronizar outros switchers
-            window.dispatchEvent(new CustomEvent("themechange", { detail: theme }));
-          });
-        });
 
-        window.addEventListener("themechange", (e) => {
-          updateSegmentActive();
-        });
-    }
 
     renderIcons();
 

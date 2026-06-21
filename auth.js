@@ -517,6 +517,11 @@
       return;
     }
 
+    if (document.body.hasAttribute("data-unified-admin")) {
+      document.body.classList.add("theme-dark");
+      return;
+    }
+
     const savedTheme = localStorage.getItem("seven-gold-theme") || "light";
     if (savedTheme === "dark") {
       document.body.classList.add("theme-dark");
