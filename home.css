@@ -15424,11 +15424,11 @@ body.theme-dark .modal-role-row {
 .login-page-body {
   background:
     linear-gradient(
-      rgba(21, 1, 38, 0.82),
-      rgba(21, 1, 38, 0.92)
+      rgba(9, 0, 20, 0.82),
+      rgba(9, 0, 20, 0.92)
     ),
     url("assets/login-background-new.png") !important;
-  background-color: #150126 !important;
+  background-color: #090014 !important;
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
@@ -15648,12 +15648,28 @@ body.theme-dark .modal-role-row {
   height: 48px !important;
   border-radius: 12px !important;
   border: 1px solid rgba(255, 255, 255, 0.13) !important;
-  background: rgba(255, 255, 255, 0.065) !important;
+  background: #13161c !important;
   color: #ffffff !important;
   padding: 0 44px !important;
   font-size: 15px !important;
   outline: none !important;
   transition: all 0.2s ease !important;
+}
+
+/* Sobrescrever estilo de autofill do Chrome/Safari/Edge para manter fundo escuro */
+.input-wrapper input:-webkit-autofill,
+.input-wrapper input:-webkit-autofill:hover, 
+.input-wrapper input:-webkit-autofill:focus, 
+.input-wrapper input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #13161c inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Ocultar o botão padrão de revelação de senha do Microsoft Edge */
+.input-wrapper input::-ms-reveal,
+.input-wrapper input::-ms-clear {
+  display: none !important;
 }
 
 .input-wrapper input::placeholder {
@@ -15663,7 +15679,7 @@ body.theme-dark .modal-role-row {
 .input-wrapper input:focus {
   border-color: rgba(212, 175, 55, 0.75) !important;
   box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.12) !important;
-  background: rgba(255, 255, 255, 0.085) !important;
+  background: #181d26 !important;
 }
 
 .input-icon-left {
@@ -15728,13 +15744,36 @@ body.theme-dark .modal-role-row {
 }
 
 .remember-option input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
   width: 18px !important;
   height: 18px !important;
   border-radius: 4px !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  accent-color: #d8b444 !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+  background: #13161c !important;
+  position: relative;
   cursor: pointer;
   margin: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.remember-option input[type="checkbox"]:checked {
+  background: #d8b444 !important;
+  border-color: #d8b444 !important;
+}
+
+.remember-option input[type="checkbox"]:checked::after {
+  content: "";
+  width: 4px;
+  height: 8px;
+  border: solid #111111;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  position: absolute;
+  top: 2px;
 }
 
 .login-options a {
