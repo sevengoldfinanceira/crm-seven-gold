@@ -16051,6 +16051,473 @@ body.theme-dark .modal-role-row {
 .bubble:nth-child(9) { left: 45%; width: 95px; height: 95px; animation-duration: 29s; animation-delay: 15s; }
 .bubble:nth-child(10) { left: 90%; width: 65px; height: 65px; animation-duration: 23s; animation-delay: 14s; }
 
+/* ==========================================================================
+   Base mobile global - todas as abas Empresa
+   ========================================================================== */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+svg,
+video,
+canvas,
+table,
+input,
+textarea,
+select,
+button {
+  max-width: 100%;
+}
+
+body.mobile-menu-open {
+  overflow: hidden;
+}
+
+.mobile-menu-toggle,
+.mobile-sidebar-close {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  html,
+  body,
+  body[data-unified-admin] {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
+  }
+
+  body[data-unified-admin] .unified-admin-shell,
+  body[data-unified-admin] .company-dashboard-shell,
+  body[data-unified-admin] .history-dashboard-shell,
+  body[data-unified-admin] .profile-dashboard-shell,
+  body[data-unified-admin] main,
+  body[data-unified-admin] .container,
+  body[data-unified-admin] .content,
+  body[data-unified-admin] .page,
+  body[data-unified-admin] .section,
+  body[data-unified-admin] .layout {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  body[data-unified-admin] .company-premium-dashboard,
+  body[data-unified-admin] .company-dashboard-main,
+  body[data-unified-admin] .history-dashboard-main,
+  body[data-unified-admin] .profile-page-shell,
+  body[data-unified-admin] .documents-shell,
+  body[data-unified-admin] .reports-shell,
+  body[data-unified-admin] .permissions-shell,
+  body[data-unified-admin] .finance-shell,
+  body[data-unified-admin] .commission-shell,
+  body[data-unified-admin] .team-shell,
+  body[data-unified-admin] .org-shell,
+  body[data-unified-admin] .metas-shell,
+  body[data-unified-admin] .marketing-shell {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  body[data-unified-admin] .grid,
+  body[data-unified-admin] .cards-grid,
+  body[data-unified-admin] .module-grid,
+  body[data-unified-admin] .stat-grid,
+  body[data-unified-admin] .premium-stat-grid,
+  body[data-unified-admin] .quick-access-groups,
+  body[data-unified-admin] .premium-bottom-grid,
+  body[data-unified-admin] .company-dashboard-content,
+  body[data-unified-admin] .eq-main-grid,
+  body[data-unified-admin] .eq-stats-grid,
+  body[data-unified-admin] .metas-stats,
+  body[data-unified-admin] .metas-grid,
+  body[data-unified-admin] .reports-grid,
+  body[data-unified-admin] .finance-grid,
+  body[data-unified-admin] .commission-grid,
+  body[data-unified-admin] .documents-grid,
+  body[data-unified-admin] .marketing-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  body[data-unified-admin] .card,
+  body[data-unified-admin] .panel-card,
+  body[data-unified-admin] .dashboard-card,
+  body[data-unified-admin] .module-card,
+  body[data-unified-admin] .stat-card,
+  body[data-unified-admin] .goal-card,
+  body[data-unified-admin] .chart-card,
+  body[data-unified-admin] .table-card,
+  body[data-unified-admin] article,
+  body[data-unified-admin] section {
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  body[data-unified-admin] {
+    padding: 0 !important;
+  }
+
+  body[data-unified-admin] .empresa-topbar {
+    display: none !important;
+  }
+
+  body[data-unified-admin] .unified-admin-shell,
+  body[data-unified-admin] .company-dashboard-shell.unified-admin-shell,
+  body[data-unified-admin] .history-dashboard-shell.unified-admin-shell,
+  body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell {
+    display: block !important;
+    min-height: 100vh !important;
+    padding: 76px 12px 18px !important;
+    margin: 0 !important;
+    gap: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  body[data-unified-admin] .company-search-wrapper {
+    width: 100% !important;
+    margin: 0 0 12px !important;
+    gap: 8px !important;
+  }
+
+  body[data-unified-admin] .company-global-search {
+    width: 100% !important;
+    min-height: 44px !important;
+    border-radius: 16px !important;
+  }
+
+  body[data-unified-admin] .top-theme-toggle-segment {
+    flex: 0 0 auto !important;
+    height: 44px !important;
+  }
+
+  .mobile-menu-toggle,
+  body[data-unified-admin] .mobile-menu-toggle,
+  body[data-unified-admin] .sidebar-hamburger {
+    position: fixed !important;
+    top: 14px !important;
+    left: 14px !important;
+    z-index: 1200 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 46px !important;
+    height: 46px !important;
+    border: 1px solid rgba(212, 175, 55, 0.35) !important;
+    border-radius: 16px !important;
+    background: #0f1115 !important;
+    color: #f7d46a !important;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24) !important;
+  }
+
+  body.mobile-menu-open .mobile-menu-toggle,
+  body.mobile-menu-open .sidebar-hamburger {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .mobile-overlay,
+  body[data-unified-admin] .mobile-overlay,
+  body[data-unified-admin] .sidebar-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 1100 !important;
+    display: block !important;
+    background: rgba(2, 6, 23, 0.62) !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: opacity 0.22s ease, visibility 0.22s ease !important;
+  }
+
+  .mobile-overlay.open,
+  .mobile-overlay.active,
+  body[data-unified-admin] .sidebar-overlay.active,
+  body[data-unified-admin] .sidebar-overlay.open {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  .mobile-sidebar,
+  body[data-unified-admin] .mobile-sidebar,
+  body[data-unified-admin] .company-sidebar,
+  body[data-unified-admin] .unified-admin-sidebar,
+  body[data-unified-admin] .sidebar-collapsed .company-sidebar,
+  body[data-unified-admin] .sidebar-collapsed .unified-admin-sidebar {
+    position: fixed !important;
+    top: 10px !important;
+    left: 10px !important;
+    bottom: 10px !important;
+    z-index: 1201 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: min(86vw, 340px) !important;
+    max-width: calc(100vw - 20px) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 14px !important;
+    border-radius: 24px !important;
+    background: linear-gradient(180deg, #0b0d10, #111318) !important;
+    box-shadow: 0 26px 70px rgba(0, 0, 0, 0.35) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    transform: translateX(calc(-100% - 24px)) !important;
+    opacity: 0.98 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transition: transform 0.24s ease !important;
+  }
+
+  .mobile-sidebar.open,
+  .mobile-sidebar.drawer-open,
+  body[data-unified-admin] .company-sidebar.open,
+  body[data-unified-admin] .company-sidebar.drawer-open,
+  body[data-unified-admin] .unified-admin-sidebar.open,
+  body[data-unified-admin] .unified-admin-sidebar.drawer-open {
+    transform: translateX(0) !important;
+  }
+
+  body[data-unified-admin] .mobile-sidebar-close {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 38px !important;
+    height: 38px !important;
+    margin-left: auto !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    border-radius: 14px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #e5e7eb !important;
+    cursor: pointer !important;
+  }
+
+  body[data-unified-admin] .sidebar-toggle {
+    display: none !important;
+  }
+
+  body[data-unified-admin] .company-sidebar-brand .brand-text,
+  body[data-unified-admin] .company-sidebar-nav .menu-item span,
+  body[data-unified-admin] .menu-section-title {
+    display: inline-flex !important;
+  }
+
+  body[data-unified-admin] .company-sidebar-nav {
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  body[data-unified-admin] .company-sidebar-nav .menu-item {
+    width: 100% !important;
+    min-height: 46px !important;
+    justify-content: flex-start !important;
+    padding: 0 12px !important;
+    border-radius: 16px !important;
+  }
+
+  body[data-unified-admin] .company-dashboard-main,
+  body[data-unified-admin] .history-dashboard-main,
+  body[data-unified-admin] .profile-page-shell,
+  body[data-unified-admin] .documents-shell,
+  body[data-unified-admin] .reports-shell,
+  body[data-unified-admin] .permissions-shell,
+  body[data-unified-admin] .finance-shell,
+  body[data-unified-admin] .commission-shell,
+  body[data-unified-admin] .team-shell,
+  body[data-unified-admin] .org-shell,
+  body[data-unified-admin] .metas-shell,
+  body[data-unified-admin] .marketing-shell,
+  body[data-unified-admin] .company-premium-dashboard {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    border-radius: 22px !important;
+    overflow-x: hidden !important;
+  }
+
+  body[data-unified-admin] .grid,
+  body[data-unified-admin] .cards-grid,
+  body[data-unified-admin] .module-grid,
+  body[data-unified-admin] .stat-grid,
+  body[data-unified-admin] .premium-stat-grid,
+  body[data-unified-admin] .quick-access-groups,
+  body[data-unified-admin] .premium-bottom-grid,
+  body[data-unified-admin] .company-dashboard-content,
+  body[data-unified-admin] .company-health-strip,
+  body[data-unified-admin] .quick-action-grid,
+  body[data-unified-admin] .eq-main-grid,
+  body[data-unified-admin] .eq-stats-grid,
+  body[data-unified-admin] .job-grid,
+  body[data-unified-admin] .metas-stats,
+  body[data-unified-admin] .metas-grid,
+  body[data-unified-admin] .reports-grid,
+  body[data-unified-admin] .finance-grid,
+  body[data-unified-admin] .commission-grid,
+  body[data-unified-admin] .documents-grid,
+  body[data-unified-admin] .marketing-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  body[data-unified-admin] .card,
+  body[data-unified-admin] .panel-card,
+  body[data-unified-admin] .dashboard-card,
+  body[data-unified-admin] .module-card,
+  body[data-unified-admin] .stat-card,
+  body[data-unified-admin] .goal-card,
+  body[data-unified-admin] .chart-card,
+  body[data-unified-admin] .table-card,
+  body[data-unified-admin] .quick-access-group,
+  body[data-unified-admin] .company-action-panel article,
+  body[data-unified-admin] .eq-sidebar-card,
+  body[data-unified-admin] article,
+  body[data-unified-admin] section {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  body[data-unified-admin] form,
+  body[data-unified-admin] fieldset,
+  body[data-unified-admin] .form-grid,
+  body[data-unified-admin] .filters-row,
+  body[data-unified-admin] .actions-row,
+  body[data-unified-admin] .eq-toolbar,
+  body[data-unified-admin] .eq-tabs,
+  body[data-unified-admin] .eq-actions,
+  body[data-unified-admin] .org-actions,
+  body[data-unified-admin] .metas-actions {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-wrap: wrap !important;
+  }
+
+  body[data-unified-admin] input,
+  body[data-unified-admin] textarea,
+  body[data-unified-admin] select,
+  body[data-unified-admin] button {
+    max-width: 100% !important;
+  }
+
+  body[data-unified-admin] table {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  body[data-unified-admin] .table-wrapper,
+  body[data-unified-admin] .table-responsive,
+  body[data-unified-admin] .data-table-wrap,
+  body[data-unified-admin] .documents-table-wrap,
+  body[data-unified-admin] .eq-table-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  body[data-unified-admin] .modal,
+  body[data-unified-admin] .eq-modal,
+  body[data-unified-admin] dialog {
+    max-width: 100vw !important;
+  }
+
+  body[data-unified-admin] .modal > *,
+  body[data-unified-admin] .eq-modal > *,
+  body[data-unified-admin] dialog > * {
+    width: min(100% - 24px, 560px) !important;
+    max-width: calc(100vw - 24px) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  body[data-unified-admin] .unified-admin-shell,
+  body[data-unified-admin] .company-dashboard-shell.unified-admin-shell,
+  body[data-unified-admin] .history-dashboard-shell.unified-admin-shell,
+  body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell {
+    padding: 68px 8px 12px !important;
+  }
+
+  body[data-unified-admin] .company-dashboard-main,
+  body[data-unified-admin] .history-dashboard-main,
+  body[data-unified-admin] .profile-page-shell,
+  body[data-unified-admin] .documents-shell,
+  body[data-unified-admin] .reports-shell,
+  body[data-unified-admin] .permissions-shell,
+  body[data-unified-admin] .finance-shell,
+  body[data-unified-admin] .commission-shell,
+  body[data-unified-admin] .team-shell,
+  body[data-unified-admin] .org-shell,
+  body[data-unified-admin] .metas-shell,
+  body[data-unified-admin] .marketing-shell,
+  body[data-unified-admin] .company-premium-dashboard {
+    padding: 12px !important;
+    border-radius: 18px !important;
+  }
+
+  .mobile-menu-toggle,
+  body[data-unified-admin] .mobile-menu-toggle,
+  body[data-unified-admin] .sidebar-hamburger {
+    top: 10px !important;
+    left: 10px !important;
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 14px !important;
+  }
+
+  .mobile-sidebar,
+  body[data-unified-admin] .mobile-sidebar,
+  body[data-unified-admin] .company-sidebar,
+  body[data-unified-admin] .unified-admin-sidebar {
+    width: min(90vw, 320px) !important;
+    top: 8px !important;
+    left: 8px !important;
+    bottom: 8px !important;
+    padding: 12px !important;
+    border-radius: 20px !important;
+  }
+
+  body[data-unified-admin] h1 {
+    font-size: clamp(1.35rem, 7vw, 1.8rem) !important;
+  }
+
+  body[data-unified-admin] h2 {
+    font-size: clamp(1.05rem, 5.4vw, 1.35rem) !important;
+  }
+
+  body[data-unified-admin] .company-global-search {
+    min-height: 42px !important;
+    padding: 0 10px !important;
+  }
+
+  body[data-unified-admin] .top-theme-toggle-segment {
+    height: 42px !important;
+  }
+
+  body[data-unified-admin] button,
+  body[data-unified-admin] .btn,
+  body[data-unified-admin] a[role="button"] {
+    min-height: 40px;
+  }
+}
+
 
 
 

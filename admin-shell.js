@@ -106,7 +106,7 @@
 
   const createSidebar = () => {
     const sidebar = document.createElement("aside");
-    sidebar.className = "company-sidebar unified-admin-sidebar";
+    sidebar.className = "company-sidebar unified-admin-sidebar mobile-sidebar";
     sidebar.innerHTML = `
       <div class="unified-sidebar-header">
         <a class="company-sidebar-brand" href="empresa.html" aria-label="Seven Gold">
@@ -119,6 +119,9 @@
         </a>
         <button class="sidebar-toggle" type="button" aria-label="Recolher menu" title="Recolher ou expandir menu">
           <i data-lucide="menu"></i>
+        </button>
+        <button class="mobile-sidebar-close" type="button" aria-label="Fechar menu" title="Fechar menu">
+          <i data-lucide="x"></i>
         </button>
       </div>
       <nav class="company-sidebar-nav" aria-label="Navegação da empresa">
@@ -346,25 +349,52 @@
       applyCollapsed(collapsed);
     });
 
+    const closeMobileMenu = () => {
+      sidebar.classList.remove("drawer-open", "open");
+      overlay.classList.remove("active", "open");
+      document.body.classList.remove("menu-open", "mobile-menu-open");
+      hamburger.setAttribute("aria-expanded", "false");
+    };
+
+    const openMobileMenu = () => {
+      sidebar.classList.add("drawer-open", "open");
+      overlay.classList.add("active", "open");
+      document.body.classList.add("menu-open", "mobile-menu-open");
+      hamburger.setAttribute("aria-expanded", "true");
+    };
+
+    const toggleMobileMenu = () => {
+      if (sidebar.classList.contains("open") || sidebar.classList.contains("drawer-open")) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu();
+      }
+    };
+
     const hamburger = document.createElement("button");
-    hamburger.className = "sidebar-hamburger";
+    hamburger.className = "sidebar-hamburger mobile-menu-toggle";
     hamburger.setAttribute("aria-label", "Abrir menu");
+    hamburger.setAttribute("aria-expanded", "false");
+    hamburger.setAttribute("aria-controls", "mobile-admin-sidebar");
     hamburger.innerHTML = '<i data-lucide="menu"></i>';
     document.body.appendChild(hamburger);
+    sidebar.id = "mobile-admin-sidebar";
 
     const overlay = document.createElement("div");
-    overlay.className = "sidebar-overlay";
+    overlay.className = "sidebar-overlay mobile-overlay";
     document.body.appendChild(overlay);
-    hamburger.addEventListener("click", () => {
-      sidebar.classList.toggle("drawer-open");
-      overlay.classList.toggle("active");
-      document.body.classList.toggle("menu-open");
+    hamburger.addEventListener("click", toggleMobileMenu);
+
+    sidebar.querySelector(".mobile-sidebar-close")?.addEventListener("click", closeMobileMenu);
+    sidebar.querySelectorAll(".company-sidebar-nav a").forEach((link) => {
+      link.addEventListener("click", closeMobileMenu);
     });
 
-    overlay.addEventListener("click", () => {
-      sidebar.classList.remove("drawer-open");
-      overlay.classList.remove("active");
-      document.body.classList.remove("menu-open");
+    overlay.addEventListener("click", closeMobileMenu);
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeMobileMenu();
+      }
     });
 
     // Injetar seletor de tema segmentado ao lado da busca global
