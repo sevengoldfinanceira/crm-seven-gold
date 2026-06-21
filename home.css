@@ -4348,6 +4348,14 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   gap: 10px;
 }
 
+.role-editor-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
 .job-card.editing .role-editor {
   display: grid;
 }
@@ -4361,6 +4369,24 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   color: var(--ink);
   padding: 11px 12px;
   resize: vertical;
+}
+
+.role-editor .btn-save-funcs {
+  background: #fffdf4 !important;
+  border: 1px solid rgba(212, 175, 55, 0.35) !important;
+  color: var(--gold-dark) !important;
+}
+
+.role-editor .btn-delete-func {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.24);
+  color: #dc2626;
+}
+
+.role-editor .btn-delete-func:hover {
+  background: #fee2e2;
+  border-color: rgba(220, 38, 38, 0.42);
+  color: #b91c1c;
 }
 
 .role-save-status {
@@ -15357,6 +15383,15 @@ body.theme-dark .eq-role-chip-more {
   background: #0f172a;
   color: #64748b;
   border-color: #334155;
+}
+body.theme-dark .role-editor .btn-delete-func {
+  background: rgba(248, 113, 113, 0.12);
+  border-color: rgba(248, 113, 113, 0.28);
+  color: #f87171;
+}
+body.theme-dark .role-editor .btn-delete-func:hover {
+  background: rgba(239, 68, 68, 0.22);
+  color: #fecaca;
 }
 body.theme-dark .eq-sidebar-function-card {
   background: #1e293b;

@@ -990,7 +990,10 @@
                 
                 <div class="role-editor" style="display: none; margin-top: 12px;">
                   <textarea rows="6" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.8rem; font-family: inherit; resize: vertical;">${funcList.map((item, index) => `${index + 1}. ${item}`).join("\n")}</textarea>
-                  <button type="button" class="btn-save-funcs" style="margin-top: 8px; background: #d4af37; border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">Salvar funções</button>
+                  <div class="role-editor-actions">
+                    <button type="button" class="btn-save-funcs">Salvar funções</button>
+                    <button type="button" class="btn-delete-func">Excluir função</button>
+                  </div>
                   <span class="role-save-status" style="font-size: 0.7rem; margin-left: 8px;"></span>
                 </div>
               </div>
@@ -1005,6 +1008,7 @@
         const editBtn = card.querySelector(".btn-edit-funcs");
         const deleteBtn = card.querySelector(".eq-job-delete-role");
         const saveBtn = card.querySelector(".btn-save-funcs");
+        const deleteFuncBtn = card.querySelector(".btn-delete-func");
         const editor = card.querySelector(".role-editor");
         const viewArea = card.querySelector(".role-functions");
         const textarea = card.querySelector("textarea");
@@ -1103,6 +1107,31 @@
           e.preventDefault();
           e.stopPropagation();
           removeRole(deleteBtn.dataset.roleDelete);
+        });
+
+        deleteFuncBtn?.addEventListener("click", () => {
+          const lines = textarea.value.split("\n");
+          const selectedText = textarea.value.slice(textarea.selectionStart, textarea.selectionEnd).trim();
+
+          if (selectedText) {
+            textarea.setRangeText("", textarea.selectionStart, textarea.selectionEnd, "start");
+          } else {
+            let lastFilledIndex = -1;
+            for (let index = lines.length - 1; index >= 0; index -= 1) {
+              if (lines[index].trim()) {
+                lastFilledIndex = index;
+                break;
+              }
+            }
+            if (lastFilledIndex === -1) return;
+            lines.splice(lastFilledIndex, 1);
+            textarea.value = lines.join("\n").trim();
+          }
+
+          statusSpan.textContent = "Função removida. Clique em Salvar funções.";
+          statusSpan.dataset.type = "";
+          statusSpan.style.color = "#dc2626";
+          textarea.focus();
         });
 
         saveBtn.addEventListener("click", async () => {
