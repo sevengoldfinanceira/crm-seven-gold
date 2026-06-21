@@ -77,8 +77,8 @@ body.theme-dark,
 .dark-mode {
   color-scheme: dark;
 
-  --sg-bg-main: #210f2d;
-  --sg-bg-page: #170a20;
+  --sg-bg-main: #150126;
+  --sg-bg-page: #0e011a;
   --sg-bg-elevated: #241032;
 
   --sg-sidebar-bg: #180b20;
@@ -114,7 +114,7 @@ body.theme-dark,
   --sg-shadow-gold: 0 0 18px rgba(212, 175, 55, 0.12);
 
   --sg-page-gradient:
-    linear-gradient(180deg, #210f2d 0%, #170a20 48%, #210f2d 100%);
+    linear-gradient(180deg, #150126 0%, #0e011a 48%, #150126 100%);
 
   /* retrocompatibilidade em Modo Escuro */
   --ink: var(--sg-text-main);
@@ -125,7 +125,7 @@ body.theme-dark,
   --shadow: var(--sg-shadow-card);
   --gold: var(--sg-gold);
   --gold-dark: var(--sg-gold-dark);
-  --brand-purple: #210f2d;
+  --brand-purple: #150126;
   --surface-soft: var(--sg-card-bg-soft);
 }
 
@@ -358,7 +358,7 @@ body[data-unified-admin]>.unified-admin-shell {
 }
 
 .crm-login-body {
-  background: #210f2d !important;
+  background: #150126 !important;
 }
 
 .crm-login-body .login-copy,
@@ -6810,7 +6810,7 @@ body.theme-dark .reports-summary article:nth-child(8)>i {
    ========================================================================== */
 body.theme-dark {
   color-scheme: dark;
-  --page: #210f2d;
+  --page: #150126;
   /* fundo roxo bem escuro (Seven Gold) */
   --surface: #241032;
   /* roxo de marca como superficie */
@@ -8051,7 +8051,7 @@ body:not(.theme-dark) .menu-item.active {
 
 /* --- 19.1 Body e HTML --- */
 body.theme-dark:not(.entry-premium-body) {
-  background: linear-gradient(180deg, #210f2d 0%, #150a1e 100%) !important;
+  background: linear-gradient(180deg, #150126 0%, #0a0014 100%) !important;
   color: #f7f7f8 !important;
 }
 
@@ -8273,7 +8273,7 @@ body.theme-dark.finance-body,
 body.theme-dark.commission-body,
 body.theme-dark.reports-body,
 body.theme-dark.profile-page-body {
-  background: linear-gradient(180deg, #210f2d 0%, #150a1e 100%) !important;
+  background: linear-gradient(180deg, #150126 0%, #0a0014 100%) !important;
   color: #f7f7f8 !important;
 }
 
@@ -15416,7 +15416,7 @@ body.theme-dark .modal-role-row {
 
 /* Premium Login Page Enhancements */
 .login-page-body {
-  background: radial-gradient(circle at center, #2b133b 0%, #210f2d 60%, #150a1e 100%) !important;
+  background: radial-gradient(circle at center, #25023f 0%, #150126 60%, #0a0014 100%) !important;
   min-height: 100vh;
 }
 
