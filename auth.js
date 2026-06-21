@@ -517,6 +517,12 @@
       return;
     }
 
+    const currentPage = window.location.pathname.split("/").pop();
+    if (currentPage === "painel.html" || currentPage === "painel") {
+      document.body.classList.add("theme-dark");
+      return;
+    }
+
     const savedTheme = localStorage.getItem("seven-gold-theme") || "light";
     if (savedTheme === "dark") {
       document.body.classList.add("theme-dark");
