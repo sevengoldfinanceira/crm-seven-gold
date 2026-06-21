@@ -77,8 +77,8 @@ body.theme-dark,
 .dark-mode {
   color-scheme: dark;
 
-  --sg-bg-main: #1e0e28;
-  --sg-bg-page: #150822;
+  --sg-bg-main: #210f2d;
+  --sg-bg-page: #170a20;
   --sg-bg-elevated: #241032;
 
   --sg-sidebar-bg: #180b20;
@@ -114,7 +114,7 @@ body.theme-dark,
   --sg-shadow-gold: 0 0 18px rgba(212, 175, 55, 0.12);
 
   --sg-page-gradient:
-    linear-gradient(180deg, #1e0e28 0%, #150822 48%, #1e0e28 100%);
+    linear-gradient(180deg, #210f2d 0%, #170a20 48%, #210f2d 100%);
 
   /* retrocompatibilidade em Modo Escuro */
   --ink: var(--sg-text-main);
@@ -125,7 +125,7 @@ body.theme-dark,
   --shadow: var(--sg-shadow-card);
   --gold: var(--sg-gold);
   --gold-dark: var(--sg-gold-dark);
-  --brand-purple: #1e0e28;
+  --brand-purple: #210f2d;
   --surface-soft: var(--sg-card-bg-soft);
 }
 
@@ -358,11 +358,7 @@ body[data-unified-admin]>.unified-admin-shell {
 }
 
 .crm-login-body {
-  background:
-    linear-gradient(135deg, rgba(21, 23, 19, 0.88), rgba(49, 55, 46, 0.8)),
-    url("https://images.unsplash.com/photo-1553729459-efe14ef6055d?auto=format&fit=crop&w=1800&q=80");
-  background-position: center;
-  background-size: cover;
+  background: #210f2d !important;
 }
 
 .crm-login-body .login-copy,
@@ -6571,11 +6567,11 @@ body.theme-dark .reports-summary article:nth-child(8)>i {
 }
 
 .index-login-body {
-  background-image: url("assets/login-background-new.png") !important;
+  background-image: none !important;
 }
 
 .crm-login-body {
-  background-image: url("assets/login-background-new.png") !important;
+  background-image: none !important;
 }
 
 .login-header-layout {
@@ -6814,7 +6810,7 @@ body.theme-dark .reports-summary article:nth-child(8)>i {
    ========================================================================== */
 body.theme-dark {
   color-scheme: dark;
-  --page: #1e0e28;
+  --page: #210f2d;
   /* fundo roxo bem escuro (Seven Gold) */
   --surface: #241032;
   /* roxo de marca como superficie */
@@ -8055,7 +8051,7 @@ body:not(.theme-dark) .menu-item.active {
 
 /* --- 19.1 Body e HTML --- */
 body.theme-dark:not(.entry-premium-body) {
-  background: #1e0e28 !important;
+  background: #210f2d !important;
   background-image: none !important;
   color: #f7f7f8 !important;
 }
@@ -8063,7 +8059,7 @@ body.theme-dark:not(.entry-premium-body) {
 /* --- 19.2 Shells e Wrappers principais --- */
 body.theme-dark .unified-admin-shell,
 body.theme-dark .company-dashboard-shell {
-  background: #1e0e28 !important;
+  background: #210f2d !important;
 }
 
 body.theme-dark .company-dashboard-main,
@@ -8278,7 +8274,7 @@ body.theme-dark.finance-body,
 body.theme-dark.commission-body,
 body.theme-dark.reports-body,
 body.theme-dark.profile-page-body {
-  background: #1e0e28 !important;
+  background: #210f2d !important;
   background-image: none !important;
   color: #f7f7f8 !important;
 }
@@ -15422,16 +15418,8 @@ body.theme-dark .modal-role-row {
 
 /* Premium Login Page Enhancements */
 .login-page-body {
-  background:
-    linear-gradient(
-      rgba(30, 14, 40, 0.72),
-      rgba(30, 14, 40, 0.82)
-    ),
-    url("assets/login-background-new.png") !important;
-  background-color: #1e0e28 !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
+  background: #210f2d !important;
+  background-image: none !important;
   min-height: 100vh;
 }
 
