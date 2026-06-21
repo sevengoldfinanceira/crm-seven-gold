@@ -517,8 +517,15 @@
       state.selectedItem = null;
     }
 
+    document.querySelectorAll(`[data-role-key="${roleKey}"]`).forEach((element) => {
+      element.remove();
+    });
+    document.querySelectorAll(`[data-role-link-key="${roleKey}"]`).forEach((element) => {
+      element.remove();
+    });
+
     // Atualiza a tela imediatamente; a limpeza remota roda em segundo plano.
-    renderOrgChart();
+    renderOrganograma();
     renderRolesAndFunctions();
     renderListView();
     renderSidebarDetails();
