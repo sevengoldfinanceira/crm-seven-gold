@@ -114,7 +114,7 @@ body.theme-dark,
   --sg-shadow-gold: 0 0 18px rgba(212, 175, 55, 0.12);
 
   --sg-page-gradient:
-    linear-gradient(180deg, #150126 0%, #0e011a 48%, #150126 100%);
+    linear-gradient(180deg, #20023a 0%, #0e011a 48%, #20023a 100%);
 
   /* retrocompatibilidade em Modo Escuro */
   --ink: var(--sg-text-main);
@@ -8051,7 +8051,7 @@ body:not(.theme-dark) .menu-item.active {
 
 /* --- 19.1 Body e HTML --- */
 body.theme-dark:not(.entry-premium-body) {
-  background: linear-gradient(180deg, #150126 0%, #0a0014 100%) !important;
+  background: linear-gradient(180deg, #20023a 0%, #05000a 100%) !important;
   color: #f7f7f8 !important;
 }
 
@@ -8273,7 +8273,7 @@ body.theme-dark.finance-body,
 body.theme-dark.commission-body,
 body.theme-dark.reports-body,
 body.theme-dark.profile-page-body {
-  background: linear-gradient(180deg, #150126 0%, #0a0014 100%) !important;
+  background: linear-gradient(180deg, #20023a 0%, #05000a 100%) !important;
   color: #f7f7f8 !important;
 }
 
@@ -15416,7 +15416,7 @@ body.theme-dark .modal-role-row {
 
 /* Premium Login Page Enhancements */
 .login-page-body {
-  background: radial-gradient(circle at center, #150126 0%, #0a0014 70%, #05000a 100%) !important;
+  background: radial-gradient(circle at center, #240242 0%, #150126 50%, #040008 100%) !important;
   min-height: 100vh;
 }
 
