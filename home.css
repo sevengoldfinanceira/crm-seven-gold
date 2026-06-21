@@ -15424,8 +15424,8 @@ body.theme-dark .modal-role-row {
 .login-page-body {
   background:
     linear-gradient(
-      rgba(30, 14, 40, 0.82),
-      rgba(30, 14, 40, 0.92)
+      rgba(30, 14, 40, 0.72),
+      rgba(30, 14, 40, 0.82)
     ),
     url("assets/login-background-new.png") !important;
   background-color: #1e0e28 !important;
