@@ -8051,15 +8051,14 @@ body:not(.theme-dark) .menu-item.active {
 
 /* --- 19.1 Body e HTML --- */
 body.theme-dark:not(.entry-premium-body) {
-  background: #210f2d !important;
-  background-image: none !important;
+  background: linear-gradient(180deg, #210f2d 0%, #150a1e 100%) !important;
   color: #f7f7f8 !important;
 }
 
 /* --- 19.2 Shells e Wrappers principais --- */
 body.theme-dark .unified-admin-shell,
 body.theme-dark .company-dashboard-shell {
-  background: #210f2d !important;
+  background: transparent !important;
 }
 
 body.theme-dark .company-dashboard-main,
@@ -8274,8 +8273,7 @@ body.theme-dark.finance-body,
 body.theme-dark.commission-body,
 body.theme-dark.reports-body,
 body.theme-dark.profile-page-body {
-  background: #210f2d !important;
-  background-image: none !important;
+  background: linear-gradient(180deg, #210f2d 0%, #150a1e 100%) !important;
   color: #f7f7f8 !important;
 }
 
@@ -15418,8 +15416,7 @@ body.theme-dark .modal-role-row {
 
 /* Premium Login Page Enhancements */
 .login-page-body {
-  background: #210f2d !important;
-  background-image: none !important;
+  background: radial-gradient(circle at center, #2b133b 0%, #210f2d 60%, #150a1e 100%) !important;
   min-height: 100vh;
 }
 
