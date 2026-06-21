@@ -12355,7 +12355,7 @@ body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user small {
   html[data-theme="dark"] body[data-unified-admin] .empresa-topbar,
   body[data-unified-admin].theme-dark .empresa-topbar {
     position: fixed !important;
-    top: 18px !important;
+    top: 10px !important;
     left: 18px !important;
     right: 18px !important;
     width: auto !important;
@@ -13041,7 +13041,7 @@ body[data-unified-admin] .company-dashboard-main {
   html body[data-unified-admin].theme-dark .company-dashboard-shell.unified-admin-shell,
   html[data-theme="dark"] body[data-unified-admin] .company-dashboard-shell.unified-admin-shell,
   body.theme-dark .company-dashboard-shell.unified-admin-shell {
-    padding-top: 110px !important;
+    padding-top: 100px !important;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
   }
@@ -13487,7 +13487,7 @@ body.theme-dark .helper-card-subtitle,
 
 /* Topbar clearance fix */
 body[data-unified-admin] .unified-admin-shell {
-  padding-top: 110px !important;
+  padding-top: 100px !important;
 }
 
 /* Header */
