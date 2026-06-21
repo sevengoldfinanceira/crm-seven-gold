@@ -23,7 +23,10 @@
   <body class="reports-body" data-require-auth data-permission-area="relatorios" data-login-page="index.html" data-allowed-roles="dono,administrador,financeiro,marketing,rh,coordenador" data-denied-redirect="empresa.html" data-unified-admin>
     <script>
       (function() {
-        document.body.classList.add("theme-dark");
+        const theme = localStorage.getItem("seven-gold-theme") || "light";
+        if (theme === "dark") {
+          document.body.classList.add("theme-dark");
+        }
       })();
     </script>
     <main class="reports-shell">

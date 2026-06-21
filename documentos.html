@@ -23,7 +23,10 @@
   <body class="documents-body" data-require-auth data-permission-area="documentos" data-login-page="index.html" data-allowed-roles="dono,administrador,coordenador,representante,vendedor,financeiro,marketing,rh" data-denied-redirect="painel.html" data-unified-admin>
     <script>
       (function() {
-        document.body.classList.add("theme-dark");
+        const theme = localStorage.getItem("seven-gold-theme") || "light";
+        if (theme === "dark") {
+          document.body.classList.add("theme-dark");
+        }
       })();
     </script>
     
@@ -40,10 +43,10 @@
             <span style="font-size: 0.8rem; color: var(--muted);">Organize arquivos por setor, pasta, cargo, categoria e tipo de documento.</span>
           </div>
         </div>
-      <div class="documents-actions two-action-row">
-      <button type="button" class="eq-btn-outline button-padrao" id="btn-new-folder" style="border-radius: 8px;font-weight: 800; font-size: 1.2rem; line-height: 1; display: flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1.5px solid #d4af37; color: #d4af37; background: #ffffff;"><i data-lucide="plus"></i> Nova pasta</button>
-      <button type="button" class="eq-btn-gold button-padrao" data-focus-document-form style="border-radius: 8px;font-weight: 800; font-size: 1.2rem; line-height: 1;display: flex; align-items: center; gap: 6px; padding: 8px 14px; border: none; color: #ffffff; background: #d4af37;"><i data-lucide="plus"></i> Adicionar documento</button>
-      </div>
+        <div class="documents-actions" style="display: flex; gap: 8px;">
+          <button type="button" class="eq-btn-outline" id="btn-new-folder" style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; font-weight: 600; font-size: 0.8rem; border: 1.5px solid #d4af37; color: #d4af37; background: #ffffff; border-radius: 8px; cursor: pointer; transition: all 0.2s;"><i data-lucide="plus"></i> Nova pasta</button>
+          <button type="button" class="eq-btn-gold" data-focus-document-form style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; font-weight: 600; font-size: 0.8rem; border: none; color: #ffffff; background: #d4af37; border-radius: 8px; cursor: pointer; transition: all 0.2s;"><i data-lucide="plus"></i> Adicionar documento</button>
+        </div>
       </section>
 
       <!-- 2. Summary Cards -->

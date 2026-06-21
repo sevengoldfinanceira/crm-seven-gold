@@ -20,7 +20,10 @@
   <body class="company-body company-dashboard-body" data-require-auth data-permission-area="empresa" data-login-page="index.html" data-allowed-roles="dono,administrador,financeiro,marketing,rh" data-denied-redirect="painel.html" data-unified-admin>
     <script>
       (function() {
-        document.body.classList.add("theme-dark");
+        const theme = localStorage.getItem("seven-gold-theme") || "light";
+        if (theme === "dark") {
+          document.body.classList.add("theme-dark");
+        }
       })();
     </script>
     <main class="company-dashboard-shell">

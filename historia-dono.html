@@ -23,7 +23,10 @@
   <body class="owner-history-body" data-require-auth data-permission-area="historia_dono" data-login-page="index.html" data-allowed-roles="dono" data-denied-redirect="empresa.html" data-unified-admin>
     <script>
       (function() {
-        document.body.classList.add("theme-dark");
+        const theme = localStorage.getItem("seven-gold-theme") || "light";
+        if (theme === "dark") {
+          document.body.classList.add("theme-dark");
+        }
       })();
     </script>
     <div class="history-dashboard-shell">
@@ -66,9 +69,9 @@
             <span>Bem-vindo à sua história, Jonatã! Acompanhe sua trajetória, cotas vendidas, comissões e metas por ano.</span>
           </div>
         </div>
-<div class="history-actions three-action-row">
-      <a class="history-toolbar-link button-padrao" href="editar-tempo-consorcio.html">Editar tempos</a>
-    </div>
+        <div class="history-actions">
+          <a class="history-toolbar-link" href="editar-tempo-consorcio.html">Editar tempos</a>
+        </div>
       </section>
       <section class="career-time-grid" aria-label="Tempo de carreira no consorcio">
         <article data-time-card="consorcio" draggable="true">
