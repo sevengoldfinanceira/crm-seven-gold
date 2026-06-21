@@ -15416,7 +15416,7 @@ body.theme-dark .modal-role-row {
 
 /* Premium Login Page Enhancements */
 .login-page-body {
-  background: radial-gradient(circle at center, #25023f 0%, #150126 60%, #0a0014 100%) !important;
+  background: radial-gradient(circle at center, #150126 0%, #0a0014 70%, #05000a 100%) !important;
   min-height: 100vh;
 }
 
