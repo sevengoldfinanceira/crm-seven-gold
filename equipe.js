@@ -513,19 +513,11 @@
     saveEmployeeFunctionsMap(employeeMap);
     saveOrderToLocalStorage();
 
-    const client = getClient();
-    if (client) {
-      try {
-        await client.from("company_role_functions").delete().eq("role_key", roleKey);
-      } catch (error) {
-        console.warn("Nao foi possivel remover funcoes do cargo no Supabase:", error);
-      }
-    }
-
     if (state.selectedItem?.type === "role" && state.selectedItem.id === roleKey) {
       state.selectedItem = null;
     }
 
+    // Atualiza a tela imediatamente; a limpeza remota roda em segundo plano.
     renderOrgChart();
     renderRolesAndFunctions();
     renderListView();
@@ -533,6 +525,22 @@
     renderSummaryCards();
     applySearch();
     refreshIcons();
+
+    const client = getClient();
+    if (client) {
+      client
+        .from("company_role_functions")
+        .delete()
+        .eq("role_key", roleKey)
+        .then(({ error }) => {
+          if (error) {
+            console.warn("Nao foi possivel remover funcoes do cargo no Supabase:", error);
+          }
+        })
+        .catch((error) => {
+          console.warn("Nao foi possivel remover funcoes do cargo no Supabase:", error);
+        });
+    }
   };
 
   const getSectorColorClass = (sectorId) => {
