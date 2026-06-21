@@ -450,6 +450,65 @@
     }
   };
 
+  const removeRole = async (roleKey) => {
+    const sectorObj = sectors.find(s => s.roles.some(r => r.key === roleKey));
+    const roleObj = sectorObj?.roles.find(r => r.key === roleKey);
+    if (!sectorObj || !roleObj) return;
+
+    if (sectorObj.id === "diretoria" || roleKey === "diretor-ceo") {
+      alert("O cargo principal da diretoria não pode ser removido.");
+      return;
+    }
+
+    const linkedMembers = getProfilesForRole(roleKey);
+    const message = linkedMembers.length > 0
+      ? `Remover o cargo "${roleObj.title}"?\n\n${linkedMembers.length} colaborador(es) vinculado(s) ficarão sem esse cargo.`
+      : `Remover o cargo "${roleObj.title}"?`;
+
+    if (!confirm(message)) return;
+
+    sectorObj.roles = sectorObj.roles.filter(role => role.key !== roleKey);
+    state.functions.delete(roleKey);
+    delete rolesData[roleKey];
+
+    const employeeMap = loadEmployeeFunctionsMap();
+    Object.keys(employeeMap).forEach(profileId => {
+      const remainingFuncs = (employeeMap[profileId] || []).filter(func => func.roleKey !== roleKey);
+      if (remainingFuncs.length > 0 && !remainingFuncs.some(func => func.primary)) {
+        remainingFuncs[0].primary = true;
+      }
+      employeeMap[profileId] = remainingFuncs;
+      const profile = state.profiles.find(item => String(item.id) === String(profileId));
+      const primaryFunc = remainingFuncs.find(func => func.primary) || remainingFuncs[0];
+      if (profile && primaryFunc) {
+        profile.role = primaryFunc.roleKey;
+      }
+    });
+    saveEmployeeFunctionsMap(employeeMap);
+    saveOrderToLocalStorage();
+
+    const client = getClient();
+    if (client) {
+      try {
+        await client.from("company_role_functions").delete().eq("role_key", roleKey);
+      } catch (error) {
+        console.warn("Nao foi possivel remover funcoes do cargo no Supabase:", error);
+      }
+    }
+
+    if (state.selectedItem?.type === "role" && state.selectedItem.id === roleKey) {
+      state.selectedItem = null;
+    }
+
+    renderOrgChart();
+    renderRolesAndFunctions();
+    renderListView();
+    renderSidebarDetails();
+    renderSummaryCards();
+    applySearch();
+    refreshIcons();
+  };
+
   const getSectorColorClass = (sectorId) => {
     const clean = sectorId.toLowerCase().replace("-", "");
     if (clean === "administrativo" || clean === "admin") return "eq-sec-bg-admin";
@@ -674,7 +733,12 @@
                   <strong>${role.title}</strong>
                   <span>${roleMembers.length} ${roleMembers.length === 1 ? 'pessoa' : 'pessoas'}</span>
                 </div>
-                <i data-lucide="chevron-right"></i>
+                <div class="eq-role-pill-actions">
+                  <span class="eq-role-delete-btn" role="button" tabindex="0" data-role-delete="${role.key}" title="Remover cargo" aria-label="Remover cargo ${role.title}">
+                    <i data-lucide="trash-2"></i>
+                  </span>
+                  <i data-lucide="chevron-right"></i>
+                </div>
               </button>
             `;
           }).join("")}
@@ -691,10 +755,24 @@
       // Event listener for clicking role pills inside sector
       sectorCard.querySelectorAll(".eq-role-pill").forEach(pill => {
         pill.addEventListener("click", (e) => {
-          if (e.target.closest(".eq-role-pill-grip")) return;
+          if (e.target.closest(".eq-role-pill-grip, .eq-role-delete-btn")) return;
           e.stopPropagation();
           const rKey = pill.getAttribute("data-role-key");
           selectItem('role', rKey, sector.id);
+        });
+      });
+
+      sectorCard.querySelectorAll(".eq-role-delete-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          removeRole(btn.dataset.roleDelete);
+        });
+        btn.addEventListener("keydown", (e) => {
+          if (e.key !== "Enter" && e.key !== " ") return;
+          e.preventDefault();
+          e.stopPropagation();
+          removeRole(btn.dataset.roleDelete);
         });
       });
 
@@ -915,6 +993,7 @@
                   <div class="job-actions" style="display: flex; gap: 8px; font-size: 0.75rem;">
                     <a href="documentos.html?setor=${sector.id}&cargo=${role.key}" class="ver-docs-link" style="color: #d4af37; font-weight: 600; text-decoration: none;">Documentos</a>
                     <button type="button" class="btn-edit-funcs" style="background: none; border: none; color: #3b82f6; cursor: pointer; font-weight: 600;">Editar</button>
+                    ${sector.id !== "diretoria" ? `<button type="button" class="eq-job-delete-role" data-role-delete="${role.key}" title="Remover cargo" aria-label="Remover cargo ${role.title}"><i data-lucide="trash-2"></i></button>` : ""}
                   </div>
                 </div>
                 
@@ -943,6 +1022,7 @@
       article.querySelectorAll(".job-card").forEach(card => {
         const roleKey = card.getAttribute("data-role-key");
         const editBtn = card.querySelector(".btn-edit-funcs");
+        const deleteBtn = card.querySelector(".eq-job-delete-role");
         const saveBtn = card.querySelector(".btn-save-funcs");
         const editor = card.querySelector(".role-editor");
         const viewArea = card.querySelector(".role-functions");
@@ -1036,6 +1116,12 @@
             const list = state.functions.get(roleKey) || [];
             textarea.value = list.map((item, index) => `${index + 1}. ${item}`).join("\n");
           }
+        });
+
+        deleteBtn?.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          removeRole(deleteBtn.dataset.roleDelete);
         });
 
         saveBtn.addEventListener("click", async () => {
@@ -1619,6 +1705,9 @@
           <button class="eq-btn-side-outline" id="side-btn-edit-role" type="button" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; border: 1.5px solid #cbd5e1; color: #475569; background: #fff; cursor: pointer;">
             <i data-lucide="edit"></i> Editar cargo
           </button>
+          ${sectorId !== "diretoria" && id !== "diretor-ceo" ? `<button class="eq-btn-side-delete" id="side-btn-delete-role" type="button">
+            <i data-lucide="trash-2"></i> Remover cargo
+          </button>` : ""}
         </div>
       `;
 
@@ -1643,6 +1732,10 @@
 
       activeContent.querySelector("#side-btn-edit-role")?.addEventListener("click", () => {
         openEditRoleModal(id);
+      });
+
+      activeContent.querySelector("#side-btn-delete-role")?.addEventListener("click", () => {
+        removeRole(id);
       });
 
     } else if (type === 'colaborador') {
