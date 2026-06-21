@@ -77,23 +77,23 @@ body.theme-dark,
 .dark-mode {
   color-scheme: dark;
 
-  --sg-bg-main: #050607;
-  --sg-bg-page: #08090b;
-  --sg-bg-elevated: #0d0f12;
+  --sg-bg-main: #1e0e28;
+  --sg-bg-page: #150822;
+  --sg-bg-elevated: #241032;
 
-  --sg-sidebar-bg: #050607;
-  --sg-sidebar-card: #101216;
-  --sg-sidebar-hover: #171a20;
+  --sg-sidebar-bg: #180b20;
+  --sg-sidebar-card: #241032;
+  --sg-sidebar-hover: #2e133e;
 
-  --sg-card-bg: #111318;
-  --sg-card-bg-soft: #151820;
-  --sg-card-hover: #1a1e26;
+  --sg-card-bg: #241032;
+  --sg-card-bg-soft: #2e133e;
+  --sg-card-hover: #351648;
 
-  --sg-bg-card: #111318;
-  --sg-bg-card-solid: #111318;
-  --sg-bg-card-hover: #1a1e26;
+  --sg-bg-card: #241032;
+  --sg-bg-card-solid: #241032;
+  --sg-bg-card-hover: #351648;
 
-  --sg-header-bg: #101216;
+  --sg-header-bg: #180b20;
 
   --sg-text-main: #f7f7f8;
   --sg-text-secondary: #c5c8ce;
@@ -114,7 +114,7 @@ body.theme-dark,
   --sg-shadow-gold: 0 0 18px rgba(212, 175, 55, 0.12);
 
   --sg-page-gradient:
-    linear-gradient(180deg, #050607 0%, #08090b 48%, #050607 100%);
+    linear-gradient(180deg, #1e0e28 0%, #150822 48%, #1e0e28 100%);
 
   /* retrocompatibilidade em Modo Escuro */
   --ink: var(--sg-text-main);
@@ -125,7 +125,7 @@ body.theme-dark,
   --shadow: var(--sg-shadow-card);
   --gold: var(--sg-gold);
   --gold-dark: var(--sg-gold-dark);
-  --brand-purple: #15181d;
+  --brand-purple: #1e0e28;
   --surface-soft: var(--sg-card-bg-soft);
 }
 
@@ -6814,17 +6814,17 @@ body.theme-dark .reports-summary article:nth-child(8)>i {
    ========================================================================== */
 body.theme-dark {
   color-scheme: dark;
-  --page: #08010f;
+  --page: #1e0e28;
   /* fundo roxo bem escuro (Seven Gold) */
-  --surface: #150126;
+  --surface: #241032;
   /* roxo de marca como superficie */
-  --surface-soft: #241032;
+  --surface-soft: #2e133e;
   /* roxo mais claro */
   --ink: #fbfaf4;
   /* texto claro */
   --muted: #9f9baf;
   /* texto secundario */
-  --line: #2e1743;
+  --line: #3e1b54;
   /* bordas roxas */
   --shadow: 0 16px 38px rgba(0, 0, 0, 0.4);
 }
@@ -8054,8 +8054,8 @@ body:not(.theme-dark) .menu-item.active {
    ========================================================================== */
 
 /* --- 19.1 Body e HTML --- */
-body.theme-dark {
-  background: #08090b !important;
+body.theme-dark:not(.entry-premium-body) {
+  background: #1e0e28 !important;
   background-image: none !important;
   color: #f7f7f8 !important;
 }
@@ -8063,7 +8063,7 @@ body.theme-dark {
 /* --- 19.2 Shells e Wrappers principais --- */
 body.theme-dark .unified-admin-shell,
 body.theme-dark .company-dashboard-shell {
-  background: #08090b !important;
+  background: #1e0e28 !important;
 }
 
 body.theme-dark .company-dashboard-main,
@@ -8137,7 +8137,7 @@ body.theme-dark .year-detail summary {
 
 /* --- 19.5 Sidebar --- */
 body.theme-dark .company-sidebar {
-  background: #050607 !important;
+  background: #180b20 !important;
   border-right: 1px solid rgba(212, 175, 55, 0.22) !important;
   color: #f7f7f8 !important;
 }
@@ -8278,7 +8278,7 @@ body.theme-dark.finance-body,
 body.theme-dark.commission-body,
 body.theme-dark.reports-body,
 body.theme-dark.profile-page-body {
-  background: #08090b !important;
+  background: #1e0e28 !important;
   background-image: none !important;
   color: #f7f7f8 !important;
 }
