@@ -1,6 +1,6 @@
 /* Variables for the theme */
 :root {
-  --bg-dark: #150126;
+  --bg-dark: #1e0e28;
   --bg-card: linear-gradient(135deg, rgba(30, 10, 48, 0.85), rgba(11, 4, 18, 0.9));
   --border-gold: rgba(243, 207, 102, 0.22);
   --border-gold-hover: rgba(243, 207, 102, 0.65);
@@ -17,7 +17,7 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: var(--text-light);
   background: 
-    radial-gradient(circle at 10% 20%, rgba(21, 1, 38, 0.98) 0%, rgba(18, 1, 32, 0.99) 90%),
+    radial-gradient(circle at 10% 20%, rgba(30, 14, 40, 0.98) 0%, rgba(18, 1, 32, 0.99) 90%),
     radial-gradient(circle at 80% 20%, rgba(243, 207, 102, 0.06), transparent 45%),
     radial-gradient(circle at 50% 80%, rgba(100, 38, 128, 0.1), transparent 50%),
     url("assets/gold-bg.jpg");
@@ -42,18 +42,20 @@
   max-width: 1240px;
   margin: 0 auto;
   min-height: 100vh;
-  padding: 20px 24px 15px 24px;
+  padding: 40px 24px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: center;
+  align-items: center;
 }
 
-.main-content-wrapper {
+.left-column-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  text-align: center;
+  gap: 36px;
   width: 100%;
 }
 
@@ -61,8 +63,15 @@
 .premium-entry-brand {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  text-align: center;
   gap: 14px;
+}
+
+.premium-entry-brand div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .brand-logo {
@@ -108,7 +117,8 @@
 .premium-entry-copy {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  text-align: center;
   gap: 16px;
 }
 
@@ -137,9 +147,10 @@
 .title-line {
   width: 64px;
   height: 4px;
-  background: linear-gradient(90deg, var(--text-gold), transparent);
+  background: linear-gradient(90deg, transparent, var(--text-gold), transparent);
   border-radius: 2px;
   box-shadow: 0 0 10px rgba(243, 207, 102, 0.25);
+  margin: 0 auto;
 }
 
 .hero-subtitle {
@@ -351,7 +362,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  align-items: flex-start;
+  align-items: center;
+  text-align: center;
   width: 100%;
 }
 
@@ -363,10 +375,10 @@
   padding: 10px 16px;
   border: 1px solid rgba(243, 207, 102, 0.15);
   border-radius: 12px;
-  background: rgba(21, 1, 38, 0.45);
+  background: rgba(30, 14, 40, 0.45);
   backdrop-filter: blur(10px);
   width: fit-content;
-  align-self: flex-start;
+  align-self: center;
 }
 
 .security-note div {
@@ -430,7 +442,10 @@
     padding: 32px 24px;
     gap: 32px;
     justify-content: flex-start;
+    align-items: center;
     min-height: auto;
+    display: flex;
+    flex-direction: column;
   }
   
   .hero-section {

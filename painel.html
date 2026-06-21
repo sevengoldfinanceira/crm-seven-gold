@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR" style="background-color: #150126;">
+<html lang="pt-BR" style="background-color: #1e0e28;">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="home.css?v=68" />
     <link rel="stylesheet" href="painel.css?v=34" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#150126" />
+    <meta name="theme-color" content="#1e0e28" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Seven Gold" />
@@ -27,16 +27,17 @@
       })();
     </script>
     <main class="premium-entry-shell">
-      <div class="main-content-wrapper">
-        <header class="premium-entry-brand" aria-label="Seven Gold Financeira">
-          <img src="assets/icons/LOGO COPA.png?v=1" alt="Seven Gold Financeira" class="brand-logo" />
-          <div>
-            <strong class="brand-title">Seven Gold Financeira</strong>
-            <span class="brand-subtitle">Sistema interno</span>
-          </div>
-        </header>
+      <div class="hero-section">
+        <!-- Coluna da Esquerda (Marca, Conteúdo e Rodapé unificados e centrados) -->
+        <div class="left-column-wrapper">
+          <header class="premium-entry-brand" aria-label="Seven Gold Financeira">
+            <img src="assets/icons/LOGO COPA.png?v=1" alt="Seven Gold Financeira" class="brand-logo" />
+            <div>
+              <strong class="brand-title">Seven Gold Financeira</strong>
+              <span class="brand-subtitle">Sistema interno</span>
+            </div>
+          </header>
 
-        <div class="hero-section">
           <section class="premium-entry-copy" aria-labelledby="page-title">
             <span class="welcome-badge">BEM-VINDO</span>
             <h1 id="page-title" class="hero-title">Bem-vindo ao Sistema Seven Gold</h1>
@@ -44,54 +45,55 @@
             <p class="hero-subtitle">Selecione o ambiente que deseja acessar para continuar.</p>
           </section>
 
-          <section class="premium-entry-cards" aria-label="Ambientes do system">
-            <a class="premium-access-card premium-access-card-main" href="crm.html">
-              <span class="recommended-badge">RECOMENDADO</span>
-              <div class="card-header">
-                <div class="card-icon"><i data-lucide="trending-up"></i></div>
-                <div>
-                  <p class="card-kicker">Ambiente de vendas e atendimento</p>
-                  <h2 class="card-title">CRM Comercial</h2>
-                </div>
+          <div class="footer-wrapper">
+            <aside class="security-note" aria-label="Aviso de segurança">
+              <i data-lucide="shield-check" style="color: #f4cf5d; width: 20px; height: 20px;"></i>
+              <div>
+                <strong>Acesso seguro e restrito.</strong>
+                <span>Uso exclusivo para fins internos.</span>
               </div>
-              <p class="card-description">Gerencie leads, clientes, atendimentos, tarefas e negociações de forma eficiente.</p>
-              <div class="tags">
-                <span class="tag">Leads</span>
-                <span class="tag">Negociações</span>
-                <span class="tag">Tarefas</span>
-                <span class="tag">Clientes</span>
-              </div>
-              <span class="card-button primary">ACESSAR CRM →</span>
-            </a>
+            </aside>
 
-            <a class="premium-access-card premium-access-card-admin" href="empresa.html" data-visible-roles="dono,administrador,financeiro,marketing,rh">
-              <span class="restricted-badge">ACESSO RESTRITO</span>
-              <div class="card-header">
-                <div class="card-icon"><i data-lucide="shield"></i></div>
-                <div>
-                  <p class="card-kicker">Gestão e controle da empresa</p>
-                  <h2 class="card-title">Painel Administrativo</h2>
-                </div>
-              </div>
-              <p class="card-description">Controle usuários, permissões, financeiro, relatórios e configurações gerais.</p>
-              <span class="card-button secondary">ACESSAR EMPRESA →</span>
-            </a>
-          </section>
-        </div>
-      </div>
-
-      <div class="footer-wrapper">
-        <aside class="security-note" aria-label="Aviso de segurança">
-          <i data-lucide="shield-check" style="color: #f4cf5d; width: 20px; height: 20px;"></i>
-          <div>
-            <strong>Acesso seguro e restrito.</strong>
-            <span>Uso exclusivo para fins internos.</span>
+            <footer class="footer">
+              © 2026 Seven Gold Financeira. Todos os direitos reservados.
+            </footer>
           </div>
-        </aside>
+        </div>
 
-        <footer class="footer">
-          © 2026 Seven Gold Financeira. Todos os direitos reservados.
-        </footer>
+        <!-- Coluna da Direita (Cards de Acesso) -->
+        <section class="premium-entry-cards" aria-label="Ambientes do system">
+          <a class="premium-access-card premium-access-card-main" href="crm.html">
+            <span class="recommended-badge">RECOMENDADO</span>
+            <div class="card-header">
+              <div class="card-icon"><i data-lucide="trending-up"></i></div>
+              <div>
+                <p class="card-kicker">Ambiente de vendas e atendimento</p>
+                <h2 class="card-title">CRM Comercial</h2>
+              </div>
+            </div>
+            <p class="card-description">Gerencie leads, clientes, atendimentos, tarefas e negociações de forma eficiente.</p>
+            <div class="tags">
+              <span class="tag">Leads</span>
+              <span class="tag">Negociações</span>
+              <span class="tag">Tarefas</span>
+              <span class="tag">Clientes</span>
+            </div>
+            <span class="card-button primary">ACESSAR CRM →</span>
+          </a>
+
+          <a class="premium-access-card premium-access-card-admin" href="empresa.html" data-visible-roles="dono,administrador,financeiro,marketing,rh">
+            <span class="restricted-badge">ACESSO RESTRITO</span>
+            <div class="card-header">
+              <div class="card-icon"><i data-lucide="shield"></i></div>
+              <div>
+                <p class="card-kicker">Gestão e controle da empresa</p>
+                <h2 class="card-title">Painel Administrativo</h2>
+              </div>
+            </div>
+            <p class="card-description">Controle usuários, permissões, financeiro, relatórios e configurações gerais.</p>
+            <span class="card-button secondary">ACESSAR EMPRESA →</span>
+          </a>
+        </section>
       </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
