@@ -436,6 +436,23 @@
     localStorage.setItem("seven-gold-employee-roles", JSON.stringify(map));
   };
 
+  const roleFunctionsLocalKey = "seven-gold-role-functions";
+
+  const loadRoleFunctionsLocalMap = () => {
+    try {
+      return JSON.parse(localStorage.getItem(roleFunctionsLocalKey) || "{}");
+    } catch (error) {
+      console.warn("Nao foi possivel carregar funcoes locais:", error);
+      return {};
+    }
+  };
+
+  const saveRoleFunctionsLocal = (roleKey, funcs) => {
+    const map = loadRoleFunctionsLocalMap();
+    map[roleKey] = funcs;
+    localStorage.setItem(roleFunctionsLocalKey, JSON.stringify(map));
+  };
+
   const getEmployeeFunctions = (profile) => {
     const map = loadEmployeeFunctionsMap();
     if (map[profile.id] && map[profile.id].length > 0) {
@@ -658,6 +675,13 @@
         });
       }
     }
+
+    const localFunctions = loadRoleFunctionsLocalMap();
+    Object.entries(localFunctions).forEach(([roleKey, funcs]) => {
+      if (Array.isArray(funcs)) {
+        state.functions.set(roleKey, funcs);
+      }
+    });
 
     // Set defaults from static metadata if not in DB
     sectors.forEach(sec => {
@@ -1070,31 +1094,27 @@
         };
 
         const persistRoleFunctions = async (parsedFuncs) => {
+          saveRoleFunctionsLocal(roleKey, parsedFuncs);
+
           const client = getClient();
           if (!client) return true;
 
           try {
-            const { data: userData } = await client.auth.getUser();
-            const userId = userData?.user?.id || null;
-
-            const { error } = await client.from("company_role_functions").upsert(
-              {
-                role_key: roleKey,
-                role_title: sectors.flatMap(s => s.roles).find(r => r.key === roleKey)?.title || roleKey,
-                functions: parsedFuncs,
-                updated_by: userId,
-                updated_at: new Date().toISOString()
-              },
-              { onConflict: "role_key" }
-            );
+            const { error } = await client
+              .from("company_role_functions")
+              .upsert(
+                {
+                  role_key: roleKey,
+                  functions: parsedFuncs
+                },
+                { onConflict: "role_key" }
+              );
 
             if (error) {
-              console.error(error);
-              return false;
+              console.warn("Funcoes salvas localmente; Supabase recusou a gravacao:", error);
             }
           } catch (error) {
-            console.error(error);
-            return false;
+            console.warn("Funcoes salvas localmente; Supabase indisponivel:", error);
           }
 
           return true;
@@ -1239,6 +1259,8 @@
             return;
           }
 
+          statusSpan.style.color = "green";
+          statusSpan.textContent = "Função removida e salva.";
           setTimeout(() => { statusSpan.textContent = ""; }, 2000);
         });
 
