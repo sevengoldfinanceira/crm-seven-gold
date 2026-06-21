@@ -733,12 +733,7 @@
                   <strong>${role.title}</strong>
                   <span>${roleMembers.length} ${roleMembers.length === 1 ? 'pessoa' : 'pessoas'}</span>
                 </div>
-                <div class="eq-role-pill-actions">
-                  <span class="eq-role-delete-btn" role="button" tabindex="0" data-role-delete="${role.key}" title="Remover cargo" aria-label="Remover cargo ${role.title}">
-                    <i data-lucide="trash-2"></i>
-                  </span>
-                  <i data-lucide="chevron-right"></i>
-                </div>
+                <i data-lucide="chevron-right"></i>
               </button>
             `;
           }).join("")}
@@ -755,24 +750,10 @@
       // Event listener for clicking role pills inside sector
       sectorCard.querySelectorAll(".eq-role-pill").forEach(pill => {
         pill.addEventListener("click", (e) => {
-          if (e.target.closest(".eq-role-pill-grip, .eq-role-delete-btn")) return;
+          if (e.target.closest(".eq-role-pill-grip")) return;
           e.stopPropagation();
           const rKey = pill.getAttribute("data-role-key");
           selectItem('role', rKey, sector.id);
-        });
-      });
-
-      sectorCard.querySelectorAll(".eq-role-delete-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          removeRole(btn.dataset.roleDelete);
-        });
-        btn.addEventListener("keydown", (e) => {
-          if (e.key !== "Enter" && e.key !== " ") return;
-          e.preventDefault();
-          e.stopPropagation();
-          removeRole(btn.dataset.roleDelete);
         });
       });
 

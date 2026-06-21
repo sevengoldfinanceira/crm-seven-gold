@@ -14078,20 +14078,12 @@ body[data-unified-admin] .unified-admin-shell {
   color: #64748b;
   margin-top: 1px;
 }
-.eq-role-pill-actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-left: 6px;
-}
-.eq-role-delete-btn,
 .eq-job-delete-role,
 .eq-btn-side-delete {
   border: 0;
   cursor: pointer;
   transition: all 0.2s ease;
 }
-.eq-role-delete-btn,
 .eq-job-delete-role {
   width: 28px;
   height: 28px;
@@ -14103,14 +14095,12 @@ body[data-unified-admin] .unified-admin-shell {
   color: #ef4444;
   opacity: 0.78;
 }
-.eq-role-delete-btn:hover,
 .eq-job-delete-role:hover {
   background: #fee2e2;
   color: #dc2626;
   opacity: 1;
   transform: translateY(-1px);
 }
-.eq-role-delete-btn i,
 .eq-job-delete-role i {
   width: 15px !important;
   height: 15px !important;
@@ -14520,12 +14510,10 @@ body.theme-dark .eq-role-pill { background: #0f172a; border-color: #1e293b; }
 body.theme-dark .eq-role-pill:hover { background: #1e293b; }
 body.theme-dark .eq-role-pill.selected { background: #2b2518 !important; border-color: #d4af37 !important; }
 body.theme-dark .eq-role-pill-info strong { color: #cbd5e1; }
-body.theme-dark .eq-role-delete-btn,
 body.theme-dark .eq-job-delete-role {
   background: rgba(248, 113, 113, 0.12);
   color: #f87171;
 }
-body.theme-dark .eq-role-delete-btn:hover,
 body.theme-dark .eq-job-delete-role:hover {
   background: rgba(239, 68, 68, 0.22);
   color: #fecaca;
