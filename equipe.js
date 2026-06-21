@@ -1048,6 +1048,58 @@
         const textarea = card.querySelector("textarea");
         const statusSpan = card.querySelector(".role-save-status");
 
+        const parseFunctionsFromEditor = () => textarea.value
+          .split("\n")
+          .map(item => item.replace(/^\s*\d+[\).\-\s]+/, "").trim())
+          .filter(Boolean);
+
+        const renderFunctionsPreview = (parsedFuncs) => {
+          viewArea.innerHTML = `
+            <ol style="margin: 0; padding-left: 16px; font-size: 0.8rem; color: #475569; line-height: 1.4;">
+              ${parsedFuncs.map(item => `<li>${item}</li>`).join("")}
+            </ol>
+            ${parsedFuncs.length === 0 ? '<p style="margin: 8px 0 0; color: #94a3b8; font-size: 0.75rem;">Nenhuma função cadastrada.</p>' : ''}
+          `;
+        };
+
+        const persistRoleFunctions = async (parsedFuncs) => {
+          const client = getClient();
+          if (!client) return true;
+
+          try {
+            const { data: userData } = await client.auth.getUser();
+            const userId = userData?.user?.id || null;
+
+            const { error } = await client.from("company_role_functions").upsert(
+              {
+                role_key: roleKey,
+                role_title: sectors.flatMap(s => s.roles).find(r => r.key === roleKey)?.title || roleKey,
+                functions: parsedFuncs,
+                updated_by: userId,
+                updated_at: new Date().toISOString()
+              },
+              { onConflict: "role_key" }
+            );
+
+            if (error) {
+              console.error(error);
+              return false;
+            }
+          } catch (error) {
+            console.error(error);
+            return false;
+          }
+
+          return true;
+        };
+
+        const applyFunctionsUpdate = (parsedFuncs) => {
+          state.functions.set(roleKey, parsedFuncs);
+          renderFunctionsPreview(parsedFuncs);
+          renderSidebarDetails();
+          refreshIcons();
+        };
+
         // --- Drag events for job cards ---
         if (sector.id !== "diretoria") {
           card.addEventListener("dragstart", (e) => {
@@ -1143,7 +1195,7 @@
           removeRole(deleteBtn.dataset.roleDelete);
         });
 
-        deleteFuncBtn?.addEventListener("click", () => {
+        deleteFuncBtn?.addEventListener("click", async () => {
           const lines = textarea.value.split("\n");
           const selectedText = textarea.value.slice(textarea.selectionStart, textarea.selectionEnd).trim();
 
@@ -1162,10 +1214,25 @@
             textarea.value = lines.join("\n").trim();
           }
 
-          statusSpan.textContent = "Função removida. Clique em Salvar funções.";
+          const parsedFuncs = parseFunctionsFromEditor();
+          textarea.value = parsedFuncs.map((item, index) => `${index + 1}. ${item}`).join("\n");
+          applyFunctionsUpdate(parsedFuncs);
+
+          deleteFuncBtn.disabled = true;
+          statusSpan.textContent = "Função removida e atualizada.";
           statusSpan.dataset.type = "";
           statusSpan.style.color = "#dc2626";
           textarea.focus();
+
+          const success = await persistRoleFunctions(parsedFuncs);
+          deleteFuncBtn.disabled = false;
+          if (!success) {
+            statusSpan.style.color = "red";
+            statusSpan.textContent = "Removida na tela, mas houve erro ao salvar no Supabase.";
+            return;
+          }
+
+          setTimeout(() => { statusSpan.textContent = ""; }, 2000);
         });
 
         saveBtn.addEventListener("click", async () => {
@@ -1173,45 +1240,14 @@
           saveBtn.textContent = "Salvando...";
           statusSpan.textContent = "";
 
-          const parsedFuncs = textarea.value
-            .split("\n")
-            .map(item => item.replace(/^\s*\d+[\).\-\s]+/, "").trim())
-            .filter(Boolean);
-
-          const client = getClient();
-          let success = true;
-
-          if (client) {
-            const { data: userData } = await client.auth.getUser();
-            const userId = userData?.user?.id || null;
-
-            const { error } = await client.from("company_role_functions").upsert(
-              {
-                role_key: roleKey,
-                role_title: sectors.flatMap(s => s.roles).find(r => r.key === roleKey)?.title || roleKey,
-                functions: parsedFuncs,
-                updated_by: userId,
-                updated_at: new Date().toISOString()
-              },
-              { onConflict: "role_key" }
-            );
-
-            if (error) {
-              success = false;
-              console.error(error);
-            }
-          }
+          const parsedFuncs = parseFunctionsFromEditor();
+          applyFunctionsUpdate(parsedFuncs);
+          const success = await persistRoleFunctions(parsedFuncs);
 
           saveBtn.disabled = false;
           saveBtn.textContent = "Salvar funções";
 
           if (success) {
-            state.functions.set(roleKey, parsedFuncs);
-            viewArea.innerHTML = `
-              <ol style="margin: 0; padding-left: 16px; font-size: 0.8rem; color: #475569; line-height: 1.4;">
-                ${parsedFuncs.map(item => `<li>${item}</li>`).join("")}
-              </ol>
-            `;
             editor.style.display = "none";
             viewArea.style.display = "block";
             editBtn.textContent = "Editar";
