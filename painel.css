@@ -154,7 +154,7 @@
 .premium-entry-cards {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 28px;
+  gap: 48px;
   width: 100%;
 }
 
