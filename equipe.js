@@ -92,6 +92,20 @@
   let draggedSectorId = null;
   let draggedRoleKey = null;
   let draggedRoleOriginSectorId = null;
+  const removedRolesKey = "seven-gold-removed-roles";
+
+  const loadRemovedRoles = () => {
+    try {
+      return new Set(JSON.parse(localStorage.getItem(removedRolesKey) || "[]"));
+    } catch (error) {
+      console.warn("Nao foi possivel carregar cargos removidos:", error);
+      return new Set();
+    }
+  };
+
+  const saveRemovedRoles = (removedRoles) => {
+    localStorage.setItem(removedRolesKey, JSON.stringify([...removedRoles]));
+  };
 
   // Persist order to localStorage
   const saveOrderToLocalStorage = () => {
@@ -109,6 +123,13 @@
 
   // Load and apply saved order from localStorage
   const applySavedOrder = () => {
+    const removedRoles = loadRemovedRoles();
+    if (removedRoles.size > 0) {
+      sectors.forEach(sec => {
+        sec.roles = sec.roles.filter(role => !removedRoles.has(role.key));
+      });
+    }
+
     // 1. Reorder sectors if customized
     const savedSectorsOrder = localStorage.getItem("seven-gold-sectors-order");
     if (savedSectorsOrder) {
@@ -167,6 +188,7 @@
 
         // Put back any roles that weren't consumed (safety backup for newly defined roles)
         allRolesByKey.forEach((roleObj, key) => {
+          if (removedRoles.has(key)) return;
           const origSectorId = originalSectorOfRole.get(key) || "comercial";
           const sec = sectors.find(s => s.id === origSectorId);
           if (sec) {
@@ -466,6 +488,10 @@
       : `Remover o cargo "${roleObj.title}"?`;
 
     if (!confirm(message)) return;
+
+    const removedRoles = loadRemovedRoles();
+    removedRoles.add(roleKey);
+    saveRemovedRoles(removedRoles);
 
     sectorObj.roles = sectorObj.roles.filter(role => role.key !== roleKey);
     state.functions.delete(roleKey);
