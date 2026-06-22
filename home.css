@@ -17622,6 +17622,52 @@ body[data-unified-admin] .unified-admin-sidebar:not(.sidebar-editing) .menu-item
   }
 }
 
+/* Mobile escuro: rodape legivel e botoes de acao claros */
+@media (max-width: 768px) {
+  body[data-unified-admin].theme-dark .mobile-sidebar .system-section-title,
+  body[data-unified-admin].theme-dark .mobile-sidebar .theme-label,
+  body[data-unified-admin].theme-dark .mobile-sidebar .profile-name-row strong,
+  body[data-unified-admin].theme-dark .mobile-sidebar .profile-email,
+  html[data-theme="dark"] body[data-unified-admin] .mobile-sidebar .system-section-title,
+  html[data-theme="dark"] body[data-unified-admin] .mobile-sidebar .theme-label,
+  html[data-theme="dark"] body[data-unified-admin] .mobile-sidebar .profile-name-row strong,
+  html[data-theme="dark"] body[data-unified-admin] .mobile-sidebar .profile-email {
+    color: #ffffff !important;
+  }
+
+  body[data-unified-admin].theme-dark .mobile-sidebar .profile-icon-action,
+  html[data-theme="dark"] body[data-unified-admin] .mobile-sidebar .profile-icon-action {
+    background: #ffffff !important;
+    border-color: rgba(212, 175, 55, 0.38) !important;
+    color: #111827 !important;
+  }
+
+  body[data-unified-admin].theme-dark .mobile-sidebar .profile-icon-action svg,
+  body[data-unified-admin].theme-dark .mobile-sidebar .profile-icon-action i,
+  html[data-theme="dark"] body[data-unified-admin] .mobile-sidebar .profile-icon-action svg,
+  html[data-theme="dark"] body[data-unified-admin] .mobile-sidebar .profile-icon-action i {
+    color: #111827 !important;
+    stroke: #111827 !important;
+    opacity: 1 !important;
+  }
+
+  body[data-unified-admin].theme-dark .mobile-sidebar .sidebar-logout-btn,
+  html[data-theme="dark"] body[data-unified-admin] .mobile-sidebar .sidebar-logout-btn {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-color: rgba(239, 68, 68, 0.35) !important;
+    color: #ef4444 !important;
+  }
+
+  body[data-unified-admin].theme-dark .mobile-sidebar .sidebar-logout-btn svg,
+  body[data-unified-admin].theme-dark .mobile-sidebar .sidebar-logout-btn i,
+  html[data-theme="dark"] body[data-unified-admin] .mobile-sidebar .sidebar-logout-btn svg,
+  html[data-theme="dark"] body[data-unified-admin] .mobile-sidebar .sidebar-logout-btn i {
+    color: #111827 !important;
+    stroke: #111827 !important;
+    opacity: 1 !important;
+  }
+}
+
 
 
 
