@@ -501,6 +501,30 @@
 
     renderIcons();
 
+    const fitSidebarProfileEmail = () => {
+      sidebar.querySelectorAll(".profile-email").forEach((email) => {
+        if (!email.textContent.trim()) return;
+        email.style.whiteSpace = "nowrap";
+        email.style.overflow = "hidden";
+        email.style.textOverflow = "clip";
+        email.style.fontSize = "";
+
+        const maxWidth = email.clientWidth;
+        if (!maxWidth) return;
+
+        let size = parseFloat(window.getComputedStyle(email).fontSize) || 9;
+        while (email.scrollWidth > maxWidth && size > 6.5) {
+          size -= 0.25;
+          email.style.fontSize = `${size}px`;
+        }
+      });
+    };
+
+    requestAnimationFrame(fitSidebarProfileEmail);
+    const emailObserver = new MutationObserver(() => requestAnimationFrame(fitSidebarProfileEmail));
+    emailObserver.observe(sidebar, { childList: true, characterData: true, subtree: true });
+    window.addEventListener("resize", fitSidebarProfileEmail);
+
     const editBtn = sidebar.querySelector(".btn-edit-sidebar");
     const nav = sidebar.querySelector(".company-sidebar-nav");
 
