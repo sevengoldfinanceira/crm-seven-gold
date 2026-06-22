@@ -17146,6 +17146,94 @@ body.login-page-body .password-toggle-btn[type="button"]:hover {
   }
 }
 
+/* Mobile: alinhar topo do modo escuro ao modo claro */
+@media (max-width: 768px) {
+  html[data-theme="dark"] body[data-unified-admin] .unified-admin-shell,
+  html[data-theme="dark"] body[data-unified-admin] .company-dashboard-shell.unified-admin-shell,
+  html[data-theme="dark"] body[data-unified-admin] .history-dashboard-shell.unified-admin-shell,
+  html[data-theme="dark"] body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell,
+  body[data-unified-admin].theme-dark .unified-admin-shell,
+  body[data-unified-admin].theme-dark .company-dashboard-shell.unified-admin-shell,
+  body[data-unified-admin].theme-dark .history-dashboard-shell.unified-admin-shell,
+  body[data-unified-admin].theme-dark .profile-dashboard-shell.unified-admin-shell {
+    padding-top: 76px !important;
+  }
+
+  html[data-theme="dark"] body[data-unified-admin] .company-search-wrapper,
+  body[data-unified-admin].theme-dark .company-search-wrapper {
+    margin-top: 0 !important;
+    margin-bottom: 12px !important;
+  }
+
+  html[data-theme="dark"] body[data-unified-admin] .company-dashboard-main,
+  html[data-theme="dark"] body[data-unified-admin] .history-dashboard-main,
+  html[data-theme="dark"] body[data-unified-admin] .profile-page-shell,
+  html[data-theme="dark"] body[data-unified-admin] .documents-shell,
+  html[data-theme="dark"] body[data-unified-admin] .reports-shell,
+  html[data-theme="dark"] body[data-unified-admin] .permissions-shell,
+  html[data-theme="dark"] body[data-unified-admin] .finance-shell,
+  html[data-theme="dark"] body[data-unified-admin] .commission-shell,
+  html[data-theme="dark"] body[data-unified-admin] .team-shell,
+  html[data-theme="dark"] body[data-unified-admin] .org-shell,
+  html[data-theme="dark"] body[data-unified-admin] .metas-shell,
+  html[data-theme="dark"] body[data-unified-admin] .marketing-shell,
+  body[data-unified-admin].theme-dark .company-dashboard-main,
+  body[data-unified-admin].theme-dark .history-dashboard-main,
+  body[data-unified-admin].theme-dark .profile-page-shell,
+  body[data-unified-admin].theme-dark .documents-shell,
+  body[data-unified-admin].theme-dark .reports-shell,
+  body[data-unified-admin].theme-dark .permissions-shell,
+  body[data-unified-admin].theme-dark .finance-shell,
+  body[data-unified-admin].theme-dark .commission-shell,
+  body[data-unified-admin].theme-dark .team-shell,
+  body[data-unified-admin].theme-dark .org-shell,
+  body[data-unified-admin].theme-dark .metas-shell,
+  body[data-unified-admin].theme-dark .marketing-shell {
+    padding-top: 16px !important;
+    margin-top: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  html[data-theme="dark"] body[data-unified-admin] .unified-admin-shell,
+  html[data-theme="dark"] body[data-unified-admin] .company-dashboard-shell.unified-admin-shell,
+  html[data-theme="dark"] body[data-unified-admin] .history-dashboard-shell.unified-admin-shell,
+  html[data-theme="dark"] body[data-unified-admin] .profile-dashboard-shell.unified-admin-shell,
+  body[data-unified-admin].theme-dark .unified-admin-shell,
+  body[data-unified-admin].theme-dark .company-dashboard-shell.unified-admin-shell,
+  body[data-unified-admin].theme-dark .history-dashboard-shell.unified-admin-shell,
+  body[data-unified-admin].theme-dark .profile-dashboard-shell.unified-admin-shell {
+    padding-top: 68px !important;
+  }
+
+  html[data-theme="dark"] body[data-unified-admin] .company-dashboard-main,
+  html[data-theme="dark"] body[data-unified-admin] .history-dashboard-main,
+  html[data-theme="dark"] body[data-unified-admin] .profile-page-shell,
+  html[data-theme="dark"] body[data-unified-admin] .documents-shell,
+  html[data-theme="dark"] body[data-unified-admin] .reports-shell,
+  html[data-theme="dark"] body[data-unified-admin] .permissions-shell,
+  html[data-theme="dark"] body[data-unified-admin] .finance-shell,
+  html[data-theme="dark"] body[data-unified-admin] .commission-shell,
+  html[data-theme="dark"] body[data-unified-admin] .team-shell,
+  html[data-theme="dark"] body[data-unified-admin] .org-shell,
+  html[data-theme="dark"] body[data-unified-admin] .metas-shell,
+  html[data-theme="dark"] body[data-unified-admin] .marketing-shell,
+  body[data-unified-admin].theme-dark .company-dashboard-main,
+  body[data-unified-admin].theme-dark .history-dashboard-main,
+  body[data-unified-admin].theme-dark .profile-page-shell,
+  body[data-unified-admin].theme-dark .documents-shell,
+  body[data-unified-admin].theme-dark .reports-shell,
+  body[data-unified-admin].theme-dark .permissions-shell,
+  body[data-unified-admin].theme-dark .finance-shell,
+  body[data-unified-admin].theme-dark .commission-shell,
+  body[data-unified-admin].theme-dark .team-shell,
+  body[data-unified-admin].theme-dark .org-shell,
+  body[data-unified-admin].theme-dark .metas-shell,
+  body[data-unified-admin].theme-dark .marketing-shell {
+    padding-top: 12px !important;
+  }
+}
+
 
 
 
