@@ -17692,6 +17692,14 @@ body[data-unified-admin] .unified-admin-sidebar:not(.sidebar-editing) .menu-item
   }
 }
 
+/* Mobile: subir um pouco o bloco final do menu */
+@media (max-width: 768px) {
+  body[data-unified-admin] .mobile-sidebar .sidebar-footer-container {
+    padding-bottom: max(6px, env(safe-area-inset-bottom)) !important;
+    transform: translateY(-8px) !important;
+  }
+}
+
 
 
 
