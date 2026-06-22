@@ -17653,17 +17653,18 @@ body[data-unified-admin] .unified-admin-sidebar:not(.sidebar-editing) .menu-item
 
   body[data-unified-admin].theme-dark .mobile-sidebar .sidebar-logout-btn,
   html[data-theme="dark"] body[data-unified-admin] .mobile-sidebar .sidebar-logout-btn {
-    background: rgba(255, 255, 255, 0.9) !important;
-    border-color: rgba(239, 68, 68, 0.35) !important;
+    background: rgba(10, 10, 10, 0.72) !important;
+    border-color: rgba(239, 68, 68, 0.38) !important;
     color: #ef4444 !important;
+    box-shadow: none !important;
   }
 
   body[data-unified-admin].theme-dark .mobile-sidebar .sidebar-logout-btn svg,
   body[data-unified-admin].theme-dark .mobile-sidebar .sidebar-logout-btn i,
   html[data-theme="dark"] body[data-unified-admin] .mobile-sidebar .sidebar-logout-btn svg,
   html[data-theme="dark"] body[data-unified-admin] .mobile-sidebar .sidebar-logout-btn i {
-    color: #111827 !important;
-    stroke: #111827 !important;
+    color: #ef4444 !important;
+    stroke: #ef4444 !important;
     opacity: 1 !important;
   }
 }
