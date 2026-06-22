@@ -17591,6 +17591,37 @@ body[data-unified-admin] .unified-admin-sidebar:not(.sidebar-editing) .menu-item
   }
 }
 
+/* Mobile: remover qualquer resquicio visual entre categorias do menu */
+@media (max-width: 768px) {
+  body[data-unified-admin] .mobile-sidebar .company-sidebar-nav,
+  body[data-unified-admin] .mobile-sidebar.company-sidebar .company-sidebar-nav,
+  body[data-unified-admin] .mobile-sidebar.unified-admin-sidebar .company-sidebar-nav {
+    gap: 0 !important;
+    row-gap: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  body[data-unified-admin] .mobile-sidebar .menu-section,
+  body[data-unified-admin] .mobile-sidebar .menu-section + .menu-section {
+    border-top: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body[data-unified-admin] .mobile-sidebar .menu-section-title {
+    display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body[data-unified-admin] .mobile-sidebar .menu-item {
+    margin: 1px 0 !important;
+  }
+}
+
 
 
 
