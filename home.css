@@ -16486,12 +16486,20 @@ body.mobile-menu-open {
   body[data-unified-admin] .mobile-sidebar,
   body[data-unified-admin] .company-sidebar,
   body[data-unified-admin] .unified-admin-sidebar {
-    width: min(90vw, 320px) !important;
-    top: 8px !important;
-    left: 8px !important;
-    bottom: 8px !important;
-    padding: 12px !important;
-    border-radius: 20px !important;
+    width: 280px !important;
+    top: 0 !important;
+    left: -300px !important;
+    bottom: 0 !important;
+    padding: 20px 14px !important;
+    border-radius: 0 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .mobile-sidebar.drawer-open,
+  body[data-unified-admin] .mobile-sidebar.drawer-open,
+  body[data-unified-admin] .company-sidebar.drawer-open,
+  body[data-unified-admin] .unified-admin-sidebar.drawer-open {
+    left: 0 !important;
   }
 
   body[data-unified-admin] h1 {
@@ -16925,6 +16933,141 @@ body[data-unified-admin] .theme-btn-toggle.active {
   border-color: #ffffff !important;
   color: #000000 !important;
   box-shadow: none !important;
+}
+
+/* ============================================================
+   MOBILE/TABLET ONLY SIDEBAR THEME SWITCHER (<1024px)
+   ============================================================ */
+@media (max-width: 1023px) {
+  /* Sidebar dark mode on mobile */
+  body.theme-dark .company-sidebar,
+  body.theme-dark .unified-admin-sidebar {
+    background: #000000 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+  body.theme-dark .menu-item {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+  body.theme-dark .menu-item svg,
+  body.theme-dark .menu-item i {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+  body.theme-dark .menu-item.active {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #ffffff !important;
+  }
+  body.theme-dark .menu-item.active svg,
+  body.theme-dark .menu-item.active i {
+    color: #ffffff !important;
+  }
+  body.theme-dark .sidebar-divider {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+  body.theme-dark .theme-label,
+  body.theme-dark .system-section-title {
+    color: rgba(255, 255, 255, 0.42) !important;
+  }
+  body.theme-dark .profile-name-row strong {
+    color: #ffffff !important;
+  }
+  body.theme-dark .profile-role {
+    color: #f6d365 !important;
+  }
+  body.theme-dark .profile-email {
+    color: rgba(255, 255, 255, 0.45) !important;
+  }
+  body.theme-dark .profile-icon-action {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+  body.theme-dark .profile-icon-action:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+  }
+  body.theme-dark .sidebar-copyright {
+    color: rgba(255, 255, 255, 0.32) !important;
+  }
+  body.theme-dark .mobile-sidebar-close {
+    color: #ffffff !important;
+  }
+
+  /* Sidebar light mode on mobile */
+  body:not(.theme-dark) .company-sidebar,
+  body:not(.theme-dark) .unified-admin-sidebar {
+    background: #ffffff !important;
+    border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.05) !important;
+  }
+  body:not(.theme-dark) .brand-title {
+    color: #000000 !important;
+  }
+  body:not(.theme-dark) .brand-subtitle {
+    color: rgba(0, 0, 0, 0.5) !important;
+  }
+  body:not(.theme-dark) .menu-item {
+    color: rgba(0, 0, 0, 0.6) !important;
+  }
+  body:not(.theme-dark) .menu-item svg,
+  body:not(.theme-dark) .menu-item i {
+    color: rgba(0, 0, 0, 0.5) !important;
+  }
+  body:not(.theme-dark) .menu-item:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+    color: #000000 !important;
+  }
+  body:not(.theme-dark) .menu-item:hover svg,
+  body:not(.theme-dark) .menu-item:hover i {
+    color: #000000 !important;
+  }
+  body:not(.theme-dark) .menu-item.active {
+    background: rgba(0, 0, 0, 0.08) !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+  }
+  body:not(.theme-dark) .menu-item.active svg,
+  body:not(.theme-dark) .menu-item.active i {
+    color: #000000 !important;
+  }
+  body:not(.theme-dark) .sidebar-divider {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+  }
+  body:not(.theme-dark) .theme-label,
+  body:not(.theme-dark) .system-section-title {
+    color: rgba(0, 0, 0, 0.45) !important;
+  }
+  body:not(.theme-dark) .profile-name-row strong {
+    color: #000000 !important;
+  }
+  body:not(.theme-dark) .profile-role {
+    color: #a47e1b !important;
+  }
+  body:not(.theme-dark) .profile-email {
+    color: rgba(0, 0, 0, 0.5) !important;
+  }
+  body:not(.theme-dark) .profile-icon-action {
+    color: rgba(0, 0, 0, 0.5) !important;
+  }
+  body:not(.theme-dark) .profile-icon-action:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+    color: #000000 !important;
+  }
+  body:not(.theme-dark) .sidebar-copyright {
+    color: rgba(0, 0, 0, 0.4) !important;
+  }
+  body:not(.theme-dark) .mobile-sidebar-close {
+    color: #000000 !important;
+  }
+  body:not(.theme-dark) .theme-buttons-group {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+  body:not(.theme-dark) .theme-btn-toggle {
+    color: rgba(0, 0, 0, 0.5) !important;
+  }
+  body:not(.theme-dark) .theme-btn-toggle.active {
+    background: #000000 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+  }
 }
 
 
