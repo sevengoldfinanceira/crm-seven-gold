@@ -17096,6 +17096,52 @@ body.login-page-body .password-toggle-btn[type="button"]:hover {
   }
 }
 
+/* Ajuste fino mobile: menos respiro no topo do menu e botao X visivel */
+@media (max-width: 768px) {
+  body[data-unified-admin] .mobile-sidebar,
+  body[data-unified-admin] .company-sidebar,
+  body[data-unified-admin] .unified-admin-sidebar {
+    padding-top: 8px !important;
+  }
+
+  body[data-unified-admin] .unified-sidebar-header {
+    min-height: 42px !important;
+    padding: 0 0 6px !important;
+    margin: 0 0 6px !important;
+  }
+
+  body[data-unified-admin] .company-sidebar-nav {
+    padding-top: 0 !important;
+    gap: 4px !important;
+  }
+
+  body[data-unified-admin] .menu-section {
+    padding-top: 4px !important;
+  }
+
+  body[data-unified-admin] .menu-section + .menu-section {
+    margin-top: 2px !important;
+    padding-top: 5px !important;
+  }
+
+  body[data-unified-admin] .menu-section-title {
+    margin-bottom: 4px !important;
+  }
+
+  body[data-unified-admin]:not(.theme-dark) .mobile-sidebar-close {
+    background: #ffffff !important;
+    border-color: rgba(212, 175, 55, 0.42) !important;
+    color: #000000 !important;
+  }
+
+  body[data-unified-admin]:not(.theme-dark) .mobile-sidebar-close svg,
+  body[data-unified-admin]:not(.theme-dark) .mobile-sidebar-close i {
+    color: #000000 !important;
+    stroke: #000000 !important;
+    opacity: 1 !important;
+  }
+}
+
 
 
 
