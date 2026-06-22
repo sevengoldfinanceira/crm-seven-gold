@@ -17318,6 +17318,30 @@ body.login-page-body .password-toggle-btn[type="button"]:hover {
   }
 }
 
+/* Mobile: menu hamburguer sem espaco sobrando no fim */
+@media (max-width: 768px) {
+  body[data-unified-admin] .mobile-sidebar,
+  body[data-unified-admin] .company-sidebar.mobile-sidebar,
+  body[data-unified-admin] .unified-admin-sidebar.mobile-sidebar,
+  body[data-unified-admin] .sidebar-collapsed .company-sidebar.mobile-sidebar,
+  body[data-unified-admin] .sidebar-collapsed .unified-admin-sidebar.mobile-sidebar {
+    bottom: 0 !important;
+    padding-bottom: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+
+  body[data-unified-admin] .mobile-sidebar .sidebar-footer-container {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  body[data-unified-admin] .mobile-sidebar .sidebar-profile-card {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}
+
 
 
 
