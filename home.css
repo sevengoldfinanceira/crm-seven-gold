@@ -17565,6 +17565,32 @@ body.login-page-body .password-toggle-btn[type="button"]:hover {
   }
 }
 
+/* Menu: mostrar alcas de arrastar apenas no modo de edicao */
+body[data-unified-admin] .company-sidebar:not(.sidebar-editing) .menu-drag-handle,
+body[data-unified-admin] .unified-admin-sidebar:not(.sidebar-editing) .menu-drag-handle {
+  display: none !important;
+}
+
+body[data-unified-admin] .company-sidebar.sidebar-editing .menu-drag-handle,
+body[data-unified-admin] .unified-admin-sidebar.sidebar-editing .menu-drag-handle {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+body[data-unified-admin] .company-sidebar:not(.sidebar-editing) .menu-item,
+body[data-unified-admin] .unified-admin-sidebar:not(.sidebar-editing) .menu-item {
+  gap: 12px !important;
+  padding-left: 12px !important;
+}
+
+@media (max-width: 768px) {
+  body[data-unified-admin] .mobile-sidebar:not(.sidebar-editing) .menu-item {
+    gap: 10px !important;
+    padding-left: 10px !important;
+  }
+}
+
 
 
 
