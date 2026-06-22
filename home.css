@@ -16935,138 +16935,174 @@ body[data-unified-admin] .theme-btn-toggle.active {
   box-shadow: none !important;
 }
 
+body[data-unified-admin] .theme-btn-toggle.active {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: none !important;
+}
+
 /* ============================================================
    MOBILE/TABLET ONLY SIDEBAR THEME SWITCHER (<1024px)
    ============================================================ */
 @media (max-width: 1023px) {
-  /* Sidebar dark mode on mobile */
-  body.theme-dark .company-sidebar,
-  body.theme-dark .unified-admin-sidebar {
+  /* Sidebar dark mode on mobile (using high specificity to override line 9562) */
+  body[data-unified-admin].theme-dark .company-sidebar,
+  body[data-unified-admin].theme-dark .unified-admin-sidebar {
     background: #000000 !important;
     border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: none !important;
+    padding: 20px 14px 0 14px !important; /* bottom padding set to 0 */
   }
-  body.theme-dark .menu-item {
+  body[data-unified-admin].theme-dark .menu-item {
     color: rgba(255, 255, 255, 0.6) !important;
   }
-  body.theme-dark .menu-item svg,
-  body.theme-dark .menu-item i {
+  body[data-unified-admin].theme-dark .menu-item svg,
+  body[data-unified-admin].theme-dark .menu-item i {
     color: rgba(255, 255, 255, 0.5) !important;
   }
-  body.theme-dark .menu-item.active {
+  body[data-unified-admin].theme-dark .menu-item.active {
     background: rgba(255, 255, 255, 0.12) !important;
     color: #ffffff !important;
   }
-  body.theme-dark .menu-item.active svg,
-  body.theme-dark .menu-item.active i {
+  body[data-unified-admin].theme-dark .menu-item.active svg,
+  body[data-unified-admin].theme-dark .menu-item.active i {
     color: #ffffff !important;
   }
-  body.theme-dark .sidebar-divider {
+  body[data-unified-admin].theme-dark .sidebar-divider {
     border-color: rgba(255, 255, 255, 0.1) !important;
   }
-  body.theme-dark .theme-label,
-  body.theme-dark .system-section-title {
+  body[data-unified-admin].theme-dark .theme-label,
+  body[data-unified-admin].theme-dark .system-section-title {
     color: rgba(255, 255, 255, 0.42) !important;
   }
-  body.theme-dark .profile-name-row strong {
+  body[data-unified-admin].theme-dark .profile-name-row strong {
     color: #ffffff !important;
   }
-  body.theme-dark .profile-role {
+  body[data-unified-admin].theme-dark .profile-role {
     color: #f6d365 !important;
   }
-  body.theme-dark .profile-email {
+  body[data-unified-admin].theme-dark .profile-email {
     color: rgba(255, 255, 255, 0.45) !important;
   }
-  body.theme-dark .profile-icon-action {
+  body[data-unified-admin].theme-dark .profile-icon-action {
     color: rgba(255, 255, 255, 0.5) !important;
   }
-  body.theme-dark .profile-icon-action:hover {
+  body[data-unified-admin].theme-dark .profile-icon-action:hover {
     background: rgba(255, 255, 255, 0.08) !important;
     color: #ffffff !important;
   }
-  body.theme-dark .sidebar-copyright {
+  body[data-unified-admin].theme-dark .sidebar-copyright {
     color: rgba(255, 255, 255, 0.32) !important;
   }
-  body.theme-dark .mobile-sidebar-close {
+  body[data-unified-admin].theme-dark .mobile-sidebar-close {
     color: #ffffff !important;
   }
 
-  /* Sidebar light mode on mobile */
-  body:not(.theme-dark) .company-sidebar,
-  body:not(.theme-dark) .unified-admin-sidebar {
+  /* Sidebar light mode on mobile (using high specificity to override line 9312) */
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar {
     background: #ffffff !important;
     border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
     box-shadow: 4px 0 16px rgba(0, 0, 0, 0.05) !important;
+    padding: 20px 14px 0 14px !important; /* bottom padding set to 0 */
   }
-  body:not(.theme-dark) .brand-title {
+  body[data-unified-admin]:not(.theme-dark) .brand-title {
     color: #000000 !important;
   }
-  body:not(.theme-dark) .brand-subtitle {
+  body[data-unified-admin]:not(.theme-dark) .brand-subtitle {
     color: rgba(0, 0, 0, 0.5) !important;
   }
-  body:not(.theme-dark) .menu-item {
+  body[data-unified-admin]:not(.theme-dark) .menu-item {
     color: rgba(0, 0, 0, 0.6) !important;
   }
-  body:not(.theme-dark) .menu-item svg,
-  body:not(.theme-dark) .menu-item i {
+  body[data-unified-admin]:not(.theme-dark) .menu-item svg,
+  body[data-unified-admin]:not(.theme-dark) .menu-item i {
     color: rgba(0, 0, 0, 0.5) !important;
   }
-  body:not(.theme-dark) .menu-item:hover {
+  body[data-unified-admin]:not(.theme-dark) .menu-item:hover {
     background: rgba(0, 0, 0, 0.05) !important;
     color: #000000 !important;
   }
-  body:not(.theme-dark) .menu-item:hover svg,
-  body:not(.theme-dark) .menu-item:hover i {
+  body[data-unified-admin]:not(.theme-dark) .menu-item:hover svg,
+  body[data-unified-admin]:not(.theme-dark) .menu-item:hover i {
     color: #000000 !important;
   }
-  body:not(.theme-dark) .menu-item.active {
+  body[data-unified-admin]:not(.theme-dark) .menu-item.active {
     background: rgba(0, 0, 0, 0.08) !important;
     color: #000000 !important;
     font-weight: 700 !important;
   }
-  body:not(.theme-dark) .menu-item.active svg,
-  body:not(.theme-dark) .menu-item.active i {
+  body[data-unified-admin]:not(.theme-dark) .menu-item.active svg,
+  body[data-unified-admin]:not(.theme-dark) .menu-item.active i {
     color: #000000 !important;
   }
-  body:not(.theme-dark) .sidebar-divider {
+  body[data-unified-admin]:not(.theme-dark) .sidebar-divider {
     border-color: rgba(0, 0, 0, 0.1) !important;
   }
-  body:not(.theme-dark) .theme-label,
-  body:not(.theme-dark) .system-section-title {
+  body[data-unified-admin]:not(.theme-dark) .theme-label,
+  body[data-unified-admin]:not(.theme-dark) .system-section-title {
     color: rgba(0, 0, 0, 0.45) !important;
   }
-  body:not(.theme-dark) .profile-name-row strong {
+  body[data-unified-admin]:not(.theme-dark) .profile-name-row strong {
     color: #000000 !important;
   }
-  body:not(.theme-dark) .profile-role {
+  body[data-unified-admin]:not(.theme-dark) .profile-role {
     color: #a47e1b !important;
   }
-  body:not(.theme-dark) .profile-email {
+  body[data-unified-admin]:not(.theme-dark) .profile-email {
     color: rgba(0, 0, 0, 0.5) !important;
   }
-  body:not(.theme-dark) .profile-icon-action {
+  body[data-unified-admin]:not(.theme-dark) .profile-icon-action {
     color: rgba(0, 0, 0, 0.5) !important;
   }
-  body:not(.theme-dark) .profile-icon-action:hover {
+  body[data-unified-admin]:not(.theme-dark) .profile-icon-action:hover {
     background: rgba(0, 0, 0, 0.05) !important;
     color: #000000 !important;
   }
-  body:not(.theme-dark) .sidebar-copyright {
+  body[data-unified-admin]:not(.theme-dark) .sidebar-copyright {
     color: rgba(0, 0, 0, 0.4) !important;
   }
-  body:not(.theme-dark) .mobile-sidebar-close {
+  body[data-unified-admin]:not(.theme-dark) .mobile-sidebar-close {
     color: #000000 !important;
   }
-  body:not(.theme-dark) .theme-buttons-group {
+  body[data-unified-admin]:not(.theme-dark) .theme-buttons-group {
     background: rgba(0, 0, 0, 0.05) !important;
     border-color: rgba(0, 0, 0, 0.08) !important;
   }
-  body:not(.theme-dark) .theme-btn-toggle {
+  body[data-unified-admin]:not(.theme-dark) .theme-btn-toggle {
     color: rgba(0, 0, 0, 0.5) !important;
   }
-  body:not(.theme-dark) .theme-btn-toggle.active {
+  body[data-unified-admin]:not(.theme-dark) .theme-btn-toggle.active {
     background: #000000 !important;
     border-color: #000000 !important;
     color: #ffffff !important;
+  }
+
+  /* Padding and margin alignments to stay completely flush with bottom edge */
+  body[data-unified-admin] .sidebar-footer-container {
+    gap: 8px !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  
+  body[data-unified-admin] .sidebar-divider {
+    margin: 6px 0 !important;
+  }
+  
+  body[data-unified-admin] .sidebar-logout-btn {
+    height: 38px !important;
+  }
+  
+  body[data-unified-admin] .sidebar-profile-card {
+    padding: 8px 4px 0 4px !important;
+    margin-bottom: 0 !important;
+  }
+  
+  body[data-unified-admin] .sidebar-copyright {
+    margin-top: 4px !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 0 !important;
   }
 }
 
