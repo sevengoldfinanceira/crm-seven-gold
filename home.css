@@ -17342,6 +17342,37 @@ body.login-page-body .password-toggle-btn[type="button"]:hover {
   }
 }
 
+/* Mobile: botao hamburguer igual ao da tela inicial */
+@media (max-width: 768px) {
+  body[data-unified-admin] .mobile-menu-toggle,
+  body[data-unified-admin] .sidebar-hamburger,
+  .mobile-menu-toggle.sidebar-hamburger {
+    top: 14px !important;
+    left: 16px !important;
+    width: 64px !important;
+    height: 64px !important;
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+    border-radius: 999px !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    box-shadow: 0 16px 38px rgba(15, 23, 42, 0.12) !important;
+  }
+
+  body[data-unified-admin] .mobile-menu-toggle svg,
+  body[data-unified-admin] .mobile-menu-toggle i,
+  body[data-unified-admin] .sidebar-hamburger svg,
+  body[data-unified-admin] .sidebar-hamburger i,
+  .mobile-menu-toggle.sidebar-hamburger svg,
+  .mobile-menu-toggle.sidebar-hamburger i {
+    width: 34px !important;
+    height: 34px !important;
+    color: #0f172a !important;
+    stroke: #0f172a !important;
+    stroke-width: 2.6px !important;
+    opacity: 1 !important;
+  }
+}
+
 
 
 
