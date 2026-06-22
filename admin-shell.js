@@ -146,7 +146,13 @@
       <div class="sidebar-footer-container">
         <div class="sidebar-divider"></div>
         <div class="sidebar-system-section">
-          <span class="system-section-title">SISTEMA</span>
+          <div class="sidebar-system-heading">
+            <span class="system-section-title">SISTEMA</span>
+            <div class="sidebar-system-actions">
+              <a href="perfil.html?area=empresa" class="profile-icon-action" title="Configurações"><i data-lucide="settings"></i></a>
+              <button type="button" class="profile-icon-action btn-edit-sidebar" title="Editar Menu"><i data-lucide="pencil"></i></button>
+            </div>
+          </div>
           
           <div class="sidebar-theme-toggle-row">
             <span class="theme-label">Tema:</span>
@@ -177,10 +183,6 @@
               </div>
               <span class="profile-role" data-user-role>Perfil</span>
               <span class="profile-email" data-user-email></span>
-            </div>
-            <div class="profile-action-icons">
-              <a href="perfil.html?area=empresa" class="profile-icon-action" title="Configurações"><i data-lucide="settings"></i></a>
-              <button type="button" class="profile-icon-action btn-edit-sidebar" title="Editar Menu"><i data-lucide="pencil"></i></button>
             </div>
           </div>
           <div class="sidebar-copyright">
