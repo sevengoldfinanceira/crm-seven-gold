@@ -17700,6 +17700,17 @@ body[data-unified-admin] .unified-admin-sidebar:not(.sidebar-editing) .menu-item
   }
 }
 
+/* Mobile: texto e icone do sair sempre vermelhos */
+@media (max-width: 768px) {
+  body[data-unified-admin] .mobile-sidebar .sidebar-logout-btn,
+  body[data-unified-admin] .mobile-sidebar .sidebar-logout-btn *,
+  body[data-unified-admin] .mobile-sidebar .sidebar-logout-btn svg,
+  body[data-unified-admin] .mobile-sidebar .sidebar-logout-btn i {
+    color: #ef4444 !important;
+    stroke: #ef4444 !important;
+  }
+}
+
 
 
 
