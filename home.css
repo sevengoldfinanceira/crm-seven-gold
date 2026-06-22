@@ -17363,10 +17363,10 @@ body.login-page-body .password-toggle-btn[type="button"]:hover {
   body[data-unified-admin] .mobile-menu-toggle,
   body[data-unified-admin] .sidebar-hamburger,
   .mobile-menu-toggle.sidebar-hamburger {
-    top: 14px !important;
+    top: 12px !important;
     left: 16px !important;
-    width: 64px !important;
-    height: 64px !important;
+    width: 44px !important;
+    height: 44px !important;
     border: 1px solid rgba(15, 23, 42, 0.08) !important;
     border-radius: 999px !important;
     background: #ffffff !important;
@@ -17380,11 +17380,11 @@ body.login-page-body .password-toggle-btn[type="button"]:hover {
   body[data-unified-admin] .sidebar-hamburger i,
   .mobile-menu-toggle.sidebar-hamburger svg,
   .mobile-menu-toggle.sidebar-hamburger i {
-    width: 34px !important;
-    height: 34px !important;
+    width: 24px !important;
+    height: 24px !important;
     color: #0f172a !important;
     stroke: #0f172a !important;
-    stroke-width: 2.6px !important;
+    stroke-width: 2.4px !important;
     opacity: 1 !important;
   }
 }
