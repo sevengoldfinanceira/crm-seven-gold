@@ -17140,6 +17140,10 @@ body.login-page-body .password-toggle-btn[type="button"]:hover {
     stroke: #000000 !important;
     opacity: 1 !important;
   }
+
+  body[data-unified-admin] .sidebar-copyright {
+    display: none !important;
+  }
 }
 
 
