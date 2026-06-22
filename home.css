@@ -17711,6 +17711,25 @@ body[data-unified-admin] .unified-admin-sidebar:not(.sidebar-editing) .menu-item
   }
 }
 
+/* Mobile: centralizar perfil no rodape do menu */
+@media (max-width: 768px) {
+  body[data-unified-admin] .mobile-sidebar .sidebar-profile-card {
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  body[data-unified-admin] .mobile-sidebar .profile-main {
+    width: fit-content !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    justify-content: center !important;
+  }
+
+  body[data-unified-admin] .mobile-sidebar .profile-info {
+    flex: 0 1 auto !important;
+  }
+}
+
 
 
 
