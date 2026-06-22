@@ -1240,7 +1240,7 @@ body[data-unified-admin]>.unified-admin-shell {
 }
 
 .profile-role {
-  display: none !important;
+  display: block;
   margin-top: 2px;
   color: #f6d365;
   font-size: 0.7rem;
@@ -16517,6 +16517,280 @@ body.mobile-menu-open {
     min-height: 40px;
   }
 }
+
+/* ============================================================
+   SIDEBAR FOOTER & SYSTEM ADJUSTMENTS — PREMIUM MOBILE SIDEBAR
+   ============================================================ */
+.sidebar-footer-container {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.sidebar-system-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 4px;
+}
+
+.system-section-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+body[data-unified-admin]:not(.theme-dark) .system-section-title {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.sidebar-theme-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.theme-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body[data-unified-admin]:not(.theme-dark) .theme-label {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.theme-buttons-group {
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body[data-unified-admin]:not(.theme-dark) .theme-buttons-group {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.theme-btn-toggle {
+  background: transparent !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  min-height: auto !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .theme-btn-toggle {
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.theme-btn-toggle.active {
+  background: rgba(212, 175, 55, 0.15) !important;
+  border: 1px solid rgba(212, 175, 55, 0.45) !important;
+  color: #f6d365 !important;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.12) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .theme-btn-toggle.active {
+  background: #fbf5e6 !important;
+  border: 1px solid #d4af37 !important;
+  color: #a47e1b !important;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.1) !important;
+}
+
+.sidebar-logout-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+  color: #f87171 !important;
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  transition: all 0.25s ease !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.sidebar-logout-btn svg,
+.sidebar-logout-btn i {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.sidebar-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border-color: rgba(239, 68, 68, 0.6) !important;
+  color: #ef4444 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1) !important;
+}
+
+.sidebar-divider {
+  border-top: 1px solid rgba(212, 175, 55, 0.15);
+  margin: 4px 0;
+  width: 100%;
+}
+
+body[data-unified-admin]:not(.theme-dark) .sidebar-divider {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.profile-action-icons {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.profile-icon-action {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(212, 175, 55, 0.25) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: #d4af37 !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+  padding: 0 !important;
+  min-height: auto !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .profile-icon-action {
+  border-color: rgba(212, 175, 55, 0.35) !important;
+  background: rgba(0, 0, 0, 0.02) !important;
+  color: #a47e1b !important;
+}
+
+.profile-icon-action svg,
+.profile-icon-action i {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.profile-icon-action:hover {
+  background: rgba(212, 175, 55, 0.12) !important;
+  border-color: rgba(212, 175, 55, 0.5) !important;
+  color: #f6d365 !important;
+  transform: translateY(-1px) !important;
+}
+
+body[data-unified-admin]:not(.theme-dark) .profile-icon-action:hover {
+  background: rgba(212, 175, 55, 0.08) !important;
+  border-color: #d4af37 !important;
+  color: #8a6500 !important;
+}
+
+.profile-email {
+  display: block;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+body[data-unified-admin]:not(.theme-dark) .profile-email {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-copyright {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.32);
+  text-align: left;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.3;
+  padding-left: 2px;
+}
+
+body[data-unified-admin]:not(.theme-dark) .sidebar-copyright {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.sidebar-profile-card {
+  margin-top: 0 !important;
+  padding: 12px 14px !important;
+  border: 1px solid rgba(212, 175, 55, 0.25) !important;
+}
+
+.sidebar-collapsed .sidebar-system-section,
+.sidebar-collapsed .sidebar-divider,
+.sidebar-collapsed .sidebar-copyright,
+.sidebar-collapsed .profile-action-icons,
+.sidebar-collapsed .profile-email {
+  display: none !important;
+}
+
+/* ============================================================
+   HIGH-SPECIFICITY OVERRIDES FOR DARK LOGIN BUTTONS
+   ============================================================ */
+body.login-page-body button.use-saved-account-btn[type="button"],
+body.login-page-body .use-saved-account-btn[type="button"] {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(212, 175, 55, 0.3) !important;
+  color: #d8b444 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+body.login-page-body button.use-saved-account-btn[type="button"]:hover,
+body.login-page-body .use-saved-account-btn[type="button"]:hover {
+  background: rgba(212, 175, 55, 0.15) !important;
+  border-color: #d8b444 !important;
+  color: #f6d365 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.1) !important;
+}
+
+body.login-page-body button.password-toggle-btn[type="button"],
+body.login-page-body .password-toggle-btn[type="button"] {
+  background: transparent !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.42) !important;
+  box-shadow: none !important;
+  transform: translateY(-50%) !important;
+  right: 14px !important;
+}
+
+body.login-page-body button.password-toggle-btn[type="button"]:hover,
+body.login-page-body .password-toggle-btn[type="button"]:hover {
+  color: #ffffff !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform: translateY(-50%) !important;
+}
+
 
 
 

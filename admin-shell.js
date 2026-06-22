@@ -143,21 +143,49 @@
           )
           .join("")}
       </nav>
-      <div class="sidebar-profile-card">
-        <div class="profile-main">
-          <span class="profile-avatar" data-user-avatar>U</span>
-          <div class="profile-info">
-            <div class="profile-name-row">
-              <strong data-user-name>Usuário</strong>
-              <span class="verified-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#d4af37"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <div class="sidebar-footer-container">
+        <div class="sidebar-system-section">
+          <span class="system-section-title">SISTEMA</span>
+          
+          <div class="sidebar-theme-toggle-row">
+            <span class="theme-label">Tema:</span>
+            <div class="theme-buttons-group">
+              <button type="button" class="theme-btn-toggle" data-theme-val="light" title="Modo Claro">
+                Claro
+              </button>
+              <button type="button" class="theme-btn-toggle" data-theme-val="dark" title="Modo Escuro">
+                Escuro
+              </button>
             </div>
-            <span class="profile-role" data-user-role>Perfil</span>
           </div>
+          
+          <a href="painel.html" class="sidebar-logout-btn" title="Sair">
+            <i data-lucide="log-out"></i> Sair
+          </a>
         </div>
-        <div class="profile-actions">
-          <a href="perfil.html?area=empresa" class="profile-action" title="Configurações"><i data-lucide="settings"></i></a>
-          <button type="button" class="profile-action btn-edit-sidebar" title="Editar Menu"><i data-lucide="pencil"></i></button>
-          <a href="painel.html" class="profile-action" title="Sair"><i data-lucide="log-out"></i></a>
+        
+        <div class="sidebar-divider"></div>
+        
+        <div class="sidebar-profile-card">
+          <div class="profile-main">
+            <span class="profile-avatar" data-user-avatar>U</span>
+            <div class="profile-info">
+              <div class="profile-name-row">
+                <strong data-user-name>Usuário</strong>
+                <span class="verified-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#d4af37"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </div>
+              <span class="profile-role" data-user-role>Perfil</span>
+              <span class="profile-email" data-user-email></span>
+            </div>
+            <div class="profile-action-icons">
+              <a href="perfil.html?area=empresa" class="profile-icon-action" title="Configurações"><i data-lucide="settings"></i></a>
+              <button type="button" class="profile-icon-action btn-edit-sidebar" title="Editar Menu"><i data-lucide="pencil"></i></button>
+            </div>
+          </div>
+          <div class="sidebar-copyright">
+            <span>© 2026 Seven Gold</span>
+            <span>Todos os direitos reservados.</span>
+          </div>
         </div>
       </div>
     `;
@@ -226,6 +254,33 @@
     topbar.after(searchWrapper);
     const sidebar = createSidebar();
     layout.prepend(sidebar);
+
+    const sidebarThemeBtns = sidebar.querySelectorAll(".theme-btn-toggle");
+    const updateSidebarThemeActive = () => {
+      const currentTheme = localStorage.getItem("seven-gold-theme") || "light";
+      sidebarThemeBtns.forEach((btn) => {
+        const isActive = btn.dataset.themeVal === currentTheme;
+        btn.classList.toggle("active", isActive);
+      });
+    };
+    updateSidebarThemeActive();
+    sidebarThemeBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const theme = btn.dataset.themeVal;
+        localStorage.setItem("seven-gold-theme", theme);
+        if (theme === "dark") {
+          document.body.classList.add("theme-dark");
+        } else {
+          document.body.classList.remove("theme-dark");
+        }
+        updateSidebarThemeActive();
+        window.dispatchEvent(new CustomEvent("themechange", { detail: theme }));
+      });
+    });
+
+    window.addEventListener("themechange", (e) => {
+      updateSidebarThemeActive();
+    });
 
     if (window.matchMedia("(min-width: 1024px)").matches) {
       layout.style.setProperty("padding-top", "88px", "important");
