@@ -16999,7 +16999,7 @@ body[data-unified-admin] .theme-btn-toggle.active {
     color: #ffffff !important;
   }
 
-  /* Sidebar light mode on mobile (using high specificity to override line 9312) */
+  /* Sidebar light mode on mobile (using high specificity to override line 9312 and 9575) */
   body[data-unified-admin]:not(.theme-dark) .company-sidebar,
   body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar {
     background: #ffffff !important;
@@ -17007,35 +17007,57 @@ body[data-unified-admin] .theme-btn-toggle.active {
     box-shadow: 4px 0 16px rgba(0, 0, 0, 0.05) !important;
     padding: 20px 14px 0 14px !important; /* bottom padding set to 0 */
   }
+  
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar a,
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar span,
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar p,
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar small,
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar button,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar a,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar span,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar p,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar small,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar button {
+    color: rgba(0, 0, 0, 0.65) !important;
+  }
+
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar a:hover,
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar a:hover span,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar a:hover,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar a:hover span {
+    color: #000000 !important;
+  }
+
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar a.active,
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar a.active span,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar a.active,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar a.active span {
+    color: #000000 !important;
+  }
+
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar svg,
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar i,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar svg,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar i {
+    color: rgba(0, 0, 0, 0.5) !important;
+  }
+
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar a:hover svg,
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar a:hover i,
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar a.active svg,
+  body[data-unified-admin]:not(.theme-dark) .company-sidebar a.active i,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar a:hover svg,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar a:hover i,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar a.active svg,
+  body[data-unified-admin]:not(.theme-dark) .unified-admin-sidebar a.active i {
+    color: #000000 !important;
+  }
+
   body[data-unified-admin]:not(.theme-dark) .brand-title {
     color: #000000 !important;
   }
   body[data-unified-admin]:not(.theme-dark) .brand-subtitle {
     color: rgba(0, 0, 0, 0.5) !important;
-  }
-  body[data-unified-admin]:not(.theme-dark) .menu-item {
-    color: rgba(0, 0, 0, 0.6) !important;
-  }
-  body[data-unified-admin]:not(.theme-dark) .menu-item svg,
-  body[data-unified-admin]:not(.theme-dark) .menu-item i {
-    color: rgba(0, 0, 0, 0.5) !important;
-  }
-  body[data-unified-admin]:not(.theme-dark) .menu-item:hover {
-    background: rgba(0, 0, 0, 0.05) !important;
-    color: #000000 !important;
-  }
-  body[data-unified-admin]:not(.theme-dark) .menu-item:hover svg,
-  body[data-unified-admin]:not(.theme-dark) .menu-item:hover i {
-    color: #000000 !important;
-  }
-  body[data-unified-admin]:not(.theme-dark) .menu-item.active {
-    background: rgba(0, 0, 0, 0.08) !important;
-    color: #000000 !important;
-    font-weight: 700 !important;
-  }
-  body[data-unified-admin]:not(.theme-dark) .menu-item.active svg,
-  body[data-unified-admin]:not(.theme-dark) .menu-item.active i {
-    color: #000000 !important;
   }
   body[data-unified-admin]:not(.theme-dark) .sidebar-divider {
     border-color: rgba(0, 0, 0, 0.1) !important;
@@ -17060,10 +17082,11 @@ body[data-unified-admin] .theme-btn-toggle.active {
     background: rgba(0, 0, 0, 0.05) !important;
     color: #000000 !important;
   }
-  body[data-unified-admin]:not(.theme-dark) .sidebar-copyright {
+  body[data-unified-admin]:not(.theme-dark) .sidebar-copyright span {
     color: rgba(0, 0, 0, 0.4) !important;
   }
-  body[data-unified-admin]:not(.theme-dark) .mobile-sidebar-close {
+  body[data-unified-admin]:not(.theme-dark) .mobile-sidebar-close i,
+  body[data-unified-admin]:not(.theme-dark) .mobile-sidebar-close svg {
     color: #000000 !important;
   }
   body[data-unified-admin]:not(.theme-dark) .theme-buttons-group {
