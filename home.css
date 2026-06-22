@@ -16791,6 +16791,143 @@ body.login-page-body .password-toggle-btn[type="button"]:hover {
   transform: translateY(-50%) !important;
 }
 
+/* ============================================================
+   FLAT BLACK-AND-WHITE SIDEBAR STYLE CUSTOMIZATIONS
+   ============================================================ */
+body[data-unified-admin] .company-sidebar,
+body[data-unified-admin] .unified-admin-sidebar {
+  background: #000000 !important;
+  box-shadow: none !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0 !important;
+  padding: 20px 14px !important;
+}
+
+/* Hide Category Titles Visually */
+body[data-unified-admin] .menu-section-title {
+  display: none !important;
+}
+
+body[data-unified-admin] .menu-section {
+  border-top: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body[data-unified-admin] .menu-section+.menu-section {
+  border-top: none !important;
+  margin-top: 0 !important;
+}
+
+/* Flat Profile Card Footer (No Rounded Border, Transparent Background) */
+body[data-unified-admin] .sidebar-profile-card {
+  border: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 10px 4px !important;
+}
+
+/* Flat Icon Actions inside Profile Footer */
+body[data-unified-admin] .profile-icon-action {
+  border: none !important;
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: none !important;
+}
+
+body[data-unified-admin] .profile-icon-action:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  transform: none !important;
+}
+
+/* Dividers */
+body[data-unified-admin] .sidebar-divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  margin: 10px 0 !important;
+}
+
+/* Header Text Adjustments */
+body[data-unified-admin] .brand-title {
+  color: #ffffff !important;
+  text-shadow: none !important;
+}
+
+body[data-unified-admin] .brand-subtitle {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Menu Items Flat Styling */
+body[data-unified-admin] .menu-item {
+  color: rgba(255, 255, 255, 0.6) !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  transform: none !important;
+  margin: 2px 0 !important;
+  font-weight: 500 !important;
+}
+
+body[data-unified-admin] .menu-item svg,
+body[data-unified-admin] .menu-item i {
+  color: rgba(255, 255, 255, 0.5) !important;
+  filter: none !important;
+}
+
+body[data-unified-admin] .menu-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+body[data-unified-admin] .menu-item:hover svg,
+body[data-unified-admin] .menu-item:hover i {
+  color: #ffffff !important;
+}
+
+body[data-unified-admin] .menu-item.active {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+body[data-unified-admin] .menu-item.active svg,
+body[data-unified-admin] .menu-item.active i {
+  color: #ffffff !important;
+  filter: none !important;
+}
+
+body[data-unified-admin] .menu-item.active::before {
+  display: none !important;
+}
+
+/* Flat Theme Toggles */
+body[data-unified-admin] .theme-buttons-group {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body[data-unified-admin] .theme-btn-toggle {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+body[data-unified-admin] .theme-btn-toggle.active {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: none !important;
+}
+
+
 
 
 

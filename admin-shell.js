@@ -144,6 +144,7 @@
           .join("")}
       </nav>
       <div class="sidebar-footer-container">
+        <div class="sidebar-divider"></div>
         <div class="sidebar-system-section">
           <span class="system-section-title">SISTEMA</span>
           
