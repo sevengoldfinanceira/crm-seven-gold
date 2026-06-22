@@ -17325,20 +17325,36 @@ body.login-page-body .password-toggle-btn[type="button"]:hover {
   body[data-unified-admin] .unified-admin-sidebar.mobile-sidebar,
   body[data-unified-admin] .sidebar-collapsed .company-sidebar.mobile-sidebar,
   body[data-unified-admin] .sidebar-collapsed .unified-admin-sidebar.mobile-sidebar {
+    top: 0 !important;
     bottom: 0 !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
     padding-bottom: 0 !important;
     border-bottom-left-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
   }
 
+  body[data-unified-admin] .mobile-sidebar .company-sidebar-nav {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+  }
+
   body[data-unified-admin] .mobile-sidebar .sidebar-footer-container {
+    width: calc(100% + 28px) !important;
+    margin-left: -14px !important;
+    margin-right: -14px !important;
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
+    gap: 0 !important;
   }
 
   body[data-unified-admin] .mobile-sidebar .sidebar-profile-card {
+    width: 100% !important;
     margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
+    padding: 8px 14px 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
   }
 }
 
