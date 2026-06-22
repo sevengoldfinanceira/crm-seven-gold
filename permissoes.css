@@ -1018,3 +1018,31 @@ body.theme-dark .perm-area-icon {
     flex-wrap: wrap;
   }
 }
+
+/* --- Antigravity Mobile Card Overflow & Font Size Fix --- */
+@media (max-width: 768px) {
+  .perm-stat-card,
+  .perm-sidebar-card {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    box-sizing: border-box !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(216, 173, 61, 0.4) transparent !important;
+  }
+
+  .perm-stat-card .perm-stat-value,
+  .perm-sidebar-card h2 {
+    font-size: clamp(0.85rem, 4vw, 1.15rem) !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .perm-stat-card .perm-stat-label,
+  .perm-sidebar-card .perm-card-desc {
+    font-size: clamp(0.75rem, 3.5vw, 0.85rem) !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.4 !important;
+  }
+}
+

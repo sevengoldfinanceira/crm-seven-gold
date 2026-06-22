@@ -17750,6 +17750,105 @@ body[data-unified-admin] .unified-admin-sidebar:not(.sidebar-editing) .menu-item
   }
 }
 
+/* --- Antigravity Mobile Card Overflow & Font Size Fix --- */
+@media (max-width: 768px) {
+  /* Prevent horizontal overflow on all card containers and add a horizontal scrollbar if needed */
+  .entry-card,
+  .premium-access-card,
+  .saved-account-card,
+  .company-card,
+  .owner-year-card,
+  .sidebar-profile-card,
+  .org-summary-card,
+  .commission-card,
+  .eq-content-card,
+  .eq-dir-card,
+  .eq-document-card,
+  .eq-folder-card,
+  .eq-sector-card,
+  .eq-sidebar-card,
+  .eq-summary-card,
+  .goal-stat-card,
+  .goals-chart-card,
+  .goals-donut-card,
+  .goals-table-card,
+  .lead-source-card,
+  .panel-card,
+  .perm-sidebar-card,
+  .perm-stat-card,
+  .profile-editor-card,
+  .stat-card-blue,
+  .stat-card-green,
+  .stat-card-indigo,
+  .stat-card-orange {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    box-sizing: border-box !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(216, 173, 61, 0.4) transparent !important;
+  }
+
+  /* Decrease font size inside cards when content is too large or wraps, preventing overflow */
+  .entry-card h2,
+  .entry-card strong,
+  .premium-access-card .card-title,
+  .saved-account-card strong,
+  .company-card h2,
+  .company-card strong,
+  .owner-year-card h2,
+  .org-summary-card h2,
+  .commission-card h2,
+  .goal-stat-card h2,
+  .goals-chart-card h2,
+  .goals-donut-card h2,
+  .goals-table-card h2,
+  .lead-source-card h2,
+  .panel-card h2,
+  .perm-stat-card h2,
+  .perm-sidebar-card h2,
+  .profile-editor-card h2,
+  .stat-card-blue h2,
+  .stat-card-green h2,
+  .stat-card-indigo h2,
+  .stat-card-orange h2 {
+    font-size: clamp(0.85rem, 4vw, 1.15rem) !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  /* Description and body paragraphs inside cards */
+  .entry-card p,
+  .premium-access-card .card-description,
+  .saved-account-card span,
+  .company-card p,
+  .owner-year-card p,
+  .org-summary-card p,
+  .commission-card p,
+  .goal-stat-card p,
+  .lead-source-card p,
+  .panel-card p,
+  .perm-card-desc,
+  .profile-editor-card p {
+    font-size: clamp(0.75rem, 3.5vw, 0.85rem) !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Small labels/emails/kickers/tags inside cards */
+  .entry-card span:not(.card-icon),
+  .premium-access-card .card-kicker,
+  .premium-access-card .tags .tag,
+  .saved-account-card .saved-email,
+  .company-card span:not(.company-icon),
+  .commission-card header span {
+    font-size: clamp(0.625rem, 3vw, 0.75rem) !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+}
+
+
 
 
 

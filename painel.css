@@ -501,3 +501,35 @@
     font-size: 1.15rem;
   }
 }
+
+/* --- Antigravity Mobile Card Overflow & Font Size Fix --- */
+@media (max-width: 768px) {
+  .premium-access-card {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    box-sizing: border-box !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(216, 173, 61, 0.4) transparent !important;
+  }
+
+  .premium-access-card .card-title {
+    font-size: clamp(0.85rem, 4vw, 1.15rem) !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .premium-access-card .card-description {
+    font-size: clamp(0.75rem, 3.5vw, 0.85rem) !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.4 !important;
+  }
+
+  .premium-access-card .card-kicker,
+  .premium-access-card .tags .tag {
+    font-size: clamp(0.625rem, 3vw, 0.75rem) !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+}
+
