@@ -1,7 +1,15 @@
 {
   "version": 2,
+  "buildCommand": null,
+  "outputDirectory": ".",
   "public": true,
   "github": {
     "silent": true
+  },
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "@vercel/node@3",
+      "maxDuration": 10
+    }
   }
 }
