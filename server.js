@@ -2,6 +2,38 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
+// -----------------------------------------------------------
+// Carregar variáveis de ambiente do arquivo .env (se existir)
+// -----------------------------------------------------------
+const envPath = path.join(__dirname, ".env");
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, "utf-8");
+  envContent.split("\n").forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) return;
+    const eqIndex = trimmed.indexOf("=");
+    if (eqIndex === -1) return;
+    const key = trimmed.slice(0, eqIndex).trim();
+    const value = trimmed.slice(eqIndex + 1).trim();
+    if (!process.env[key]) {
+      process.env[key] = value;
+    }
+  });
+  console.log("Variáveis de ambiente carregadas do .env");
+}
+
+// -----------------------------------------------------------
+// Importar handlers de API
+// -----------------------------------------------------------
+const apiRoutes = {};
+
+try {
+  apiRoutes["/api/whatsapp/webhook"] = require("./api/whatsapp/webhook");
+  console.log("Rota de API carregada: /api/whatsapp/webhook");
+} catch (e) {
+  console.warn("Aviso: api/whatsapp/webhook.js nao pode ser carregado.", e.message);
+}
+
 const port = 3000;
 const root = __dirname;
 
@@ -18,7 +50,36 @@ const mimeTypes = {
 
 const server = http.createServer((request, response) => {
   const requestUrl = new URL(request.url, `http://localhost:${port}`);
-  const normalizedPath = path.normalize(decodeURIComponent(requestUrl.pathname));
+  const pathname = decodeURIComponent(requestUrl.pathname);
+
+  // ---------------------------------------------------------
+  // Rotas de API
+  // ---------------------------------------------------------
+  const handler = apiRoutes[pathname];
+  if (handler) {
+    request.query = Object.fromEntries(requestUrl.searchParams);
+
+    let body = "";
+    request.on("data", (chunk) => {
+      body += chunk;
+    });
+
+    request.on("end", () => {
+      try {
+        request.body = body ? JSON.parse(body) : {};
+      } catch {
+        request.body = {};
+      }
+      handler(request, response);
+    });
+
+    return;
+  }
+
+  // ---------------------------------------------------------
+  // Arquivos estáticos
+  // ---------------------------------------------------------
+  const normalizedPath = path.normalize(pathname);
   const safePath = normalizedPath
     .replace(/^[/\\]+/, "")
     .replace(/^(\.\.[/\\])+/, "");
