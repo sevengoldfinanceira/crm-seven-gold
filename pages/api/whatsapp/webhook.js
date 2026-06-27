@@ -76,13 +76,14 @@ module.exports = async (req, res) => {
         } else {
           const { data: newLead, error: insertError } = await supabase
             .from('leads')
-            .insert({
-              telefone,
-              owner_id: ownerId,
-              interesse: 'Lead via WhatsApp',
-              opt_in: true,
-              ultima_interacao: new Date().toISOString(),
-            })
+          .insert({
+            name: `WhatsApp ${telefone}`,
+            telefone,
+            owner_id: ownerId,
+            interesse: 'Lead via WhatsApp',
+            opt_in: true,
+            ultima_interacao: new Date().toISOString(),
+          })
             .select('id')
             .single();
 

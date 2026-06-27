@@ -99,6 +99,7 @@ module.exports = async (req, res) => {
           const { data: newLead, error: insertError } = await supabase
             .from('leads')
             .insert({
+              name: `WhatsApp ${telefone}`,
               telefone,
               owner_id: ownerId,
               interesse: 'Lead via WhatsApp',
