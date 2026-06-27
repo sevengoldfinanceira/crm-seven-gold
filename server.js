@@ -31,7 +31,12 @@ try {
   apiRoutes["/api/whatsapp/webhook"] = require("./api/whatsapp/webhook");
   console.log("Rota de API carregada: /api/whatsapp/webhook");
 } catch (e) {
-  console.warn("Aviso: api/whatsapp/webhook.js nao pode ser carregado.", e.message);
+  try {
+    apiRoutes["/api/whatsapp/webhook"] = require("./pages/api/whatsapp/webhook");
+    console.log("Rota de API carregada (pages): /api/whatsapp/webhook");
+  } catch (e2) {
+    console.warn("Aviso: webhook.js nao pode ser carregado.", e2.message);
+  }
 }
 
 const port = 3000;
