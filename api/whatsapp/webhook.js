@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
     const token = req.query?.['hub.verify_token'];
     const challenge = req.query?.['hub.challenge'];
 
-    console.log('[WhatsApp Webhook] GET verification', { mode, token });
+    console.log('[WhatsApp Webhook] GET verification', { mode });
 
     if (mode === 'subscribe' && token === process.env.WHATSAPP_VERIFY_TOKEN) {
       res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
       const telefone = message.from;
       const texto = message.text?.body || '';
 
-      console.log('[WhatsApp Webhook] Mensagem recebida:', { telefone, texto });
+      console.log('[WhatsApp Webhook] Mensagem recebida');
 
       // -------------------------------------------------------
       // Buscar lead existente pelo telefone
@@ -134,7 +134,7 @@ module.exports = async (req, res) => {
         }
       }
     } catch (err) {
-      console.error('[WhatsApp Webhook] Erro inesperado:', err);
+      console.error('[WhatsApp Webhook] Erro inesperado:', process.env.NODE_ENV !== 'production' ? err : err.message);
     }
 
     // Sempre retorna 200 para a Meta não reenviar

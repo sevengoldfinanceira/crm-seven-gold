@@ -1,74 +1,59 @@
-const CACHE_VERSION = "seven-gold-v102";
-const APP_SHELL = [
-  "/",
-  "/index.html",
-  "/painel.html",
-  "/crm.html",
-  "/empresa.html",
-  "/metas.html",
-  "/marketing.html",
-  "/perfil.html",
+const CACHE_VERSION = "seven-gold-vmqreizkw";
+const STATIC_ASSETS = [
   "/home.css",
   "/styles.css",
   "/auth.js",
   "/admin-shell.js",
   "/pwa.js",
   "/supabase-config.js",
-"/assets/icons/LOGO COPA.png?v=1",
+  "/assets/icons/LOGO COPA.png",
   "/manifest.json"
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(APP_SHELL))
+    caches.open(CACHE_VERSION).then((cache) => cache.addAll(STATIC_ASSETS))
   );
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) =>
-        Promise.all(keys.filter((key) => key !== CACHE_VERSION).map((key) => caches.delete(key)))
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys
+          .filter((key) => key !== CACHE_VERSION)
+          .map((key) => caches.delete(key))
       )
+    )
   );
   self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
-  const request = event.request;
+  const { request } = event;
   const url = new URL(request.url);
 
-  if (request.method !== "GET" || url.origin !== self.location.origin) {
-    return;
-  }
+  if (request.method !== "GET" || url.origin !== self.location.origin) return;
 
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(request, copy));
-          return response;
-        })
-        .catch(async () => (await caches.match(request)) || caches.match("/index.html"))
+      fetch(request).catch(() =>
+        caches.match(request).then((r) => r || caches.match("/index.html"))
+      )
     );
     return;
   }
 
   event.respondWith(
     caches.match(request).then((cached) => {
-      const update = fetch(request)
-        .then((response) => {
-          if (response.ok) {
-            caches.open(CACHE_VERSION).then((cache) => cache.put(request, response.clone()));
-          }
-          return response;
-        })
-        .catch(() => cached);
-
-      return cached || update;
+      const fetched = fetch(request).then((response) => {
+        if (response.ok) {
+          caches.open(CACHE_VERSION).then((cache) => cache.put(request, response.clone()));
+        }
+        return response;
+      }).catch(() => cached);
+      return cached || fetched;
     })
   );
 });

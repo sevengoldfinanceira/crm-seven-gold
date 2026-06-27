@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
     const token = req.query?.['hub.verify_token'];
     const challenge = req.query?.['hub.challenge'];
 
-    console.log('[WhatsApp Webhook] GET verification', { mode, token });
+    console.log('[WhatsApp Webhook] GET verification', { mode });
 
     if (mode === 'subscribe' && token === process.env.WHATSAPP_VERIFY_TOKEN) {
       return res.status(200).send(challenge);
@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
       const telefone = message.from;
       const texto = message.text?.body || '';
 
-      console.log('[WhatsApp Webhook] Mensagem recebida:', { telefone, texto });
+      console.log('[WhatsApp Webhook] Mensagem recebida');
 
       const { data: existingLead, error: selectError } = await supabase
         .from('leads')
@@ -109,7 +109,7 @@ module.exports = async (req, res) => {
         }
       }
     } catch (err) {
-      console.error('[WhatsApp Webhook] Erro inesperado:', err);
+      console.error('[WhatsApp Webhook] Erro inesperado:', process.env.NODE_ENV !== 'production' ? err : err.message);
     }
 
     return res.status(200).send('EVENT_RECEIVED');

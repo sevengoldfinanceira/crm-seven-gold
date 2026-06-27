@@ -1,26 +1,7 @@
+require("dotenv").config();
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
-
-// -----------------------------------------------------------
-// Carregar variáveis de ambiente do arquivo .env (se existir)
-// -----------------------------------------------------------
-const envPath = path.join(__dirname, ".env");
-if (fs.existsSync(envPath)) {
-  const envContent = fs.readFileSync(envPath, "utf-8");
-  envContent.split("\n").forEach((line) => {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) return;
-    const eqIndex = trimmed.indexOf("=");
-    if (eqIndex === -1) return;
-    const key = trimmed.slice(0, eqIndex).trim();
-    const value = trimmed.slice(eqIndex + 1).trim();
-    if (!process.env[key]) {
-      process.env[key] = value;
-    }
-  });
-  console.log("Variáveis de ambiente carregadas do .env");
-}
 
 // -----------------------------------------------------------
 // Importar handlers de API
@@ -36,6 +17,18 @@ try {
     console.log("Rota de API carregada (pages): /api/whatsapp/webhook");
   } catch (e2) {
     console.warn("Aviso: webhook.js nao pode ser carregado.", e2.message);
+  }
+}
+
+try {
+  apiRoutes["/api/leads/from-whatsapp-extension"] = require("./api/leads/from-whatsapp-extension");
+  console.log("Rota de API carregada: /api/leads/from-whatsapp-extension");
+} catch (e) {
+  try {
+    apiRoutes["/api/leads/from-whatsapp-extension"] = require("./pages/api/leads/from-whatsapp-extension");
+    console.log("Rota de API carregada (pages): /api/leads/from-whatsapp-extension");
+  } catch (e2) {
+    console.warn("Aviso: from-whatsapp-extension.js nao pode ser carregado.", e2.message);
   }
 }
 
