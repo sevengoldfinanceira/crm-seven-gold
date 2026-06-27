@@ -89,24 +89,31 @@ module.exports = async (req, res) => {
         leadId = existingLead.id;
       } else {
         // -------------------------------------------------------
-        // Lead novo: criar no Supabase
+        // Lead novo: verificar owner_id antes de criar
         // -------------------------------------------------------
-        const { data: newLead, error: insertError } = await supabase
-          .from('leads')
-          .insert({
-            telefone,
-            interesse: 'Lead via WhatsApp',
-            opt_in: true,
-            ultima_interacao: new Date().toISOString(),
-          })
-          .select('id')
-          .single();
+        const ownerId = process.env.WHATSAPP_DEFAULT_OWNER_ID;
 
-        if (insertError) {
-          console.error('[WhatsApp Webhook] Erro ao criar lead:', insertError);
+        if (!ownerId) {
+          console.warn('[WhatsApp Webhook] WHATSAPP_DEFAULT_OWNER_ID não configurado');
+        } else {
+          const { data: newLead, error: insertError } = await supabase
+            .from('leads')
+            .insert({
+              telefone,
+              owner_id: ownerId,
+              interesse: 'Lead via WhatsApp',
+              opt_in: true,
+              ultima_interacao: new Date().toISOString(),
+            })
+            .select('id')
+            .single();
+
+          if (insertError) {
+            console.error('[WhatsApp Webhook] Erro ao criar lead:', insertError);
+          }
+
+          leadId = newLead?.id;
         }
-
-        leadId = newLead?.id;
       }
 
       // -------------------------------------------------------
