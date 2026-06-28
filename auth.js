@@ -29,10 +29,6 @@
   };
 
   const getTarget = (element) => element?.dataset.redirect || "painel.html";
-  const isCrmTarget = (target) => {
-    const pathname = new URL(target || "", window.location.href).pathname.toLowerCase();
-    return pathname.endsWith("/crm.html") || pathname.endsWith("/crm");
-  };
 
   const ensureProfile = async (session) => {
     const user = session?.user;
@@ -75,7 +71,7 @@
     return data;
   };
 
-  const checkCrmUserAuthorization = async (userEmail) => {
+  const checkPortalUserAuthorization = async (userEmail) => {
     if (!userEmail) {
       throw new Error("Nao foi possivel identificar o e-mail do usuario logado.");
     }
@@ -89,7 +85,7 @@
       .maybeSingle();
 
     if (error) {
-      console.error("[CRM Auth] Erro ao validar usuario:", error);
+      console.error("[Portal Auth] Erro ao validar usuario:", error);
       throw new Error(error.message || "Erro ao validar acesso.");
     }
 
@@ -100,7 +96,7 @@
     return data;
   };
 
-  const showCrmAccessDenied = () => {
+  const showPortalAccessDenied = () => {
     document.body.innerHTML = `
       <main class="crm-access-denied">
         <section>
@@ -114,36 +110,20 @@
     `;
   };
 
-  const requireCrmAuthorization = async (session) => {
+  const requirePortalAuthorization = async (session) => {
     try {
-      return await checkCrmUserAuthorization(session?.user?.email);
+      return await checkPortalUserAuthorization(session?.user?.email);
     } catch (error) {
-      console.error("[CRM Auth] Acesso bloqueado:", error);
+      console.error("[Portal Auth] Acesso bloqueado:", error);
       await client.auth.signOut();
-      showCrmAccessDenied();
+      showPortalAccessDenied();
       return null;
     }
-  };
-
-  const setupCrmEntryGuards = () => {
-    document.querySelectorAll("[data-crm-entry]").forEach((link) => {
-      link.addEventListener("click", async (event) => {
-        event.preventDefault();
-        const { data } = await client.auth.getSession();
-        const crmUser = await requireCrmAuthorization(data.session);
-        if (crmUser) window.location.href = link.href;
-      });
-    });
   };
 
   const applyCrmUserIdentity = (sessionUser, crmUser) => {
     const name = crmUser?.nome || sessionUser?.email || "Usuario";
     const role = crmUser?.cargo || "Usuario CRM";
-
-    window.currentUser = sessionUser;
-    window.crmUser = crmUser;
-    window.userRole = role;
-    window.sevenGoldCrmSession = { currentUser: sessionUser, crmUser, userRole: role };
 
     document.querySelectorAll("[data-user-name]").forEach((element) => {
       element.textContent = name;
@@ -329,10 +309,8 @@
           return;
         }
 
-        if (isCrmTarget(target)) {
-          const crmUser = await requireCrmAuthorization(data.session);
-          if (!crmUser) return;
-        }
+        const portalUser = await requirePortalAuthorization(data.session);
+        if (!portalUser) return;
 
         await ensureProfile(data.session);
         window.location.href = target;
@@ -463,10 +441,8 @@
         savedCard.addEventListener("click", async (event) => {
           if (event.target.closest("[data-logout]")) return;
           const target = getTarget(form);
-          if (isCrmTarget(target)) {
-            const crmUser = await requireCrmAuthorization(data.session);
-            if (!crmUser) return;
-          }
+          const portalUser = await requirePortalAuthorization(data.session);
+          if (!portalUser) return;
           window.location.href = target;
         });
       }
@@ -560,10 +536,8 @@
       return true;
     }
 
-    if (isCrmTarget(next)) {
-      const crmUser = await requireCrmAuthorization(session);
-      if (!crmUser) return true;
-    }
+    const portalUser = await requirePortalAuthorization(session);
+    if (!portalUser) return true;
     await ensureProfile(session);
     window.location.href = next;
     return true;
@@ -586,12 +560,18 @@
     const profileArea = new URLSearchParams(window.location.search).get("area");
     const permissionArea = document.body.dataset.permissionArea ||
       (currentPage === "perfil.html" && profileArea === "crm" ? "crm" : "");
-    let authorizedCrmUser = null;
+    const authorizedPortalUser = await requirePortalAuthorization(session);
+    if (!authorizedPortalUser) return;
 
-    if (permissionArea === "crm") {
-      authorizedCrmUser = await requireCrmAuthorization(session);
-      if (!authorizedCrmUser) return;
-    }
+    window.currentUser = session.user;
+    window.crmUser = authorizedPortalUser;
+    window.userRole = authorizedPortalUser.cargo || "Usuario";
+    window.sevenGoldCrmSession = {
+      currentUser: session.user,
+      crmUser: authorizedPortalUser,
+      userRole: window.userRole,
+    };
+    window.sevenGoldPortalSession = window.sevenGoldCrmSession;
 
     await ensureProfile(session);
     const profile = await getProfile(session);
@@ -611,10 +591,11 @@
 
     applyRoleVisibility(role, profile);
     await applyUserProfile(session, profile);
-    if (authorizedCrmUser) {
-      applyCrmUserIdentity(session.user, authorizedCrmUser);
+    if (permissionArea === "crm") {
+      applyCrmUserIdentity(session.user, authorizedPortalUser);
       document.body.classList.add("crm-authorized");
     }
+    document.body.classList.add("portal-authorized");
   };
 
   const setupLogout = () => {
@@ -659,7 +640,6 @@
     const callbackResult = await handleOAuthCallback();
     setupLoginForms();
     setupLogout();
-    setupCrmEntryGuards();
 
     const redirectedAuthenticatedUser = await redirectAuthenticatedLoginPage();
     if (redirectedAuthenticatedUser) {

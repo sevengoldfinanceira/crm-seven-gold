@@ -30,6 +30,9 @@
   flex-direction: column;
 }
 
+.entry-premium-body .premium-entry-shell { visibility: hidden; }
+.entry-premium-body.portal-authorized .premium-entry-shell { visibility: visible; }
+
 /* Remove original floating circles to clean up layout */
 .premium-entry-shell::before,
 .premium-entry-shell::after {
