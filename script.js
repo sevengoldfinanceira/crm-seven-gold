@@ -180,10 +180,9 @@ const addDays = (date, amount) => {
   return result;
 };
 
-const calendarTimes = Array.from({ length: 27 }, (_, index) => {
-  const minutes = 8 * 60 + index * 30;
-  return `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
-});
+const calendarTimes = Array.from({ length: 14 }, (_, index) =>
+  `${String(8 + index).padStart(2, "0")}:00`
+);
 
 const normalizeAppointmentTime = (value) => String(value || "").slice(0, 5);
 
@@ -341,7 +340,10 @@ const renderCalendar = () => {
         });
 
         calendarAppointments
-          .filter((item) => item.data_agendamento === dateKey && normalizeAppointmentTime(item.hora_agendamento) === time)
+          .filter((item) => {
+            const appointmentTime = normalizeAppointmentTime(item.hora_agendamento);
+            return item.data_agendamento === dateKey && appointmentTime.slice(0, 2) === time.slice(0, 2);
+          })
           .forEach((item) => slot.append(createAppointmentCard(item)));
         calendarGrid.append(slot);
       });
@@ -437,8 +439,8 @@ appointmentForm?.addEventListener("submit", async (event) => {
   const time = normalizeAppointmentTime(formData.get("hora_agendamento"));
   const [hour, minute] = time.split(":").map(Number);
   const totalMinutes = hour * 60 + minute;
-  if (totalMinutes < 8 * 60 || totalMinutes > 21 * 60 || minute % 30 !== 0) {
-    setAppointmentStatus("Escolha um horario entre 08:00 e 21:00, de 30 em 30 minutos.");
+  if (totalMinutes < 8 * 60 || totalMinutes > 21 * 60) {
+    setAppointmentStatus("Escolha um horario entre 08:00 e 21:00.");
     return;
   }
 
