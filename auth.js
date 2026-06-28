@@ -131,6 +131,9 @@
       "diretor-ceo": "dono",
       diretor: "dono",
       ceo: "dono",
+      "supervisor-comercial": "supervisor",
+      "home office": "home_office",
+      "home-office": "home_office",
     };
     return aliases[role] || role;
   };
@@ -200,6 +203,8 @@
   const cargoDisplayNames = {
     "diretor-ceo": "Diretor CEO",
     "supervisor-comercial": "Supervisor Comercial",
+    "supervisor": "Supervisor",
+    "home_office": "Home Office",
     "coordenador-comercial": "Coordenador Comercial",
     "vendedor": "Vendedor",
     "assistente-vendas": "Assistente de Vendas",
@@ -224,12 +229,14 @@
   const cargoHierarchy = [
     "diretor-ceo",
     "supervisor-comercial",
+    "supervisor",
     "coordenador-comercial", "coordenador-adm", "coordenador-financeiro",
     "coordenador-mkt", "coordenador-rh", "coordenador-posvenda",
     "advogado-juridico",
     "analista-adm", "analista-mkt", "analista-rh", "analista-posvenda",
     "financeiro",
     "vendedor",
+    "home_office",
     "pos-vendas",
     "assistente-vendas", "assistente-adm", "assistente-mkt", "assistente-rh",
     "auxiliar-financeiro",
