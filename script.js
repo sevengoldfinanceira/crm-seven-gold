@@ -483,7 +483,10 @@ const setupDragAndDrop = () => {
       column.classList.add("drag-over");
     });
 
-    stack.addEventListener("dragleave", () => {
+    stack.addEventListener("dragleave", (event) => {
+      if (stack.contains(event.relatedTarget)) {
+        return;
+      }
       column.classList.remove("drag-over");
     });
 
@@ -521,6 +524,10 @@ const setupDragAndDrop = () => {
 
 const setupTouchMove = () => {
   document.addEventListener("pointerdown", (event) => {
+    if (event.pointerType !== "touch") {
+      return;
+    }
+
     const card = event.target.closest?.(".lead-card");
 
     if (!card || event.target.closest("button, summary, details, a, input, select, textarea")) {
@@ -539,7 +546,7 @@ const setupTouchMove = () => {
   document.addEventListener(
     "pointermove",
     (event) => {
-      if (!pointerDrag) {
+      if (!pointerDrag || event.pointerType !== "touch") {
         return;
       }
 
@@ -566,7 +573,7 @@ const setupTouchMove = () => {
   );
 
   document.addEventListener("pointerup", async (event) => {
-    if (!pointerDrag) {
+    if (!pointerDrag || event.pointerType !== "touch") {
       return;
     }
 
