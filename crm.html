@@ -208,6 +208,21 @@
           <input name="name" type="text" placeholder="Ex: Amanda Silva" required />
         </label>
         <label>
+          Telefone
+          <input name="telefone" type="text" placeholder="Ex: 11999998888" />
+        </label>
+        <label id="modal-status-label" style="display: none;">
+          Etapa do Funil
+          <select name="status">
+            <option value="lead_recebido">Lead recebido</option>
+            <option value="primeiro_contato">Primeiro contato</option>
+            <option value="agendamento">Agendamento</option>
+            <option value="cliente_em_loja">Cliente em loja</option>
+            <option value="proposta_enviada">Proposta enviada</option>
+            <option value="venda_fechada">Venda fechada</option>
+          </select>
+        </label>
+        <label>
           Origem
           <select name="origin">
             <option>Site publico</option>
@@ -222,6 +237,7 @@
         </label>
         <p class="form-status" data-lead-form-status></p>
         <button class="new-lead-button" type="submit">Salvar lead</button>
+        <button class="delete-lead-modal-btn" id="delete-lead-modal-btn" type="button" style="display: none;">Excluir Lead</button>
       </form>
     </dialog>
 

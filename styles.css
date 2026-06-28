@@ -636,9 +636,10 @@ select {
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--ink);
-  white-space: normal;
-  word-break: break-word;
-  overflow-wrap: break-word;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: block;
 }
 
 .lead-card p.lead-card-note {
@@ -1269,5 +1270,43 @@ body.theme-dark .theme-fab:hover {
     width: 100%;
     text-align: center;
   }
+}
+
+/* Delete button in lead edit modal */
+.delete-lead-modal-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 12px;
+  background: #dc2626;
+  color: #ffffff;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.delete-lead-modal-btn:hover {
+  background: #b91c1c;
+}
+
+/* Card metadata stacked layout */
+.lead-info-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.lead-meta-origin {
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.lead-meta-date {
+  color: #9ca3af;
 }
 

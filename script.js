@@ -38,12 +38,77 @@ navItems.forEach((item) => {
 
 openModalButton?.addEventListener("click", () => {
   if (typeof modal?.showModal === "function") {
+    const title = modal.querySelector("#modal-title");
+    const submitButton = modal.querySelector("button[type='submit']");
+    const statusLabel = modal.querySelector("#modal-status-label");
+    const deleteBtn = modal.querySelector("#delete-lead-modal-btn");
+
+    if (title) title.textContent = "Novo lead";
+    if (submitButton) submitButton.textContent = "Salvar lead";
+    if (statusLabel) statusLabel.style.display = "none";
+    if (deleteBtn) deleteBtn.style.display = "none";
+
+    if (leadForm) {
+      leadForm.reset();
+      leadForm.dataset.mode = "create";
+      delete leadForm.dataset.leadId;
+    }
+    setFormStatus("");
     modal.showModal();
   }
 });
 
 closeModalButton?.addEventListener("click", () => {
   modal?.close();
+});
+
+const openEditLeadModal = (lead) => {
+  if (!modal || !leadForm) return;
+
+  const title = modal.querySelector("#modal-title");
+  const submitButton = modal.querySelector("button[type='submit']");
+  const statusLabel = modal.querySelector("#modal-status-label");
+  const deleteBtn = modal.querySelector("#delete-lead-modal-btn");
+
+  if (title) title.textContent = "Editar Lead";
+  if (submitButton) submitButton.textContent = "Salvar Alteracoes";
+  if (statusLabel) statusLabel.style.display = "block";
+  if (deleteBtn) deleteBtn.style.display = "block";
+
+  leadForm.dataset.mode = "edit";
+  leadForm.dataset.leadId = lead.id;
+
+  if (leadForm.elements["name"]) {
+    leadForm.elements["name"].value = lead.name;
+  }
+  if (leadForm.elements["telefone"]) {
+    leadForm.elements["telefone"].value = lead.telefone || "";
+  }
+  if (leadForm.elements["status"]) {
+    leadForm.elements["status"].value = lead.status || "lead_recebido";
+  }
+  if (leadForm.elements["origin"]) {
+    leadForm.elements["origin"].value = lead.origin || "Site publico";
+  }
+  if (leadForm.elements["note"]) {
+    leadForm.elements["note"].value = lead.note || "";
+  }
+
+  setFormStatus("");
+  modal.showModal();
+};
+
+document.getElementById("delete-lead-modal-btn")?.addEventListener("click", async () => {
+  const leadId = leadForm?.dataset.leadId;
+  if (!leadId) return;
+
+  if (confirm("Tem certeza que deseja excluir este lead permanentemente?")) {
+    const success = await deleteLead(leadId);
+    if (success) {
+      modal?.close();
+      await loadLeads();
+    }
+  }
 });
 
 const setFormStatus = (message, type = "error") => {
@@ -214,86 +279,6 @@ const updateLeadStatus = async (leadId, status) => {
   return true;
 };
 
-const createMoveMenu = (lead) => {
-  const details = document.createElement("details");
-  details.className = "lead-actions";
-
-  const summary = document.createElement("summary");
-  summary.setAttribute("aria-label", "Mover lead");
-  summary.textContent = "⋮";
-
-  const menu = document.createElement("div");
-  menu.className = "move-menu";
-
-  Object.entries(statusLabels).forEach(([status, label]) => {
-    if (status === lead.status) {
-      return;
-    }
-
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = label;
-    button.addEventListener("click", async () => {
-      details.removeAttribute("open");
-      await updateLeadStatus(lead.id, status);
-    });
-
-    menu.append(button);
-  });
-
-  // Divider line
-  const divider = document.createElement("hr");
-  divider.style.border = "0";
-  divider.style.borderTop = "1px solid var(--line)";
-  divider.style.margin = "4px 0";
-  menu.append(divider);
-
-  // Delete button
-  const deleteBtn = document.createElement("button");
-  deleteBtn.type = "button";
-  deleteBtn.textContent = "Excluir Lead";
-  deleteBtn.style.color = "#dc2626";
-  deleteBtn.style.fontWeight = "600";
-  deleteBtn.addEventListener("click", async () => {
-    details.removeAttribute("open");
-    if (confirm(`Tem certeza que deseja excluir o lead "${lead.name}"?`)) {
-      const card = details.closest(".lead-card");
-      if (card) {
-        card.remove();
-        // Update column counter
-        const column = card.closest("[data-status]");
-        if (column) {
-          const counter = column.querySelector("small");
-          if (counter) {
-            const currentCount = parseInt(counter.textContent || "0", 10);
-            counter.textContent = Math.max(0, currentCount - 1);
-          }
-        }
-        // Update total active leads counter
-        if (leadCount) {
-          const currentTotalText = leadCount.textContent || "";
-          const match = currentTotalText.match(/^(\d+)/);
-          if (match) {
-            const currentTotal = parseInt(match[1], 10);
-            const newTotal = Math.max(0, currentTotal - 1);
-            leadCount.textContent = `${newTotal} ${newTotal === 1 ? "lead ativo" : "leads ativos"}`;
-          }
-        }
-      }
-
-      const success = await deleteLead(lead.id);
-      if (!success) {
-        // If it failed, reload all leads to restore the correct state
-        await loadLeads();
-      }
-    }
-  });
-  menu.append(deleteBtn);
-
-  details.append(summary, menu);
-  return details;
-};
-
 const createLeadCard = (lead) => {
   const card = document.createElement("article");
   card.className = lead.status === "venda_fechada" ? "lead-card done" : "lead-card";
@@ -324,12 +309,21 @@ const createLeadCard = (lead) => {
     .map(w => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 
+  // Dynamic font sizing to keep the name in a single line
+  const nameLength = lead.name.length;
+  if (nameLength > 24) {
+    name.style.fontSize = "0.78rem";
+  } else if (nameLength > 16) {
+    name.style.fontSize = "0.84rem";
+  } else {
+    name.style.fontSize = "0.92rem";
+  }
+
   const nameWrapper = document.createElement("div");
   nameWrapper.className = "lead-card-title-group";
   nameWrapper.append(checkbox, name);
 
-  const actions = createMoveMenu(lead);
-  top.append(nameWrapper, actions);
+  top.append(nameWrapper);
 
   // Warning Badge (days without contact)
   const createdDate = new Date(lead.created_at);
@@ -363,14 +357,19 @@ const createLeadCard = (lead) => {
     noteEl.textContent = lead.note;
   }
 
-  // Footer for origin / date
-  const footer = document.createElement("footer");
-  footer.className = "lead-card-footer";
-  const origin = document.createElement("span");
-  origin.textContent = lead.origin || "Origem nao informada";
-  const createdAt = document.createElement("time");
-  createdAt.textContent = formatLeadDate(lead.created_at);
-  footer.append(origin, createdAt);
+  // Stacked metadata footer (origin and created date)
+  const metaContainer = document.createElement("div");
+  metaContainer.className = "lead-info-meta";
+
+  const originEl = document.createElement("span");
+  originEl.className = "lead-meta-origin";
+  originEl.textContent = `Via: ${lead.origin || "Origem nao informada"}`;
+
+  const createdAtEl = document.createElement("span");
+  createdAtEl.className = "lead-meta-date";
+  createdAtEl.textContent = `Criado em: ${formatLeadDate(lead.created_at)}`;
+
+  metaContainer.append(originEl, createdAtEl);
 
   // Separator
   const divider = document.createElement("hr");
@@ -404,7 +403,7 @@ const createLeadCard = (lead) => {
   editBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Editar`;
   editBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    editLead(lead.id);
+    openEditLeadModal(lead);
   });
 
   actionsRow.append(waBtn, callBtn, editBtn);
@@ -414,7 +413,7 @@ const createLeadCard = (lead) => {
   if (noteEl) {
     card.append(noteEl);
   }
-  card.append(footer, divider, actionsRow);
+  card.append(metaContainer, divider, actionsRow);
 
   return card;
 };
@@ -614,20 +613,42 @@ leadForm?.addEventListener("submit", async (event) => {
   submitButton.textContent = "Salvando...";
   setFormStatus("");
 
-  const { error } = await client.from("leads").insert({
-    name,
-    origin: String(formData.get("origin") || "").trim(),
-    status: "lead_recebido",
-    note: String(formData.get("note") || "").trim(),
-    owner_id: user.id,
-  });
+  const mode = leadForm.dataset.mode || "create";
+  const leadId = leadForm.dataset.leadId;
 
-  submitButton.disabled = false;
-  submitButton.textContent = "Salvar lead";
+  if (mode === "edit" && leadId) {
+    const { error } = await client.from("leads").update({
+      name,
+      telefone: String(formData.get("telefone") || "").replace(/\D/g, ""),
+      status: String(formData.get("status") || "lead_recebido").trim(),
+      origin: String(formData.get("origin") || "").trim(),
+      note: String(formData.get("note") || "").trim(),
+    }).eq("id", leadId);
 
-  if (error) {
-    setFormStatus("Nao consegui salvar. Confira se a tabela leads foi criada no Supabase.");
-    return;
+    submitButton.disabled = false;
+    submitButton.textContent = "Salvar Alteracoes";
+
+    if (error) {
+      setFormStatus("Nao consegui atualizar o lead: " + error.message);
+      return;
+    }
+  } else {
+    const { error } = await client.from("leads").insert({
+      name,
+      telefone: String(formData.get("telefone") || "").replace(/\D/g, ""),
+      origin: String(formData.get("origin") || "").trim(),
+      status: "lead_recebido",
+      note: String(formData.get("note") || "").trim(),
+      owner_id: user.id,
+    });
+
+    submitButton.disabled = false;
+    submitButton.textContent = "Salvar lead";
+
+    if (error) {
+      setFormStatus("Nao consegui salvar. Confira se a tabela leads foi criada no Supabase.");
+      return;
+    }
   }
 
   leadForm.reset();
