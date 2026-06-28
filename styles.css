@@ -148,15 +148,68 @@ select {
 }
 
 .user-box {
-  display: grid;
-  gap: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin-top: auto;
-  padding: 18px 20px;
+  padding: 20px;
   border-top: 1px solid #252722;
 }
 
-.user-box strong {
+.user-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-info-section .user-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-info-section .user-email {
+  font-size: 0.76rem;
+  color: #8f978f;
+  overflow-wrap: anywhere;
+}
+
+.user-info-section .user-role {
+  display: inline-block !important;
+  width: fit-content;
+  margin-top: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(216, 173, 61, 0.15) !important;
+  color: var(--gold) !important;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  border: none;
+}
+
+.sidebar-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: start;
+  align-self: start;
+  margin-top: 8px;
+  border: 0;
+  background: transparent;
+  color: #8f978f;
   font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.sidebar-logout-btn:hover {
+  color: #ffffff;
 }
 
 .user-profile-link {
