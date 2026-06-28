@@ -81,6 +81,53 @@ const formatLeadDate = (value) => {
   }).format(new Date(value));
 };
 
+const formatInternationalPhone = (phoneStr) => {
+  if (!phoneStr) return "";
+  
+  // Clean all non-digits
+  let digits = phoneStr.replace(/\D/g, "");
+  
+  if (digits.length === 0) return phoneStr;
+
+  // Normalize Brazilian numbers: if it has 10 or 11 digits and doesn't start with 55, assume Brazil +55
+  if (digits.length <= 11 && !digits.startsWith("55") && digits.length >= 10) {
+    digits = "55" + digits;
+  }
+
+  // Format if it starts with 55 (Brazil)
+  if (digits.startsWith("55")) {
+    const rest = digits.slice(2);
+    if (rest.length === 11) {
+      // Mobile: +55 (XX) XXXXX-XXXX
+      return `+55 (${rest.slice(0, 2)}) ${rest.slice(2, 7)}-${rest.slice(7)}`;
+    } else if (rest.length === 10) {
+      // Landline: +55 (XX) XXXX-XXXX
+      return `+55 (${rest.slice(0, 2)}) ${rest.slice(2, 6)}-${rest.slice(6)}`;
+    }
+  }
+
+  // Fallback for other lengths or countries
+  return "+" + digits;
+};
+
+const deleteLead = async (leadId) => {
+  const client = getClient();
+
+  if (!client || !leadId) {
+    return false;
+  }
+
+  const { error } = await client.from("leads").delete().eq("id", leadId);
+
+  if (error) {
+    alert("Nao consegui excluir o lead. Tente novamente.");
+    return false;
+  }
+
+  await loadLeads();
+  return true;
+};
+
 const updateLeadStatus = async (leadId, status) => {
   const client = getClient();
 
@@ -126,6 +173,27 @@ const createMoveMenu = (lead) => {
     menu.append(button);
   });
 
+  // Divider line
+  const divider = document.createElement("hr");
+  divider.style.border = "0";
+  divider.style.borderTop = "1px solid var(--line)";
+  divider.style.margin = "4px 0";
+  menu.append(divider);
+
+  // Delete button
+  const deleteBtn = document.createElement("button");
+  deleteBtn.type = "button";
+  deleteBtn.textContent = "Excluir Lead";
+  deleteBtn.style.color = "#dc2626";
+  deleteBtn.style.fontWeight = "600";
+  deleteBtn.addEventListener("click", async () => {
+    details.removeAttribute("open");
+    if (confirm(`Tem certeza que deseja excluir o lead "${lead.name}"?`)) {
+      await deleteLead(lead.id);
+    }
+  });
+  menu.append(deleteBtn);
+
   details.append(summary, menu);
   return details;
 };
@@ -150,6 +218,39 @@ const createLeadCard = (lead) => {
   const note = document.createElement("p");
   note.textContent = lead.note || "Sem observacao cadastrada.";
 
+  const phoneContainer = document.createElement("div");
+  phoneContainer.className = "lead-phone-container";
+  phoneContainer.style.fontSize = "0.78rem";
+  phoneContainer.style.fontWeight = "600";
+  phoneContainer.style.marginTop = "2px";
+  phoneContainer.style.marginBottom = "2px";
+  phoneContainer.style.display = "flex";
+  phoneContainer.style.alignItems = "center";
+  phoneContainer.style.gap = "6px";
+
+  if (lead.telefone) {
+    const cleanDigits = lead.telefone.replace(/\D/g, "");
+    const waPhone = (cleanDigits.length <= 11 && !cleanDigits.startsWith("55") && cleanDigits.length >= 10) 
+      ? "55" + cleanDigits 
+      : cleanDigits;
+
+    const phoneLink = document.createElement("a");
+    phoneLink.href = `https://wa.me/${waPhone}`;
+    phoneLink.target = "_blank";
+    phoneLink.className = "lead-phone-link";
+    phoneLink.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${formatInternationalPhone(lead.telefone)}`;
+    phoneLink.style.color = "var(--blue)";
+    phoneLink.style.textDecoration = "none";
+    
+    phoneContainer.append(phoneLink);
+  } else {
+    const noPhone = document.createElement("span");
+    noPhone.textContent = "Sem telefone";
+    noPhone.style.color = "var(--muted)";
+    noPhone.style.fontStyle = "italic";
+    phoneContainer.append(noPhone);
+  }
+
   const footer = document.createElement("footer");
   const origin = document.createElement("span");
   origin.textContent = lead.origin || "Origem nao informada";
@@ -159,7 +260,7 @@ const createLeadCard = (lead) => {
 
   top.append(name, tag, actions);
   footer.append(origin, createdAt);
-  card.append(top, note, footer);
+  card.append(top, phoneContainer, note, footer);
 
   return card;
 };
@@ -207,7 +308,7 @@ const loadLeads = async () => {
 
   const { data, error } = await client
     .from("leads")
-    .select("id, name, origin, note, status, created_at")
+    .select("id, name, origin, note, status, created_at, telefone")
     .order("created_at", { ascending: false });
 
   if (error) {
