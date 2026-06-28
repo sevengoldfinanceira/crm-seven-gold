@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-crm-exit-v1";
+const CACHE_VERSION = "seven-gold-saved-logout-v1";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",

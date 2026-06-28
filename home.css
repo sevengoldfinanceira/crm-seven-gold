@@ -15698,6 +15698,24 @@ body.theme-dark .modal-role-row {
   border-color: #d8b444 !important;
 }
 
+.saved-account-logout-btn {
+  width: 100%;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(239, 68, 68, .42);
+  border-radius: 8px;
+  background: transparent;
+  color: #ff6868;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.saved-account-logout-btn:hover { background: rgba(239, 68, 68, .08); border-color: #ef4444; }
+.saved-account-logout-btn svg { width: 14px; height: 14px; }
+
 /* Manual Login Styling */
 .manual-login-title {
   display: flex;

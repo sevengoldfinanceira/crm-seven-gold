@@ -370,7 +370,8 @@
       
       const savedCard = wrapper.querySelector(".saved-account-card");
       if (savedCard) {
-        savedCard.addEventListener("click", () => {
+        savedCard.addEventListener("click", (event) => {
+          if (event.target.closest("[data-logout]")) return;
           window.location.href = getTarget(form);
         });
       }
@@ -505,7 +506,9 @@
 
   const setupLogout = () => {
     document.querySelectorAll("[data-logout]").forEach((button) => {
-      button.addEventListener("click", async () => {
+      button.addEventListener("click", async (event) => {
+        event.stopPropagation();
+        button.disabled = true;
         await client.auth.signOut();
         window.location.href = button.dataset.logoutRedirect || "index.html";
       });
