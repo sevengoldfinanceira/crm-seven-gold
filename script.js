@@ -110,6 +110,21 @@ const formatInternationalPhone = (phoneStr) => {
   return "+" + digits;
 };
 
+const formatDisplayPhone = (phoneStr) => {
+  if (!phoneStr) return "";
+  let digits = phoneStr.replace(/\D/g, "");
+  if (digits.length === 0) return phoneStr;
+  if (digits.startsWith("55") && digits.length > 2) {
+    digits = digits.slice(2);
+  }
+  if (digits.length === 11) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  } else if (digits.length === 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+  return phoneStr;
+};
+
 const deleteLead = async (leadId) => {
   if (!leadId) {
     return false;
@@ -139,6 +154,48 @@ const deleteLead = async (leadId) => {
   }
 };
 
+const editLead = async (leadId) => {
+  const client = getClient();
+  if (!client) return;
+
+  const { data: lead, error: fetchError } = await client
+    .from("leads")
+    .select("name, telefone, note")
+    .eq("id", leadId)
+    .single();
+
+  if (fetchError || !lead) {
+    alert("Erro ao carregar dados do lead para edicao.");
+    return;
+  }
+
+  const newName = prompt("Editar Nome do Lead:", lead.name);
+  if (newName === null) return;
+  const trimmedName = newName.trim();
+  if (!trimmedName) return;
+
+  const newPhone = prompt("Editar Telefone (ex: 11999998888):", lead.telefone || "");
+  if (newPhone === null) return;
+
+  const newNote = prompt("Editar Observacao:", lead.note || "");
+  if (newNote === null) return;
+
+  const { error } = await client
+    .from("leads")
+    .update({ 
+      name: trimmedName,
+      telefone: newPhone.replace(/\D/g, ""),
+      note: newNote.trim()
+    })
+    .eq("id", leadId);
+
+  if (error) {
+    alert("Erro ao salvar alteracoes: " + error.message);
+  } else {
+    await loadLeads();
+  }
+};
+
 const updateLeadStatus = async (leadId, status) => {
   const client = getClient();
 
@@ -163,7 +220,7 @@ const createMoveMenu = (lead) => {
 
   const summary = document.createElement("summary");
   summary.setAttribute("aria-label", "Mover lead");
-  summary.textContent = "...";
+  summary.textContent = "⋮";
 
   const menu = document.createElement("div");
   menu.className = "move-menu";
@@ -259,65 +316,105 @@ const createLeadCard = (lead) => {
   });
 
   const name = document.createElement("strong");
-  name.textContent = lead.name;
+  name.className = "lead-card-name";
+  // Format casing nicely (Capitalized words)
+  name.textContent = lead.name
+    .toLowerCase()
+    .split(" ")
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
 
   const nameWrapper = document.createElement("div");
-  nameWrapper.style.display = "flex";
-  nameWrapper.style.alignItems = "center";
-  nameWrapper.style.gap = "6px";
+  nameWrapper.className = "lead-card-title-group";
   nameWrapper.append(checkbox, name);
 
-  const tag = document.createElement("mark");
-  tag.className = lead.status === "venda_fechada" ? "money" : "soft";
-  tag.textContent = statusLabels[lead.status] || "Novo";
   const actions = createMoveMenu(lead);
+  top.append(nameWrapper, actions);
 
-  const note = document.createElement("p");
-  note.textContent = lead.note || "Sem observacao cadastrada.";
-
-  const phoneContainer = document.createElement("div");
-  phoneContainer.className = "lead-phone-container";
-  phoneContainer.style.fontSize = "0.78rem";
-  phoneContainer.style.fontWeight = "600";
-  phoneContainer.style.marginTop = "2px";
-  phoneContainer.style.marginBottom = "2px";
-  phoneContainer.style.display = "flex";
-  phoneContainer.style.alignItems = "center";
-  phoneContainer.style.gap = "6px";
-
-  if (lead.telefone) {
-    const cleanDigits = lead.telefone.replace(/\D/g, "");
-    const waPhone = (cleanDigits.length <= 11 && !cleanDigits.startsWith("55") && cleanDigits.length >= 10) 
-      ? "55" + cleanDigits 
-      : cleanDigits;
-
-    const phoneLink = document.createElement("a");
-    phoneLink.href = `https://wa.me/${waPhone}`;
-    phoneLink.target = "_blank";
-    phoneLink.className = "lead-phone-link";
-    phoneLink.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${formatInternationalPhone(lead.telefone)}`;
-    phoneLink.style.color = "var(--blue)";
-    phoneLink.style.textDecoration = "none";
-    
-    phoneContainer.append(phoneLink);
+  // Warning Badge (days without contact)
+  const createdDate = new Date(lead.created_at);
+  const now = new Date();
+  const diffTime = Math.abs(now - createdDate);
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  
+  const warningBadge = document.createElement("div");
+  warningBadge.className = "lead-warning-badge";
+  if (diffDays === 0) {
+    warningBadge.textContent = "⚠️ Criado hoje";
   } else {
-    const noPhone = document.createElement("span");
-    noPhone.textContent = "Sem telefone";
-    noPhone.style.color = "var(--muted)";
-    noPhone.style.fontStyle = "italic";
-    phoneContainer.append(noPhone);
+    warningBadge.textContent = `⚠️ ${diffDays} ${diffDays === 1 ? 'dia' : 'dias'} sem contato`;
   }
 
+  // Phone Line
+  const phoneLine = document.createElement("div");
+  phoneLine.className = "lead-phone-line";
+  const phoneIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #9ca3af; margin-right: 6px; vertical-align: middle;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+  const phoneText = document.createElement("span");
+  phoneText.textContent = lead.telefone ? formatDisplayPhone(lead.telefone) : "Sem telefone";
+  phoneLine.innerHTML = phoneIcon;
+  phoneLine.append(phoneText);
+
+  // Optional Note
+  const hasCustomNote = lead.note && lead.note.trim() !== "" && lead.note.trim().toLowerCase() !== "sem observacao cadastrada.";
+  let noteEl = null;
+  if (hasCustomNote) {
+    noteEl = document.createElement("p");
+    noteEl.className = "lead-card-note";
+    noteEl.textContent = lead.note;
+  }
+
+  // Footer for origin / date
   const footer = document.createElement("footer");
+  footer.className = "lead-card-footer";
   const origin = document.createElement("span");
   origin.textContent = lead.origin || "Origem nao informada";
-
   const createdAt = document.createElement("time");
   createdAt.textContent = formatLeadDate(lead.created_at);
-
-  top.append(nameWrapper, tag, actions);
   footer.append(origin, createdAt);
-  card.append(top, phoneContainer, note, footer);
+
+  // Separator
+  const divider = document.createElement("hr");
+  divider.className = "lead-card-divider";
+
+  // Actions Row
+  const actionsRow = document.createElement("div");
+  actionsRow.className = "lead-card-actions-row";
+
+  const cleanDigits = lead.telefone ? lead.telefone.replace(/\D/g, "") : "";
+  const waPhone = (cleanDigits.length <= 11 && !cleanDigits.startsWith("55") && cleanDigits.length >= 10) 
+    ? "55" + cleanDigits 
+    : cleanDigits;
+
+  const waBtn = document.createElement("a");
+  waBtn.href = lead.telefone ? `https://wa.me/${waPhone}` : "#";
+  waBtn.target = lead.telefone ? "_blank" : "_self";
+  waBtn.className = "lead-action-btn wa-btn";
+  waBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>WA`;
+  if (!lead.telefone) waBtn.style.opacity = "0.5";
+
+  const callBtn = document.createElement("a");
+  callBtn.href = lead.telefone ? `tel:+${waPhone}` : "#";
+  callBtn.className = "lead-action-btn call-btn";
+  callBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Ligar`;
+  if (!lead.telefone) callBtn.style.opacity = "0.5";
+
+  const editBtn = document.createElement("button");
+  editBtn.type = "button";
+  editBtn.className = "lead-action-btn edit-btn";
+  editBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Editar`;
+  editBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    editLead(lead.id);
+  });
+
+  actionsRow.append(waBtn, callBtn, editBtn);
+
+  // Append everything
+  card.append(top, warningBadge, phoneLine);
+  if (noteEl) {
+    card.append(noteEl);
+  }
+  card.append(footer, divider, actionsRow);
 
   return card;
 };
