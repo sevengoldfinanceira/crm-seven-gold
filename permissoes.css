@@ -268,7 +268,7 @@
 
 /* --- 5. Permissions Matrix Table --- */
 .permission-table-wrap {
-  overflow-x: auto;
+  overflow-x: hidden;
   border-radius: var(--sg-radius-lg, 24px) !important;
   border: 1px solid var(--sg-border, rgba(0, 0, 0, 0.06)) !important;
   background: var(--sg-card-bg, #ffffff) !important;
@@ -277,38 +277,57 @@
 
 .permission-table {
   width: 100%;
-  min-width: 1040px;
+  table-layout: fixed;
   border-collapse: collapse;
+}
+
+.permission-table th:first-child {
+  width: 18% !important;
+}
+
+.permission-table th:not(:first-child),
+.permission-table td {
+  width: 8.2% !important;
 }
 
 .permission-table thead th {
   background: #f9fafb !important;
   color: var(--sg-text-secondary, #6b7280) !important;
-  font-size: 0.74rem !important;
+  font-size: 0.62rem !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
+  letter-spacing: 0.02em !important;
   border-bottom: 2px solid rgba(0, 0, 0, 0.04) !important;
+  white-space: normal !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+  padding: 8px 4px !important;
+  vertical-align: middle !important;
+  text-align: center !important;
 }
 
 .permission-table thead th:first-child {
   text-align: left !important;
-  padding-left: 24px !important;
+  padding-left: 16px !important;
 }
 
 .permission-table tbody th {
   background: transparent !important;
   text-align: left !important;
   font-weight: 700 !important;
-  font-size: 0.88rem !important;
+  font-size: 0.76rem !important;
   color: var(--sg-text-main, #111827) !important;
-  padding-left: 24px !important;
+  padding: 8px 16px !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .permission-table td {
   border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
   text-align: center !important;
+  padding: 8px 4px !important;
 }
 
 .permission-table tbody tr {
@@ -375,8 +394,8 @@ tr [data-area-icon="permissoes"] .perm-area-icon svg { stroke: #ef4444; }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-width: 100px;
+  gap: 4px;
+  min-width: 0;
   cursor: pointer;
   position: relative;
 }
@@ -392,8 +411,8 @@ tr [data-area-icon="permissoes"] .perm-area-icon svg { stroke: #ef4444; }
 .perm-switch-track {
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 22px;
+  width: 28px;
+  height: 16px;
   border-radius: 999px;
   background: #e5e7eb;
   transition: background 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -404,10 +423,10 @@ tr [data-area-icon="permissoes"] .perm-area-icon svg { stroke: #ef4444; }
 .perm-switch-track::after {
   content: "";
   position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 16px;
-  height: 16px;
+  top: 1px;
+  left: 1px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: #ffffff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
@@ -420,7 +439,7 @@ tr [data-area-icon="permissoes"] .perm-area-icon svg { stroke: #ef4444; }
 }
 
 .permission-toggle input:checked + .perm-switch-track::after {
-  transform: translateX(18px);
+  transform: translateX(12px);
 }
 
 .permission-toggle input:disabled + .perm-switch-track {
@@ -431,7 +450,7 @@ tr [data-area-icon="permissoes"] .perm-area-icon svg { stroke: #ef4444; }
 }
 
 .permission-toggle input:disabled + .perm-switch-track::after {
-  transform: translateX(18px);
+  transform: translateX(12px);
 }
 
 .permission-toggle input:disabled ~ .perm-switch-track {
@@ -439,7 +458,7 @@ tr [data-area-icon="permissoes"] .perm-area-icon svg { stroke: #ef4444; }
 }
 
 .permission-toggle .perm-switch-label {
-  font-size: 0.72rem;
+  font-size: 0.65rem;
   font-weight: 700;
   transition: color 0.2s ease;
   white-space: nowrap;
