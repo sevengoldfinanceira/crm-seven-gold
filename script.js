@@ -7,8 +7,18 @@ const leadForm = document.querySelector("[data-lead-form]");
 const leadFormStatus = document.querySelector("[data-lead-form-status]");
 const leadCount = document.querySelector("[data-lead-count]");
 const columns = Array.from(document.querySelectorAll("[data-status]"));
+const appointmentModal = document.querySelector(".appointment-modal");
+const appointmentForm = document.querySelector("[data-appointment-form]");
+const appointmentStatus = document.querySelector("[data-appointment-status]");
+const calendarGrid = document.querySelector("[data-calendar-grid]");
+const calendarMobileList = document.querySelector("[data-calendar-mobile-list]");
+const calendarWeekLabel = document.querySelector("[data-calendar-week-label]");
+const calendarStatus = document.querySelector("[data-calendar-status]");
 let draggedLeadId = null;
 let pointerDrag = null;
+let calendarWeekStart = null;
+let calendarAppointments = [];
+let appointmentResolution = null;
 
 const statusLabels = {
   lead_recebido: "Lead recebido",
@@ -75,6 +85,7 @@ const openEditLeadModal = (lead) => {
 
   leadForm.dataset.mode = "edit";
   leadForm.dataset.leadId = lead.id;
+  leadForm.dataset.originalStatus = lead.status || "lead_recebido";
 
   if (leadForm.elements["name"]) {
     leadForm.elements["name"].value = lead.name;
@@ -142,6 +153,365 @@ const getCurrentUser = async () => {
   const { data } = await client.auth.getUser();
   return data.user;
 };
+
+const toDateKey = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const parseDateKey = (value) => {
+  const [year, month, day] = String(value || "").split("-").map(Number);
+  return new Date(year, month - 1, day);
+};
+
+const getWeekStart = (value = new Date()) => {
+  const date = new Date(value);
+  date.setHours(0, 0, 0, 0);
+  const offset = (date.getDay() + 6) % 7;
+  date.setDate(date.getDate() - offset);
+  return date;
+};
+
+const addDays = (date, amount) => {
+  const result = new Date(date);
+  result.setDate(result.getDate() + amount);
+  return result;
+};
+
+const calendarTimes = Array.from({ length: 27 }, (_, index) => {
+  const minutes = 8 * 60 + index * 30;
+  return `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
+});
+
+const normalizeAppointmentTime = (value) => String(value || "").slice(0, 5);
+
+const getCurrentSellerName = async () => {
+  const user = await getCurrentUser();
+  return user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "Usuario";
+};
+
+const setCalendarStatus = (message = "", type = "") => {
+  if (!calendarStatus) return;
+  calendarStatus.textContent = message;
+  calendarStatus.dataset.type = type;
+};
+
+const setAppointmentStatus = (message = "", type = "error") => {
+  if (!appointmentStatus) return;
+  appointmentStatus.textContent = message;
+  appointmentStatus.dataset.type = type;
+};
+
+const closeAppointmentModal = (result = null) => {
+  appointmentModal?.close();
+  if (appointmentResolution) {
+    const resolve = appointmentResolution;
+    appointmentResolution = null;
+    resolve(result);
+  }
+};
+
+const openAppointmentModal = async ({ appointment = null, lead = null, date = "", time = "" } = {}) => {
+  if (!appointmentModal || !appointmentForm) return null;
+
+  appointmentForm.reset();
+  setAppointmentStatus("");
+  appointmentForm.dataset.mode = appointment ? "edit" : "create";
+  appointmentForm.elements.id.value = appointment?.id || "";
+  appointmentForm.elements.lead_id.value = appointment?.lead_id || lead?.id || "";
+  appointmentForm.elements.nome_cliente.value = appointment?.nome_cliente || lead?.name || "";
+  appointmentForm.elements.telefone_cliente.value = appointment?.telefone_cliente || lead?.telefone || "";
+  appointmentForm.elements.data_agendamento.value = appointment?.data_agendamento || date || toDateKey(new Date());
+  appointmentForm.elements.hora_agendamento.value = normalizeAppointmentTime(appointment?.hora_agendamento || time || "08:00");
+  appointmentForm.elements.nome_usuario.value = appointment?.nome_usuario || await getCurrentSellerName();
+  appointmentForm.elements.observacao.value = appointment?.observacao || "";
+
+  const title = appointmentModal.querySelector("#appointment-modal-title");
+  const submit = appointmentForm.querySelector("button[type='submit']");
+  const deleteButton = appointmentModal.querySelector("[data-delete-appointment]");
+  if (title) title.textContent = appointment ? "Detalhes do agendamento" : "Agendar cliente";
+  if (submit) submit.textContent = appointment ? "Salvar alteracoes" : "Confirmar agendamento";
+  if (deleteButton) deleteButton.hidden = !appointment;
+
+  appointmentModal.showModal();
+  appointmentForm.elements.data_agendamento.focus();
+
+  return new Promise((resolve) => {
+    appointmentResolution = resolve;
+  });
+};
+
+const fetchLeadForAppointment = async (leadId, fallback = {}) => {
+  const client = getClient();
+  if (!client || !leadId) return null;
+  const { data, error } = await client
+    .from("leads")
+    .select("id, name, telefone, status")
+    .eq("id", leadId)
+    .single();
+  if (error) {
+    return fallback?.name ? { id: leadId, ...fallback } : null;
+  }
+  return data;
+};
+
+const requestAppointmentForLead = async (leadId, fallback = {}) => {
+  const lead = await fetchLeadForAppointment(leadId, fallback);
+  if (!lead) {
+    alert("Nao consegui carregar o cliente para criar o agendamento.");
+    return null;
+  }
+  return openAppointmentModal({ lead });
+};
+
+const createAppointmentCard = (appointment) => {
+  const card = document.createElement("article");
+  card.className = "appointment-card";
+  card.tabIndex = 0;
+  card.dataset.appointmentId = appointment.id;
+
+  const client = document.createElement("strong");
+  client.textContent = appointment.nome_cliente;
+  const seller = document.createElement("span");
+  seller.textContent = appointment.nome_usuario || "Vendedor nao informado";
+  const time = document.createElement("span");
+  time.textContent = normalizeAppointmentTime(appointment.hora_agendamento);
+  card.append(client, seller, time);
+
+  const open = (event) => {
+    event.stopPropagation();
+    openAppointmentModal({ appointment });
+  };
+  card.addEventListener("click", open);
+  card.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") open(event);
+  });
+  return card;
+};
+
+const renderCalendar = () => {
+  if (!calendarWeekStart) calendarWeekStart = getWeekStart();
+  const days = Array.from({ length: 7 }, (_, index) => addDays(calendarWeekStart, index));
+  const todayKey = toDateKey(new Date());
+  const end = days[6];
+  const weekFormat = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" });
+  if (calendarWeekLabel) calendarWeekLabel.textContent = `${weekFormat.format(days[0])} a ${weekFormat.format(end)}`;
+
+  if (calendarGrid) {
+    calendarGrid.innerHTML = "";
+    const corner = document.createElement("div");
+    corner.className = "calendar-corner";
+    corner.textContent = "Horario";
+    calendarGrid.append(corner);
+
+    days.forEach((day) => {
+      const header = document.createElement("div");
+      header.className = `calendar-day-header${toDateKey(day) === todayKey ? " is-today" : ""}`;
+      const weekday = document.createElement("strong");
+      weekday.textContent = new Intl.DateTimeFormat("pt-BR", { weekday: "short" }).format(day).replace(".", "");
+      const date = document.createElement("span");
+      date.textContent = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" }).format(day);
+      header.append(weekday, date);
+      calendarGrid.append(header);
+    });
+
+    calendarTimes.forEach((time) => {
+      const label = document.createElement("div");
+      label.className = "calendar-time-label";
+      label.textContent = time;
+      calendarGrid.append(label);
+
+      days.forEach((day) => {
+        const dateKey = toDateKey(day);
+        const slot = document.createElement("div");
+        slot.className = `calendar-slot${dateKey === todayKey ? " is-today" : ""}`;
+        slot.dataset.date = dateKey;
+        slot.dataset.time = time;
+        slot.tabIndex = 0;
+        slot.setAttribute("role", "button");
+        slot.setAttribute("aria-label", `Criar agendamento em ${dateKey} as ${time}`);
+        slot.addEventListener("click", () => openAppointmentModal({ date: dateKey, time }));
+        slot.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openAppointmentModal({ date: dateKey, time });
+          }
+        });
+
+        calendarAppointments
+          .filter((item) => item.data_agendamento === dateKey && normalizeAppointmentTime(item.hora_agendamento) === time)
+          .forEach((item) => slot.append(createAppointmentCard(item)));
+        calendarGrid.append(slot);
+      });
+    });
+  }
+
+  if (calendarMobileList) {
+    calendarMobileList.innerHTML = "";
+    days.forEach((day) => {
+      const dateKey = toDateKey(day);
+      const dayAppointments = calendarAppointments
+        .filter((item) => item.data_agendamento === dateKey)
+        .sort((a, b) => normalizeAppointmentTime(a.hora_agendamento).localeCompare(normalizeAppointmentTime(b.hora_agendamento)));
+      const section = document.createElement("section");
+      section.className = "calendar-mobile-day";
+      const header = document.createElement("header");
+      const title = document.createElement("strong");
+      title.textContent = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit" }).format(day);
+      const addButton = document.createElement("button");
+      addButton.type = "button";
+      addButton.className = "calendar-nav-button";
+      addButton.textContent = "+";
+      addButton.addEventListener("click", () => openAppointmentModal({ date: dateKey, time: "08:00" }));
+      header.append(title, addButton);
+      section.append(header);
+      const list = document.createElement("div");
+      list.className = "calendar-mobile-day-list";
+      if (!dayAppointments.length) {
+        const empty = document.createElement("p");
+        empty.className = "calendar-mobile-empty";
+        empty.textContent = "Nenhum cliente agendado.";
+        list.append(empty);
+      } else {
+        dayAppointments.forEach((item) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "calendar-mobile-appointment";
+          const time = document.createElement("time");
+          time.textContent = normalizeAppointmentTime(item.hora_agendamento);
+          const info = document.createElement("span");
+          const name = document.createElement("strong");
+          name.textContent = item.nome_cliente;
+          const seller = document.createElement("span");
+          seller.textContent = item.nome_usuario || "Vendedor nao informado";
+          info.append(name, seller);
+          button.append(time, info);
+          button.addEventListener("click", () => openAppointmentModal({ appointment: item }));
+          list.append(button);
+        });
+      }
+      section.append(list);
+      calendarMobileList.append(section);
+    });
+  }
+};
+
+const loadAppointments = async () => {
+  const client = getClient();
+  if (!client || !calendarWeekStart) return;
+  setCalendarStatus("Carregando agendamentos...");
+  const start = toDateKey(calendarWeekStart);
+  const end = toDateKey(addDays(calendarWeekStart, 6));
+  const { data, error } = await client
+    .from("appointments")
+    .select("id, lead_id, nome_cliente, telefone_cliente, usuario_id, nome_usuario, data_agendamento, hora_agendamento, observacao, status, created_at, updated_at")
+    .gte("data_agendamento", start)
+    .lte("data_agendamento", end)
+    .neq("status", "cancelado")
+    .order("data_agendamento")
+    .order("hora_agendamento");
+
+  if (error) {
+    calendarAppointments = [];
+    renderCalendar();
+    setCalendarStatus("A tabela de agendamentos ainda nao esta configurada no Supabase.", "error");
+    return;
+  }
+  calendarAppointments = data || [];
+  renderCalendar();
+  setCalendarStatus(`${calendarAppointments.length} agendamento${calendarAppointments.length === 1 ? "" : "s"} nesta semana.`);
+};
+
+appointmentForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const client = getClient();
+  const user = await getCurrentUser();
+  if (!client || !user) {
+    setAppointmentStatus("Faca login novamente antes de salvar.");
+    return;
+  }
+
+  const formData = new FormData(appointmentForm);
+  const time = normalizeAppointmentTime(formData.get("hora_agendamento"));
+  const [hour, minute] = time.split(":").map(Number);
+  const totalMinutes = hour * 60 + minute;
+  if (totalMinutes < 8 * 60 || totalMinutes > 21 * 60 || minute % 30 !== 0) {
+    setAppointmentStatus("Escolha um horario entre 08:00 e 21:00, de 30 em 30 minutos.");
+    return;
+  }
+
+  const submitButton = appointmentForm.querySelector("button[type='submit']");
+  submitButton.disabled = true;
+  submitButton.textContent = "Salvando...";
+  setAppointmentStatus("");
+
+  const payload = {
+    lead_id: String(formData.get("lead_id") || "").trim() || null,
+    nome_cliente: String(formData.get("nome_cliente") || "").trim(),
+    telefone_cliente: String(formData.get("telefone_cliente") || "").replace(/\D/g, "") || null,
+    usuario_id: user.id,
+    nome_usuario: String(formData.get("nome_usuario") || "").trim() || await getCurrentSellerName(),
+    data_agendamento: String(formData.get("data_agendamento") || ""),
+    hora_agendamento: `${time}:00`,
+    observacao: String(formData.get("observacao") || "").trim() || null,
+    status: "agendado",
+  };
+
+  const appointmentId = String(formData.get("id") || "").trim();
+  const query = appointmentId
+    ? client.from("appointments").update(payload).eq("id", appointmentId)
+    : client.from("appointments").insert(payload);
+  const { data, error } = await query.select().single();
+
+  submitButton.disabled = false;
+  submitButton.textContent = appointmentId ? "Salvar alteracoes" : "Confirmar agendamento";
+  if (error) {
+    setAppointmentStatus(`Nao consegui salvar o agendamento: ${error.message}`);
+    return;
+  }
+
+  closeAppointmentModal(data);
+  await loadAppointments();
+});
+
+document.querySelector("[data-close-appointment]")?.addEventListener("click", () => closeAppointmentModal(null));
+document.querySelector("[data-cancel-appointment]")?.addEventListener("click", () => closeAppointmentModal(null));
+appointmentModal?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeAppointmentModal(null);
+});
+
+document.querySelector("[data-delete-appointment]")?.addEventListener("click", async () => {
+  const appointmentId = appointmentForm?.elements.id.value;
+  if (!appointmentId || !confirm("Cancelar este agendamento?")) return;
+  const client = getClient();
+  const { error } = await client.from("appointments").update({ status: "cancelado" }).eq("id", appointmentId);
+  if (error) {
+    setAppointmentStatus(`Nao consegui cancelar: ${error.message}`);
+    return;
+  }
+  closeAppointmentModal({ cancelled: true });
+  await loadAppointments();
+});
+
+document.querySelector("[data-new-appointment]")?.addEventListener("click", () => openAppointmentModal());
+document.querySelector("[data-calendar-prev]")?.addEventListener("click", async () => {
+  calendarWeekStart = addDays(calendarWeekStart || getWeekStart(), -7);
+  renderCalendar();
+  await loadAppointments();
+});
+document.querySelector("[data-calendar-today]")?.addEventListener("click", async () => {
+  calendarWeekStart = getWeekStart();
+  renderCalendar();
+  await loadAppointments();
+});
+document.querySelector("[data-calendar-next]")?.addEventListener("click", async () => {
+  calendarWeekStart = addDays(calendarWeekStart || getWeekStart(), 7);
+  renderCalendar();
+  await loadAppointments();
+});
 
 const formatLeadDate = (value) => {
   if (!value) {
@@ -289,11 +659,19 @@ const updateLeadCount = () => {
   leadCount.textContent = `${total} ${total === 1 ? "lead ativo" : "leads ativos"}`;
 };
 
-const updateLeadStatus = async (leadId, status, { optimistic = false } = {}) => {
+const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppointment = false } = {}) => {
   const client = getClient();
 
   if (!client || !leadId || !status) {
     return false;
+  }
+
+  let createdAppointment = null;
+  if (status === "agendamento" && !skipAppointment) {
+    createdAppointment = await requestAppointmentForLead(leadId);
+    if (!createdAppointment || createdAppointment.cancelled) {
+      return false;
+    }
   }
 
   if (optimistic) {
@@ -330,6 +708,9 @@ const updateLeadStatus = async (leadId, status, { optimistic = false } = {}) => 
   const { error } = await client.from("leads").update({ status }).eq("id", leadId);
 
   if (error) {
+    if (createdAppointment?.id) {
+      await client.from("appointments").delete().eq("id", createdAppointment.id);
+    }
     if (optimistic) {
       await loadLeads();
     } else {
@@ -340,6 +721,9 @@ const updateLeadStatus = async (leadId, status, { optimistic = false } = {}) => 
 
   if (!optimistic) {
     await loadLeads();
+  }
+  if (status === "agendamento") {
+    await loadAppointments();
   }
   return true;
 };
@@ -689,10 +1073,26 @@ leadForm?.addEventListener("submit", async (event) => {
   const leadId = leadForm.dataset.leadId;
 
   if (mode === "edit" && leadId) {
+    const targetStatus = String(formData.get("status") || "lead_recebido").trim();
+    let appointment = null;
+    if (targetStatus === "agendamento" && leadForm.dataset.originalStatus !== "agendamento") {
+      modal?.close();
+      appointment = await requestAppointmentForLead(leadId, {
+        name,
+        telefone: String(formData.get("telefone") || "").replace(/\D/g, ""),
+      });
+      if (!appointment || appointment.cancelled) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Salvar Alteracoes";
+        modal?.showModal();
+        return;
+      }
+    }
+
     const { error } = await client.from("leads").update({
       name,
       telefone: String(formData.get("telefone") || "").replace(/\D/g, ""),
-      status: String(formData.get("status") || "lead_recebido").trim(),
+      status: targetStatus,
       origin: String(formData.get("origin") || "").trim(),
       note: String(formData.get("note") || "").trim(),
       property_region: String(formData.get("property_region") || "").trim() || null,
@@ -705,7 +1105,11 @@ leadForm?.addEventListener("submit", async (event) => {
     submitButton.textContent = "Salvar Alteracoes";
 
     if (error) {
+      if (appointment?.id) {
+        await client.from("appointments").delete().eq("id", appointment.id);
+      }
       setFormStatus("Nao consegui atualizar o lead: " + error.message);
+      modal?.showModal();
       return;
     }
   } else {
@@ -768,6 +1172,26 @@ const setupBulkActions = () => {
     const leadIds = Array.from(checkboxes).map(cb => cb.closest(".lead-card")?.dataset.leadId).filter(Boolean);
 
     if (leadIds.length === 0) return;
+
+    if (targetStatus === "agendamento") {
+      if (!confirm(`Agendar ${leadIds.length} cliente${leadIds.length === 1 ? "" : "s"}? A data e o horario serao solicitados individualmente.`)) {
+        moveSelect.value = "";
+        return;
+      }
+
+      for (const leadId of leadIds) {
+        const saved = await updateLeadStatus(leadId, "agendamento");
+        if (!saved) break;
+      }
+      checkboxes.forEach((checkbox) => {
+        checkbox.checked = false;
+        checkbox.closest(".lead-card")?.classList.remove("selected");
+      });
+      updateBulkActionsBar();
+      moveSelect.value = "";
+      await loadLeads();
+      return;
+    }
 
     if (confirm(`Deseja mover os ${leadIds.length} leads selecionados para "${statusLabels[targetStatus]}"?`)) {
       const client = getClient();
@@ -883,11 +1307,19 @@ const switchTab = () => {
 
   const titleEl = document.querySelector("[data-tab-title]");
   if (titleEl) titleEl.textContent = tabTitleMap[activeTab] || "Pipeline";
+
+  if (activeTab === "calendario") {
+    calendarWeekStart = calendarWeekStart || getWeekStart();
+    renderCalendar();
+    loadAppointments();
+  }
 };
 
 window.addEventListener("hashchange", switchTab);
 
 document.addEventListener("DOMContentLoaded", () => {
+  calendarWeekStart = getWeekStart();
+  renderCalendar();
   setupDragAndDrop();
   setupTouchMove();
   setupBulkActions();

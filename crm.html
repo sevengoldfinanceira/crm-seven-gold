@@ -11,7 +11,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=lead-client-info-1" />
+    <link rel="stylesheet" href="styles.css?v=calendar-v1" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -243,11 +243,34 @@
 
         <!-- Calendario -->
         <section class="tab-content" data-tab="calendario" style="display:none;">
-          <div class="empty-tab-state">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-bottom: 16px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <h2>Calendario</h2>
-            <p>Em breve.</p>
-          </div>
+          <section class="commercial-calendar" aria-labelledby="calendar-title">
+            <header class="calendar-toolbar">
+              <div>
+                <p class="route-label">Agenda comercial</p>
+                <h1 id="calendar-title">Calendario de atendimentos</h1>
+                <p class="calendar-week-label" data-calendar-week-label></p>
+              </div>
+              <div class="calendar-toolbar-actions">
+                <button class="calendar-nav-button" type="button" data-calendar-prev aria-label="Semana anterior">&larr;</button>
+                <button class="calendar-today-button" type="button" data-calendar-today>Semana atual</button>
+                <button class="calendar-nav-button" type="button" data-calendar-next aria-label="Proxima semana">&rarr;</button>
+                <button class="new-lead-button calendar-new-button" type="button" data-new-appointment>
+                  <span aria-hidden="true">+</span>
+                  Novo agendamento
+                </button>
+              </div>
+            </header>
+
+            <p class="calendar-status" data-calendar-status aria-live="polite"></p>
+
+            <div class="calendar-desktop-view">
+              <div class="calendar-scroll" aria-label="Agenda semanal de clientes">
+                <div class="calendar-grid" data-calendar-grid></div>
+              </div>
+            </div>
+
+            <div class="calendar-mobile-view" data-calendar-mobile-list></div>
+          </section>
         </section>
 
         <!-- Financeiro -->
@@ -344,6 +367,55 @@
       </form>
     </dialog>
 
+    <dialog class="appointment-modal" aria-labelledby="appointment-modal-title">
+      <form data-appointment-form>
+        <header>
+          <div>
+            <span class="appointment-modal-kicker">Agenda comercial</span>
+            <h2 id="appointment-modal-title">Agendar cliente</h2>
+          </div>
+          <button class="icon-button" type="button" data-close-appointment aria-label="Fechar">X</button>
+        </header>
+
+        <input name="id" type="hidden" />
+        <input name="lead_id" type="hidden" />
+
+        <div class="appointment-form-grid">
+          <label>
+            Cliente
+            <input name="nome_cliente" type="text" required placeholder="Nome do cliente" />
+          </label>
+          <label>
+            Telefone
+            <input name="telefone_cliente" type="text" placeholder="Telefone do cliente" />
+          </label>
+          <label>
+            Data
+            <input name="data_agendamento" type="date" required />
+          </label>
+          <label>
+            Horario
+            <input name="hora_agendamento" type="time" min="08:00" max="21:00" step="1800" required />
+          </label>
+          <label class="appointment-seller-field">
+            Vendedor
+            <input name="nome_usuario" type="text" readonly />
+          </label>
+          <label class="appointment-observation-field">
+            Observacao
+            <textarea name="observacao" rows="4" placeholder="Informacoes importantes para o atendimento"></textarea>
+          </label>
+        </div>
+
+        <p class="form-status" data-appointment-status></p>
+        <footer class="appointment-modal-actions">
+          <button class="appointment-delete-button" type="button" data-delete-appointment hidden>Cancelar agendamento</button>
+          <button class="clear-button" type="button" data-cancel-appointment>Cancelar</button>
+          <button class="new-lead-button" type="submit">Confirmar agendamento</button>
+        </footer>
+      </form>
+    </dialog>
+
     <!-- Bulk Actions Floating Bar -->
     <div class="bulk-actions-bar" id="bulk-actions-bar" style="display: none;">
       <div class="bulk-info">
@@ -374,7 +446,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=mqreizkw"></script>
-    <script src="script.js?v=lead-client-info-1"></script>
+    <script src="script.js?v=calendar-v1"></script>
     <script src="/pwa.js"></script>
   </body>
 </html>

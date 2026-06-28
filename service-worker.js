@@ -1,7 +1,8 @@
-const CACHE_VERSION = "seven-gold-lead-client-info-1";
+const CACHE_VERSION = "seven-gold-calendar-v1";
 const STATIC_ASSETS = [
   "/home.css",
   "/styles.css",
+  "/script.js",
   "/auth.js",
   "/admin-shell.js",
   "/pwa.js",
