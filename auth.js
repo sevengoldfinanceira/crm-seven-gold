@@ -29,6 +29,10 @@
   };
 
   const getTarget = (element) => element?.dataset.redirect || "painel.html";
+  const isCrmTarget = (target) => {
+    const pathname = new URL(target || "", window.location.href).pathname.toLowerCase();
+    return pathname.endsWith("/crm.html") || pathname.endsWith("/crm");
+  };
 
   const ensureProfile = async (session) => {
     const user = session?.user;
@@ -108,6 +112,28 @@
         </section>
       </main>
     `;
+  };
+
+  const requireCrmAuthorization = async (session) => {
+    try {
+      return await checkCrmUserAuthorization(session?.user?.email);
+    } catch (error) {
+      console.error("[CRM Auth] Acesso bloqueado:", error);
+      await client.auth.signOut();
+      showCrmAccessDenied();
+      return null;
+    }
+  };
+
+  const setupCrmEntryGuards = () => {
+    document.querySelectorAll("[data-crm-entry]").forEach((link) => {
+      link.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const { data } = await client.auth.getSession();
+        const crmUser = await requireCrmAuthorization(data.session);
+        if (crmUser) window.location.href = link.href;
+      });
+    });
   };
 
   const applyCrmUserIdentity = (sessionUser, crmUser) => {
@@ -303,6 +329,11 @@
           return;
         }
 
+        if (isCrmTarget(target)) {
+          const crmUser = await requireCrmAuthorization(data.session);
+          if (!crmUser) return;
+        }
+
         await ensureProfile(data.session);
         window.location.href = target;
       });
@@ -429,9 +460,14 @@
       
       const savedCard = wrapper.querySelector(".saved-account-card");
       if (savedCard) {
-        savedCard.addEventListener("click", (event) => {
+        savedCard.addEventListener("click", async (event) => {
           if (event.target.closest("[data-logout]")) return;
-          window.location.href = getTarget(form);
+          const target = getTarget(form);
+          if (isCrmTarget(target)) {
+            const crmUser = await requireCrmAuthorization(data.session);
+            if (!crmUser) return;
+          }
+          window.location.href = target;
         });
       }
     }
@@ -524,6 +560,10 @@
       return true;
     }
 
+    if (isCrmTarget(next)) {
+      const crmUser = await requireCrmAuthorization(session);
+      if (!crmUser) return true;
+    }
     await ensureProfile(session);
     window.location.href = next;
     return true;
@@ -549,14 +589,8 @@
     let authorizedCrmUser = null;
 
     if (permissionArea === "crm") {
-      try {
-        authorizedCrmUser = await checkCrmUserAuthorization(session.user?.email);
-      } catch (error) {
-        console.error("[CRM Auth] Acesso bloqueado:", error);
-        await client.auth.signOut();
-        showCrmAccessDenied();
-        return;
-      }
+      authorizedCrmUser = await requireCrmAuthorization(session);
+      if (!authorizedCrmUser) return;
     }
 
     await ensureProfile(session);
@@ -625,6 +659,7 @@
     const callbackResult = await handleOAuthCallback();
     setupLoginForms();
     setupLogout();
+    setupCrmEntryGuards();
 
     const redirectedAuthenticatedUser = await redirectAuthenticatedLoginPage();
     if (redirectedAuthenticatedUser) {

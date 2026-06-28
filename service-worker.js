@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-crm-users-auth-v1";
+const CACHE_VERSION = "seven-gold-crm-users-auth-v2";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
