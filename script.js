@@ -91,6 +91,18 @@ const openEditLeadModal = (lead) => {
   if (leadForm.elements["note"]) {
     leadForm.elements["note"].value = lead.note || "";
   }
+  if (leadForm.elements["property_region"]) {
+    leadForm.elements["property_region"].value = lead.property_region || "";
+  }
+  if (leadForm.elements["credit_value"]) {
+    leadForm.elements["credit_value"].value = lead.credit_value ?? "";
+  }
+  if (leadForm.elements["down_payment_value"]) {
+    leadForm.elements["down_payment_value"].value = lead.down_payment_value ?? "";
+  }
+  if (leadForm.elements["installment_value"]) {
+    leadForm.elements["installment_value"].value = lead.installment_value ?? "";
+  }
 
   setFormStatus("");
   modal.showModal();
@@ -142,6 +154,14 @@ const formatLeadDate = (value) => {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
+};
+
+const parseOptionalMoney = (value) => {
+  const normalized = String(value ?? "").trim().replace(",", ".");
+  if (!normalized) return null;
+
+  const amount = Number(normalized);
+  return Number.isFinite(amount) && amount >= 0 ? amount : null;
 };
 
 const formatInternationalPhone = (phoneStr) => {
@@ -240,7 +260,7 @@ const editLead = async (leadId) => {
   const newPhone = prompt("Editar Telefone (ex: 11999998888):", lead.telefone || "");
   if (newPhone === null) return;
 
-  const newNote = prompt("Editar Observacao:", lead.note || "");
+  const newNote = prompt("Editar Anotacoes:", lead.note || "");
   if (newNote === null) return;
 
   const { error } = await client
@@ -506,7 +526,7 @@ const loadLeads = async () => {
 
   const { data, error } = await client
     .from("leads")
-    .select("id, name, origin, note, status, created_at, telefone")
+    .select("id, name, origin, note, status, created_at, telefone, property_region, credit_value, down_payment_value, installment_value")
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -675,6 +695,10 @@ leadForm?.addEventListener("submit", async (event) => {
       status: String(formData.get("status") || "lead_recebido").trim(),
       origin: String(formData.get("origin") || "").trim(),
       note: String(formData.get("note") || "").trim(),
+      property_region: String(formData.get("property_region") || "").trim() || null,
+      credit_value: parseOptionalMoney(formData.get("credit_value")),
+      down_payment_value: parseOptionalMoney(formData.get("down_payment_value")),
+      installment_value: parseOptionalMoney(formData.get("installment_value")),
     }).eq("id", leadId);
 
     submitButton.disabled = false;
@@ -691,6 +715,10 @@ leadForm?.addEventListener("submit", async (event) => {
       origin: String(formData.get("origin") || "").trim(),
       status: "lead_recebido",
       note: String(formData.get("note") || "").trim(),
+      property_region: String(formData.get("property_region") || "").trim() || null,
+      credit_value: parseOptionalMoney(formData.get("credit_value")),
+      down_payment_value: parseOptionalMoney(formData.get("down_payment_value")),
+      installment_value: parseOptionalMoney(formData.get("installment_value")),
       owner_id: user.id,
     });
 

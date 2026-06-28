@@ -11,7 +11,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=mqreizkw" />
+    <link rel="stylesheet" href="styles.css?v=lead-client-info-1" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -314,9 +314,30 @@
           </select>
         </label>
         <label>
-          Observacao
-          <textarea name="note" rows="4" placeholder="Resumo do primeiro contato"></textarea>
+          Anota&ccedil;&otilde;es
+          <textarea name="note" rows="4" placeholder="Anota&ccedil;&otilde;es gerais sobre o cliente"></textarea>
         </label>
+        <fieldset class="lead-client-info">
+          <legend>Informa&ccedil;&otilde;es do cliente</legend>
+          <div class="lead-client-info-grid">
+            <label>
+              Regi&atilde;o do im&oacute;vel
+              <input name="property_region" type="text" placeholder="Ex: Zona Sul, Centro, bairro..." />
+            </label>
+            <label>
+              Valor do cr&eacute;dito
+              <input name="credit_value" type="number" min="0" step="0.01" inputmode="decimal" placeholder="R$ 0,00" />
+            </label>
+            <label>
+              Valor da entrada
+              <input name="down_payment_value" type="number" min="0" step="0.01" inputmode="decimal" placeholder="R$ 0,00" />
+            </label>
+            <label>
+              Valor da parcela
+              <input name="installment_value" type="number" min="0" step="0.01" inputmode="decimal" placeholder="R$ 0,00" />
+            </label>
+          </div>
+        </fieldset>
         <p class="form-status" data-lead-form-status></p>
         <button class="new-lead-button" type="submit">Salvar lead</button>
         <button class="delete-lead-modal-btn" id="delete-lead-modal-btn" type="button" style="display: none;">Excluir Lead</button>
@@ -353,7 +374,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=mqreizkw"></script>
-    <script src="script.js"></script>
+    <script src="script.js?v=lead-client-info-1"></script>
     <script src="/pwa.js"></script>
   </body>
 </html>
