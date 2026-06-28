@@ -121,9 +121,23 @@
     }
   };
 
-  const applyCrmUserIdentity = (sessionUser, crmUser) => {
+  const normalizeSystemRole = (value) => {
+    const role = String(value || "").trim().toLowerCase();
+    const aliases = {
+      admin: "administrador",
+      administrator: "administrador",
+      owner: "dono",
+      proprietario: "dono",
+      "diretor-ceo": "dono",
+      diretor: "dono",
+      ceo: "dono",
+    };
+    return aliases[role] || role;
+  };
+
+  const applyCrmUserIdentity = (sessionUser, crmUser, resolvedRole) => {
     const name = crmUser?.nome || sessionUser?.email || "Usuario";
-    const role = crmUser?.cargo || "Usuario CRM";
+    const role = resolvedRole || normalizeSystemRole(crmUser?.cargo) || "Usuario CRM";
 
     document.querySelectorAll("[data-user-name]").forEach((element) => {
       element.textContent = name;
@@ -563,19 +577,18 @@
     const authorizedPortalUser = await requirePortalAuthorization(session);
     if (!authorizedPortalUser) return;
 
+    await ensureProfile(session);
+    const profile = await getProfile(session);
+    const role = normalizeSystemRole(authorizedPortalUser.cargo || profile?.role || "vendedor");
     window.currentUser = session.user;
     window.crmUser = authorizedPortalUser;
-    window.userRole = authorizedPortalUser.cargo || "Usuario";
+    window.userRole = role;
     window.sevenGoldCrmSession = {
       currentUser: session.user,
       crmUser: authorizedPortalUser,
-      userRole: window.userRole,
+      userRole: role,
     };
     window.sevenGoldPortalSession = window.sevenGoldCrmSession;
-
-    await ensureProfile(session);
-    const profile = await getProfile(session);
-    const role = authorizedPortalUser.cargo || profile?.role || "vendedor";
     const allowedRoles = parseRoles(document.body.dataset.allowedRoles);
     const areaAccess = permissionArea === "crm" ? true : await canAccessArea(role, permissionArea);
 
@@ -592,7 +605,7 @@
     applyRoleVisibility(role, profile);
     await applyUserProfile(session, profile);
     if (permissionArea === "crm") {
-      applyCrmUserIdentity(session.user, authorizedPortalUser);
+      applyCrmUserIdentity(session.user, authorizedPortalUser, role);
       document.body.classList.add("crm-authorized");
     }
     document.body.classList.add("portal-authorized");
