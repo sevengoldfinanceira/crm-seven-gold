@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { name, phone, stage, tags, notes, source, owner_id } = req.body;
+    const { name, phone, tags, notes, source, owner_id } = req.body;
 
     console.log('[from-whatsapp-extension] Requisição recebida');
 
@@ -28,9 +28,7 @@ module.exports = async (req, res) => {
     }
 
     const cleanedPhone = String(phone).replace(/\D/g, '');
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[from-whatsapp-extension] Telefone normalizado:', cleanedPhone);
-    }
+
 
     const ownerId = owner_id || process.env.DEFAULT_OWNER_ID;
     if (!ownerId) {
@@ -39,7 +37,7 @@ module.exports = async (req, res) => {
         JSON.stringify({ ok: false, error: 'owner_id obrigatório. Configure DEFAULT_OWNER_ID no .env.' })
       );
     }
-    console.log('[from-whatsapp-extension] Owner ID:', ownerId);
+
 
     const { data: existingLead, error: findError } = await supabase
       .from('leads')
@@ -70,7 +68,7 @@ module.exports = async (req, res) => {
     const insertData = {
       name,
       telefone: cleanedPhone,
-      status: stage || 'novo_lead',
+      status: 'lead_recebido',
       origin: source || 'whatsapp_web_extension',
       note: notes || '',
       owner_id: ownerId,
