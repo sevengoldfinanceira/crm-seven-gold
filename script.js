@@ -30,8 +30,6 @@ overlay?.addEventListener("click", () => {
 
 navItems.forEach((item) => {
   item.addEventListener("click", () => {
-    navItems.forEach((navItem) => navItem.classList.remove("active"));
-    item.classList.add("active");
     document.body.classList.remove("menu-open");
   });
 });
@@ -825,9 +823,46 @@ const setupBulkActions = () => {
   });
 };
 
+const tabTitleMap = {
+  dashboard: "Dashboard",
+  pipeline: "Pipeline",
+  tarefas: "Tarefas",
+  feed: "Feed",
+  calendario: "Calendario",
+  financeiro: "Financeiro",
+  cadastro: "Cadastro rapido",
+  equipe: "Minha equipe",
+};
+
+const switchTab = () => {
+  const hash = window.location.hash.replace("#", "") || "pipeline";
+  const validTabs = ["dashboard", "pipeline", "tarefas", "feed", "calendario", "financeiro", "cadastro", "equipe"];
+  const activeTab = validTabs.includes(hash) ? hash : "pipeline";
+
+  document.querySelectorAll(".tab-content").forEach((section) => {
+    section.style.display = section.dataset.tab === activeTab ? "" : "none";
+  });
+
+  navItems.forEach((item) => {
+    const isActive = item.getAttribute("href") === "#" + activeTab;
+    item.classList.toggle("active", isActive);
+    if (isActive) {
+      item.setAttribute("aria-current", "page");
+    } else {
+      item.removeAttribute("aria-current");
+    }
+  });
+
+  const titleEl = document.querySelector("[data-tab-title]");
+  if (titleEl) titleEl.textContent = tabTitleMap[activeTab] || "Pipeline";
+};
+
+window.addEventListener("hashchange", switchTab);
+
 document.addEventListener("DOMContentLoaded", () => {
   setupDragAndDrop();
   setupTouchMove();
   setupBulkActions();
+  switchTab();
   loadLeads();
 });

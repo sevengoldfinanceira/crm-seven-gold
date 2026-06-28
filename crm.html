@@ -107,107 +107,173 @@
           <button class="icon-button menu-button" type="button" aria-label="Abrir menu">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
           </button>
-          <strong>Pipeline</strong>
+          <strong data-tab-title>Pipeline</strong>
         </header>
 
-        <section class="pipeline-header" id="pipeline">
-          <div>
-            <p class="route-label">sistema.sevengold.com.br/crm</p>
-            <h1>Pipeline</h1>
-            <span class="lead-count" data-lead-count>Carregando leads...</span>
+        <!-- Dashboard -->
+        <section class="tab-content" data-tab="dashboard" style="display:none;">
+          <div class="empty-tab-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-bottom: 16px;"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+            <h2>Dashboard</h2>
+            <p>Em breve.</p>
           </div>
-          <button class="new-lead-button" type="button" data-open-modal>
-            <span aria-hidden="true">+</span>
-            Novo lead
-          </button>
         </section>
 
-        <section class="filter-row" aria-label="Filtros do pipeline">
-          <label>
-            <span>Tipo</span>
-            <select>
-              <option>Todos os tipos</option>
-              <option>Consorcio</option>
-              <option>Investimento</option>
-              <option>Credito</option>
-            </select>
-          </label>
-          <label>
-            <span>Origem</span>
-            <select>
-              <option>Todas as origens</option>
-              <option>Site publico</option>
-              <option>Instagram</option>
-              <option>Indicacao</option>
-            </select>
-          </label>
-          <label>
-            <span>Periodo</span>
-            <select>
-              <option>Este mes</option>
-              <option>Hoje</option>
-              <option>Ultimos 7 dias</option>
-              <option>Este ano</option>
-            </select>
-          </label>
-          <button class="clear-button" type="button">Limpar filtros</button>
+        <!-- Pipeline -->
+        <section class="tab-content" data-tab="pipeline">
+          <section class="pipeline-header" id="pipeline">
+            <div>
+              <p class="route-label">sistema.sevengold.com.br/crm</p>
+              <h1>Pipeline</h1>
+              <span class="lead-count" data-lead-count>Carregando leads...</span>
+            </div>
+            <button class="new-lead-button" type="button" data-open-modal>
+              <span aria-hidden="true">+</span>
+              Novo lead
+            </button>
+          </section>
+
+          <section class="filter-row" aria-label="Filtros do pipeline">
+            <label>
+              <span>Tipo</span>
+              <select>
+                <option>Todos os tipos</option>
+                <option>Consorcio</option>
+                <option>Investimento</option>
+                <option>Credito</option>
+              </select>
+            </label>
+            <label>
+              <span>Origem</span>
+              <select>
+                <option>Todas as origens</option>
+                <option>Site publico</option>
+                <option>Instagram</option>
+                <option>Indicacao</option>
+              </select>
+            </label>
+            <label>
+              <span>Periodo</span>
+              <select>
+                <option>Este mes</option>
+                <option>Hoje</option>
+                <option>Ultimos 7 dias</option>
+                <option>Este ano</option>
+              </select>
+            </label>
+            <button class="clear-button" type="button">Limpar filtros</button>
+          </section>
+
+          <section class="kanban-wrap" aria-label="Quadro de leads">
+            <div class="kanban-board" data-kanban-board>
+              <article class="kanban-column" data-status="lead_recebido">
+                <header>
+                  <span class="dot blue"></span>
+                  <strong>Lead recebido</strong>
+                  <small>0</small>
+                </header>
+                <div class="card-stack"></div>
+              </article>
+
+              <article class="kanban-column" data-status="primeiro_contato">
+                <header>
+                  <span class="dot orange"></span>
+                  <strong>Primeiro contato</strong>
+                  <small>0</small>
+                </header>
+                <div class="card-stack"></div>
+              </article>
+
+              <article class="kanban-column" data-status="agendamento">
+                <header>
+                  <span class="dot purple"></span>
+                  <strong>Agendamento</strong>
+                  <small>0</small>
+                </header>
+                <div class="card-stack"></div>
+              </article>
+
+              <article class="kanban-column" data-status="cliente_em_loja">
+                <header>
+                  <span class="dot pink"></span>
+                  <strong>Cliente em loja</strong>
+                  <small>0</small>
+                </header>
+                <div class="card-stack"></div>
+              </article>
+
+              <article class="kanban-column" data-status="proposta_enviada">
+                <header>
+                  <span class="dot amber"></span>
+                  <strong>Proposta enviada</strong>
+                  <small>0</small>
+                </header>
+                <div class="card-stack"></div>
+              </article>
+
+              <article class="kanban-column" data-status="venda_fechada">
+                <header>
+                  <span class="dot green"></span>
+                  <strong>Venda fechada</strong>
+                  <small>0</small>
+                </header>
+                <div class="card-stack"></div>
+              </article>
+            </div>
+          </section>
         </section>
 
-        <section class="kanban-wrap" aria-label="Quadro de leads">
-          <div class="kanban-board" data-kanban-board>
-            <article class="kanban-column" data-status="lead_recebido">
-              <header>
-                <span class="dot blue"></span>
-                <strong>Lead recebido</strong>
-                <small>0</small>
-              </header>
-              <div class="card-stack"></div>
-            </article>
+        <!-- Tarefas -->
+        <section class="tab-content" data-tab="tarefas" style="display:none;">
+          <div class="empty-tab-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-bottom: 16px;"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M9 12l2 2 4-4"/></svg>
+            <h2>Tarefas</h2>
+            <p>Em breve.</p>
+          </div>
+        </section>
 
-            <article class="kanban-column" data-status="primeiro_contato">
-              <header>
-                <span class="dot orange"></span>
-                <strong>Primeiro contato</strong>
-                <small>0</small>
-              </header>
-              <div class="card-stack"></div>
-            </article>
+        <!-- Feed -->
+        <section class="tab-content" data-tab="feed" style="display:none;">
+          <div class="empty-tab-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-bottom: 16px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <h2>Feed</h2>
+            <p>Em breve.</p>
+          </div>
+        </section>
 
-            <article class="kanban-column" data-status="agendamento">
-              <header>
-                <span class="dot purple"></span>
-                <strong>Agendamento</strong>
-                <small>0</small>
-              </header>
-              <div class="card-stack"></div>
-            </article>
+        <!-- Calendario -->
+        <section class="tab-content" data-tab="calendario" style="display:none;">
+          <div class="empty-tab-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-bottom: 16px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <h2>Calendario</h2>
+            <p>Em breve.</p>
+          </div>
+        </section>
 
-            <article class="kanban-column" data-status="cliente_em_loja">
-              <header>
-                <span class="dot pink"></span>
-                <strong>Cliente em loja</strong>
-                <small>0</small>
-              </header>
-              <div class="card-stack"></div>
-            </article>
+        <!-- Financeiro -->
+        <section class="tab-content" data-tab="financeiro" style="display:none;">
+          <div class="empty-tab-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-bottom: 16px;"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <h2>Financeiro</h2>
+            <p>Em breve.</p>
+          </div>
+        </section>
 
-            <article class="kanban-column" data-status="proposta_enviada">
-              <header>
-                <span class="dot amber"></span>
-                <strong>Proposta enviada</strong>
-                <small>0</small>
-              </header>
-              <div class="card-stack"></div>
-            </article>
+        <!-- Cadastro rapido -->
+        <section class="tab-content" data-tab="cadastro" style="display:none;">
+          <div class="empty-tab-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-bottom: 16px;"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+            <h2>Cadastro rapido</h2>
+            <p>Em breve.</p>
+          </div>
+        </section>
 
-            <article class="kanban-column" data-status="venda_fechada">
-              <header>
-                <span class="dot green"></span>
-                <strong>Venda fechada</strong>
-                <small>0</small>
-              </header>
-              <div class="card-stack"></div>
-            </article>
+        <!-- Minha equipe -->
+        <section class="tab-content" data-tab="equipe" style="display:none;">
+          <div class="empty-tab-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-bottom: 16px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h2>Minha equipe</h2>
+            <p>Em breve.</p>
           </div>
         </section>
       </main>
