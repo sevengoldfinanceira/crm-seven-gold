@@ -71,13 +71,13 @@
     return data;
   };
 
-  const checkPortalUserAuthorization = async (userEmail) => {
+  const checkPortalUserAuthorization = async (userEmail, userId) => {
     if (!userEmail) {
       throw new Error("Nao foi possivel identificar o e-mail do usuario logado.");
     }
 
     const normalizedEmail = userEmail.trim().toLowerCase();
-    const { data, error } = await client
+    const { data: crmUser, error } = await client
       .from("crm_users")
       .select("email, nome, cargo, ativo")
       .eq("email", normalizedEmail)
@@ -86,14 +86,48 @@
 
     if (error) {
       console.error("[Portal Auth] Erro ao validar usuario:", error);
-      throw new Error(error.message || "Erro ao validar acesso.");
     }
 
-    if (!data) {
-      throw new Error("Usuario nao autorizado. Solicite acesso ao administrador.");
+    if (crmUser) {
+      return crmUser;
     }
 
-    return data;
+    // Se nao estiver no crm_users, verifica se tem role de 'dono' ou 'administrador' na tabela profiles
+    if (userId) {
+      const { data: profile, error: profileError } = await client
+        .from("profiles")
+        .select("id, full_name, email, role")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (profileError) {
+        console.error("[Portal Auth] Erro ao buscar profile:", profileError);
+      }
+
+      if (profile && (profile.role === "dono" || profile.role === "administrador")) {
+        const newCrmUser = {
+          email: normalizedEmail,
+          nome: profile.full_name || normalizedEmail.split("@")[0],
+          cargo: profile.role,
+          ativo: true
+        };
+
+        const { data: insertedUser, error: insertError } = await client
+          .from("crm_users")
+          .insert(newCrmUser)
+          .select("email, nome, cargo, ativo")
+          .maybeSingle();
+
+        if (insertError) {
+          console.error("[Portal Auth] Erro ao registrar dono no crm_users:", insertError);
+          return newCrmUser;
+        }
+
+        return insertedUser || newCrmUser;
+      }
+    }
+
+    throw new Error("Usuario nao autorizado. Solicite acesso ao administrador.");
   };
 
   const showPortalAccessDenied = () => {
@@ -112,7 +146,7 @@
 
   const requirePortalAuthorization = async (session) => {
     try {
-      return await checkPortalUserAuthorization(session?.user?.email);
+      return await checkPortalUserAuthorization(session?.user?.email, session?.user?.id);
     } catch (error) {
       console.error("[Portal Auth] Acesso bloqueado:", error);
       await client.auth.signOut();
