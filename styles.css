@@ -220,6 +220,13 @@ select {
   color: #ffffff;
 }
 
+.sidebar-user-actions { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+.sidebar-panels-link, .user-box .sidebar-user-actions .sidebar-logout-btn { display: inline-flex; align-items: center; gap: 5px; min-width: 0; margin: 0; padding: 0; border: 0; background: transparent; color: #a9afa9; font-size: .7rem; font-weight: 700; line-height: 1.2; text-decoration: none; }
+.sidebar-panels-link { flex: 1 1 auto; }
+.user-box .sidebar-user-actions .sidebar-logout-btn { flex: 0 0 auto; }
+.sidebar-panels-link:hover, .user-box .sidebar-user-actions .sidebar-logout-btn:hover { color: #fff; }
+.sidebar-panels-link svg, .sidebar-logout-btn svg { flex: 0 0 auto; }
+
 .user-profile-link {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
