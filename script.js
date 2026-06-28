@@ -180,7 +180,7 @@ const addDays = (date, amount) => {
   return result;
 };
 
-const calendarTimes = Array.from({ length: 14 }, (_, index) =>
+const calendarTimes = Array.from({ length: 13 }, (_, index) =>
   `${String(8 + index).padStart(2, "0")}:00`
 );
 
@@ -439,8 +439,8 @@ appointmentForm?.addEventListener("submit", async (event) => {
   const time = normalizeAppointmentTime(formData.get("hora_agendamento"));
   const [hour, minute] = time.split(":").map(Number);
   const totalMinutes = hour * 60 + minute;
-  if (totalMinutes < 8 * 60 || totalMinutes > 21 * 60) {
-    setAppointmentStatus("Escolha um horario entre 08:00 e 21:00.");
+  if (totalMinutes < 8 * 60 || totalMinutes > 20 * 60 + 59) {
+    setAppointmentStatus("Escolha um horario entre 08:00 e 20:59.");
     return;
   }
 
