@@ -910,10 +910,21 @@ const createLeadCard = (lead) => {
 };
 
 const renderEmptyState = (stack) => {
-  const empty = document.createElement("p");
-  empty.className = "empty-column";
-  empty.textContent = "Sem leads nesta etapa.";
-  stack.append(empty);
+  const container = document.createElement("div");
+  container.className = "empty-column-card";
+
+  const iconBox = document.createElement("div");
+  iconBox.className = "empty-column-icon-box";
+  iconBox.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+
+  const title = document.createElement("strong");
+  title.textContent = "Sem leads nesta etapa";
+
+  const subtitle = document.createElement("p");
+  subtitle.textContent = "Leads recém-chegados aparecerão aqui.";
+
+  container.append(iconBox, title, subtitle);
+  stack.append(container);
 };
 
 const renderLeads = (leads) => {

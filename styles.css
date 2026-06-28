@@ -1562,3 +1562,193 @@ body.theme-dark .appointment-form-grid input, body.theme-dark .appointment-form-
   .appointment-delete-button { margin-right: 0; }
 }
 
+/* ============================================================
+   CRM Kanban Funnel Custom Layout Updates
+   ============================================================ */
+.kanban-column {
+  border-radius: 16px !important;
+  border: 1.5px dashed #cbd5e1 !important; /* Primeira borda/Borda externa */
+  background: #ffffff !important;
+  overflow: hidden;
+  box-sizing: border-box !important;
+  display: grid !important;
+  grid-template-rows: auto 1fr !important;
+  min-height: 580px !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+body.theme-dark .kanban-column {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: #17121d !important;
+}
+
+.kanban-column.drag-over {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 16px rgba(37, 99, 235, 0.1) !important;
+}
+
+.kanban-column header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-height: 48px !important;
+  padding: 10px 14px !important;
+  background: #ffffff !important;
+  border-top-left-radius: 14px !important;
+  border-top-right-radius: 14px !important;
+  box-sizing: border-box !important;
+}
+
+body.theme-dark .kanban-column header {
+  background: #17121d !important;
+}
+
+.kanban-column header strong {
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  color: #1f2937 !important;
+  text-transform: none !important; /* Keep original casing */
+  flex: 1;
+}
+
+body.theme-dark .kanban-column header strong {
+  color: #f7f5ed !important;
+}
+
+.kanban-column header small {
+  display: grid !important;
+  place-items: center !important;
+  min-width: 22px !important;
+  height: 22px !important;
+  border-radius: 999px !important;
+  background: #f3f4f6 !important;
+  color: #4b5563 !important;
+  font-weight: 800 !important;
+  font-size: 0.72rem !important;
+  padding: 0 4px !important;
+}
+
+body.theme-dark .kanban-column header small {
+  background: #29223e !important;
+  color: #a9a3ae !important;
+}
+
+/* Colored Bottom Borders for Stages headers */
+.kanban-column[data-status="lead_recebido"] header {
+  border-bottom: 2.5px solid #3b82f6 !important;
+}
+.kanban-column[data-status="primeiro_contato"] header {
+  border-bottom: 2.5px solid #f97316 !important;
+}
+.kanban-column[data-status="agendamento"] header {
+  border-bottom: 2.5px solid #8b5cf6 !important;
+}
+.kanban-column[data-status="cliente_em_loja"] header {
+  border-bottom: 2.5px solid #ec4899 !important;
+}
+.kanban-column[data-status="proposta_enviada"] header {
+  border-bottom: 2.5px solid #f59e0b !important;
+}
+.kanban-column[data-status="venda_fechada"] header {
+  border-bottom: 2.5px solid #10b981 !important;
+}
+
+/* Stage Header Icons styling */
+.stage-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  stroke-width: 2.5;
+}
+.stage-icon.blue { color: #3b82f6; }
+.stage-icon.orange { color: #f97316; }
+.stage-icon.purple { color: #8b5cf6; }
+.stage-icon.pink { color: #ec4899; }
+.stage-icon.amber { color: #f59e0b; }
+.stage-icon.green { color: #10b981; }
+
+.card-stack {
+  display: grid !important;
+  align-content: start !important;
+  gap: 12px !important;
+  min-height: 520px !important;
+  padding: 12px !important;
+  border-radius: 0 0 14px 14px !important;
+  background: #fafbfe !important;
+  box-sizing: border-box !important;
+}
+
+body.theme-dark .card-stack {
+  background: #110d16 !important;
+}
+
+/* Empty State Card - Second dashed border wrapper */
+.empty-column-card {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 32px 14px !important;
+  border: 1.5px dashed #cbd5e1 !important; /* Segunda borda / Borda interna forte */
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  text-align: center !important;
+  margin: 6px 0 !important;
+  box-sizing: border-box !important;
+}
+
+body.theme-dark .empty-column-card {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: #17121d !important;
+}
+
+.empty-column-icon-box {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  background: rgba(37, 99, 235, 0.06) !important;
+  border: 1px solid rgba(37, 99, 235, 0.16) !important;
+  color: #2563eb !important;
+  margin-bottom: 12px !important;
+}
+
+body.theme-dark .empty-column-icon-box {
+  background: rgba(156, 91, 240, 0.08) !important;
+  border-color: rgba(156, 91, 240, 0.2) !important;
+  color: #a87dfb !important;
+}
+
+.empty-column-icon-box svg {
+  width: 18px !important;
+  height: 18px !important;
+  stroke: currentColor !important;
+  fill: none !important;
+  stroke-width: 2 !important;
+}
+
+.empty-column-card strong {
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  color: #1f2937 !important;
+  margin-bottom: 4px !important;
+  display: block !important;
+}
+
+body.theme-dark .empty-column-card strong {
+  color: #f7f5ed !important;
+}
+
+.empty-column-card p {
+  font-size: 0.7rem !important;
+  color: #6b7280 !important;
+  margin: 0 !important;
+  line-height: 1.3 !important;
+}
+
+body.theme-dark .empty-column-card p {
+  color: #a9a3ae !important;
+}
+
