@@ -124,7 +124,6 @@ const deleteLead = async (leadId) => {
     return false;
   }
 
-  await loadLeads();
   return true;
 };
 
@@ -189,7 +188,35 @@ const createMoveMenu = (lead) => {
   deleteBtn.addEventListener("click", async () => {
     details.removeAttribute("open");
     if (confirm(`Tem certeza que deseja excluir o lead "${lead.name}"?`)) {
-      await deleteLead(lead.id);
+      const card = details.closest(".lead-card");
+      if (card) {
+        card.remove();
+        // Update column counter
+        const column = card.closest("[data-status]");
+        if (column) {
+          const counter = column.querySelector("small");
+          if (counter) {
+            const currentCount = parseInt(counter.textContent || "0", 10);
+            counter.textContent = Math.max(0, currentCount - 1);
+          }
+        }
+        // Update total active leads counter
+        if (leadCount) {
+          const currentTotalText = leadCount.textContent || "";
+          const match = currentTotalText.match(/^(\d+)/);
+          if (match) {
+            const currentTotal = parseInt(match[1], 10);
+            const newTotal = Math.max(0, currentTotal - 1);
+            leadCount.textContent = `${newTotal} ${newTotal === 1 ? "lead ativo" : "leads ativos"}`;
+          }
+        }
+      }
+
+      const success = await deleteLead(lead.id);
+      if (!success) {
+        // If it failed, reload all leads to restore the correct state
+        await loadLeads();
+      }
     }
   });
   menu.append(deleteBtn);
