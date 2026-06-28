@@ -1456,9 +1456,11 @@ body.theme-dark .theme-fab:hover {
 .calendar-slot.is-today { background: rgba(216,173,61,.035); }
 .appointment-card { width: 100%; min-width: 0; padding: 7px 8px; border: 1px solid rgba(94,99,241,.18); border-left: 3px solid var(--blue); border-radius: 9px; background: #f3f4ff; color: #212448; cursor: pointer; }
 .appointment-card:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(46,51,122,.13); }
+.appointment-card-header { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-width: 0; }
 .appointment-card strong, .appointment-card span { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .appointment-card strong { font-size: .72rem; }
-.appointment-card span { margin-top: 2px; color: #606580; font-size: .62rem; }
+.appointment-card span { margin-top: 4px; color: #606580; font-size: .62rem; }
+.appointment-card .appointment-card-time { flex: 0 0 auto; padding: 2px 6px; border: 1px solid rgba(94,99,241,.3); border-radius: 999px; background: #fff; color: #34386e; font-size: .61rem; font-weight: 800; line-height: 1.2; }
 .appointment-modal { width: min(620px, calc(100vw - 28px)); padding: 0; border: 0; border-radius: 18px; background: transparent; }
 .appointment-modal::backdrop { background: rgba(12,8,18,.68); backdrop-filter: blur(3px); }
 .appointment-modal form { padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); color: var(--ink); box-shadow: 0 28px 80px rgba(0,0,0,.28); }
@@ -1483,6 +1485,7 @@ body.theme-dark .calendar-scroll, body.theme-dark .calendar-corner, body.theme-d
 body.theme-dark .calendar-slot:hover, body.theme-dark .calendar-slot:focus-visible, body.theme-dark .calendar-slot.is-today, body.theme-dark .calendar-day-header.is-today { background: #211829; }
 body.theme-dark .appointment-card { background: #29223e; color: #fff; border-color: rgba(156,91,240,.3); }
 body.theme-dark .appointment-card span, body.theme-dark .calendar-week-label, body.theme-dark .calendar-status { color: #a9a3ae; }
+body.theme-dark .appointment-card .appointment-card-time { background: #181221; color: #fff; border-color: rgba(190,153,255,.42); }
 body.theme-dark .appointment-form-grid input, body.theme-dark .appointment-form-grid textarea, body.theme-dark .calendar-nav-button, body.theme-dark .calendar-today-button { background: #211829; color: #fff; border-color: rgba(255,255,255,.1); }
 @media (max-width: 900px) {
   .commercial-calendar { padding: 14px; }

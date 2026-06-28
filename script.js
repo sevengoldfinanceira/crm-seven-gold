@@ -186,8 +186,22 @@ const calendarTimes = Array.from({ length: 13 }, (_, index) =>
 
 const normalizeAppointmentTime = (value) => String(value || "").slice(0, 5);
 
+const formatSellerName = (value) => {
+  const parts = String(value || "").trim().split(/\s+/).filter(Boolean);
+  return parts.slice(0, 2).join(" ") || "Vendedor nao informado";
+};
+
 const getCurrentSellerName = async () => {
   const user = await getCurrentUser();
+  const client = getClient();
+  if (client && user?.id) {
+    const { data: profile } = await client
+      .from("profiles")
+      .select("full_name")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (profile?.full_name) return profile.full_name;
+  }
   return user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "Usuario";
 };
 
@@ -271,13 +285,18 @@ const createAppointmentCard = (appointment) => {
   card.tabIndex = 0;
   card.dataset.appointmentId = appointment.id;
 
+  const header = document.createElement("div");
+  header.className = "appointment-card-header";
   const client = document.createElement("strong");
-  client.textContent = appointment.nome_cliente;
-  const seller = document.createElement("span");
-  seller.textContent = appointment.nome_usuario || "Vendedor nao informado";
-  const time = document.createElement("span");
+  client.textContent = `Cliente - ${appointment.nome_cliente}`;
+  const time = document.createElement("time");
+  time.className = "appointment-card-time";
   time.textContent = normalizeAppointmentTime(appointment.hora_agendamento);
-  card.append(client, seller, time);
+  header.append(client, time);
+  const seller = document.createElement("span");
+  seller.className = "appointment-card-seller";
+  seller.textContent = `Vendedor - ${formatSellerName(appointment.vendedor_nome || appointment.nome_usuario)}`;
+  card.append(header, seller);
 
   const open = (event) => {
     event.stopPropagation();
@@ -421,7 +440,20 @@ const loadAppointments = async () => {
     setCalendarStatus("A tabela de agendamentos ainda nao esta configurada no Supabase.", "error");
     return;
   }
-  calendarAppointments = data || [];
+  const appointments = data || [];
+  const sellerIds = [...new Set(appointments.map((item) => item.usuario_id).filter(Boolean))];
+  let sellerNames = new Map();
+  if (sellerIds.length) {
+    const { data: profiles } = await client
+      .from("profiles")
+      .select("id, full_name")
+      .in("id", sellerIds);
+    sellerNames = new Map((profiles || []).map((profile) => [profile.id, profile.full_name]));
+  }
+  calendarAppointments = appointments.map((item) => ({
+    ...item,
+    vendedor_nome: sellerNames.get(item.usuario_id) || item.nome_usuario,
+  }));
   renderCalendar();
   setCalendarStatus(`${calendarAppointments.length} agendamento${calendarAppointments.length === 1 ? "" : "s"} nesta semana.`);
 };
