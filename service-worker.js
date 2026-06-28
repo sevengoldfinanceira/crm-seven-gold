@@ -1,8 +1,10 @@
-const CACHE_VERSION = "seven-gold-portal-users-auth-v1";
+const CACHE_VERSION = "seven-gold-crm-users-management-v1";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
   "/atendimento.css",
+  "/permissoes.css",
+  "/permissoes.js",
   "/styles.css",
   "/script.js",
   "/auth.js",

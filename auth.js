@@ -575,7 +575,7 @@
 
     await ensureProfile(session);
     const profile = await getProfile(session);
-    const role = profile?.role || "vendedor";
+    const role = authorizedPortalUser.cargo || profile?.role || "vendedor";
     const allowedRoles = parseRoles(document.body.dataset.allowedRoles);
     const areaAccess = permissionArea === "crm" ? true : await canAccessArea(role, permissionArea);
 

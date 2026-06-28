@@ -7,6 +7,11 @@
   const saveButton = document.querySelector("[data-save-permissions]");
   const reloadButton = document.querySelector("[data-reload-permissions]");
   const auditLog = document.querySelector("[data-audit-log]");
+  const addUserButton = document.querySelector("[data-add-user]");
+  const userModal = document.querySelector("[data-user-modal]");
+  const userForm = document.querySelector("[data-user-form]");
+  const userFormStatus = document.querySelector("[data-user-form-status]");
+  const userModalTitle = document.querySelector("[data-user-modal-title]");
 
   const roles = [
     { key: "dono", label: "Dono" },
@@ -67,7 +72,7 @@
 
   const state = {
     permissions: new Map(),
-    profiles: [],
+    users: [],
     userSearch: "",
     activeFilter: "all",
   };
@@ -99,19 +104,12 @@
     const statBlocked = document.querySelector("[data-stat-blocked]");
     if (!statActive || !statBlocked) return;
 
-    let active = 0;
-    let blocked = 0;
-    areas.forEach((area) => {
-      roles.forEach((role) => {
-        if (canAccess(role.key, area.key)) {
-          active++;
-        } else {
-          blocked++;
-        }
-      });
-    });
-    statActive.textContent = active;
-    statBlocked.textContent = blocked;
+    statActive.textContent = state.users.filter((user) => user.ativo === true).length;
+    statBlocked.textContent = state.users.filter((user) => user.ativo !== true).length;
+    const statRoles = document.querySelector("[data-stat-roles]");
+    const statAreas = document.querySelector("[data-stat-areas]");
+    if (statRoles) statRoles.textContent = roles.length;
+    if (statAreas) statAreas.textContent = areas.length;
   };
 
   const permissionKey = (role, area) => `${role}:${area}`;
@@ -192,50 +190,166 @@
     userList.innerHTML = "";
 
     const search = state.userSearch.trim().toLowerCase();
-    const profiles = state.profiles.filter((profile) => {
-      const text = `${profile.full_name || ""} ${profile.email || ""} ${profile.role || ""}`.toLowerCase();
+    const users = state.users.filter((user) => {
+      const text = `${user.nome || ""} ${user.email || ""} ${user.cargo || ""}`.toLowerCase();
       return !search || text.includes(search);
     });
 
-    if (profiles.length === 0) {
+    if (users.length === 0) {
       userList.innerHTML = '<p class="permission-note">Nenhum usuario encontrado.</p>';
       return;
     }
 
-    profiles.forEach((profile) => {
+    users.forEach((user) => {
       const row = document.createElement("div");
       row.className = "user-access-row";
 
       const copy = document.createElement("div");
       copy.className = "user-identity";
 
-      const nameLabel = document.createElement("span");
-      nameLabel.textContent = "Nome";
+      const name = document.createElement("strong");
+      name.className = "perm-user-name";
+      name.textContent = user.nome || "Sem nome";
 
-      const name = document.createElement("input");
-      name.type = "text";
-      name.value = profile.full_name || "";
-      name.placeholder = "Nome da pessoa";
-      name.dataset.userName = profile.id;
+      const email = document.createElement("span");
+      email.className = "perm-user-email";
+      email.textContent = user.email || "sem email";
 
-      const email = document.createElement("strong");
-      email.textContent = profile.email || "sem email";
+      const meta = document.createElement("div");
+      meta.className = "perm-user-meta";
+      const role = document.createElement("span");
+      role.className = "perm-user-role";
+      role.textContent = roles.find((item) => item.key === user.cargo)?.label || user.cargo || "Sem cargo";
+      const status = document.createElement("span");
+      status.className = `perm-user-status ${user.ativo ? "is-active" : "is-inactive"}`;
+      status.textContent = user.ativo ? "Ativo" : "Inativo";
+      meta.append(role, status);
 
-      copy.append(nameLabel, name, email);
+      copy.append(name, email, meta);
 
-      const select = document.createElement("select");
-      select.dataset.userRole = profile.id;
-      roles.forEach((role) => {
-        const option = document.createElement("option");
-        option.value = role.key;
-        option.textContent = role.label;
-        option.selected = role.key === profile.role;
-        select.append(option);
-      });
+      const actions = document.createElement("div");
+      actions.className = "perm-user-actions";
+      const activeToggle = document.createElement("button");
+      activeToggle.type = "button";
+      activeToggle.className = `perm-user-toggle ${user.ativo ? "is-active" : "is-inactive"}`;
+      activeToggle.setAttribute("aria-label", user.ativo ? "Desativar usuario" : "Ativar usuario");
+      activeToggle.innerHTML = `<span></span>`;
+      activeToggle.addEventListener("click", () => toggleUserStatus(user, activeToggle));
 
-      row.append(copy, select);
+      const editButton = document.createElement("button");
+      editButton.type = "button";
+      editButton.className = "perm-user-edit";
+      editButton.innerHTML = '<i data-lucide="pencil"></i><span>Editar</span>';
+      editButton.addEventListener("click", () => openUserModal(user));
+      actions.append(activeToggle, editButton);
+
+      row.append(copy, actions);
       userList.append(row);
     });
+    if (window.lucide) lucide.createIcons();
+  };
+
+  const setUserFormStatus = (message = "", type = "error") => {
+    if (!userFormStatus) return;
+    userFormStatus.textContent = message;
+    userFormStatus.dataset.type = type;
+  };
+
+  const openUserModal = (user = null) => {
+    if (!userModal || !userForm) return;
+    userForm.reset();
+    setUserFormStatus("");
+    userForm.elements.id.value = user?.id || "";
+    userForm.elements.nome.value = user?.nome || "";
+    userForm.elements.email.value = user?.email || "";
+    userForm.elements.cargo.value = user?.cargo || "";
+    userForm.elements.ativo.checked = user ? user.ativo === true : true;
+    if (userModalTitle) userModalTitle.textContent = user ? "Editar usuario" : "Adicionar usuario";
+    userModal.showModal();
+    userForm.elements.nome.focus();
+  };
+
+  const closeUserModal = () => userModal?.close();
+
+  const toggleUserStatus = async (user, button) => {
+    const client = getClient();
+    if (!client || !user?.id) return;
+    button.disabled = true;
+    const nextActive = user.ativo !== true;
+    const { data, error } = await client
+      .from("crm_users")
+      .update({ ativo: nextActive, updated_at: new Date().toISOString() })
+      .eq("id", user.id)
+      .select("id")
+      .maybeSingle();
+    if (error || !data) {
+      button.disabled = false;
+      setStatus("Nao foi possivel alterar o acesso. Confira as politicas de crm_users.");
+      addAuditEntry("<strong>Erro</strong> ao alterar acesso do usuario", "warning");
+      return;
+    }
+    await loadData();
+    setStatus(`Usuario ${nextActive ? "ativado" : "desativado"} com sucesso.`, "success");
+    addAuditEntry(`<strong>Usuario</strong> ${nextActive ? "ativado" : "desativado"}`, nextActive ? "success" : "warning");
+  };
+
+  const saveUser = async (event) => {
+    event.preventDefault();
+    const client = getClient();
+    if (!client || !userForm) return;
+
+    const id = String(userForm.elements.id.value || "").trim();
+    const nome = String(userForm.elements.nome.value || "").trim();
+    const email = String(userForm.elements.email.value || "").trim().toLowerCase();
+    const cargo = String(userForm.elements.cargo.value || "").trim();
+    const ativo = userForm.elements.ativo.checked;
+    const submitButton = userForm.querySelector('button[type="submit"]');
+
+    if (!nome || !email || !cargo) {
+      setUserFormStatus("Preencha nome, e-mail e cargo.");
+      return;
+    }
+    if (!roles.some((role) => role.key === cargo)) {
+      setUserFormStatus("Selecione um cargo valido.");
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Salvando...";
+    setUserFormStatus("");
+
+    const payload = { nome, email, cargo, ativo, updated_at: new Date().toISOString() };
+    let error = null;
+
+    const existing = await client
+      .from("crm_users")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle();
+
+    if (existing.error) {
+      error = existing.error;
+    } else if (id && existing.data?.id && String(existing.data.id) !== id) {
+      error = { message: "Este e-mail ja pertence a outro usuario." };
+    } else {
+      const targetId = id || existing.data?.id;
+      const result = targetId
+        ? await client.from("crm_users").update(payload).eq("id", targetId).select("id").maybeSingle()
+        : await client.from("crm_users").insert(payload).select("id").maybeSingle();
+      error = result.error || (!result.data ? { message: "O Supabase nao confirmou a gravacao." } : null);
+    }
+
+    submitButton.disabled = false;
+    submitButton.textContent = "Salvar usuario";
+    if (error) {
+      setUserFormStatus(error.message || "Nao foi possivel salvar o usuario.");
+      return;
+    }
+
+    closeUserModal();
+    await loadData();
+    setStatus("Usuario salvo com sucesso.", "success");
+    addAuditEntry(`<strong>Usuario</strong> ${id ? "atualizado" : "adicionado"}`, "success");
   };
 
   const loadData = async () => {
@@ -244,9 +358,12 @@
 
     setStatus("Carregando permissoes...", "success");
 
-    const [permissionsResult, profilesResult] = await Promise.all([
+    const [permissionsResult, usersResult] = await Promise.all([
       client.from("app_permissions").select("role, area, can_access"),
-      client.from("profiles").select("id, full_name, email, role").order("email", { ascending: true }),
+      client
+        .from("crm_users")
+        .select("id, email, nome, cargo, ativo, created_at, updated_at")
+        .order("created_at", { ascending: false }),
     ]);
 
     state.permissions.clear();
@@ -256,12 +373,12 @@
       });
     }
 
-    state.profiles = profilesResult.error ? [] : profilesResult.data || [];
+    state.users = usersResult.error ? [] : usersResult.data || [];
     renderMatrix();
     renderUsers();
 
-    if (permissionsResult.error || profilesResult.error) {
-      setStatus("Crie a tabela app_permissions e ajuste as politicas no Supabase.");
+    if (permissionsResult.error || usersResult.error) {
+      setStatus("Nao foi possivel carregar permissoes ou usuarios. Confira as politicas do Supabase.");
       addAuditEntry("<strong>Erro</strong> ao carregar permissoes", "warning");
       return;
     }
@@ -277,18 +394,6 @@
       can_access: input.checked,
     }));
 
-  const collectProfileUpdates = () =>
-    state.profiles.map((profile) => {
-      const roleSelect = document.querySelector(`[data-user-role="${profile.id}"]`);
-      const nameInput = document.querySelector(`[data-user-name="${profile.id}"]`);
-
-      return {
-        id: profile.id,
-        role: roleSelect?.value || profile.role,
-        full_name: nameInput?.value?.trim() || profile.full_name || profile.email,
-      };
-    });
-
   const saveData = async () => {
     const client = getClient();
     if (!client) return;
@@ -302,28 +407,6 @@
     const { error: permissionError } = await client
       .from("app_permissions")
       .upsert(permissions, { onConflict: "role,area" });
-
-    const profileUpdates = collectProfileUpdates();
-    for (const update of profileUpdates) {
-      const current = state.profiles.find((profile) => profile.id === update.id);
-      if (
-        current &&
-        (current.role !== update.role || (current.full_name || "") !== update.full_name)
-      ) {
-        const { error } = await client
-          .from("profiles")
-          .update({ role: update.role, full_name: update.full_name })
-          .eq("id", update.id);
-        if (error) {
-          saveButton.disabled = false;
-          saveButton.innerHTML = '<i data-lucide="save" style="width:16px;height:16px;"></i> Salvar permissoes';
-          if (window.lucide) lucide.createIcons();
-          setStatus("Nao consegui atualizar um usuario. Confira as politicas do Supabase.");
-          addAuditEntry("<strong>Erro</strong> ao atualizar usuario", "warning");
-          return;
-        }
-      }
-    }
 
     saveButton.disabled = false;
     saveButton.innerHTML = '<i data-lucide="save" style="width:16px;height:16px;"></i> Salvar permissoes';
@@ -388,6 +471,14 @@
 
   saveButton?.addEventListener("click", saveData);
   reloadButton?.addEventListener("click", loadData);
+  addUserButton?.addEventListener("click", () => openUserModal());
+  userForm?.addEventListener("submit", saveUser);
+  document.querySelectorAll("[data-close-user-modal]").forEach((button) => {
+    button.addEventListener("click", closeUserModal);
+  });
+  userModal?.addEventListener("click", (event) => {
+    if (event.target === userModal) closeUserModal();
+  });
   userSearch?.addEventListener("input", () => {
     state.userSearch = userSearch.value;
     renderUsers();

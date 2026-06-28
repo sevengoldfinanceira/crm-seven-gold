@@ -492,6 +492,12 @@ tr [data-area-icon="permissoes"] .perm-area-icon svg { stroke: #ef4444; }
   line-height: 1.4;
 }
 
+.perm-users-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.perm-users-heading h2 { margin: 0; }
+.perm-add-user-button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; padding: 0 10px; border: 1px solid rgba(184,134,11,.28); border-radius: 10px; background: rgba(212,175,55,.08); color: #8a6716; font-size: .7rem; font-weight: 800; white-space: nowrap; }
+.perm-add-user-button:hover { background: rgba(212,175,55,.16); border-color: rgba(184,134,11,.45); }
+.perm-add-user-button svg { width: 14px; height: 14px; }
+
 /* Users card */
 .perm-sidebar-card.user-access-panel {
   position: static !important;
@@ -547,8 +553,8 @@ tr [data-area-icon="permissoes"] .perm-area-icon svg { stroke: #ef4444; }
 
 .user-access-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 135px;
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   gap: 12px;
   padding: 14px !important;
   border-radius: 16px !important;
@@ -575,6 +581,40 @@ tr [data-area-icon="permissoes"] .perm-area-icon svg { stroke: #ef4444; }
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+
+.user-identity .perm-user-name { color: var(--sg-text-main, #111827) !important; font-size: .86rem !important; font-weight: 800 !important; }
+.user-identity .perm-user-email { color: var(--sg-text-secondary, #6b7280); font-size: .72rem; font-weight: 600; text-transform: none; letter-spacing: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.perm-user-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 3px; }
+.perm-user-meta span { display: inline-flex; padding: 3px 7px; border-radius: 999px; font-size: .62rem; font-weight: 800; letter-spacing: 0; text-transform: none; }
+.perm-user-role { background: rgba(59,130,246,.1); color: #2563eb !important; }
+.perm-user-status.is-active { background: rgba(16,185,129,.11); color: #059669 !important; }
+.perm-user-status.is-inactive { background: rgba(239,68,68,.1); color: #dc2626 !important; }
+.perm-user-actions { display: flex; align-items: center; gap: 7px; }
+.perm-user-toggle { position: relative; width: 38px; height: 22px; padding: 0; border: 0; border-radius: 999px; background: #d1d5db; }
+.perm-user-toggle span { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.2); transition: transform .2s ease; }
+.perm-user-toggle.is-active { background: #10b981; }
+.perm-user-toggle.is-active span { transform: translateX(16px); }
+.perm-user-edit { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 32px; padding: 0 9px; border: 1px solid rgba(0,0,0,.08); border-radius: 9px; background: #fff; color: #475569; font-size: .68rem; font-weight: 800; }
+.perm-user-edit:hover { border-color: rgba(184,134,11,.3); color: #8a6716; }
+.perm-user-edit svg { width: 13px; height: 13px; }
+
+.perm-user-modal { width: min(520px, calc(100vw - 28px)); padding: 0; border: 0; border-radius: 20px; background: transparent; }
+.perm-user-modal::backdrop { background: rgba(15,8,22,.68); backdrop-filter: blur(3px); }
+.perm-user-modal form { display: grid; gap: 16px; padding: 24px; border: 1px solid rgba(0,0,0,.08); border-radius: 20px; background: #fff; color: #111827; box-shadow: 0 30px 90px rgba(0,0,0,.3); }
+.perm-user-modal header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.perm-user-modal header .eyebrow { margin: 0 0 4px; color: #8a6716; font-size: .66rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.perm-user-modal h2 { margin: 0; font-size: 1.35rem; }
+.perm-modal-close { display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 1px solid rgba(0,0,0,.08); border-radius: 10px; background: #f8fafc; color: #334155; font-size: 1.25rem; }
+.perm-user-modal form > label:not(.perm-user-active-field) { display: grid; gap: 7px; font-size: .78rem; font-weight: 800; }
+.perm-user-modal input[type="text"], .perm-user-modal input[type="email"], .perm-user-modal select { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid #d9dde4; border-radius: 11px; background: #fff; color: #111827; font: inherit; }
+.perm-user-active-field { display: flex; align-items: center; gap: 9px; padding: 11px 12px; border: 1px solid rgba(16,185,129,.18); border-radius: 11px; background: rgba(16,185,129,.06); font-size: .78rem; font-weight: 700; }
+.perm-user-active-field input { width: 17px; height: 17px; accent-color: #10b981; }
+.perm-user-form-status { min-height: 18px; margin: 0; color: #dc2626; font-size: .76rem; font-weight: 700; }
+.perm-user-form-status[data-type="success"] { color: #059669; }
+.perm-user-modal footer { display: flex; justify-content: flex-end; gap: 9px; }
+.perm-user-modal footer button { min-height: 40px; padding: 0 15px; border-radius: 10px; font-weight: 800; }
+.perm-modal-cancel { border: 1px solid #d9dde4; background: #fff; color: #475569; }
+.perm-modal-save { border: 0; background: linear-gradient(135deg, #e7bd45, #b8860b); color: #17130a; }
 
 .user-identity input {
   width: 100% !important;
@@ -894,6 +934,13 @@ body.theme-dark .user-access-row:hover {
   background: rgba(212, 175, 55, 0.04) !important;
 }
 
+body.theme-dark .user-identity .perm-user-name { color: #f7f7f8 !important; }
+body.theme-dark .perm-user-edit { background: #0d0f12; border-color: rgba(255,255,255,.1); color: #d1d5db; }
+body.theme-dark .perm-add-user-button { color: #d4af37; border-color: rgba(212,175,55,.35); background: rgba(212,175,55,.1); }
+body.theme-dark .perm-user-modal form { background: #111318; color: #f7f7f8; border-color: rgba(255,255,255,.1); }
+body.theme-dark .perm-modal-close, body.theme-dark .perm-modal-cancel { background: #0d0f12; border-color: rgba(255,255,255,.1); color: #d1d5db; }
+body.theme-dark .perm-user-modal input[type="text"], body.theme-dark .perm-user-modal input[type="email"], body.theme-dark .perm-user-modal select { background: #0d0f12; border-color: rgba(255,255,255,.1); color: #f7f7f8; }
+
 body.theme-dark .user-identity input,
 body.theme-dark .user-access-row select {
   background: #0d0f12 !important;
@@ -1017,6 +1064,12 @@ body.theme-dark .perm-area-icon {
   .perm-filter-chips {
     flex-wrap: wrap;
   }
+
+  .perm-users-heading { align-items: stretch; flex-direction: column; }
+  .perm-add-user-button { width: 100%; }
+  .user-access-row { grid-template-columns: 1fr; }
+  .perm-user-actions { justify-content: space-between; }
+  .perm-user-edit { flex: 1; }
 }
 
 /* --- Antigravity Mobile Card Overflow & Font Size Fix --- */
@@ -1045,4 +1098,3 @@ body.theme-dark .perm-area-icon {
     line-height: 1.4 !important;
   }
 }
-
