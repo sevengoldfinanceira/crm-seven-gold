@@ -312,11 +312,11 @@ const createLeadCard = (lead) => {
   // Dynamic font sizing to keep the name in a single line
   const nameLength = lead.name.length;
   if (nameLength > 24) {
-    name.style.fontSize = "0.78rem";
+    name.style.fontSize = "0.7rem";
   } else if (nameLength > 16) {
-    name.style.fontSize = "0.84rem";
+    name.style.fontSize = "0.78rem";
   } else {
-    name.style.fontSize = "0.92rem";
+    name.style.fontSize = "0.85rem";
   }
 
   const nameWrapper = document.createElement("div");
