@@ -1334,6 +1334,19 @@ const switchTab = () => {
   const validTabs = ["dashboard", "pipeline", "tarefas", "feed", "calendario", "financeiro", "cadastro", "equipe", "perfil"];
   const activeTab = validTabs.includes(hash) ? hash : "pipeline";
 
+  const userRole = window.userRole || (window.sevenGoldCrmSession?.userRole);
+  if (userRole && typeof window.canAccessArea === "function") {
+    window.currentCrmUser = window.crmUser || window.sevenGoldCrmSession?.crmUser;
+
+    if (!window.canAccessArea(userRole, activeTab)) {
+      alert("Você não tem permissão para acessar esta área.");
+      const allowedTabs = ["pipeline", "dashboard", "calendario", "tarefas", "feed"];
+      const fallbackTab = allowedTabs.find(tab => window.canAccessArea(userRole, tab)) || "pipeline";
+      window.location.hash = "#" + fallbackTab;
+      return;
+    }
+  }
+
   document.querySelectorAll(".tab-content").forEach((section) => {
     section.style.display = section.dataset.tab === activeTab ? "" : "none";
   });

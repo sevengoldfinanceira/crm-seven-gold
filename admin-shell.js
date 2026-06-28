@@ -61,7 +61,7 @@
         ${allItems
           .map(
             ([href, icon, label, key, roles]) =>
-              `<a href="${href}" class="${area === key ? "active" : ""}" draggable="false" ${roles ? `data-visible-roles="${roles}"` : ""}><i data-lucide="${icon}"></i><span>${label}</span></a>`
+              `<a href="${href}" class="${area === key ? "active" : ""}" draggable="false" data-permission-key="${key}" ${roles ? `data-visible-roles="${roles}"` : ""}><i data-lucide="${icon}"></i><span>${label}</span></a>`
           )
           .join("")}
       </nav>
@@ -133,7 +133,7 @@
             ${cat.items
               .map(
                 ([href, icon, label, key, roles]) => `
-              <a href="${href}" class="menu-item${area === key ? " active" : ""}" title="${label}" draggable="false" ${roles ? `data-visible-roles="${roles}"` : ""}>
+              <a href="${href}" class="menu-item${area === key ? " active" : ""}" title="${label}" draggable="false" data-permission-key="${key}" ${roles ? `data-visible-roles="${roles}"` : ""}>
                 <i data-lucide="grip-vertical" class="menu-drag-handle"></i>
                 <i data-lucide="${icon}"></i><span>${label}</span>
               </a>`

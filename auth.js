@@ -194,45 +194,46 @@
       .filter(Boolean);
 
   const showAccessDenied = (fallbackPage, role) => {
-    document.body.innerHTML = `
-      <main class="login-shell">
-        <section class="login-panel" style="max-width: 560px; margin: auto;">
-          <div class="login-form">
-            <header>
-              <p class="eyebrow">Acesso bloqueado</p>
-              <h2>Seu perfil nao tem permissao para esta area.</h2>
-            </header>
-            <p class="login-note">
-              Perfil atual: <strong>${role || "sem perfil"}</strong>. Se isso estiver errado, altere o cargo em Permissoes ou no Supabase.
-            </p>
-            <a class="login-button auth-link-button" href="${fallbackPage}">Voltar</a>
-            <button class="google-button" type="button" data-logout data-logout-redirect="index.html">Sair da conta</button>
-          </div>
-        </section>
-      </main>
-    `;
-
-    setupLogout();
+    localStorage.setItem("seven-gold-permission-error", "Você não tem permissão para acessar esta área.");
+    window.location.href = fallbackPage;
   };
 
-  const canAccessArea = async (role, area) => {
-    if (!area || role === "dono") {
+  const normalizeRole = (role) => {
+    return String(role || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  };
+
+  const isAdminRole = (role) => {
+    const normalized = normalizeRole(role);
+    return ["dono", "admin", "administrador"].includes(normalized);
+  };
+
+  const canAccessArea = (userRole, areaKey) => {
+    const role = normalizeRole(userRole);
+
+    if (["dono", "admin", "administrador"].includes(role)) {
       return true;
     }
 
-    const { data, error } = await client
-      .from("app_permissions")
-      .select("can_access")
-      .eq("role", role)
-      .eq("area", area)
-      .maybeSingle();
+    const permissions = {
+      vendedor: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
+      representante: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
+      coordenador: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "relatorios"],
+      supervisor: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "relatorios"],
+      financeiro: ["dashboard", "pipeline", "calendario", "cadastro", "financeiro", "relatorios"],
+      marketing: ["dashboard", "pipeline", "calendario", "cadastro", "marketing", "feed"],
+      rh: ["dashboard", "equipe", "organograma", "relatorios"]
+    };
 
-    if (error || !data) {
-      return null;
-    }
-
-    return Boolean(data.can_access);
+    return permissions[role]?.includes(areaKey) || false;
   };
+
+  window.normalizeRole = normalizeRole;
+  window.isAdminRole = isAdminRole;
+  window.canAccessArea = canAccessArea;
 
   const cargoDisplayNames = {
     "diretor-ceo": "Diretor CEO",
@@ -308,6 +309,15 @@
 
       if (!roles.includes(role)) {
         element.hidden = true;
+        element.style.setProperty("display", "none", "important");
+      }
+    });
+
+    document.querySelectorAll("[data-permission-key]").forEach((element) => {
+      const areaKey = element.dataset.permissionKey;
+      if (!canAccessArea(role, areaKey)) {
+        element.hidden = true;
+        element.style.setProperty("display", "none", "important");
       }
     });
 
@@ -649,6 +659,14 @@
     if (permissionArea === "crm") {
       applyCrmUserIdentity(session.user, authorizedPortalUser, role);
       document.body.classList.add("crm-authorized");
+
+      // Check if current hash is allowed for this role
+      const hash = window.location.hash.replace("#", "") || "pipeline";
+      if (!canAccessArea(role, hash)) {
+        const allowedTabs = ["pipeline", "dashboard", "calendario", "tarefas", "feed"];
+        const fallbackTab = allowedTabs.find(tab => canAccessArea(role, tab)) || "pipeline";
+        window.location.hash = "#" + fallbackTab;
+      }
     }
     document.body.classList.add("portal-authorized");
   };
@@ -686,6 +704,12 @@
 
   document.addEventListener("DOMContentLoaded", async () => {
     initTheme();
+
+    const storedError = localStorage.getItem("seven-gold-permission-error");
+    if (storedError) {
+      localStorage.removeItem("seven-gold-permission-error");
+      alert(storedError);
+    }
 
     const handledCallback = await setupAuthCallbackPage();
     if (handledCallback) {
