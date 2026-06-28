@@ -102,6 +102,15 @@ const openEditLeadModal = (lead) => {
   if (leadForm.elements["note"]) {
     leadForm.elements["note"].value = lead.note || "";
   }
+  if (leadForm.elements["tags"]) {
+    let tagsVal = "";
+    if (Array.isArray(lead.tags)) {
+      tagsVal = lead.tags.join(", ");
+    } else if (typeof lead.tags === "string") {
+      tagsVal = lead.tags;
+    }
+    leadForm.elements["tags"].value = tagsVal;
+  }
   if (leadForm.elements["property_region"]) {
     leadForm.elements["property_region"].value = lead.property_region || "";
   }
@@ -770,6 +779,25 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
   return true;
 };
 
+const getTagColors = (tag) => {
+  const colors = [
+    { bg: "#eff6ff", text: "#1d4ed8", border: "#dbeafe" }, // blue
+    { bg: "#fef2f2", text: "#b91c1c", border: "#fee2e2" }, // red
+    { bg: "#ecfdf5", text: "#047857", border: "#d1fae5" }, // green
+    { bg: "#fffbeb", text: "#b45309", border: "#fef3c7" }, // yellow/amber
+    { bg: "#faf5ff", text: "#6d28d9", border: "#f3e8ff" }, // purple
+    { bg: "#fdf2f8", text: "#be185d", border: "#fce7f3" }, // pink
+    { bg: "#f0fdfa", text: "#0f766e", border: "#ccfbf1" }, // teal
+  ];
+  let hash = 0;
+  const tagStr = String(tag).toLowerCase().trim();
+  for (let i = 0; i < tagStr.length; i++) {
+    hash = tagStr.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
+};
+
 const createLeadCard = (lead) => {
   const card = document.createElement("article");
   card.className = lead.status === "venda_fechada" ? "lead-card done" : "lead-card";
@@ -899,8 +927,35 @@ const createLeadCard = (lead) => {
 
   actionsRow.append(waBtn, callBtn, editBtn);
 
+  // Tags Container
+  const tagsContainer = document.createElement("div");
+  tagsContainer.className = "lead-tags-container";
+  let tagsArray = [];
+  if (Array.isArray(lead.tags)) {
+    tagsArray = lead.tags;
+  } else if (typeof lead.tags === "string" && lead.tags.trim() !== "") {
+    tagsArray = lead.tags.split(",").map(t => t.trim()).filter(Boolean);
+  }
+
+  if (tagsArray.length > 0) {
+    tagsArray.forEach(tag => {
+      const tagEl = document.createElement("span");
+      tagEl.className = "lead-tag-pill";
+      tagEl.textContent = tag;
+      const colors = getTagColors(tag);
+      tagEl.style.backgroundColor = colors.bg;
+      tagEl.style.color = colors.text;
+      tagEl.style.borderColor = colors.border;
+      tagsContainer.append(tagEl);
+    });
+  }
+
   // Append everything
-  card.append(top, warningBadge, phoneLine);
+  card.append(top, warningBadge);
+  if (tagsArray.length > 0) {
+    card.append(tagsContainer);
+  }
+  card.append(phoneLine);
   if (noteEl) {
     card.append(noteEl);
   }
@@ -1125,6 +1180,11 @@ leadForm?.addEventListener("submit", async (event) => {
   const mode = leadForm.dataset.mode || "create";
   const leadId = leadForm.dataset.leadId;
 
+  const tagsInput = String(formData.get("tags") || "").trim();
+  const tagsArray = tagsInput
+    ? tagsInput.split(",").map(t => t.trim()).filter(Boolean)
+    : [];
+
   if (mode === "edit" && leadId) {
     const targetStatus = String(formData.get("status") || "lead_recebido").trim();
     let appointment = null;
@@ -1148,6 +1208,7 @@ leadForm?.addEventListener("submit", async (event) => {
       status: targetStatus,
       origin: String(formData.get("origin") || "").trim(),
       note: String(formData.get("note") || "").trim(),
+      tags: tagsArray,
       property_region: String(formData.get("property_region") || "").trim() || null,
       credit_value: parseOptionalMoney(formData.get("credit_value")),
       down_payment_value: parseOptionalMoney(formData.get("down_payment_value")),
@@ -1172,6 +1233,7 @@ leadForm?.addEventListener("submit", async (event) => {
       origin: String(formData.get("origin") || "").trim(),
       status: "lead_recebido",
       note: String(formData.get("note") || "").trim(),
+      tags: tagsArray,
       property_region: String(formData.get("property_region") || "").trim() || null,
       credit_value: parseOptionalMoney(formData.get("credit_value")),
       down_payment_value: parseOptionalMoney(formData.get("down_payment_value")),
