@@ -295,9 +295,12 @@ const createAppointmentCard = (appointment) => {
   header.append(client, time);
   const seller = document.createElement("span");
   seller.className = "appointment-card-seller";
+  seller.textContent = `Vendedor - ${formatSellerName(appointment.vendedor_nome || appointment.nome_usuario)}`;
   const customerPhone = formatDisplayPhone(appointment.telefone_cliente) || "Telefone nao informado";
-  seller.textContent = `Vendedor - ${formatSellerName(appointment.vendedor_nome || appointment.nome_usuario)} | Telefone - ${customerPhone}`;
-  card.append(header, seller);
+  const phone = document.createElement("span");
+  phone.className = "appointment-card-phone";
+  phone.textContent = `Telefone - ${customerPhone}`;
+  card.append(header, seller, phone);
 
   const open = (event) => {
     event.stopPropagation();

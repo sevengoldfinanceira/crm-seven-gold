@@ -1461,6 +1461,7 @@ body.theme-dark .theme-fab:hover {
 .appointment-card strong { font-size: .72rem; }
 .appointment-card span { margin-top: 4px; color: #606580; font-size: .62rem; }
 .appointment-card .appointment-card-seller { color: #111827; font-weight: 600; }
+.appointment-card .appointment-card-phone { color: #111827; font-weight: 600; }
 .appointment-card .appointment-card-time { flex: 0 0 auto; padding: 2px 6px; border: 1px solid rgba(94,99,241,.3); border-radius: 999px; background: #fff; color: #34386e; font-size: .61rem; font-weight: 800; line-height: 1.2; }
 .appointment-modal { width: min(620px, calc(100vw - 28px)); padding: 0; border: 0; border-radius: 18px; background: transparent; }
 .appointment-modal::backdrop { background: rgba(12,8,18,.68); backdrop-filter: blur(3px); }
@@ -1487,6 +1488,7 @@ body.theme-dark .calendar-slot:hover, body.theme-dark .calendar-slot:focus-visib
 body.theme-dark .appointment-card { background: #29223e; color: #fff; border-color: rgba(156,91,240,.3); }
 body.theme-dark .appointment-card span, body.theme-dark .calendar-week-label, body.theme-dark .calendar-status { color: #a9a3ae; }
 body.theme-dark .appointment-card .appointment-card-seller { color: #fff; }
+body.theme-dark .appointment-card .appointment-card-phone { color: #fff; }
 body.theme-dark .appointment-card .appointment-card-time { background: #181221; color: #fff; border-color: rgba(190,153,255,.42); }
 body.theme-dark .appointment-form-grid input, body.theme-dark .appointment-form-grid textarea, body.theme-dark .calendar-nav-button, body.theme-dark .calendar-today-button { background: #211829; color: #fff; border-color: rgba(255,255,255,.1); }
 @media (max-width: 900px) {
