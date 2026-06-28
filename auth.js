@@ -212,6 +212,10 @@
   };
 
   const canAccessArea = (userRole, areaKey) => {
+    if (!areaKey) {
+      return true;
+    }
+
     const role = normalizeRole(userRole);
 
     if (["dono", "admin", "administrador"].includes(role)) {
@@ -221,6 +225,9 @@
     const permissions = {
       vendedor: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
       representante: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
+      assistente_vendas: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
+      assistente_de_vendas: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
+      home_office: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
       coordenador: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "relatorios"],
       supervisor: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "relatorios"],
       financeiro: ["dashboard", "pipeline", "calendario", "cadastro", "financeiro", "relatorios"],
