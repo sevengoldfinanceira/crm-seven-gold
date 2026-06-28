@@ -242,6 +242,7 @@
     "coordenador-comercial": "Coordenador Comercial",
     "vendedor": "Vendedor",
     "assistente-vendas": "Assistente de Vendas",
+    "assistente_vendas": "Assistente de Vendas",
     "coordenador-posvenda": "Coordenador Pós-Venda",
     "analista-posvenda": "Analista Pós-Venda",
     "pos-vendas": "Pós-Vendas",

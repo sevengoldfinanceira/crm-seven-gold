@@ -16,10 +16,11 @@
   const roles = [
     { key: "dono", label: "Dono" },
     { key: "administrador", label: "Administrador" },
-    { key: "coordenador", label: "Coordenador" },
     { key: "supervisor", label: "Supervisor" },
-    { key: "home_office", label: "Home Office" },
+    { key: "coordenador", label: "Coordenador" },
     { key: "vendedor", label: "Vendedor" },
+    { key: "assistente_vendas", label: "Assistente de Vendas" },
+    { key: "home_office", label: "Home Office" },
     { key: "financeiro", label: "Financeiro" },
     { key: "marketing", label: "Marketing" },
     { key: "rh", label: "RH" },
