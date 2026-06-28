@@ -1,4 +1,5 @@
 const { supabase } = require('../../../api/_shared/supabase');
+const { normalizeLeadClientInfo } = require('../../../api/_shared/lead-client-info');
 
 module.exports = async (req, res) => {
   const origin = req.headers?.origin || '*';
@@ -67,6 +68,7 @@ module.exports = async (req, res) => {
       origin: source || 'whatsapp_web_extension',
       note: notes || '',
       owner_id: ownerId,
+      ...normalizeLeadClientInfo(req.body),
     };
     if (tags) insertData.tags = tags;
 

@@ -68,6 +68,19 @@ try {
   }
 }
 
+try {
+  apiRoutes["/api/appointments/list"] = require("./api/appointments/list");
+  console.log("Rota de API carregada: /api/appointments/list");
+} catch (e) {
+  try {
+    apiRoutes["/api/appointments/list"] = require("./pages/api/appointments/list");
+    console.log("Rota de API carregada (pages): /api/appointments/list");
+  } catch (e2) {
+    console.warn("Aviso: appointments/list.js nao pode ser carregado.", e2.message);
+  }
+}
+
+
 const port = 3000;
 const root = __dirname;
 

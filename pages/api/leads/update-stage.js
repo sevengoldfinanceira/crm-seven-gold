@@ -1,4 +1,5 @@
 const { supabase } = require('../../../api/_shared/supabase');
+const { hasBasicLeadInfo, hasLeadClientInfo, normalizeBasicLeadInfo, normalizeLeadClientInfo } = require('../../../api/_shared/lead-client-info');
 
 const ALLOWED_STATUSES = [
   "lead_recebido",
@@ -25,21 +26,32 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { phone, status } = req.body || {};
+    const payload = req.body || {};
+    const { phone, status } = payload;
 
     if (!phone) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ ok: false, error: 'O campo phone é obrigatório' }));
     }
 
-    if (!status) {
+    if (!status && !hasLeadClientInfo(payload) && !hasBasicLeadInfo(payload)) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ ok: false, error: 'O campo status é obrigatório' }));
+      return res.end(JSON.stringify({ ok: false, error: 'Informe a etapa ou os dados do lead que serão atualizados.' }));
     }
 
-    if (!ALLOWED_STATUSES.includes(status)) {
+    if (status && !ALLOWED_STATUSES.includes(status)) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ ok: false, error: 'Etapa inválida para o funil.' }));
+    }
+
+    const basicInfo = normalizeBasicLeadInfo(payload);
+    if (Object.prototype.hasOwnProperty.call(basicInfo, 'name') && !basicInfo.name) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: false, error: 'O nome do lead é obrigatório.' }));
+    }
+    if (Object.prototype.hasOwnProperty.call(basicInfo, 'telefone') && basicInfo.telefone.length < 10) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: false, error: 'Telefone inválido.' }));
     }
 
     const normalizedPhone = String(phone).replace(/\D/g, '');
@@ -63,15 +75,20 @@ module.exports = async (req, res) => {
 
     const leadId = fetchLead[0].id;
     const updateTime = new Date().toISOString();
+    const updateData = {
+      ...basicInfo,
+      ...normalizeLeadClientInfo(payload, { onlyPresent: true }),
+    };
+    if (status) {
+      updateData.status = status;
+      updateData.ultima_interacao = updateTime;
+    }
 
     const { data: updatedLead, error: updateError } = await supabase
       .from('leads')
-      .update({
-        status: status,
-        ultima_interacao: updateTime
-      })
+      .update(updateData)
       .eq('id', leadId)
-      .select('id, name, telefone, status');
+      .select('id, name, telefone, status, origin, note, property_region, credit_value, down_payment_value, installment_value, ultima_interacao');
 
     if (updateError) {
       console.error('Error executing stage update on lead');
@@ -87,7 +104,13 @@ module.exports = async (req, res) => {
         name: result.name,
         telefone: result.telefone,
         status: result.status,
-        updated_at: updateTime,
+        origin: result.origin,
+        note: result.note,
+        property_region: result.property_region,
+        credit_value: result.credit_value,
+        down_payment_value: result.down_payment_value,
+        installment_value: result.installment_value,
+        updated_at: result.ultima_interacao,
       }
     };
 

@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
 
     const { data, error } = await supabase
       .from('leads')
-      .select('id, name, telefone, status, tags, note, origin, created_at, ultima_interacao')
+      .select('id, name, telefone, status, tags, note, origin, created_at, ultima_interacao, property_region, credit_value, down_payment_value, installment_value')
       .eq('telefone', normalizedPhone)
       .limit(1);
 
@@ -56,6 +56,10 @@ module.exports = async (req, res) => {
         origin: lead.origin,
         created_at: lead.created_at,
         ultima_interacao: lead.ultima_interacao,
+        property_region: lead.property_region,
+        credit_value: lead.credit_value,
+        down_payment_value: lead.down_payment_value,
+        installment_value: lead.installment_value,
       }
     };
 

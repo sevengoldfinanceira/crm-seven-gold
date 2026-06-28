@@ -1,4 +1,5 @@
 const { supabase } = require('../_shared/supabase');
+const { normalizeLeadClientInfo } = require('../_shared/lead-client-info');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -72,6 +73,7 @@ module.exports = async (req, res) => {
       origin: source || 'whatsapp_web_extension',
       note: notes || '',
       owner_id: ownerId,
+      ...normalizeLeadClientInfo(req.body),
     };
     if (tags) insertData.tags = tags;
 
