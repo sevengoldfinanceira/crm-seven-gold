@@ -545,6 +545,7 @@
 
     const callbackResult = await handleOAuthCallback();
     setupLoginForms();
+    setupLogout();
 
     const redirectedAuthenticatedUser = await redirectAuthenticatedLoginPage();
     if (redirectedAuthenticatedUser) {
@@ -552,6 +553,5 @@
     }
 
     await setupProtectedPages(callbackResult.error);
-    setupLogout();
   });
 })();
