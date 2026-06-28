@@ -32,6 +32,18 @@ try {
   }
 }
 
+try {
+  apiRoutes["/api/leads/delete"] = require("./api/leads/delete");
+  console.log("Rota de API carregada: /api/leads/delete");
+} catch (e) {
+  try {
+    apiRoutes["/api/leads/delete"] = require("./pages/api/leads/delete");
+    console.log("Rota de API carregada (pages): /api/leads/delete");
+  } catch (e2) {
+    console.warn("Aviso: delete.js nao pode ser carregado.", e2.message);
+  }
+}
+
 const port = 3000;
 const root = __dirname;
 

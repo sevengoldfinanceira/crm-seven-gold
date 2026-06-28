@@ -111,25 +111,32 @@ const formatInternationalPhone = (phoneStr) => {
 };
 
 const deleteLead = async (leadId) => {
-  const client = getClient();
-
-  if (!client || !leadId) {
+  if (!leadId) {
     return false;
   }
 
-  const { data, error } = await client.from("leads").delete().eq("id", leadId).select();
+  try {
+    const response = await fetch(`/api/leads/delete`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: leadId }),
+    });
 
-  if (error) {
-    alert("Nao consegui excluir o lead. Erro: " + error.message);
+    const result = await response.json();
+
+    if (!response.ok || !result.ok) {
+      alert("Erro ao excluir o lead: " + (result.error || "Erro desconhecido"));
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    alert("Erro de conexao ao excluir o lead. Tente novamente.");
+    console.error("Delete failed:", err);
     return false;
   }
-
-  if (!data || data.length === 0) {
-    alert("Nao foi possivel excluir. Verifique se o seu usuario do Supabase possui permissao de exclusao (RLS) na tabela 'leads'. Executamos uma migracao em /sql/003-leads-delete-policy.sql para te ajudar.");
-    return false;
-  }
-
-  return true;
 };
 
 const updateLeadStatus = async (leadId, status) => {
@@ -610,25 +617,29 @@ const setupBulkActions = () => {
       });
       updateBulkActionsBar();
 
-      const { data, error } = await client
-        .from("leads")
-        .delete()
-        .in("id", leadIds)
-        .select();
+      try {
+        const response = await fetch(`/api/leads/delete`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ids: leadIds }),
+        });
 
-      if (error) {
-        alert("Erro ao excluir os leads. Erro: " + error.message);
+        const result = await response.json();
+
+        if (!response.ok || !result.ok) {
+          alert("Erro ao excluir os leads: " + (result.error || "Erro desconhecido"));
+          await loadLeads();
+          return;
+        }
+
         await loadLeads();
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        alert("Nao foi possivel excluir os leads. Verifique suas permissoes (RLS) no Supabase.");
+      } catch (err) {
+        alert("Erro de conexao ao excluir os leads. Tente novamente.");
+        console.error("Bulk delete failed:", err);
         await loadLeads();
-        return;
       }
-
-      await loadLeads();
     }
   });
 
