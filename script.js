@@ -261,21 +261,68 @@ const editLead = async (leadId) => {
   }
 };
 
-const updateLeadStatus = async (leadId, status) => {
+const updateLeadCount = () => {
+  if (!leadCount) return;
+  let total = 0;
+  columns.forEach((column) => {
+    const stack = column.querySelector(".card-stack");
+    total += stack.querySelectorAll(".lead-card").length;
+  });
+  leadCount.textContent = `${total} ${total === 1 ? "lead ativo" : "leads ativos"}`;
+};
+
+const updateLeadStatus = async (leadId, status, { optimistic = false } = {}) => {
   const client = getClient();
 
   if (!client || !leadId || !status) {
     return false;
   }
 
+  if (optimistic) {
+    const targetColumn = columns.find((col) => col.dataset.status === status);
+    const sourceCard = document.querySelector(`[data-lead-id="${leadId}"]`);
+
+    if (sourceCard && targetColumn) {
+      const targetStack = targetColumn.querySelector(".card-stack");
+      const emptyMsg = targetStack.querySelector(".empty-column");
+      if (emptyMsg) emptyMsg.remove();
+      targetStack.append(sourceCard);
+
+      const counter = targetColumn.querySelector("small");
+      if (counter) {
+        counter.textContent = targetStack.querySelectorAll(".lead-card").length;
+      }
+
+      const sourceColumn = sourceCard.closest?.(".kanban-column");
+      if (sourceColumn && sourceColumn !== targetColumn) {
+        const sourceStack = sourceColumn.querySelector(".card-stack");
+        const sourceCounter = sourceColumn.querySelector("small");
+        if (sourceCounter) {
+          sourceCounter.textContent = sourceStack.querySelectorAll(".lead-card").length;
+        }
+        if (sourceStack.querySelectorAll(".lead-card").length === 0) {
+          renderEmptyState(sourceStack);
+        }
+      }
+
+      updateLeadCount();
+    }
+  }
+
   const { error } = await client.from("leads").update({ status }).eq("id", leadId);
 
   if (error) {
-    alert("Nao consegui mover o lead. Tente novamente.");
+    if (optimistic) {
+      await loadLeads();
+    } else {
+      alert("Nao consegui mover o lead. Tente novamente.");
+    }
     return false;
   }
 
-  await loadLeads();
+  if (!optimistic) {
+    await loadLeads();
+  }
   return true;
 };
 
@@ -495,7 +542,7 @@ const setupDragAndDrop = () => {
       column.classList.remove("drag-over");
 
       if (draggedLeadId) {
-        await updateLeadStatus(draggedLeadId, column.dataset.status);
+        await updateLeadStatus(draggedLeadId, column.dataset.status, { optimistic: true });
       }
 
       draggedLeadId = null;
@@ -591,7 +638,7 @@ const setupTouchMove = () => {
       ?.closest("[data-status]");
 
     if (targetColumn) {
-      await updateLeadStatus(drag.id, targetColumn.dataset.status);
+      await updateLeadStatus(drag.id, targetColumn.dataset.status, { optimistic: true });
     }
   });
 };
