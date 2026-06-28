@@ -620,13 +620,14 @@ select {
 .lead-card-top {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 8px;
 }
 
 .lead-card-title-group {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   min-width: 0;
   flex: 1;
@@ -648,6 +649,7 @@ select {
   font-size: 0.78rem;
   line-height: 1.4;
   word-break: break-word;
+  text-align: center;
 }
 
 .lead-warning-badge {
@@ -663,11 +665,13 @@ select {
   font-weight: 600;
   width: fit-content;
   margin-top: 2px;
+  justify-self: center;
 }
 
 .lead-phone-line {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   font-size: 0.85rem;
   color: #4b5563;
@@ -1295,10 +1299,12 @@ body.theme-dark .theme-fab:hover {
 .lead-info-meta {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 2px;
   margin-top: 4px;
   font-size: 0.72rem;
   color: var(--muted);
+  text-align: center;
 }
 
 .lead-meta-origin {
