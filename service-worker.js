@@ -1,6 +1,8 @@
-const CACHE_VERSION = "seven-gold-crm-profile-v1";
+const CACHE_VERSION = "seven-gold-atendimento-v1";
 const STATIC_ASSETS = [
   "/home.css",
+  "/painel.css",
+  "/atendimento.css",
   "/styles.css",
   "/script.js",
   "/auth.js",
@@ -8,7 +10,8 @@ const STATIC_ASSETS = [
   "/pwa.js",
   "/supabase-config.js",
   "/assets/icons/LOGO COPA.png",
-  "/manifest.json"
+  "/manifest.json",
+  "/atendimento.html"
 ];
 
 self.addEventListener("install", (event) => {

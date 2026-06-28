@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR" style="background-color: #150126;">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Painel de Atendimento</title>
+    <link rel="icon" href="assets/icons/LOGO COPA.png?v=mqreizkw" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="atendimento.css?v=atendimento-v1" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#150126" />
+  </head>
+  <body data-require-auth data-login-page="index.html">
+    <div class="service-shell">
+      <aside class="service-sidebar">
+        <a class="service-brand" href="painel.html">
+          <img src="assets/icons/LOGO COPA.png?v=mqreizkw" alt="Seven Gold" />
+          <span><strong>Seven Gold</strong><small>Atendimento</small></span>
+        </a>
+
+        <nav class="service-nav" aria-label="Menu do atendimento">
+          <p>ATENDIMENTO</p>
+          <a class="active" href="atendimento.html">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Visão geral</span>
+          </a>
+        </nav>
+
+        <div class="service-user">
+          <span class="service-avatar" data-user-avatar>U</span>
+          <span><strong data-user-name>Usuário</strong><small data-user-email></small></span>
+        </div>
+      </aside>
+
+      <main class="service-content">
+        <header class="service-header">
+          <div>
+            <p class="eyebrow">Painel de atendimento</p>
+            <h1>Atendimento ao cliente</h1>
+            <p>Levantamento de necessidades, simulações, contratos e clientes em loja.</p>
+          </div>
+          <a href="painel.html">Voltar aos painéis</a>
+        </header>
+
+        <section class="service-welcome">
+          <span class="service-welcome-icon"><i data-lucide="headset"></i></span>
+          <div>
+            <h2>Área pronta para começar</h2>
+            <p>As próximas sub-abas e ferramentas de atendimento serão adicionadas aqui.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js?v=mqreizkw"></script>
+    <script>lucide.createIcons();</script>
+    <script src="/pwa.js"></script>
+  </body>
+</html>
