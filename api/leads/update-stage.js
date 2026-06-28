@@ -1,5 +1,14 @@
 const { supabase } = require('../_shared/supabase');
 
+const ALLOWED_STATUSES = [
+  "lead_recebido",
+  "primeiro_contato",
+  "agendamento",
+  "cliente_em_loja",
+  "proposta_enviada",
+  "venda_fechada"
+];
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'PATCH, OPTIONS');
@@ -26,6 +35,11 @@ module.exports = async (req, res) => {
     if (!status) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ ok: false, error: 'O campo status é obrigatório' }));
+    }
+
+    if (!ALLOWED_STATUSES.includes(status)) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: false, error: 'Etapa inválida para o funil.' }));
     }
 
     const normalizedPhone = String(phone).replace(/\D/g, '');
