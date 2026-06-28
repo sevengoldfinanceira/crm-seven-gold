@@ -133,6 +133,13 @@ body.theme-dark,
   box-sizing: border-box;
 }
 
+body[data-permission-area="crm"] .profile-dashboard-shell { visibility: hidden; }
+body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visibility: visible; }
+body[data-permission-area="crm"] .crm-access-denied { visibility: visible; }
+.crm-access-denied { display: grid; place-items: center; min-height: 100vh; padding: 24px; background: #150126; color: #fff; text-align: center; }
+.crm-access-denied section { width: min(520px, 100%); padding: 34px; border: 1px solid rgba(227,182,50,.35); border-radius: 22px; }
+.crm-access-denied a { display: inline-flex; margin-top: 14px; padding: 11px 16px; border-radius: 10px; background: #e3b632; color: #17130a; font-weight: 800; text-decoration: none; }
+
 body {
   margin: 0;
   min-height: 100vh;

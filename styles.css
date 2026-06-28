@@ -47,6 +47,11 @@ select {
   cursor: pointer;
 }
 
+body[data-permission-area="crm"] .app-shell,
+body[data-permission-area="crm"] .profile-dashboard-shell { visibility: hidden; }
+body[data-permission-area="crm"].crm-authorized .app-shell,
+body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visibility: visible; }
+
 .app-shell {
   display: grid;
   grid-template-columns: 228px minmax(0, 1fr);
@@ -1467,6 +1472,14 @@ body.theme-dark .crm-profile-card { background: #17121d; border-color: rgba(255,
 body.theme-dark .crm-profile-card form > label, body.theme-dark .crm-profile-upload { color: #fff; }
 body.theme-dark .crm-profile-card input { background: #211829; color: #fff; border-color: rgba(255,255,255,.12); }
 body.theme-dark .crm-profile-card input[readonly] { background: #151019; color: #aaa5ad; }
+
+.crm-access-denied { display: grid; place-items: center; min-height: 100vh; padding: 24px; background: radial-gradient(circle at top, #2a073f, #0d0116 72%); color: #fff; }
+.crm-access-denied section { width: min(520px, 100%); padding: 36px; border: 1px solid rgba(227,182,50,.3); border-radius: 22px; background: rgba(22,6,34,.92); text-align: center; box-shadow: 0 28px 80px rgba(0,0,0,.42); }
+.crm-access-denied-icon { display: grid; place-items: center; width: 52px; height: 52px; margin: 0 auto 18px; border: 1px solid rgba(227,182,50,.45); border-radius: 50%; color: var(--gold); font-size: 1.4rem; font-weight: 800; }
+.crm-access-denied .eyebrow { color: var(--gold); }
+.crm-access-denied h1 { margin: 8px 0; font-size: 1.65rem; }
+.crm-access-denied p { color: #c8bfcc; }
+.crm-access-denied a { display: inline-flex; margin-top: 14px; padding: 11px 16px; border-radius: 10px; background: var(--gold); color: #17130a; font-weight: 800; text-decoration: none; }
 
 @media (max-width: 600px) {
   .crm-profile-card { padding: 18px; }

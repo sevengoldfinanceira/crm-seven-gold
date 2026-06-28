@@ -71,6 +71,65 @@
     return data;
   };
 
+  const checkCrmUserAuthorization = async (userEmail) => {
+    if (!userEmail) {
+      throw new Error("Nao foi possivel identificar o e-mail do usuario logado.");
+    }
+
+    const normalizedEmail = userEmail.trim().toLowerCase();
+    const { data, error } = await client
+      .from("crm_users")
+      .select("email, nome, cargo, ativo")
+      .eq("email", normalizedEmail)
+      .eq("ativo", true)
+      .maybeSingle();
+
+    if (error) {
+      console.error("[CRM Auth] Erro ao validar usuario:", error);
+      throw new Error(error.message || "Erro ao validar acesso.");
+    }
+
+    if (!data) {
+      throw new Error("Usuario nao autorizado. Solicite acesso ao administrador.");
+    }
+
+    return data;
+  };
+
+  const showCrmAccessDenied = () => {
+    document.body.innerHTML = `
+      <main class="crm-access-denied">
+        <section>
+          <span class="crm-access-denied-icon" aria-hidden="true">!</span>
+          <p class="eyebrow">Acesso bloqueado</p>
+          <h1>Usuário não autorizado.</h1>
+          <p>Solicite acesso ao administrador.</p>
+          <a href="index.html">Voltar para o login</a>
+        </section>
+      </main>
+    `;
+  };
+
+  const applyCrmUserIdentity = (sessionUser, crmUser) => {
+    const name = crmUser?.nome || sessionUser?.email || "Usuario";
+    const role = crmUser?.cargo || "Usuario CRM";
+
+    window.currentUser = sessionUser;
+    window.crmUser = crmUser;
+    window.userRole = role;
+    window.sevenGoldCrmSession = { currentUser: sessionUser, crmUser, userRole: role };
+
+    document.querySelectorAll("[data-user-name]").forEach((element) => {
+      element.textContent = name;
+    });
+    document.querySelectorAll("[data-user-email]").forEach((element) => {
+      element.textContent = sessionUser?.email || crmUser?.email || "";
+    });
+    document.querySelectorAll("[data-user-role]").forEach((element) => {
+      element.textContent = role;
+    });
+  };
+
   const parseRoles = (value) =>
     (value || "")
       .split(",")
@@ -483,25 +542,45 @@
       return;
     }
 
+    const currentPage = window.location.pathname.split("/").pop();
+    const profileArea = new URLSearchParams(window.location.search).get("area");
+    const permissionArea = document.body.dataset.permissionArea ||
+      (currentPage === "perfil.html" && profileArea === "crm" ? "crm" : "");
+    let authorizedCrmUser = null;
+
+    if (permissionArea === "crm") {
+      try {
+        authorizedCrmUser = await checkCrmUserAuthorization(session.user?.email);
+      } catch (error) {
+        console.error("[CRM Auth] Acesso bloqueado:", error);
+        await client.auth.signOut();
+        showCrmAccessDenied();
+        return;
+      }
+    }
+
     await ensureProfile(session);
     const profile = await getProfile(session);
     const role = profile?.role || "vendedor";
     const allowedRoles = parseRoles(document.body.dataset.allowedRoles);
-    const permissionArea = document.body.dataset.permissionArea;
-    const areaAccess = await canAccessArea(role, permissionArea);
+    const areaAccess = permissionArea === "crm" ? true : await canAccessArea(role, permissionArea);
 
     if (areaAccess === false) {
       showAccessDenied(document.body.dataset.deniedRedirect || "painel.html", role);
       return;
     }
 
-    if (areaAccess === null && allowedRoles.length > 0 && !allowedRoles.includes(role)) {
+    if (permissionArea !== "crm" && areaAccess === null && allowedRoles.length > 0 && !allowedRoles.includes(role)) {
       showAccessDenied(document.body.dataset.deniedRedirect || "painel.html", role);
       return;
     }
 
     applyRoleVisibility(role, profile);
     await applyUserProfile(session, profile);
+    if (authorizedCrmUser) {
+      applyCrmUserIdentity(session.user, authorizedCrmUser);
+      document.body.classList.add("crm-authorized");
+    }
   };
 
   const setupLogout = () => {
