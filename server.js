@@ -44,6 +44,30 @@ try {
   }
 }
 
+try {
+  apiRoutes["/api/leads/by-phone"] = require("./api/leads/by-phone");
+  console.log("Rota de API carregada: /api/leads/by-phone");
+} catch (e) {
+  try {
+    apiRoutes["/api/leads/by-phone"] = require("./pages/api/leads/by-phone");
+    console.log("Rota de API carregada (pages): /api/leads/by-phone");
+  } catch (e2) {
+    console.warn("Aviso: by-phone.js nao pode ser carregado.", e2.message);
+  }
+}
+
+try {
+  apiRoutes["/api/leads/update-stage"] = require("./api/leads/update-stage");
+  console.log("Rota de API carregada: /api/leads/update-stage");
+} catch (e) {
+  try {
+    apiRoutes["/api/leads/update-stage"] = require("./pages/api/leads/update-stage");
+    console.log("Rota de API carregada (pages): /api/leads/update-stage");
+  } catch (e2) {
+    console.warn("Aviso: update-stage.js nao pode ser carregado.", e2.message);
+  }
+}
+
 const port = 3000;
 const root = __dirname;
 
