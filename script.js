@@ -514,6 +514,10 @@ appointmentForm?.addEventListener("submit", async (event) => {
   await loadAppointments();
 });
 
+document.querySelector(".user-profile-link")?.addEventListener("click", () => {
+  document.body.classList.remove("menu-open");
+});
+
 document.querySelector("[data-close-appointment]")?.addEventListener("click", () => closeAppointmentModal(null));
 document.querySelector("[data-cancel-appointment]")?.addEventListener("click", () => closeAppointmentModal(null));
 appointmentModal?.addEventListener("cancel", (event) => {
@@ -1322,11 +1326,12 @@ const tabTitleMap = {
   financeiro: "Financeiro",
   cadastro: "Cadastro rapido",
   equipe: "Minha equipe",
+  perfil: "Meu perfil",
 };
 
 const switchTab = () => {
   const hash = window.location.hash.replace("#", "") || "pipeline";
-  const validTabs = ["dashboard", "pipeline", "tarefas", "feed", "calendario", "financeiro", "cadastro", "equipe"];
+  const validTabs = ["dashboard", "pipeline", "tarefas", "feed", "calendario", "financeiro", "cadastro", "equipe", "perfil"];
   const activeTab = validTabs.includes(hash) ? hash : "pipeline";
 
   document.querySelectorAll(".tab-content").forEach((section) => {

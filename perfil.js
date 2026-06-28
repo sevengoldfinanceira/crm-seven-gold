@@ -2,14 +2,15 @@
   const form = document.querySelector("[data-profile-form]");
   const status = document.querySelector("[data-profile-status]");
   const avatarInput = form?.elements.avatar;
-  const avatar = document.querySelector("[data-user-avatar]");
+  const avatars = () => document.querySelectorAll("[data-user-avatar]");
   let user = null;
   const area = new URLSearchParams(window.location.search).get("area") === "crm" ? "crm" : "empresa";
 
   document.querySelectorAll("[data-profile-sidebar]").forEach((sidebar) => {
     sidebar.hidden = sidebar.dataset.profileSidebar !== area;
   });
-  document.querySelector("[data-profile-back]").href = area === "crm" ? "crm.html" : "empresa.html";
+  const backLink = document.querySelector("[data-profile-back]");
+  if (backLink) backLink.href = area === "crm" ? "crm.html" : "empresa.html";
   document.body.dataset.profileArea = area;
 
   const setStatus = (message, type = "") => {
@@ -18,10 +19,12 @@
   };
 
   const showAvatar = (url, name) => {
-    avatar.textContent = "";
-    avatar.style.backgroundImage = `url("${url}")`;
-    avatar.classList.add("has-user-photo");
-    avatar.setAttribute("aria-label", `Foto de ${name}`);
+    avatars().forEach((avatar) => {
+      avatar.textContent = "";
+      avatar.style.backgroundImage = `url("${url}")`;
+      avatar.classList.add("has-user-photo");
+      avatar.setAttribute("aria-label", `Foto de ${name}`);
+    });
   };
 
   const loadProfile = async () => {
@@ -95,6 +98,9 @@
       return;
     }
 
+    document.querySelectorAll("[data-user-name]").forEach((element) => {
+      element.textContent = name;
+    });
     setStatus("Perfil salvo e sincronizado com sucesso.", "success");
   });
 
