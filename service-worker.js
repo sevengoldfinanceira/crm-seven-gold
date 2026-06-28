@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-calendar-v5";
+const CACHE_VERSION = "seven-gold-calendar-v6";
 const STATIC_ASSETS = [
   "/home.css",
   "/styles.css",
