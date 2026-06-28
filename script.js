@@ -117,10 +117,15 @@ const deleteLead = async (leadId) => {
     return false;
   }
 
-  const { error } = await client.from("leads").delete().eq("id", leadId);
+  const { data, error } = await client.from("leads").delete().eq("id", leadId).select();
 
   if (error) {
-    alert("Nao consegui excluir o lead. Tente novamente.");
+    alert("Nao consegui excluir o lead. Erro: " + error.message);
+    return false;
+  }
+
+  if (!data || data.length === 0) {
+    alert("Nao foi possivel excluir. Verifique se o seu usuario do Supabase possui permissao de exclusao (RLS) na tabela 'leads'. Executamos uma migracao em /sql/003-leads-delete-policy.sql para te ajudar.");
     return false;
   }
 
