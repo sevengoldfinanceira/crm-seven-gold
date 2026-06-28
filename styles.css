@@ -1033,3 +1033,149 @@ body.theme-dark .theme-fab:hover {
   }
 }
 
+/* --- Bulk Actions Floating Bar & Card Selection --- */
+.lead-select-checkbox {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid var(--line);
+  cursor: pointer;
+  accent-color: var(--gold);
+  margin-right: 6px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.lead-card.selected {
+  border-color: var(--gold) !important;
+  background: var(--surface-soft) !important;
+  box-shadow: 0 0 0 2px rgba(216, 173, 61, 0.15) !important;
+}
+
+.bulk-actions-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 24px;
+  background: var(--sidebar);
+  color: #ffffff;
+  border: 1px solid rgba(243, 207, 102, 0.3);
+  border-radius: 50px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 90%;
+  width: auto;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translate(-50%, 100px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+.bulk-info {
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.bulk-info span {
+  color: var(--gold);
+  font-size: 1.1rem;
+}
+
+.bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bulk-move-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #e0e2de;
+  text-transform: uppercase;
+}
+
+.bulk-actions select {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 0.82rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.bulk-actions select option {
+  background: var(--sidebar);
+  color: #ffffff;
+}
+
+.bulk-action-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.bulk-action-btn.delete {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.bulk-action-btn.delete:hover {
+  background: #b91c1c;
+}
+
+.bulk-action-btn.cancel {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.bulk-action-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Mobile responsive styling for bulk action bar */
+@media (max-width: 768px) {
+  .bulk-actions-bar {
+    flex-direction: column;
+    border-radius: 24px;
+    padding: 16px;
+    gap: 12px;
+    width: calc(100% - 32px);
+    bottom: 16px;
+  }
+  .bulk-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  .bulk-actions select,
+  .bulk-action-btn,
+  .bulk-move-label {
+    width: 100%;
+    text-align: center;
+  }
+}
+

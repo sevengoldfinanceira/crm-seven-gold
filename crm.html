@@ -225,6 +225,33 @@
       </form>
     </dialog>
 
+    <!-- Bulk Actions Floating Bar -->
+    <div class="bulk-actions-bar" id="bulk-actions-bar" style="display: none;">
+      <div class="bulk-info">
+        <span id="bulk-selected-count">0</span> selecionados
+      </div>
+      <div class="bulk-actions">
+        <label class="bulk-move-label">
+          Mover para
+          <select id="bulk-move-select">
+            <option value="" disabled selected>Selecionar coluna...</option>
+            <option value="lead_recebido">Lead recebido</option>
+            <option value="primeiro_contato">Primeiro contato</option>
+            <option value="agendamento">Agendamento</option>
+            <option value="cliente_em_loja">Cliente em loja</option>
+            <option value="proposta_enviada">Proposta enviada</option>
+            <option value="venda_fechada">Venda fechada</option>
+          </select>
+        </label>
+        <button type="button" class="bulk-action-btn delete" id="bulk-delete-btn">
+          Excluir
+        </button>
+        <button type="button" class="bulk-action-btn cancel" id="bulk-cancel-btn">
+          Cancelar
+        </button>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=mqreizkw"></script>

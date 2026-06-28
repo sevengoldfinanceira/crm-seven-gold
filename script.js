@@ -239,8 +239,26 @@ const createLeadCard = (lead) => {
   const top = document.createElement("div");
   top.className = "lead-card-top";
 
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.className = "lead-select-checkbox";
+  checkbox.addEventListener("change", (e) => {
+    if (e.target.checked) {
+      card.classList.add("selected");
+    } else {
+      card.classList.remove("selected");
+    }
+    updateBulkActionsBar();
+  });
+
   const name = document.createElement("strong");
   name.textContent = lead.name;
+
+  const nameWrapper = document.createElement("div");
+  nameWrapper.style.display = "flex";
+  nameWrapper.style.alignItems = "center";
+  nameWrapper.style.gap = "6px";
+  nameWrapper.append(checkbox, name);
 
   const tag = document.createElement("mark");
   tag.className = lead.status === "venda_fechada" ? "money" : "soft";
@@ -290,7 +308,7 @@ const createLeadCard = (lead) => {
   const createdAt = document.createElement("time");
   createdAt.textContent = formatLeadDate(lead.created_at);
 
-  top.append(name, tag, actions);
+  top.append(nameWrapper, tag, actions);
   footer.append(origin, createdAt);
   card.append(top, phoneContainer, note, footer);
 
@@ -513,8 +531,120 @@ leadForm?.addEventListener("submit", async (event) => {
   await loadLeads();
 });
 
+const updateBulkActionsBar = () => {
+  const checkboxes = document.querySelectorAll(".lead-select-checkbox:checked");
+  const bar = document.getElementById("bulk-actions-bar");
+  const countSpan = document.getElementById("bulk-selected-count");
+
+  if (!bar || !countSpan) return;
+
+  const count = checkboxes.length;
+  countSpan.textContent = count;
+
+  if (count > 0) {
+    bar.style.display = "flex";
+  } else {
+    bar.style.display = "none";
+    const select = document.getElementById("bulk-move-select");
+    if (select) select.value = "";
+  }
+};
+
+const setupBulkActions = () => {
+  const moveSelect = document.getElementById("bulk-move-select");
+  const deleteBtn = document.getElementById("bulk-delete-btn");
+  const cancelBtn = document.getElementById("bulk-cancel-btn");
+
+  moveSelect?.addEventListener("change", async (e) => {
+    const targetStatus = e.target.value;
+    if (!targetStatus) return;
+
+    const checkboxes = document.querySelectorAll(".lead-select-checkbox:checked");
+    const leadIds = Array.from(checkboxes).map(cb => cb.closest(".lead-card")?.dataset.leadId).filter(Boolean);
+
+    if (leadIds.length === 0) return;
+
+    if (confirm(`Deseja mover os ${leadIds.length} leads selecionados para "${statusLabels[targetStatus]}"?`)) {
+      const client = getClient();
+      if (!client) return;
+
+      // Optimistic update
+      checkboxes.forEach(cb => {
+        const card = cb.closest(".lead-card");
+        if (card) {
+          card.classList.remove("selected");
+          cb.checked = false;
+        }
+      });
+      updateBulkActionsBar();
+
+      const { error } = await client
+        .from("leads")
+        .update({ status: targetStatus })
+        .in("id", leadIds);
+
+      if (error) {
+        alert("Erro ao mover alguns leads. Detalhes: " + error.message);
+      }
+
+      await loadLeads();
+    } else {
+      moveSelect.value = "";
+    }
+  });
+
+  deleteBtn?.addEventListener("click", async () => {
+    const checkboxes = document.querySelectorAll(".lead-select-checkbox:checked");
+    const leadIds = Array.from(checkboxes).map(cb => cb.closest(".lead-card")?.dataset.leadId).filter(Boolean);
+
+    if (leadIds.length === 0) return;
+
+    if (confirm(`Tem certeza que deseja excluir permanentemente os ${leadIds.length} leads selecionados?`)) {
+      const client = getClient();
+      if (!client) return;
+
+      // Optimistic UI updates
+      checkboxes.forEach(cb => {
+        const card = cb.closest(".lead-card");
+        if (card) card.remove();
+      });
+      updateBulkActionsBar();
+
+      const { data, error } = await client
+        .from("leads")
+        .delete()
+        .in("id", leadIds)
+        .select();
+
+      if (error) {
+        alert("Erro ao excluir os leads. Erro: " + error.message);
+        await loadLeads();
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        alert("Nao foi possivel excluir os leads. Verifique suas permissoes (RLS) no Supabase.");
+        await loadLeads();
+        return;
+      }
+
+      await loadLeads();
+    }
+  });
+
+  cancelBtn?.addEventListener("click", () => {
+    const checkboxes = document.querySelectorAll(".lead-select-checkbox:checked");
+    checkboxes.forEach(cb => {
+      cb.checked = false;
+      cb.closest(".lead-card")?.classList.remove("selected");
+    });
+    updateBulkActionsBar();
+  });
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   setupDragAndDrop();
   setupTouchMove();
+  setupBulkActions();
   loadLeads();
 });
