@@ -406,9 +406,13 @@
     renderMatrix();
     renderUsers();
 
-    if (permissionsResult.error || usersResult.error) {
-      setStatus("Nao foi possivel carregar permissoes ou usuarios. Confira as politicas do Supabase.");
+    if (permissionsResult.error) {
+      setStatus("Nao consegui carregar as permissoes: " + permissionsResult.error.message);
       addAuditEntry("<strong>Erro</strong> ao carregar permissoes", "warning");
+      return;
+    }
+    if (usersResult.error) {
+      setStatus("Nao consegui carregar os usuarios: " + usersResult.error.message);
       return;
     }
 
@@ -444,7 +448,7 @@
     if (window.lucide) lucide.createIcons();
 
     if (permissionError) {
-      setStatus("Nao consegui salvar as permissoes. Confira a tabela crm_role_permissions.");
+      setStatus("Nao consegui salvar as permissoes: " + permissionError.message);
       addAuditEntry("<strong>Erro</strong> ao salvar permissoes", "warning");
       return;
     }
