@@ -61,6 +61,8 @@ openModalButton?.addEventListener("click", () => {
       leadForm.dataset.mode = "create";
       delete leadForm.dataset.leadId;
     }
+    const metaContainer = modal.querySelector("#modal-lead-meta");
+    if (metaContainer) metaContainer.style.display = "none";
     setFormStatus("");
     modal.showModal();
   }
@@ -86,6 +88,14 @@ const openEditLeadModal = (lead) => {
   leadForm.dataset.mode = "edit";
   leadForm.dataset.leadId = lead.id;
   leadForm.dataset.originalStatus = lead.status || "lead_recebido";
+
+  const metaRow = modal.querySelector("#modal-lead-meta");
+  const originDisplay = modal.querySelector("#modal-lead-origin-display");
+  const createdDisplay = modal.querySelector("#modal-lead-created-display");
+
+  if (metaRow) metaRow.style.display = "flex";
+  if (originDisplay) originDisplay.textContent = lead.origin || "Site publico";
+  if (createdDisplay) createdDisplay.textContent = formatLeadDate(lead.created_at);
 
   if (leadForm.elements["name"]) {
     leadForm.elements["name"].value = lead.name;
@@ -876,20 +886,6 @@ const createLeadCard = (lead) => {
     noteEl.textContent = lead.note;
   }
 
-  // Stacked metadata footer (origin and created date)
-  const metaContainer = document.createElement("div");
-  metaContainer.className = "lead-info-meta";
-
-  const originEl = document.createElement("span");
-  originEl.className = "lead-meta-origin";
-  originEl.textContent = `Via: ${lead.origin || "Origem nao informada"}`;
-
-  const createdAtEl = document.createElement("span");
-  createdAtEl.className = "lead-meta-date";
-  createdAtEl.textContent = `Criado em: ${formatLeadDate(lead.created_at)}`;
-
-  metaContainer.append(originEl, createdAtEl);
-
   // Separator
   const divider = document.createElement("hr");
   divider.className = "lead-card-divider";
@@ -959,7 +955,7 @@ const createLeadCard = (lead) => {
   if (noteEl) {
     card.append(noteEl);
   }
-  card.append(metaContainer, divider, actionsRow);
+  card.append(divider, actionsRow);
 
   return card;
 };
