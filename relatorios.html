@@ -20,7 +20,7 @@
     <meta name="apple-mobile-web-app-title" content="Seven Gold" />
     <link rel="apple-touch-icon" href="/assets/icons/LOGO COPA.png?v=mqreizkw" />
   </head>
-  <body class="reports-body" data-require-auth data-permission-area="relatorios" data-login-page="index.html" data-allowed-roles="dono,administrador,financeiro,marketing,rh,coordenador,supervisor" data-denied-redirect="empresa.html" data-unified-admin>
+  <body class="reports-body" data-require-auth data-permission-area="relatorios" data-login-page="index.html" data-allowed-roles="dono,administrador,financeiro,marketing,rh,coordenador,supervisor,vendedor,representante" data-denied-redirect="empresa.html" data-unified-admin>
     <script>
       (function() {
         const theme = localStorage.getItem("seven-gold-theme") || "light";
@@ -93,6 +93,70 @@
         </article>
       </section>
 
+      <section class="reports-summary" data-leads-summary>
+        <article>
+          <span>Total de leads</span>
+          <strong data-report-total-leads>0</strong>
+          <i data-lucide="users"></i>
+        </article>
+        <article>
+          <span>Leads recebidos</span>
+          <strong data-report-leads-recebidos>0</strong>
+          <i data-lucide="user-plus"></i>
+        </article>
+        <article>
+          <span>Em atendimento</span>
+          <strong data-report-leads-atendimento>0</strong>
+          <i data-lucide="headphones"></i>
+        </article>
+        <article>
+          <span>Fechamentos</span>
+          <strong data-report-leads-fechamento>0</strong>
+          <i data-lucide="target"></i>
+        </article>
+        <article>
+          <span>Conversoes</span>
+          <strong data-report-leads-conversao>0</strong>
+          <i data-lucide="check-circle"></i>
+        </article>
+        <article>
+          <span>Taxa de conversao</span>
+          <strong data-report-leads-taxa>0%</strong>
+          <i data-lucide="percent"></i>
+        </article>
+      </section>
+
+      <section class="reports-summary" data-appointments-summary>
+        <article>
+          <span>Agendamentos totais</span>
+          <strong data-report-appt-total>0</strong>
+          <i data-lucide="calendar"></i>
+        </article>
+        <article>
+          <span>Agendados</span>
+          <strong data-report-appt-agendados>0</strong>
+          <i data-lucide="calendar-check"></i>
+        </article>
+        <article>
+          <span>Concluidos</span>
+          <strong data-report-appt-concluidos>0</strong>
+          <i data-lucide="check-circle"></i>
+        </article>
+      </section>
+
+      <section class="reports-summary" data-tasks-summary>
+        <article>
+          <span>Tarefas pendentes</span>
+          <strong data-report-tasks-pending>0</strong>
+          <i data-lucide="clock"></i>
+        </article>
+        <article>
+          <span>Tarefas concluidas</span>
+          <strong data-report-tasks-done>0</strong>
+          <i data-lucide="check-circle"></i>
+        </article>
+      </section>
+
       <section class="reports-layout">
         <section class="reports-panel">
           <div class="reports-filters">
@@ -136,6 +200,17 @@
             <article>
               <h2>Relatorio por representante</h2>
               <div data-representative-report></div>
+            </article>
+          </section>
+
+          <section class="report-breakdowns">
+            <article>
+              <h2>Leads por etapa</h2>
+              <div data-leads-by-status></div>
+            </article>
+            <article>
+              <h2>Leads por origem</h2>
+              <div data-leads-by-origin></div>
             </article>
           </section>
         </section>

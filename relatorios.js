@@ -42,6 +42,17 @@
     return null;
   };
 
+  const normalizeRole = (role) =>
+    String(role || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  const canSeeAllCommercialRecords = (user) => {
+    const role = normalizeRole(user?.cargo);
+    return ["dono", "admin", "administrador", "coordenador", "supervisor"].includes(role);
+  };
+
+  const getCurrentCrmUser = () =>
+    window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+
   const money = (value) =>
     new Intl.NumberFormat("pt-BR", {
       style: "currency",
@@ -98,6 +109,14 @@
   };
 
   const updatePersonFilter = () => {
+    const crmUser = getCurrentCrmUser();
+    const seeAll = canSeeAllCommercialRecords(crmUser);
+
+    if (!seeAll) {
+      if (personFilter) personFilter.closest("label")?.style.setProperty("display", "none");
+      return;
+    }
+
     const people = new Set();
     state.sales.forEach((sale) => {
       if (sale.seller_name) people.add(sale.seller_name);
@@ -249,11 +268,20 @@
     const client = getClient();
     if (!client) return;
 
-    const { data, error } = await client
+    const crmUser = getCurrentCrmUser();
+    const seeAll = canSeeAllCommercialRecords(crmUser);
+
+    let query = client
       .from("sales_reports")
-      .select("id, client_name, seller_name, representative_name, sale_table, credit_amount, sale_amount, quota_count, production_status, sale_date, created_at")
+      .select("id, client_name, seller_name, representative_name, sale_table, credit_amount, sale_amount, quota_count, production_status, sale_date, created_at, assigned_to_email")
       .order("sale_date", { ascending: false })
       .order("created_at", { ascending: false });
+
+    if (!seeAll && crmUser?.email) {
+      query = query.eq("assigned_to_email", crmUser.email);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       table.innerHTML = '<tr><td colspan="9">Tabela sales_reports ainda nao criada no Supabase.</td></tr>';
@@ -265,6 +293,152 @@
     renderTable();
   };
 
+  const renderLeadsSummary = (leads) => {
+    const total = leads.length;
+    const recebidos = leads.filter((l) => l.status === "novo_lead").length;
+    const atendimento = leads.filter((l) => l.status === "em_atendimento").length;
+    const fechamento = leads.filter((l) => l.status === "fechamento").length;
+    const conversao = leads.filter((l) => l.status === "concluido").length;
+    const taxa = total > 0 ? ((conversao / total) * 100).toFixed(1) : "0";
+
+    const el = (sel) => document.querySelector(sel);
+    if (el("[data-report-total-leads]")) el("[data-report-total-leads]").textContent = total;
+    if (el("[data-report-leads-recebidos]")) el("[data-report-leads-recebidos]").textContent = recebidos;
+    if (el("[data-report-leads-atendimento]")) el("[data-report-leads-atendimento]").textContent = atendimento;
+    if (el("[data-report-leads-fechamento]")) el("[data-report-leads-fechamento]").textContent = fechamento;
+    if (el("[data-report-leads-conversao]")) el("[data-report-leads-conversao]").textContent = conversao;
+    if (el("[data-report-leads-taxa]")) el("[data-report-leads-taxa]").textContent = `${taxa}%`;
+  };
+
+  const renderLeadsByStatus = (leads) => {
+    const container = document.querySelector("[data-leads-by-status]");
+    if (!container) return;
+
+    const statusMap = {};
+    leads.forEach((l) => {
+      const status = l.status || "Nao informado";
+      statusMap[status] = (statusMap[status] || 0) + 1;
+    });
+
+    const entries = Object.entries(statusMap).sort((a, b) => b[1] - a[1]);
+    container.innerHTML = "";
+
+    if (entries.length === 0) {
+      container.innerHTML = '<p class="report-note">Nenhum lead encontrado.</p>';
+      return;
+    }
+
+    entries.forEach(([status, count]) => {
+      const row = document.createElement("div");
+      row.className = "report-person-row";
+      row.innerHTML = `<strong>${status}</strong><span>${count} lead${count === 1 ? "" : "s"}</span>`;
+      container.append(row);
+    });
+  };
+
+  const renderLeadsByOrigin = (leads) => {
+    const container = document.querySelector("[data-leads-by-origin]");
+    if (!container) return;
+
+    const originMap = {};
+    leads.forEach((l) => {
+      const origin = l.origin || "Nao informado";
+      originMap[origin] = (originMap[origin] || 0) + 1;
+    });
+
+    const entries = Object.entries(originMap).sort((a, b) => b[1] - a[1]);
+    container.innerHTML = "";
+
+    if (entries.length === 0) {
+      container.innerHTML = '<p class="report-note">Nenhum lead encontrado.</p>';
+      return;
+    }
+
+    entries.forEach(([origin, count]) => {
+      const row = document.createElement("div");
+      row.className = "report-person-row";
+      row.innerHTML = `<strong>${origin}</strong><span>${count} lead${count === 1 ? "" : "s"}</span>`;
+      container.append(row);
+    });
+  };
+
+  const renderAppointmentsSummary = (appointments) => {
+    const total = appointments.length;
+    const agendados = appointments.filter((a) => a.status === "agendado").length;
+    const concluidos = appointments.filter((a) => a.status === "concluido").length;
+
+    const el = (sel) => document.querySelector(sel);
+    if (el("[data-report-appt-total]")) el("[data-report-appt-total]").textContent = total;
+    if (el("[data-report-appt-agendados]")) el("[data-report-appt-agendados]").textContent = agendados;
+    if (el("[data-report-appt-concluidos]")) el("[data-report-appt-concluidos]").textContent = concluidos;
+  };
+
+  const renderTasksSummary = (tasks) => {
+    const pending = tasks.filter((t) => t.status === "pending").length;
+    const done = tasks.filter((t) => t.status === "done").length;
+
+    const el = (sel) => document.querySelector(sel);
+    if (el("[data-report-tasks-pending]")) el("[data-report-tasks-pending]").textContent = pending;
+    if (el("[data-report-tasks-done]")) el("[data-report-tasks-done]").textContent = done;
+  };
+
+  const loadLeadsSummary = async () => {
+    const client = getClient();
+    if (!client) return;
+
+    const crmUser = getCurrentCrmUser();
+    const seeAll = canSeeAllCommercialRecords(crmUser);
+
+    let query = client.from("leads").select("id, status, origin, assigned_to_email");
+    if (!seeAll && crmUser?.email) {
+      query = query.eq("assigned_to_email", crmUser.email);
+    }
+
+    const { data, error } = await query;
+    if (error) return;
+
+    const leads = data || [];
+    renderLeadsSummary(leads);
+    renderLeadsByStatus(leads);
+    renderLeadsByOrigin(leads);
+  };
+
+  const loadAppointmentsSummary = async () => {
+    const client = getClient();
+    if (!client) return;
+
+    const crmUser = getCurrentCrmUser();
+    const seeAll = canSeeAllCommercialRecords(crmUser);
+
+    let query = client.from("appointments").select("id, status, assigned_to_email");
+    if (!seeAll && crmUser?.email) {
+      query = query.eq("assigned_to_email", crmUser.email);
+    }
+
+    const { data, error } = await query;
+    if (error) return;
+
+    renderAppointmentsSummary(data || []);
+  };
+
+  const loadTasksSummary = async () => {
+    const client = getClient();
+    if (!client) return;
+
+    const crmUser = getCurrentCrmUser();
+    const seeAll = canSeeAllCommercialRecords(crmUser);
+
+    let query = client.from("tasks").select("id, status, assigned_to_email");
+    if (!seeAll && crmUser?.email) {
+      query = query.eq("assigned_to_email", crmUser.email);
+    }
+
+    const { data, error } = await query;
+    if (error) return;
+
+    renderTasksSummary(data || []);
+  };
+
   form?.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -272,6 +446,7 @@
     const user = await waitForUser();
     const formData = new FormData(form);
     const submitButton = form.querySelector("button[type='submit']");
+    const crmUser = getCurrentCrmUser();
 
     if (!client || !user) {
       setMessage("Faca login novamente antes de salvar.");
@@ -293,6 +468,8 @@
       production_status: String(formData.get("production_status") || "iniciada"),
       sale_date: String(formData.get("sale_date") || ""),
       created_by: user.id,
+      assigned_to_email: crmUser?.email || user.email,
+      assigned_to_name: crmUser?.nome || user.email,
     });
 
     submitButton.disabled = false;
@@ -337,13 +514,27 @@
     form?.elements.client_name?.focus();
   });
 
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
     const today = new Date();
     const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
     state.month = currentMonth;
 
     if (monthFilter) monthFilter.value = currentMonth;
     if (form?.elements.sale_date) form.elements.sale_date.valueAsDate = today;
-    loadSales();
+
+    const crmUser = getCurrentCrmUser();
+    const seeAll = canSeeAllCommercialRecords(crmUser);
+
+    if (!seeAll && form?.elements.seller_name) {
+      form.elements.seller_name.value = crmUser?.nome || "";
+      form.elements.seller_name.readOnly = true;
+    }
+
+    await Promise.all([
+      loadSales(),
+      loadLeadsSummary(),
+      loadAppointmentsSummary(),
+      loadTasksSummary(),
+    ]);
   });
 })();
