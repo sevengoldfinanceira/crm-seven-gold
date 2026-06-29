@@ -243,7 +243,7 @@
       const editButton = document.createElement("button");
       editButton.type = "button";
       editButton.className = "perm-user-edit";
-      editButton.innerHTML = '<i data-lucide="pencil"></i><span>Editar</span>';
+      editButton.innerHTML = '<i data-lucide="pencil"></i>';
       editButton.addEventListener("click", () => openUserModal(user));
       actions.append(activeToggle, editButton);
 

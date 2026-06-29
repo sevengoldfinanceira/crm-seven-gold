@@ -618,9 +618,27 @@ tr [data-area-icon="permissoes"] .perm-area-icon svg { stroke: #ef4444; }
 .perm-user-toggle span { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.2); transition: transform .2s ease; }
 .perm-user-toggle.is-active { background: #10b981; }
 .perm-user-toggle.is-active span { transform: translateX(16px); }
-.perm-user-edit { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 32px; padding: 0 9px; border: 1px solid rgba(0,0,0,.08); border-radius: 9px; background: #fff; color: #475569; font-size: .68rem; font-weight: 800; }
-.perm-user-edit:hover { border-color: rgba(184,134,11,.3); color: #8a6716; }
-.perm-user-edit svg { width: 13px; height: 13px; }
+.perm-user-edit {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 38px !important;
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 !important;
+  border: 1px solid rgba(0,0,0,.08) !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  color: #475569 !important;
+}
+.perm-user-edit:hover {
+  border-color: rgba(184,134,11,.3) !important;
+  color: #8a6716 !important;
+}
+.perm-user-edit svg {
+  width: 12px !important;
+  height: 12px !important;
+}
 
 .perm-user-modal { width: min(520px, calc(100vw - 28px)); padding: 0; border: 0; border-radius: 20px; background: transparent; }
 .perm-user-modal::backdrop { background: rgba(15,8,22,.68); backdrop-filter: blur(3px); }
