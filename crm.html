@@ -240,12 +240,48 @@
         </section>
 
         <!-- Tarefas -->
-        <section class="tab-content" data-tab="tarefas" style="display:none;">
-          <div class="empty-tab-state">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-bottom: 16px;"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M9 12l2 2 4-4"/></svg>
-            <h2>Tarefas</h2>
-            <p>Em breve.</p>
-          </div>
+        <section class="tab-content" data-tab="tarefas" style="display:none; padding: 24px;">
+          <section class="tasks-section" aria-labelledby="tasks-title">
+            <header class="tasks-header" style="margin-bottom: 24px;">
+              <div>
+                <p class="route-label" style="font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 4px;">Agenda comercial</p>
+                <h1 id="tasks-title" style="font-size: clamp(1.45rem, 2.2vw, 2rem); font-weight: 800; margin: 0 0 4px; color: var(--ink);">Tarefas e Retornos</h1>
+                <p class="tasks-count-label" data-tasks-count-label style="font-size: 0.85rem; color: var(--muted); font-weight: 600;">0 tarefas</p>
+              </div>
+            </header>
+
+            <section class="tasks-filter-row" style="display: flex; align-items: end; flex-wrap: wrap; gap: 12px; margin-bottom: 24px;">
+              <label id="tasks-responsible-filter-container" style="display: none; flex-direction: column; gap: 5px;">
+                <span style="color: var(--muted); font-size: 0.72rem; font-weight: 700;">Responsável</span>
+                <select id="tasks-responsible-filter-select" style="min-width: 144px; min-height: 36px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 0 12px; font-size: 0.82rem;">
+                  <option value="">Todos os vendedores</option>
+                </select>
+              </label>
+
+              <label style="display: flex; flex-direction: column; gap: 5px;">
+                <span style="color: var(--muted); font-size: 0.72rem; font-weight: 700;">Status</span>
+                <select id="tasks-status-filter" style="min-width: 144px; min-height: 36px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 0 12px; font-size: 0.82rem;">
+                  <option value="">Todos os status</option>
+                  <option value="pending" selected>Pendentes</option>
+                  <option value="done">Concluídas</option>
+                </select>
+              </label>
+
+              <label style="display: flex; flex-direction: column; gap: 5px;">
+                <span style="color: var(--muted); font-size: 0.72rem; font-weight: 700;">Período</span>
+                <select id="tasks-date-filter" style="min-width: 144px; min-height: 36px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 0 12px; font-size: 0.82rem;">
+                  <option value="">Todos os períodos</option>
+                  <option value="hoje">Hoje</option>
+                  <option value="atrasadas">Atrasadas</option>
+                  <option value="semana">Esta semana</option>
+                </select>
+              </label>
+            </section>
+
+            <div class="tasks-list-container">
+              <div id="tasks-list" class="tasks-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;"></div>
+            </div>
+          </section>
         </section>
 
         <!-- Feed -->

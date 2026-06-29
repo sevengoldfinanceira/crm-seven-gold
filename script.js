@@ -413,6 +413,190 @@ const initCalendarResponsibleFilter = async (currentCrmUser) => {
   });
 };
 
+let tasksResponsibleFilterInitialized = false;
+let selectedTasksResponsibleEmail = "";
+
+const initTasksResponsibleFilter = async (currentCrmUser) => {
+  if (tasksResponsibleFilterInitialized) return;
+
+  if (!shouldSeeAllLeads(currentCrmUser)) {
+    return; // Vendedor não vê o filtro
+  }
+
+  const selectEl = document.getElementById("tasks-responsible-filter-select");
+  const containerEl = document.getElementById("tasks-responsible-filter-container");
+  if (!selectEl || !containerEl) return;
+
+  const client = getClient();
+  if (!client) return;
+
+  tasksResponsibleFilterInitialized = true;
+  containerEl.style.display = "flex";
+
+  const { data: users, error } = await client
+    .from("crm_users")
+    .select("nome, email, cargo, ativo")
+    .eq("ativo", true)
+    .order("nome", { ascending: true });
+
+  if (error || !users) {
+    console.error("Erro ao carregar vendedores para filtro de tarefas:", error);
+    return;
+  }
+
+  selectEl.innerHTML = '<option value="">Todos os vendedores</option>';
+  users.forEach((u) => {
+    const cargoLabel = u.cargo ? u.cargo.charAt(0).toUpperCase() + u.cargo.slice(1) : "";
+    const option = document.createElement("option");
+    option.value = u.email;
+    option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
+    selectEl.appendChild(option);
+  });
+
+  selectEl.addEventListener("change", (e) => {
+    selectedTasksResponsibleEmail = e.target.value;
+    loadTasks();
+  });
+
+  document.getElementById("tasks-status-filter")?.addEventListener("change", loadTasks);
+  document.getElementById("tasks-date-filter")?.addEventListener("change", loadTasks);
+};
+
+const loadTasks = async () => {
+  const client = getClient();
+  if (!client) return;
+
+  const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+  if (currentCrmUser) {
+    await initTasksResponsibleFilter(currentCrmUser);
+  }
+
+  const tasksListEl = document.getElementById("tasks-list");
+  const countLabelEl = document.querySelector("[data-tasks-count-label]");
+  if (!tasksListEl) return;
+
+  tasksListEl.innerHTML = '<p class="permission-note">Carregando tarefas...</p>';
+
+  let query = client
+    .from("tasks")
+    .select("*")
+    .order("scheduled_at", { ascending: true });
+
+  // 1. Filtragem por Responsável (RLS já restringe vendedores)
+  if (!shouldSeeAllLeads(currentCrmUser)) {
+    query = query.eq("assigned_to_email", currentCrmUser.email);
+  } else {
+    if (selectedTasksResponsibleEmail) {
+      query = query.eq("assigned_to_email", selectedTasksResponsibleEmail);
+    }
+  }
+
+  // 2. Filtragem por Status
+  const statusFilter = document.getElementById("tasks-status-filter")?.value || "";
+  if (statusFilter) {
+    query = query.eq("status", statusFilter);
+  }
+
+  // 3. Filtragem por Período
+  const dateFilter = document.getElementById("tasks-date-filter")?.value || "";
+  const now = new Date();
+  if (dateFilter === "hoje") {
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).toISOString();
+    query = query.gte("scheduled_at", startOfDay).lte("scheduled_at", endOfDay);
+  } else if (dateFilter === "atrasadas") {
+    query = query.lt("scheduled_at", now.toISOString()).eq("status", "pending");
+  } else if (dateFilter === "semana") {
+    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay())).toISOString();
+    const endOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 6)).toISOString();
+    query = query.gte("scheduled_at", startOfWeek).lte("scheduled_at", endOfWeek);
+  }
+
+  const { data: tasks, error } = await query;
+
+  if (error) {
+    tasksListEl.innerHTML = `<p class="permission-note" style="color: #ef4444;">Erro ao carregar tarefas: ${error.message}</p>`;
+    return;
+  }
+
+  if (countLabelEl) {
+    countLabelEl.textContent = `${tasks.length} tarefa${tasks.length === 1 ? "" : "s"}`;
+  }
+
+  if (!tasks || tasks.length === 0) {
+    tasksListEl.innerHTML = '<p class="permission-note">Nenhuma tarefa encontrada.</p>';
+    return;
+  }
+
+  tasksListEl.innerHTML = "";
+  tasks.forEach((task) => {
+    const card = document.createElement("article");
+    card.className = "lead-card";
+    card.style.cursor = "default";
+    card.style.display = "flex";
+    card.style.flexDirection = "column";
+    card.style.justifyContent = "space-between";
+    card.style.padding = "16px";
+    card.style.gap = "8px";
+    card.style.border = "1px solid var(--line)";
+    card.style.borderRadius = "12px";
+    card.style.background = "var(--surface)";
+
+    const formattedDate = new Date(task.scheduled_at).toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+    const isPending = task.status === "pending";
+
+    card.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: start; width: 100%;">
+        <span class="tag" style="background: ${task.type === "whatsapp_message" ? "rgba(34, 197, 94, 0.1)" : "rgba(59, 130, 246, 0.1)"}; color: ${task.type === "whatsapp_message" ? "#22c55e" : "#3b82f6"};">
+          ${task.type === "whatsapp_message" ? "WhatsApp" : "Lembrete"}
+        </span>
+        <span style="font-size: 0.72rem; color: var(--muted); font-weight: 600;">${formattedDate}</span>
+      </div>
+      <h3 style="font-size: 0.95rem; font-weight: 700; margin: 4px 0 2px; color: var(--ink);">${task.lead_nome}</h3>
+      ${task.title ? `<p style="font-size: 0.82rem; font-weight: 600; color: var(--ink); margin: 0;">${task.title}</p>` : ""}
+      ${task.internal_note ? `<p style="font-size: 0.78rem; color: var(--muted); margin: 0; line-height: 1.3;">${task.internal_note}</p>` : ""}
+      <div style="border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.72rem; color: var(--muted);">Resp: <strong>${task.assigned_to_name || "Sem atribuição"}</strong></span>
+        ${isPending ? `
+          <button class="complete-task-btn" data-task-id="${task.id}" style="border: none; background: #d4a017; color: #150126; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;">
+            Concluir
+          </button>
+        ` : `
+          <span style="font-size: 0.75rem; color: #22c55e; font-weight: 700;">Concluída</span>
+        `}
+      </div>
+    `;
+
+    const completeBtn = card.querySelector(".complete-task-btn");
+    if (completeBtn) {
+      completeBtn.addEventListener("click", async () => {
+        completeBtn.disabled = true;
+        completeBtn.textContent = "Salvando...";
+        const { error: updateErr } = await client
+          .from("tasks")
+          .update({ status: "done", updated_at: new Date().toISOString() })
+          .eq("id", task.id);
+
+        if (updateErr) {
+          alert(`Erro ao concluir tarefa: ${updateErr.message}`);
+          completeBtn.disabled = false;
+          completeBtn.textContent = "Concluir";
+        } else {
+          loadTasks();
+        }
+      });
+    }
+
+    tasksListEl.appendChild(card);
+  });
+};
+
 const loadCrmUsersForSelect = async (selectElement, currentAssignedEmail) => {
   const client = getClient();
   if (!client || !selectElement) return;
@@ -1763,6 +1947,8 @@ const switchTab = () => {
     calendarWeekStart = calendarWeekStart || getWeekStart();
     renderCalendar();
     loadAppointments();
+  } else if (activeTab === "tarefas") {
+    loadTasks();
   }
 };
 
@@ -1784,5 +1970,7 @@ document.addEventListener("crm-authorized", () => {
   const hash = window.location.hash.replace("#", "") || "pipeline";
   if (hash === "calendario") {
     loadAppointments();
+  } else if (hash === "tarefas") {
+    loadTasks();
   }
 });
