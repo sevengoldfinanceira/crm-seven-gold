@@ -1018,7 +1018,7 @@ const loadLeads = async () => {
 
   const { data, error } = await client
     .from("leads")
-    .select("id, name, origin, note, status, created_at, telefone, property_region, credit_value, down_payment_value, installment_value")
+    .select("id, name, origin, note, status, created_at, telefone, property_region, credit_value, down_payment_value, installment_value, tags")
     .order("created_at", { ascending: false });
 
   if (error) {
