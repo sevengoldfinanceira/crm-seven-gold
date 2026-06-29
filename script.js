@@ -597,6 +597,117 @@ const loadTasks = async () => {
   });
 };
 
+let dashResponsibleFilterInitialized = false;
+let selectedDashResponsibleEmail = "";
+
+const initDashResponsibleFilter = async (currentCrmUser) => {
+  if (dashResponsibleFilterInitialized) return;
+
+  if (!shouldSeeAllLeads(currentCrmUser)) {
+    return; // Vendedor não vê o filtro
+  }
+
+  const selectEl = document.getElementById("dash-responsible-filter-select");
+  const containerEl = document.getElementById("dash-responsible-filter-container");
+  if (!selectEl || !containerEl) return;
+
+  const client = getClient();
+  if (!client) return;
+
+  dashResponsibleFilterInitialized = true;
+  containerEl.style.display = "flex";
+
+  const { data: users, error } = await client
+    .from("crm_users")
+    .select("nome, email, cargo, ativo")
+    .eq("ativo", true)
+    .order("nome", { ascending: true });
+
+  if (error || !users) {
+    console.error("Erro ao carregar vendedores para filtro do dashboard:", error);
+    return;
+  }
+
+  selectEl.innerHTML = '<option value="">Todos os vendedores</option>';
+  users.forEach((u) => {
+    const cargoLabel = u.cargo ? u.cargo.charAt(0).toUpperCase() + u.cargo.slice(1) : "";
+    const option = document.createElement("option");
+    option.value = u.email;
+    option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
+    selectEl.appendChild(option);
+  });
+
+  selectEl.addEventListener("change", (e) => {
+    selectedDashResponsibleEmail = e.target.value;
+    loadDashboardMetrics();
+  });
+};
+
+const loadDashboardMetrics = async () => {
+  const client = getClient();
+  if (!client) return;
+
+  const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+  if (currentCrmUser) {
+    await initDashResponsibleFilter(currentCrmUser);
+  }
+
+  const elTotal = document.getElementById("dash-total-leads");
+  const elReceived = document.getElementById("dash-received-leads");
+  const elActive = document.getElementById("dash-active-leads");
+  const elAppointments = document.getElementById("dash-appointments");
+  const elTasks = document.getElementById("dash-pending-tasks");
+  const elClosed = document.getElementById("dash-closed-leads");
+  const elConversion = document.getElementById("dash-conversion-rate");
+
+  if (!elTotal) return;
+
+  // 1. Leads
+  let leadsQuery = client.from("leads").select("status, assigned_to_email");
+  if (!shouldSeeAllLeads(currentCrmUser)) {
+    leadsQuery = leadsQuery.eq("assigned_to_email", currentCrmUser.email);
+  } else if (selectedDashResponsibleEmail) {
+    leadsQuery = leadsQuery.eq("assigned_to_email", selectedDashResponsibleEmail);
+  }
+  const { data: leadsData } = await leadsQuery;
+  const leads = leadsData || [];
+
+  const totalLeads = leads.length;
+  const receivedLeads = leads.filter(l => l.status === "lead_recebido").length;
+  const closedLeads = leads.filter(l => l.status === "venda_fechada").length;
+  const activeLeads = leads.filter(l => ["primeiro_contato", "agendamento", "cliente_em_loja", "proposta_enviada"].includes(l.status)).length;
+  const conversionRate = totalLeads > 0 ? ((closedLeads / totalLeads) * 100).toFixed(1) : "0.0";
+
+  // 2. Agendamentos
+  let apptsQuery = client.from("appointments").select("status, assigned_to_email").neq("status", "cancelado");
+  if (!shouldSeeAllLeads(currentCrmUser)) {
+    apptsQuery = apptsQuery.eq("assigned_to_email", currentCrmUser.email);
+  } else if (selectedDashResponsibleEmail) {
+    apptsQuery = apptsQuery.eq("assigned_to_email", selectedDashResponsibleEmail);
+  }
+  const { data: apptsData } = await apptsQuery;
+  const totalAppointments = (apptsData || []).length;
+
+  // 3. Tarefas
+  let tasksQuery = client.from("tasks").select("status, assigned_to_email").eq("status", "pending");
+  if (!shouldSeeAllLeads(currentCrmUser)) {
+    tasksQuery = tasksQuery.eq("assigned_to_email", currentCrmUser.email);
+  } else if (selectedDashResponsibleEmail) {
+    tasksQuery = tasksQuery.eq("assigned_to_email", selectedDashResponsibleEmail);
+  }
+  const { data: tasksData } = await tasksQuery;
+  const totalTasks = (tasksData || []).length;
+
+  // Renderizar no HTML
+  elTotal.textContent = totalLeads;
+  elReceived.textContent = receivedLeads;
+  elActive.textContent = activeLeads;
+  elAppointments.textContent = totalAppointments;
+  elTasks.textContent = totalTasks;
+  elClosed.textContent = closedLeads;
+  elConversion.textContent = `${conversionRate}%`;
+};
+
 const loadCrmUsersForSelect = async (selectElement, currentAssignedEmail) => {
   const client = getClient();
   if (!client || !selectElement) return;
@@ -1949,6 +2060,8 @@ const switchTab = () => {
     loadAppointments();
   } else if (activeTab === "tarefas") {
     loadTasks();
+  } else if (activeTab === "dashboard") {
+    loadDashboardMetrics();
   }
 };
 
@@ -1972,5 +2085,7 @@ document.addEventListener("crm-authorized", () => {
     loadAppointments();
   } else if (hash === "tarefas") {
     loadTasks();
+  } else if (hash === "dashboard") {
+    loadDashboardMetrics();
   }
 });

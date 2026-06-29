@@ -121,12 +121,59 @@
         </header>
 
         <!-- Dashboard -->
-        <section class="tab-content" data-tab="dashboard" style="display:none;">
-          <div class="empty-tab-state">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-bottom: 16px;"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-            <h2>Dashboard</h2>
-            <p>Em breve.</p>
-          </div>
+        <section class="tab-content" data-tab="dashboard" style="display:none; padding: 24px;">
+          <section class="dashboard-section" aria-labelledby="dashboard-title">
+            <header class="dashboard-header" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+              <div>
+                <p class="route-label" style="font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 4px;">Agenda comercial</p>
+                <h1 id="dashboard-title" style="font-size: clamp(1.45rem, 2.2vw, 2rem); font-weight: 800; margin: 0; color: var(--ink);">Dashboard Comercial</h1>
+              </div>
+              
+              <label id="dash-responsible-filter-container" style="display: none; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: bold; color: var(--ink);">
+                <span>Responsável</span>
+                <select id="dash-responsible-filter-select" style="min-width: 160px; min-height: 36px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 0 12px; font-size: 0.82rem;">
+                  <option value="">Todos os vendedores</option>
+                </select>
+              </label>
+            </header>
+
+            <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+              <article class="lead-card" style="padding: 20px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
+                <span style="font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Total de Leads</span>
+                <strong id="dash-total-leads" style="font-size: 2rem; font-weight: 800; color: var(--ink);">0</strong>
+              </article>
+
+              <article class="lead-card" style="padding: 20px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
+                <span style="font-size: 0.75rem; font-weight: 700; color: #3b82f6; text-transform: uppercase;">Leads Recebidos</span>
+                <strong id="dash-received-leads" style="font-size: 2rem; font-weight: 800; color: #3b82f6;">0</strong>
+              </article>
+
+              <article class="lead-card" style="padding: 20px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
+                <span style="font-size: 0.75rem; font-weight: 700; color: #eab308; text-transform: uppercase;">Em Atendimento</span>
+                <strong id="dash-active-leads" style="font-size: 2rem; font-weight: 800; color: #eab308;">0</strong>
+              </article>
+
+              <article class="lead-card" style="padding: 20px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
+                <span style="font-size: 0.75rem; font-weight: 700; color: #8b5cf6; text-transform: uppercase;">Agendamentos</span>
+                <strong id="dash-appointments" style="font-size: 2rem; font-weight: 800; color: #8b5cf6;">0</strong>
+              </article>
+
+              <article class="lead-card" style="padding: 20px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
+                <span style="font-size: 0.75rem; font-weight: 700; color: #ef4444; text-transform: uppercase;">Tarefas Pendentes</span>
+                <strong id="dash-pending-tasks" style="font-size: 2rem; font-weight: 800; color: #ef4444;">0</strong>
+              </article>
+
+              <article class="lead-card" style="padding: 20px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
+                <span style="font-size: 0.75rem; font-weight: 700; color: #10b981; text-transform: uppercase;">Fechamentos</span>
+                <strong id="dash-closed-leads" style="font-size: 2rem; font-weight: 800; color: #10b981;">0</strong>
+              </article>
+
+              <article class="lead-card" style="padding: 20px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
+                <span style="font-size: 0.75rem; font-weight: 700; color: var(--gold); text-transform: uppercase;">Conversão</span>
+                <strong id="dash-conversion-rate" style="font-size: 2rem; font-weight: 800; color: var(--gold);">0%</strong>
+              </article>
+            </div>
+          </section>
         </section>
 
         <!-- Pipeline -->
