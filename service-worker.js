@@ -1,10 +1,11 @@
-const CACHE_VERSION = "seven-gold-all-team-permission-roles-v1";
+const CACHE_VERSION = "seven-gold-team-role-sync-v1";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
   "/atendimento.css",
   "/permissoes.css",
   "/permissoes.js",
+  "/equipe.js",
   "/styles.css",
   "/script.js",
   "/auth.js",

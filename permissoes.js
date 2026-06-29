@@ -40,6 +40,7 @@
   ];
   let roles = [...baseRoles];
   const removedRolesKey = "seven-gold-removed-roles";
+  const sharedRolesKey = "seven-gold-team-roles-snapshot";
 
   const sectors = [
     {
@@ -192,6 +193,27 @@
     }
   };
 
+  const applySharedRolesSnapshot = () => {
+    try {
+      const snapshot = JSON.parse(localStorage.getItem(sharedRolesKey) || "[]");
+      if (!Array.isArray(snapshot) || snapshot.length === 0) return;
+
+      snapshot.forEach((savedSector) => {
+        const sector = sectors.find((item) => item.id === savedSector.id);
+        if (!sector || !Array.isArray(savedSector.roles)) return;
+
+        const knownRoles = new Map(sector.roles.map((role) => [role.key, role]));
+        sector.roles = savedSector.roles.map((savedRole) => {
+          const knownRole = knownRoles.get(savedRole.key);
+          const label = savedRole.title || savedRole.label || knownRole?.label || knownRole?.title || getRoleLabel(savedRole.key);
+          return { key: savedRole.key, label };
+        });
+      });
+    } catch (error) {
+      console.warn("Nao foi possivel carregar cargos da equipe:", error);
+    }
+  };
+
   const getRoleLabel = (cargoKey) => {
     const key = normalizeCargoKey(cargoKey);
     if (key === "dono") return "Diretor CEO";
@@ -238,8 +260,17 @@
     const removedRoles = loadRemovedRoles();
     const activeRoles = new Map();
 
+    sectors.forEach((sector) => {
+      sector.roles.forEach((role) => {
+        const key = normalizeCargoKey(role.key);
+        if (key === "diretor-ceo" || !removedRoles.has(key)) {
+          activeRoles.set(key, { key, label: role.label || role.title || getRoleLabel(key) });
+        }
+      });
+    });
+
     baseRoles.forEach((role) => {
-      if (role.key === "diretor-ceo" || !removedRoles.has(role.key)) {
+      if (!activeRoles.has(role.key) && (role.key === "diretor-ceo" || !removedRoles.has(role.key))) {
         activeRoles.set(role.key, role);
       }
     });
@@ -631,6 +662,7 @@
     if (!client) return;
 
     setStatus("Carregando permissoes...", "success");
+    applySharedRolesSnapshot();
 
     let permissionsResult = await client
       .from("crm_role_permissions")

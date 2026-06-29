@@ -93,6 +93,7 @@
   let draggedRoleKey = null;
   let draggedRoleOriginSectorId = null;
   const removedRolesKey = "seven-gold-removed-roles";
+  const sharedRolesKey = "seven-gold-team-roles-snapshot";
 
   const loadRemovedRoles = () => {
     try {
@@ -107,6 +108,50 @@
     localStorage.setItem(removedRolesKey, JSON.stringify([...removedRoles]));
   };
 
+  const slugifyRoleKey = (value) =>
+    String(value || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+  const saveRolesSnapshotToLocalStorage = () => {
+    const snapshot = sectors.map((sector) => ({
+      id: sector.id,
+      title: sector.title,
+      roles: sector.roles.map((role) => ({
+        key: role.key,
+        title: role.title,
+        sub: role.sub || "",
+      })),
+    }));
+    localStorage.setItem(sharedRolesKey, JSON.stringify(snapshot));
+  };
+
+  const applyRolesSnapshotFromLocalStorage = () => {
+    try {
+      const snapshot = JSON.parse(localStorage.getItem(sharedRolesKey) || "[]");
+      if (!Array.isArray(snapshot) || snapshot.length === 0) return;
+
+      snapshot.forEach((savedSector) => {
+        const sector = sectors.find((item) => item.id === savedSector.id);
+        if (!sector || !Array.isArray(savedSector.roles)) return;
+
+        const knownRoles = new Map(sector.roles.map((role) => [role.key, role]));
+        sector.roles = savedSector.roles.map((savedRole) => {
+          const knownRole = knownRoles.get(savedRole.key);
+          return knownRole
+            ? { ...knownRole, title: savedRole.title || knownRole.title, sub: savedRole.sub || knownRole.sub || "" }
+            : { key: savedRole.key, title: savedRole.title || savedRole.key, sub: savedRole.sub || "" };
+        });
+      });
+    } catch (error) {
+      console.warn("Nao foi possivel carregar snapshot de cargos:", error);
+    }
+  };
+
   // Persist order to localStorage
   const saveOrderToLocalStorage = () => {
     // 1. Sector IDs (excluding diretoria)
@@ -119,6 +164,7 @@
       rolesMap[sec.id] = sec.roles.map(r => r.key);
     });
     localStorage.setItem("seven-gold-roles-order", JSON.stringify(rolesMap));
+    saveRolesSnapshotToLocalStorage();
   };
 
   // Load and apply saved order from localStorage
@@ -529,6 +575,7 @@
     });
     saveEmployeeFunctionsMap(employeeMap);
     saveOrderToLocalStorage();
+    saveRolesSnapshotToLocalStorage();
 
     if (state.selectedItem?.type === "role" && state.selectedItem.id === roleKey) {
       state.selectedItem = null;
@@ -2206,9 +2253,67 @@
   };
 
   const openNewRoleModal = (sectorId = "comercial") => {
+    const sectorObj = sectors.find((sector) => sector.id === sectorId) || sectors.find((sector) => sector.id === "comercial");
+    if (!sectorObj) return;
+
     const title = prompt("Nome do novo cargo:");
     if (!title) return;
-    alert(`Cargo "${title}" criado com sucesso no setor "${sectorId}"! (Fluxo visual simulado)`);
+
+    const baseKey = slugifyRoleKey(title);
+    if (!baseKey) {
+      alert("Digite um nome valido para o cargo.");
+      return;
+    }
+
+    const allRoleKeys = new Set(sectors.flatMap((sector) => sector.roles.map((role) => role.key)));
+    let roleKey = baseKey;
+    let suffix = 2;
+    while (allRoleKeys.has(roleKey)) {
+      roleKey = `${baseKey}-${suffix}`;
+      suffix += 1;
+    }
+
+    const removedRoles = loadRemovedRoles();
+    removedRoles.delete(roleKey);
+    saveRemovedRoles(removedRoles);
+
+    const newRole = {
+      key: roleKey,
+      title: title.trim(),
+      sub: prompt("Descricao curta do cargo (opcional):")?.trim() || "Novo cargo",
+    };
+
+    sectorObj.roles.push(newRole);
+    rolesData[roleKey] = {
+      desc: `Responsabilidades do cargo ${newRole.title}.`,
+      access: ["Empresa", "Documentos"],
+      files: [],
+      commission: "Campo reservado para regra de comissão.",
+      lastEdit: "Cargo criado agora",
+      lastTime: "Agora",
+    };
+
+    if (!state.functions.has(roleKey)) {
+      state.functions.set(roleKey, [
+        `Responsabilidade 1 do cargo ${newRole.title}.`,
+        `Responsabilidade 2 do cargo ${newRole.title}.`,
+        "Reportar andamento de metas do setor.",
+      ]);
+      saveRoleFunctionsLocal(roleKey, state.functions.get(roleKey));
+    }
+
+    saveOrderToLocalStorage();
+    saveRolesSnapshotToLocalStorage();
+
+    renderSummaryCards();
+    renderOrganograma();
+    renderRolesAndFunctions();
+    renderListView();
+    renderSidebarDetails();
+    populateFilterCargos(listFilters.sector || "todos");
+    applySearch();
+    refreshIcons();
+    selectItem("role", roleKey, sectorObj.id);
   };
 
   const openColabModal = (profileId = null) => {
@@ -2807,7 +2912,9 @@
     // 6. Fetch profiles and functions
     await loadProfiles();
     await loadSavedFunctions();
+    applyRolesSnapshotFromLocalStorage();
     applySavedOrder();
+    saveRolesSnapshotToLocalStorage();
 
     // 7. Render summary metric counts
     renderSummaryCards();
