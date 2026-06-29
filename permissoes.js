@@ -733,6 +733,31 @@
       updated_at: new Date().toISOString(),
     }));
 
+  const savePermissionsWithApi = async (permissions) => {
+    const client = getClient();
+    const { data: sessionData } = await client.auth.getSession();
+    const token = sessionData?.session?.access_token;
+    if (!token) {
+      throw new Error("Sessao expirada. Entre novamente para salvar permissoes.");
+    }
+
+    const response = await fetch("/api/permissions/save", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ permissions }),
+    });
+
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || result.ok === false) {
+      throw new Error(result.error || "Nao foi possivel salvar as permissoes.");
+    }
+
+    return result;
+  };
+
   const saveData = async () => {
     const client = getClient();
     if (!client) return;
@@ -743,9 +768,13 @@
     setStatus("Salvando permissoes...", "success");
 
     const permissions = collectPermissions();
-    const { error: permissionError } = await client
-      .from("crm_role_permissions")
-      .upsert(permissions, { onConflict: "cargo,area_key" });
+    let permissionError = null;
+
+    try {
+      await savePermissionsWithApi(permissions);
+    } catch (error) {
+      permissionError = error;
+    }
 
     saveButton.disabled = false;
     saveButton.innerHTML = '<i data-lucide="save" style="width:16px;height:16px;"></i> Salvar permissoes';

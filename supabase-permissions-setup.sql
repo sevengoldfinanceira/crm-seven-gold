@@ -14,7 +14,12 @@ begin
   from public.crm_users
   where email = auth.jwt() ->> 'email';
 
-  return (lower(user_cargo) = 'dono' or lower(user_cargo) = 'admin' or lower(user_cargo) = 'administrador');
+  return (
+    lower(replace(replace(user_cargo, ' ', '-'), '_', '-')) = 'diretor-ceo'
+    or lower(user_cargo) = 'dono'
+    or lower(user_cargo) = 'admin'
+    or lower(user_cargo) = 'administrador'
+  );
 end;
 $$;
 

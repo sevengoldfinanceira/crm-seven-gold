@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-team-role-sync-v1";
+const CACHE_VERSION = "seven-gold-permissions-api-save-v1";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
