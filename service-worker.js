@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-director-ceo-label-v1";
+const CACHE_VERSION = "seven-gold-dynamic-permission-roles-v1";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",

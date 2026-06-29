@@ -13,7 +13,7 @@
   const userFormStatus = document.querySelector("[data-user-form-status]");
   const userModalTitle = document.querySelector("[data-user-modal-title]");
 
-  const roles = [
+  const baseRoles = [
     { key: "diretor-ceo", label: "Diretor CEO" },
     { key: "administrador", label: "Administrador" },
     { key: "vendedor", label: "Vendedor" },
@@ -28,6 +28,8 @@
     { key: "coordenador-rh", label: "Coordenador de RH" },
     { key: "advogado-juridico", label: "Advogado Jurídico" },
   ];
+  let roles = [...baseRoles];
+  const removedRolesKey = "seven-gold-removed-roles";
 
   const sectors = [
     {
@@ -152,6 +154,65 @@
   };
 
   const getClient = () => window.sevenGoldAuth;
+
+  const normalizeCargoKey = (value) =>
+    String(value || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[\s_]+/g, "-");
+
+  const loadRemovedRoles = () => {
+    try {
+      return new Set(JSON.parse(localStorage.getItem(removedRolesKey) || "[]").map(normalizeCargoKey));
+    } catch (error) {
+      console.warn("Nao foi possivel carregar cargos removidos:", error);
+      return new Set();
+    }
+  };
+
+  const getRoleLabel = (cargoKey) => {
+    const key = normalizeCargoKey(cargoKey);
+    if (key === "dono") return "Diretor CEO";
+    for (const sec of sectors) {
+      const role = sec.roles.find((item) => normalizeCargoKey(item.key) === key);
+      if (role) return role.label;
+    }
+    const baseRole = baseRoles.find((item) => item.key === key);
+    if (baseRole) return baseRole.label;
+    return key
+      .split("-")
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ") || "Sem cargo";
+  };
+
+  const getAvailableSectorRoles = (sectorId) => {
+    const removedRoles = loadRemovedRoles();
+    const sector = sectors.find((item) => item.id === sectorId);
+    if (!sector) return [];
+    return sector.roles.filter((role) => role.key === "diretor-ceo" || !removedRoles.has(normalizeCargoKey(role.key)));
+  };
+
+  const refreshActiveRoles = () => {
+    const removedRoles = loadRemovedRoles();
+    const activeRoles = new Map();
+
+    baseRoles.forEach((role) => {
+      if (role.key === "diretor-ceo" || !removedRoles.has(role.key)) {
+        activeRoles.set(role.key, role);
+      }
+    });
+
+    state.users.forEach((user) => {
+      const key = normalizeCargoKey(user.cargo);
+      if (!key || removedRoles.has(key) || activeRoles.has(key)) return;
+      activeRoles.set(key, { key, label: getRoleLabel(key) });
+    });
+
+    roles = [...activeRoles.values()];
+  };
 
   const setStatus = (message, type = "error") => {
     if (!statusEl) return;
@@ -302,11 +363,7 @@
         if (user.cargo === "dono") {
           return "Diretor CEO";
         }
-        for (const sec of sectors) {
-          const r = sec.roles.find(x => x.key === user.cargo);
-          if (r) return r.label;
-        }
-        return roles.find((item) => item.key === user.cargo)?.label || user.cargo || "Sem cargo";
+        return getRoleLabel(user.cargo);
       })();
       role.textContent = resolvedRoleLabel;
       if (isMaster) {
@@ -364,14 +421,14 @@
       return;
     }
     
-    const sector = sectors.find(s => s.id === sectorId);
-    if (sector) {
+    const sectorRoles = getAvailableSectorRoles(sectorId);
+    if (sectorRoles.length > 0) {
       const defaultOpt = document.createElement("option");
       defaultOpt.value = "";
       defaultOpt.textContent = "Selecione o cargo";
       cargoSelect.appendChild(defaultOpt);
 
-      sector.roles.forEach(r => {
+      sectorRoles.forEach(r => {
         const opt = document.createElement("option");
         opt.value = r.key;
         opt.textContent = r.label;
@@ -400,7 +457,7 @@
     if (user && user.cargo) {
       let userSectorId = "";
       for (const sec of sectors) {
-        if (sec.roles.some(r => r.key === user.cargo)) {
+        if (getAvailableSectorRoles(sec.id).some(r => r.key === user.cargo)) {
           userSectorId = sec.id;
           break;
         }
@@ -462,7 +519,7 @@
 
     let isValidCargo = false;
     for (const sec of sectors) {
-      if (sec.roles.some(r => r.key === cargo)) {
+      if (getAvailableSectorRoles(sec.id).some(r => r.key === cargo)) {
         isValidCargo = true;
         break;
       }
@@ -537,6 +594,9 @@
       .select("id, email, nome, cargo, ativo, created_at, updated_at")
       .order("created_at", { ascending: false });
 
+    state.users = usersResult.error ? [] : usersResult.data || [];
+    refreshActiveRoles();
+
     // Se a tabela estiver vazia, criar permissões padrão iniciais
     if (!permissionsResult.error && (!permissionsResult.data || permissionsResult.data.length === 0)) {
       const defaultRows = [];
@@ -568,7 +628,6 @@
       });
     }
 
-    state.users = usersResult.error ? [] : usersResult.data || [];
     renderMatrix();
     renderUsers();
 
