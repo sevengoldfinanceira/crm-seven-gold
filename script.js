@@ -654,7 +654,9 @@ appointmentForm?.addEventListener("submit", async (event) => {
   const submitButton = appointmentForm.querySelector("button[type='submit']");
   submitButton.disabled = true;
   submitButton.textContent = "Salvando...";
-  setAppointmentStatus("");
+  const crmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+  const responsibleEmail = crmUser?.email || user.email || null;
+  const responsibleName = crmUser?.nome || crmUser?.email || user.email || null;
 
   const payload = {
     lead_id: String(formData.get("lead_id") || "").trim() || null,
@@ -666,6 +668,8 @@ appointmentForm?.addEventListener("submit", async (event) => {
     hora_agendamento: `${time}:00`,
     observacao: String(formData.get("observacao") || "").trim() || null,
     status: "agendado",
+    assigned_to_email: responsibleEmail,
+    assigned_to_name: responsibleName,
   };
 
   const appointmentId = String(formData.get("id") || "").trim();
