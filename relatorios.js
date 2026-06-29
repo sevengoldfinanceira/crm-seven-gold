@@ -108,32 +108,36 @@
     });
   };
 
-  const updatePersonFilter = () => {
+  const updatePersonFilter = async () => {
     const crmUser = getCurrentCrmUser();
     const seeAll = canSeeAllCommercialRecords(crmUser);
 
     if (!seeAll) {
-      if (personFilter) personFilter.closest("label")?.style.setProperty("display", "none");
+      if (personFilter) personFilter.style.display = "none";
       return;
     }
 
-    const people = new Set();
-    state.sales.forEach((sale) => {
-      if (sale.seller_name) people.add(sale.seller_name);
-      if (sale.representative_name) people.add(sale.representative_name);
-    });
+    const client = getClient();
+    if (!client || !personFilter) return;
+
+    const { data: users } = await client
+      .from("crm_users")
+      .select("nome, email, cargo, ativo")
+      .eq("ativo", true)
+      .order("nome", { ascending: true });
 
     const current = personFilter.value;
-    personFilter.innerHTML = '<option value="todos">Todos</option>';
-    Array.from(people)
-      .sort()
-      .forEach((person) => {
+    personFilter.innerHTML = '<option value="todos">Todos os vendedores</option>';
+    if (users) {
+      users.forEach((u) => {
+        const cargoLabel = u.cargo ? u.cargo.charAt(0).toUpperCase() + u.cargo.slice(1) : "";
         const option = document.createElement("option");
-        option.value = person;
-        option.textContent = person;
-        option.selected = person === current;
+        option.value = u.email;
+        option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
+        option.selected = u.email === current;
         personFilter.append(option);
       });
+    }
   };
 
   const renderSummary = (sales) => {
@@ -279,6 +283,8 @@
 
     if (!seeAll && crmUser?.email) {
       query = query.eq("assigned_to_email", crmUser.email);
+    } else if (state.person !== "todos") {
+      query = query.eq("assigned_to_email", state.person);
     }
 
     const { data, error } = await query;
@@ -289,7 +295,6 @@
     }
 
     state.sales = data || [];
-    updatePersonFilter();
     renderTable();
   };
 
@@ -392,6 +397,8 @@
     let query = client.from("leads").select("id, status, origin, assigned_to_email");
     if (!seeAll && crmUser?.email) {
       query = query.eq("assigned_to_email", crmUser.email);
+    } else if (state.person !== "todos") {
+      query = query.eq("assigned_to_email", state.person);
     }
 
     const { data, error } = await query;
@@ -413,6 +420,8 @@
     let query = client.from("appointments").select("id, status, assigned_to_email");
     if (!seeAll && crmUser?.email) {
       query = query.eq("assigned_to_email", crmUser.email);
+    } else if (state.person !== "todos") {
+      query = query.eq("assigned_to_email", state.person);
     }
 
     const { data, error } = await query;
@@ -431,6 +440,8 @@
     let query = client.from("tasks").select("id, status, assigned_to_email");
     if (!seeAll && crmUser?.email) {
       query = query.eq("assigned_to_email", crmUser.email);
+    } else if (state.person !== "todos") {
+      query = query.eq("assigned_to_email", state.person);
     }
 
     const { data, error } = await query;
@@ -504,9 +515,14 @@
     renderTable();
   });
 
-  personFilter?.addEventListener("change", () => {
+  personFilter?.addEventListener("change", async () => {
     state.person = personFilter.value;
-    renderTable();
+    await Promise.all([
+      loadSales(),
+      loadLeadsSummary(),
+      loadAppointmentsSummary(),
+      loadTasksSummary(),
+    ]);
   });
 
   focusButton?.addEventListener("click", () => {
@@ -529,6 +545,8 @@
       form.elements.seller_name.value = crmUser?.nome || "";
       form.elements.seller_name.readOnly = true;
     }
+
+    await updatePersonFilter();
 
     await Promise.all([
       loadSales(),

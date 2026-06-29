@@ -159,16 +159,19 @@
 
       <section class="reports-layout">
         <section class="reports-panel">
-          <div class="reports-filters">
+          <div class="reports-filters" style="grid-template-columns: minmax(0, 1fr) 150px 280px; align-items: center;">
             <input type="search" placeholder="Buscar cliente, vendedor ou representante" data-report-search />
             <select data-report-period>
               <option value="mes">Mes selecionado</option>
               <option value="ano">Este ano</option>
               <option value="todos">Todos</option>
             </select>
-            <select data-report-person>
-              <option value="todos">Todos</option>
-            </select>
+            <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
+              <span style="color: var(--muted); font-size: 0.78rem; font-weight: 700; white-space: nowrap;">Responsável:</span>
+              <select data-report-person style="flex: 1; min-height: 42px;">
+                <option value="todos">Todos os vendedores</option>
+              </select>
+            </div>
           </div>
 
           <div class="reports-table-wrap">
