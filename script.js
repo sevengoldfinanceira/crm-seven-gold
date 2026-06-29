@@ -663,7 +663,7 @@ const loadDashboardMetrics = async () => {
   if (!elTotal) return;
 
   // 1. Leads
-  let leadsQuery = client.from("leads").select("status, assigned_to_email");
+  let leadsQuery = client.from("leads").select("status, assigned_to_email, created_at");
   if (!shouldSeeAllLeads(currentCrmUser)) {
     leadsQuery = leadsQuery.eq("assigned_to_email", currentCrmUser.email);
   } else if (selectedDashResponsibleEmail) {
@@ -679,7 +679,7 @@ const loadDashboardMetrics = async () => {
   const conversionRate = totalLeads > 0 ? ((closedLeads / totalLeads) * 100).toFixed(1) : "0.0";
 
   // 2. Agendamentos
-  let apptsQuery = client.from("appointments").select("status, assigned_to_email").neq("status", "cancelado");
+  let apptsQuery = client.from("appointments").select("status, data_agendamento, assigned_to_email").neq("status", "cancelado");
   if (!shouldSeeAllLeads(currentCrmUser)) {
     apptsQuery = apptsQuery.eq("assigned_to_email", currentCrmUser.email);
   } else if (selectedDashResponsibleEmail) {
@@ -706,6 +706,121 @@ const loadDashboardMetrics = async () => {
   elTasks.textContent = totalTasks;
   elClosed.textContent = closedLeads;
   elConversion.textContent = `${conversionRate}%`;
+
+  // 4. Alertas de Metas
+  const elAlertsList = document.getElementById("dash-goals-alerts-list");
+  if (elAlertsList) {
+    const today = new Date();
+    const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    const expectedProgress = today.getDate() / daysInMonth;
+
+    let goalsQuery = client.from("crm_sales_goals").eq("month", currentMonthStr);
+    const seeAll = shouldSeeAllLeads(currentCrmUser);
+    if (!seeAll && currentCrmUser?.email) {
+      goalsQuery = goalsQuery.eq("user_email", currentCrmUser.email);
+    }
+    const { data: goalsData } = await goalsQuery;
+    const goals = goalsData || [];
+
+    let users = [];
+    if (seeAll) {
+      const { data: usersData } = await client
+        .from("crm_users")
+        .select("nome, email, cargo, ativo")
+        .eq("ativo", true);
+      users = usersData || [];
+    } else if (currentCrmUser) {
+      users = [currentCrmUser];
+    }
+
+    let targetUsers = users;
+    if (seeAll && selectedDashResponsibleEmail) {
+      targetUsers = users.filter(u => u.email === selectedDashResponsibleEmail);
+    }
+
+    const alerts = [];
+    targetUsers.forEach((user) => {
+      const email = user.email;
+      if (!email) return;
+
+      const goal = goals.find(g => g.user_email === email);
+      if (!goal) return;
+
+      const userLeads = leads.filter(l => {
+        if (l.assigned_to_email !== email || !l.created_at) return false;
+        return l.created_at.startsWith(currentMonthStr);
+      });
+      const actualLeads = userLeads.length;
+      const actualSales = userLeads.filter(l => l.status === "venda_fechada").length;
+
+      const actualAppts = (apptsData || []).filter(a => {
+        if (a.assigned_to_email !== email || !a.data_agendamento) return false;
+        return a.data_agendamento.startsWith(currentMonthStr);
+      }).length;
+
+      const checkPacing = (actual, target, typeLabel, pluralLabel) => {
+        if (!target || target <= 0) return null;
+        const realProgress = actual / target;
+        if (realProgress < expectedProgress) {
+          const isAtencao = realProgress >= (expectedProgress - 0.15);
+          return {
+            nome: user.nome || email,
+            type: typeLabel,
+            plural: pluralLabel,
+            actual,
+            target,
+            status: isAtencao ? "Atenção" : "Atrasado",
+            color: isAtencao ? "#eab308" : "#ef4444"
+          };
+        }
+        return null;
+      };
+
+      const alertLeads = checkPacing(actualLeads, goal.target_leads, "Leads", "leads");
+      const alertAppts = checkPacing(actualAppts, goal.target_appointments, "Agendamentos", "agendamentos");
+      const alertSales = checkPacing(actualSales, goal.target_sales, "Vendas", "vendas");
+
+      if (alertLeads) alerts.push(alertLeads);
+      if (alertAppts) alerts.push(alertAppts);
+      if (alertSales) alerts.push(alertSales);
+    });
+
+    if (alerts.length === 0) {
+      elAlertsList.innerHTML = `
+        <p style="color: #10b981; font-size: 0.85rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 6px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Metas no ritmo este mês.
+        </p>
+      `;
+    } else {
+      elAlertsList.innerHTML = "";
+      alerts.forEach((alert) => {
+        const item = document.createElement("div");
+        item.style.padding = "10px 12px";
+        item.style.border = "1px solid var(--line)";
+        item.style.borderRadius = "8px";
+        item.style.background = "rgba(255, 255, 255, 0.02)";
+        item.style.display = "flex";
+        item.style.justifyContent = "space-between";
+        item.style.alignItems = "center";
+        item.style.fontSize = "0.82rem";
+
+        item.innerHTML = `
+          <div>
+            <strong style="color: var(--ink);">${alert.nome}</strong> — <span style="color: var(--muted); font-weight: 600;">${alert.type} ${alert.status === "Atenção" ? "em atenção" : "atrasadas"}</span>
+            <div style="font-size: 0.72rem; color: var(--muted); margin-top: 2px;">
+               ${alert.actual} / ${alert.target} ${alert.plural}
+            </div>
+          </div>
+          <span style="font-weight: 700; color: ${alert.color}; font-size: 0.75rem; border: 1px solid ${alert.color}; padding: 2px 8px; border-radius: 4px; text-transform: uppercase;">
+            ${alert.status}
+          </span>
+        `;
+        elAlertsList.appendChild(item);
+      });
+    }
+  }
 };
 
 const loadCrmUsersForSelect = async (selectElement, currentAssignedEmail) => {
