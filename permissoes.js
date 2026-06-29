@@ -14,16 +14,19 @@
   const userModalTitle = document.querySelector("[data-user-modal-title]");
 
   const roles = [
-    { key: "dono", label: "Dono" },
+    { key: "diretor-ceo", label: "Diretor CEO" },
     { key: "administrador", label: "Administrador" },
-    { key: "supervisor", label: "Supervisor" },
-    { key: "coordenador", label: "Coordenador" },
     { key: "vendedor", label: "Vendedor" },
-    { key: "assistente_vendas", label: "Assistente de Vendas" },
-    { key: "home_office", label: "Home Office" },
-    { key: "financeiro", label: "Financeiro" },
-    { key: "marketing", label: "Marketing" },
-    { key: "rh", label: "RH" },
+    { key: "assistente-vendas", label: "Assistente de Vendas" },
+    { key: "supervisor-comercial", label: "Supervisor Comercial" },
+    { key: "coordenador-comercial", label: "Coordenador Comercial" },
+    { key: "home-office", label: "Home Office" },
+    { key: "coordenador-posvenda", label: "Coordenador de Pós-Venda" },
+    { key: "coordenador-adm", label: "Coordenador Administrativo" },
+    { key: "coordenador-financeiro", label: "Coordenador Financeiro" },
+    { key: "coordenador-mkt", label: "Coordenador de Marketing" },
+    { key: "coordenador-rh", label: "Coordenador de RH" },
+    { key: "advogado-juridico", label: "Advogado Jurídico" },
   ];
 
   const sectors = [
@@ -126,15 +129,19 @@
   ];
 
   const defaultAccess = {
-    dono: areas.map((area) => area.key),
+    "diretor-ceo": areas.map((area) => area.key),
     administrador: ["crm", "empresa", "financeiro", "comissoes", "documentos", "equipe", "organograma", "relatorios"],
-    coordenador: ["crm", "comissoes", "documentos", "relatorios"],
-    supervisor: ["crm", "comissoes", "documentos", "relatorios"],
-    home_office: ["crm", "comissoes", "documentos"],
+    "supervisor-comercial": ["crm", "comissoes", "documentos", "relatorios"],
+    "coordenador-comercial": ["crm", "comissoes", "documentos", "relatorios"],
+    "home-office": ["crm", "comissoes", "documentos"],
     vendedor: ["crm", "comissoes", "documentos"],
-    financeiro: ["empresa", "financeiro", "comissoes", "documentos", "relatorios"],
-    marketing: ["empresa", "documentos", "relatorios"],
-    rh: ["empresa", "documentos", "equipe", "organograma", "relatorios"],
+    "assistente-vendas": ["crm", "comissoes", "documentos"],
+    "coordenador-posvenda": ["crm", "documentos", "relatorios"],
+    "coordenador-adm": ["empresa", "documentos", "equipe", "organograma", "relatorios"],
+    "coordenador-financeiro": ["empresa", "financeiro", "comissoes", "documentos", "relatorios"],
+    "coordenador-mkt": ["empresa", "documentos", "relatorios"],
+    "coordenador-rh": ["empresa", "documentos", "equipe", "organograma", "relatorios"],
+    "advogado-juridico": ["empresa", "documentos"],
   };
 
   const state = {
@@ -181,10 +188,10 @@
 
   const permissionKey = (role, area) => `${role}:${area}`;
 
-  const defaultCanAccess = (role, area) => role === "dono" || defaultAccess[role]?.includes(area);
+  const defaultCanAccess = (role, area) => role === "diretor-ceo" || defaultAccess[role]?.includes(area);
 
   const canAccess = (role, area) => {
-    if (role === "dono") return true;
+    if (role === "diretor-ceo") return true;
     const key = permissionKey(role, area);
     return state.permissions.has(key) ? state.permissions.get(key) : defaultCanAccess(role, area);
   };
@@ -224,7 +231,7 @@
         const input = document.createElement("input");
         input.type = "checkbox";
         input.checked = canAccess(role.key, area.key);
-        input.disabled = role.key === "dono";
+        input.disabled = role.key === "diretor-ceo";
         input.dataset.role = role.key;
         input.dataset.area = area.key;
 
@@ -462,6 +469,18 @@
       return;
     }
 
+    if (cargo === "diretor-ceo") {
+      const existingDirector = state.users.find((user) => {
+        const sameUser = id && String(user.id) === id;
+        return !sameUser && user.cargo === "diretor-ceo";
+      });
+
+      if (existingDirector) {
+        setUserFormStatus("O cargo Diretor CEO ja esta vinculado a outro usuario. Apenas uma pessoa pode ter esse cargo.");
+        return;
+      }
+    }
+
     submitButton.disabled = true;
     submitButton.textContent = "Salvando...";
     setUserFormStatus("");
@@ -520,7 +539,7 @@
       const defaultRows = [];
       roles.forEach((role) => {
         areas.forEach((area) => {
-          const permitido = role.key === "dono" || (defaultAccess[role.key]?.includes(area.key) || false);
+          const permitido = role.key === "diretor-ceo" || (defaultAccess[role.key]?.includes(area.key) || false);
           defaultRows.push({
             cargo: role.key,
             area_key: area.key,

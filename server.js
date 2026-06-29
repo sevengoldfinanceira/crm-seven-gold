@@ -80,6 +80,54 @@ try {
   }
 }
 
+try {
+  apiRoutes["/api/appointments/create"] = require("./api/appointments/create");
+  console.log("Rota de API carregada: /api/appointments/create");
+} catch (e) {
+  try {
+    apiRoutes["/api/appointments/create"] = require("./pages/api/appointments/create");
+    console.log("Rota de API carregada (pages): /api/appointments/create");
+  } catch (e2) {
+    console.warn("Aviso: appointments/create.js nao pode ser carregado.", e2.message);
+  }
+}
+
+try {
+  apiRoutes["/api/tasks/list"] = require("./api/tasks/list");
+  console.log("Rota de API carregada: /api/tasks/list");
+} catch (e) {
+  try {
+    apiRoutes["/api/tasks/list"] = require("./pages/api/tasks/list");
+    console.log("Rota de API carregada (pages): /api/tasks/list");
+  } catch (e2) {
+    console.warn("Aviso: tasks/list.js nao pode ser carregado.", e2.message);
+  }
+}
+
+try {
+  apiRoutes["/api/tasks/create"] = require("./api/tasks/create");
+  console.log("Rota de API carregada: /api/tasks/create");
+} catch (e) {
+  try {
+    apiRoutes["/api/tasks/create"] = require("./pages/api/tasks/create");
+    console.log("Rota de API carregada (pages): /api/tasks/create");
+  } catch (e2) {
+    console.warn("Aviso: tasks/create.js nao pode ser carregado.", e2.message);
+  }
+}
+
+try {
+  apiRoutes["/api/tasks/update"] = require("./api/tasks/update");
+  console.log("Rota de API carregada: /api/tasks/update");
+} catch (e) {
+  try {
+    apiRoutes["/api/tasks/update"] = require("./pages/api/tasks/update");
+    console.log("Rota de API carregada (pages): /api/tasks/update");
+  } catch (e2) {
+    console.warn("Aviso: tasks/update.js nao pode ser carregado.", e2.message);
+  }
+}
+
 
 const port = 3000;
 const root = __dirname;

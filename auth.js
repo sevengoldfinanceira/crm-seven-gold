@@ -162,12 +162,6 @@
       administrator: "administrador",
       owner: "dono",
       proprietario: "dono",
-      "diretor-ceo": "dono",
-      diretor: "dono",
-      ceo: "dono",
-      "supervisor-comercial": "supervisor",
-      "home office": "home_office",
-      "home-office": "home_office",
     };
     return aliases[role] || role;
   };
@@ -208,7 +202,7 @@
 
   const isAdminRole = (role) => {
     const normalized = normalizeRole(role);
-    return ["dono", "admin", "administrador"].includes(normalized);
+    return ["diretor-ceo", "dono", "admin", "administrador"].includes(normalized);
   };
 
   let cachedPermissions = null;
@@ -254,7 +248,7 @@
 
     const role = normalizeRole(userRole);
 
-    if (["dono", "admin", "administrador"].includes(role)) {
+    if (isAdminRole(role)) {
       return true;
     }
 
@@ -263,16 +257,19 @@
     }
 
     const permissions = {
+      "diretor-ceo": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "relatorios", "financeiro", "marketing"],
       vendedor: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
       representante: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
-      assistente_vendas: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
-      assistente_de_vendas: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
-      home_office: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
-      coordenador: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "relatorios"],
-      supervisor: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "relatorios"],
-      financeiro: ["dashboard", "pipeline", "calendario", "cadastro", "financeiro", "relatorios"],
-      marketing: ["dashboard", "pipeline", "calendario", "cadastro", "marketing", "feed"],
-      rh: ["dashboard", "equipe", "organograma", "relatorios"]
+      "assistente-vendas": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
+      "home-office": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
+      "coordenador-comercial": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "relatorios"],
+      "supervisor-comercial": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "relatorios"],
+      "coordenador-posvenda": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "relatorios"],
+      "coordenador-adm": ["dashboard", "cadastro", "equipe", "organograma", "relatorios"],
+      "coordenador-financeiro": ["dashboard", "pipeline", "calendario", "cadastro", "financeiro", "relatorios"],
+      "coordenador-mkt": ["dashboard", "pipeline", "calendario", "cadastro", "marketing", "feed"],
+      "coordenador-rh": ["dashboard", "equipe", "organograma", "relatorios"],
+      "advogado-juridico": ["dashboard", "cadastro"]
     };
 
     return permissions[role]?.includes(areaKey) || false;
@@ -286,44 +283,28 @@
   const cargoDisplayNames = {
     "diretor-ceo": "Diretor CEO",
     "supervisor-comercial": "Supervisor Comercial",
-    "supervisor": "Supervisor",
-    "home_office": "Home Office",
+    "home-office": "Home Office",
     "coordenador-comercial": "Coordenador Comercial",
     "vendedor": "Vendedor",
     "assistente-vendas": "Assistente de Vendas",
-    "assistente_vendas": "Assistente de Vendas",
     "coordenador-posvenda": "Coordenador Pós-Venda",
-    "analista-posvenda": "Analista Pós-Venda",
-    "pos-vendas": "Pós-Vendas",
-    "assistente-adm": "Assistente Administrativo",
-    "analista-adm": "Analista Administrativo",
     "coordenador-adm": "Coordenador Administrativo",
-    "financeiro": "Financeiro",
-    "auxiliar-financeiro": "Auxiliar Financeiro",
     "coordenador-financeiro": "Coordenador Financeiro",
-    "assistente-mkt": "Assistente de Marketing",
-    "analista-mkt": "Analista de Marketing",
     "coordenador-mkt": "Coordenador de Marketing",
     "advogado-juridico": "Advogado Jurídico",
-    "assistente-rh": "Assistente de RH",
-    "analista-rh": "Analista de RH",
     "coordenador-rh": "Coordenador de RH",
+    "administrador": "Administrador",
   };
 
   const cargoHierarchy = [
     "diretor-ceo",
     "supervisor-comercial",
-    "supervisor",
     "coordenador-comercial", "coordenador-adm", "coordenador-financeiro",
     "coordenador-mkt", "coordenador-rh", "coordenador-posvenda",
     "advogado-juridico",
-    "analista-adm", "analista-mkt", "analista-rh", "analista-posvenda",
-    "financeiro",
     "vendedor",
-    "home_office",
-    "pos-vendas",
-    "assistente-vendas", "assistente-adm", "assistente-mkt", "assistente-rh",
-    "auxiliar-financeiro",
+    "home-office",
+    "assistente-vendas",
   ];
 
   const resolveCargoForUser = (userId) => {

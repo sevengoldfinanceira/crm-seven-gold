@@ -51,28 +51,33 @@ drop policy if exists "appointments_select_authenticated" on public.appointments
 drop policy if exists "appointments_insert_authenticated" on public.appointments;
 drop policy if exists "appointments_update_authenticated" on public.appointments;
 drop policy if exists "appointments_delete_authenticated" on public.appointments;
+drop policy if exists "appointments_select_anon" on public.appointments;
+drop policy if exists "appointments_insert_anon" on public.appointments;
+drop policy if exists "appointments_update_anon" on public.appointments;
+drop policy if exists "appointments_delete_anon" on public.appointments;
 
+-- Policies for authenticated role (CRM Frontend)
 create policy "appointments_select_authenticated"
-on public.appointments
-for select
-to authenticated
-using (true);
+on public.appointments for select to authenticated using (true);
 
 create policy "appointments_insert_authenticated"
-on public.appointments
-for insert
-to authenticated
-with check (usuario_id = auth.uid());
+on public.appointments for insert to authenticated with check (usuario_id = auth.uid());
 
 create policy "appointments_update_authenticated"
-on public.appointments
-for update
-to authenticated
-using (true)
-with check (true);
+on public.appointments for update to authenticated using (true) with check (true);
 
 create policy "appointments_delete_authenticated"
-on public.appointments
-for delete
-to authenticated
-using (true);
+on public.appointments for delete to authenticated using (true);
+
+-- Policies for anon role (Extension Frontend)
+create policy "appointments_select_anon"
+on public.appointments for select to anon using (true);
+
+create policy "appointments_insert_anon"
+on public.appointments for insert to anon with check (true);
+
+create policy "appointments_update_anon"
+on public.appointments for update to anon using (true) with check (true);
+
+create policy "appointments_delete_anon"
+on public.appointments for delete to anon using (true);

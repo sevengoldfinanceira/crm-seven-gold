@@ -325,7 +325,7 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
 
         const checkPermission = () => {
           const uRole = normalizeRole(currentCrmUser?.cargo);
-          const isUserAdmin = ["dono", "admin", "administrador", "coordenador", "supervisor"].includes(uRole);
+          const isUserAdmin = isAdminRole(uRole) || isManagerRole(uRole);
           const isUserOwner = task.assigned_to_email === currentCrmUser?.email;
           return isUserAdmin || isUserOwner;
         };
@@ -624,12 +624,20 @@ function normalizeRole(role) {
 
 function isAdminRole(role) {
   const normalized = normalizeRole(role);
-  return ["dono", "admin", "administrador"].includes(normalized);
+  return ["diretor-ceo", "dono", "admin", "administrador"].includes(normalized);
 }
 
 function isManagerRole(role) {
   const normalized = normalizeRole(role);
-  return ["coordenador", "supervisor"].includes(normalized);
+  return [
+    "coordenador-comercial",
+    "supervisor-comercial",
+    "coordenador-posvenda",
+    "coordenador-adm",
+    "coordenador-financeiro",
+    "coordenador-mkt",
+    "coordenador-rh",
+  ].includes(normalized);
 }
 
 function shouldSeeAllLeads(crmUser) {
@@ -936,7 +944,7 @@ const loadTasks = async () => {
 
     const checkPermission = () => {
       const uRole = normalizeRole(currentCrmUser?.cargo);
-      const isUserAdmin = ["dono", "admin", "administrador", "coordenador", "supervisor"].includes(uRole);
+      const isUserAdmin = isAdminRole(uRole) || isManagerRole(uRole);
       const isUserOwner = task.assigned_to_email === currentCrmUser?.email;
       return isUserAdmin || isUserOwner;
     };
