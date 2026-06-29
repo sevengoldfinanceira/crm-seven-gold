@@ -81,13 +81,20 @@
 
   const normalizeSystemRole = (value) => {
     const role = String(value || "").trim().toLowerCase();
+    const compactRole = role
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[\s_]+/g, "-");
     const aliases = {
       admin: "administrador",
       administrator: "administrador",
       owner: "dono",
       proprietario: "dono",
+      "diretor-ceo": "diretor-ceo",
+      "diretor-executivo": "diretor-ceo",
+      ceo: "diretor-ceo",
     };
-    return aliases[role] || role;
+    return aliases[compactRole] || compactRole;
   };
 
   const applyCrmUserIdentity = (sessionUser, crmUser, resolvedRole) => {
@@ -121,7 +128,8 @@
       .trim()
       .toLowerCase()
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[\s_]+/g, "-");
   };
 
   const isAdminRole = (role) => {
@@ -257,24 +265,33 @@
   };
 
   const applyRoleVisibility = (role, sessionUser) => {
-    document.querySelectorAll("[data-visible-roles]").forEach((element) => {
-      const roles = parseRoles(element.dataset.visibleRoles);
+    const normalizedRole = normalizeRole(role);
+    const hasFullAccess = isAdminRole(normalizedRole);
 
-      if (!roles.includes(role)) {
+    document.querySelectorAll("[data-visible-roles]").forEach((element) => {
+      const roles = parseRoles(element.dataset.visibleRoles).map(normalizeRole);
+
+      if (!hasFullAccess && !roles.includes(normalizedRole)) {
         element.hidden = true;
         element.style.setProperty("display", "none", "important");
+      } else {
+        element.hidden = false;
+        element.style.removeProperty("display");
       }
     });
 
     document.querySelectorAll("[data-permission-key]").forEach((element) => {
       const areaKey = element.dataset.permissionKey;
-      if (!canAccessArea(role, areaKey)) {
+      if (!hasFullAccess && !canAccessArea(normalizedRole, areaKey)) {
         element.hidden = true;
         element.style.setProperty("display", "none", "important");
+      } else {
+        element.hidden = false;
+        element.style.removeProperty("display");
       }
     });
 
-    let displayRole = role || "sem perfil";
+    let displayRole = cargoDisplayNames[normalizedRole] || role || "sem perfil";
     if (sessionUser?.id) {
       const cargoKey = resolveCargoForUser(sessionUser.id);
       if (cargoKey && cargoDisplayNames[cargoKey]) {
