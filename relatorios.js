@@ -397,7 +397,7 @@
     const crmUser = getCurrentCrmUser();
     const seeAll = canSeeAllCommercialRecords(crmUser);
 
-    let query = client.from("leads").select("id, status, origin, assigned_to_email");
+    let query = client.from("leads").select("id, name, telefone, status, origin, created_at, assigned_to_email");
     if (!seeAll && crmUser?.email) {
       query = query.eq("assigned_to_email", crmUser.email);
     } else if (state.person !== "todos") {
@@ -470,7 +470,7 @@
     }
 
     sectionEl.style.display = "block";
-    tbodyEl.innerHTML = '<tr><td colspan="7" style="padding: 16px; text-align: center; color: var(--muted);">Carregando desempenho...</td></tr>';
+    tbodyEl.innerHTML = '<tr><td colspan="8" style="padding: 16px; text-align: center; color: var(--muted);">Carregando desempenho...</td></tr>';
 
     const client = getClient();
     if (!client) return;
@@ -482,7 +482,7 @@
       .order("nome", { ascending: true });
 
     if (error || !users) {
-      tbodyEl.innerHTML = '<tr><td colspan="7" style="padding: 16px; text-align: center; color: #ef4444;">Erro ao carregar vendedores.</td></tr>';
+      tbodyEl.innerHTML = '<tr><td colspan="8" style="padding: 16px; text-align: center; color: #ef4444;">Erro ao carregar vendedores.</td></tr>';
       return;
     }
 
@@ -526,7 +526,7 @@
 
     tbodyEl.innerHTML = "";
     if (filteredData.length === 0) {
-      tbodyEl.innerHTML = '<tr><td colspan="7" style="padding: 16px; text-align: center; color: var(--muted);">Nenhum vendedor encontrado.</td></tr>';
+      tbodyEl.innerHTML = '<tr><td colspan="8" style="padding: 16px; text-align: center; color: var(--muted);">Nenhum vendedor encontrado.</td></tr>';
       return;
     }
 
@@ -547,6 +547,87 @@
         <td style="padding: 12px;"><strong style="color: #10b981;">${item.closedLeads}</strong></td>
         <td style="padding: 12px;"><strong style="color: var(--gold);">${item.conversionRate.toFixed(1)}%</strong></td>
         <td style="padding: 12px; color: var(--ink);">${item.tasks}</td>
+        <td style="padding: 12px;">
+          <button class="view-seller-details-btn" data-email="${item.email}" data-nome="${item.nome}" style="border: none; background: transparent; color: var(--gold); font-size: 0.78rem; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0;">
+            Ver detalhes
+          </button>
+        </td>
+      `;
+
+      const detailsBtn = tr.querySelector(".view-seller-details-btn");
+      if (detailsBtn) {
+        detailsBtn.addEventListener("click", () => {
+          selectSellerForDetails(item.email, item.nome);
+        });
+      }
+
+      tbodyEl.appendChild(tr);
+    });
+  };
+
+  const selectSellerForDetails = async (email, nome) => {
+    if (personFilter) {
+      personFilter.value = email;
+    }
+    state.person = email;
+    
+    await Promise.all([
+      loadSales(),
+      loadLeadsSummary(),
+      loadAppointmentsSummary(),
+      loadTasksSummary(),
+    ]);
+    
+    await renderSellerPerformance();
+    renderSellerDetailsBlock(email, nome);
+  };
+
+  const renderSellerDetailsBlock = (email, nome) => {
+    const sectionEl = document.getElementById("seller-detail-section");
+    const infoEl = document.getElementById("seller-detail-info");
+    const tbodyEl = document.getElementById("seller-detail-leads-tbody");
+    if (!sectionEl || !infoEl || !tbodyEl) return;
+
+    sectionEl.style.display = "block";
+    infoEl.textContent = `${nome} — ${email}`;
+
+    const userLeads = state.leads
+      .filter(l => l.assigned_to_email === email)
+      .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+      .slice(0, 5);
+
+    tbodyEl.innerHTML = "";
+    if (userLeads.length === 0) {
+      tbodyEl.innerHTML = '<tr><td colspan="5" style="padding: 16px; text-align: center; color: var(--muted);">Nenhum lead recente atribuído.</td></tr>';
+      return;
+    }
+
+    userLeads.forEach((lead) => {
+      const dateLabel = lead.created_at ? new Date(lead.created_at).toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      }) : "Sem data";
+
+      const statusLabelMap = {
+        lead_recebido: "Lead Recebido",
+        primeiro_contato: "Primeiro Contato",
+        agendamento: "Agendamento",
+        cliente_em_loja: "Cliente em Loja",
+        proposta_enviada: "Proposta Enviada",
+        venda_fechada: "Venda Fechada"
+      };
+      const statusText = statusLabelMap[lead.status] || lead.status || "Sem status";
+
+      const tr = document.createElement("tr");
+      tr.style.borderBottom = "1px solid var(--line)";
+      tr.innerHTML = `
+        <td style="padding: 12px; color: var(--ink); font-weight: 600;">${lead.name || "Sem nome"}</td>
+        <td style="padding: 12px; color: var(--ink);">${lead.telefone || "Sem telefone"}</td>
+        <td style="padding: 12px; color: var(--ink);">${statusText}</td>
+        <td style="padding: 12px; color: var(--ink);">${lead.origin || "Sem origem"}</td>
+        <td style="padding: 12px; color: var(--muted); font-size: 0.8rem;">${dateLabel}</td>
       `;
       tbodyEl.appendChild(tr);
     });
@@ -619,6 +700,10 @@
 
   personFilter?.addEventListener("change", async () => {
     state.person = personFilter.value;
+    if (state.person === "todos") {
+      const sectionEl = document.getElementById("seller-detail-section");
+      if (sectionEl) sectionEl.style.display = "none";
+    }
     await Promise.all([
       loadSales(),
       loadLeadsSummary(),
@@ -650,6 +735,25 @@
     }
 
     await updatePersonFilter();
+
+    // Bind Voltar para visão geral button click
+    document.getElementById("clear-seller-selection-btn")?.addEventListener("click", async () => {
+      if (personFilter) {
+        personFilter.value = "todos";
+      }
+      state.person = "todos";
+      
+      const detailSec = document.getElementById("seller-detail-section");
+      if (detailSec) detailSec.style.display = "none";
+      
+      await Promise.all([
+        loadSales(),
+        loadLeadsSummary(),
+        loadAppointmentsSummary(),
+        loadTasksSummary(),
+      ]);
+      await renderSellerPerformance();
+    });
 
     await Promise.all([
       loadSales(),

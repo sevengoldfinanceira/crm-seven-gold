@@ -231,10 +231,43 @@
                       <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Fechamentos</th>
                       <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Taxa de Conversão</th>
                       <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Tarefas Pendentes</th>
+                      <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Ações</th>
                     </tr>
                   </thead>
                   <tbody id="seller-performance-tbody">
-                    <tr><td colspan="7" style="padding: 16px; text-align: center; color: var(--muted);">Carregando desempenho...</td></tr>
+                    <tr><td colspan="8" style="padding: 16px; text-align: center; color: var(--muted);">Carregando desempenho...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section id="seller-detail-section" style="display: none; margin-top: 24px;">
+            <div class="reports-panel" style="padding: 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                  <h2 style="font-size: 1.25rem; font-weight: 800; margin: 0; color: var(--ink);">Detalhes do vendedor</h2>
+                  <p style="font-size: 0.85rem; color: var(--muted); margin: 4px 0 0;" id="seller-detail-info">Vendedor — email@email.com</p>
+                </div>
+                <button type="button" id="clear-seller-selection-btn" style="border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 0.78rem; font-weight: 700; padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                  Voltar para visão geral
+                </button>
+              </div>
+
+              <h3 style="font-size: 1rem; font-weight: 700; margin: 24px 0 12px; color: var(--ink);">Últimos leads atribuídos</h3>
+              <div class="reports-table-wrap">
+                <table class="reports-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                  <thead>
+                    <tr style="border-bottom: 2px solid var(--line);">
+                      <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Lead</th>
+                      <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Telefone</th>
+                      <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Etapa/Status</th>
+                      <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Origem</th>
+                      <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Data de Criação</th>
+                    </tr>
+                  </thead>
+                  <tbody id="seller-detail-leads-tbody">
+                    <tr><td colspan="5" style="padding: 16px; text-align: center; color: var(--muted);">Sem leads atribuídos recentemente.</td></tr>
                   </tbody>
                 </table>
               </div>
