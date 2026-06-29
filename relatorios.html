@@ -157,6 +157,8 @@
         </article>
       </section>
 
+      <div id="seller-personal-goal-container" style="display: none; margin-bottom: 24px; padding: 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></div>
+
       <section class="reports-layout">
         <section class="reports-panel">
           <div class="reports-filters" style="grid-template-columns: minmax(0, 1fr) 150px 280px; align-items: center;">
@@ -254,6 +256,8 @@
                 </button>
               </div>
 
+              <div id="seller-detail-goals-container" style="margin-bottom: 24px;"></div>
+
               <h3 style="font-size: 1rem; font-weight: 700; margin: 24px 0 12px; color: var(--ink);">Últimos leads atribuídos</h3>
               <div class="reports-table-wrap">
                 <table class="reports-table" style="width: 100%; border-collapse: collapse; text-align: left;">
@@ -271,6 +275,75 @@
                   </tbody>
                 </table>
               </div>
+            </div>
+          </section>
+
+          <section id="seller-goals-section" style="display: none; margin-top: 24px;">
+            <div class="reports-layout" style="display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; margin-bottom: 24px;">
+              <div class="reports-panel" style="padding: 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);">
+                <h2 style="font-size: 1.25rem; font-weight: 800; margin: 0 0 16px; color: var(--ink);">Metas da equipe</h2>
+                <div class="reports-table-wrap">
+                  <table class="reports-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                      <tr style="border-bottom: 2px solid var(--line);">
+                        <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Vendedor</th>
+                        <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Mês</th>
+                        <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Meta Leads</th>
+                        <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Meta Agendados</th>
+                        <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Meta Vendas</th>
+                        <th style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Observação</th>
+                        <th id="goals-actions-th" style="padding: 12px; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="seller-goals-tbody">
+                      <tr><td colspan="7" style="padding: 16px; text-align: center; color: var(--muted);">Carregando metas...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <aside class="reports-side" id="goals-admin-side" style="display: none; padding: 0;">
+                <form class="sale-form" id="goal-form" style="padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);">
+                  <h2 style="font-size: 1.1rem; font-weight: 800; margin: 0 0 16px; color: var(--ink);">Cadastrar/Editar Meta</h2>
+                  <input type="hidden" name="goal_id" id="goal-id-input" />
+                  
+                  <label style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px;">
+                    <span style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Vendedor</span>
+                    <select name="user_email" id="goal-user-select" required style="min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: #fbfcfa; color: var(--ink); padding: 0 12px;">
+                      <option value="">Selecione um vendedor</option>
+                    </select>
+                  </label>
+
+                  <label style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px;">
+                    <span style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Mês</span>
+                    <input name="month" type="month" required style="min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: #fbfcfa; color: var(--ink); padding: 0 12px;" />
+                  </label>
+
+                  <label style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px;">
+                    <span style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Meta de Leads</span>
+                    <input name="target_leads" type="number" min="0" required style="min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: #fbfcfa; color: var(--ink); padding: 0 12px;" />
+                  </label>
+
+                  <label style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px;">
+                    <span style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Meta de Agendamentos</span>
+                    <input name="target_appointments" type="number" min="0" required style="min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: #fbfcfa; color: var(--ink); padding: 0 12px;" />
+                  </label>
+
+                  <label style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px;">
+                    <span style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Meta de Vendas</span>
+                    <input name="target_sales" type="number" min="0" required style="min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: #fbfcfa; color: var(--ink); padding: 0 12px;" />
+                  </label>
+
+                  <label style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 16px;">
+                    <span style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">Observação</span>
+                    <input name="notes" type="text" placeholder="Observações opcionais" style="min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: #fbfcfa; color: var(--ink); padding: 0 12px;" />
+                  </label>
+
+                  <button type="submit" style="width: 100%; min-height: 44px; border: none; border-radius: 8px; background: var(--gold); color: #150126; font-weight: 700; cursor: pointer; transition: opacity 0.2s;">
+                    Salvar Meta
+                  </button>
+                </form>
+              </aside>
             </div>
           </section>
         </section>

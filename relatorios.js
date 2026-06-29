@@ -456,6 +456,349 @@
     renderTasksSummary(data || []);
   };
 
+  const loadSalesGoals = async () => {
+    const client = getClient();
+    if (!client) return;
+
+    const crmUser = getCurrentCrmUser();
+    const role = normalizeRole(crmUser?.cargo);
+    const isLeadOrAdmin = ["dono", "admin", "administrador", "coordenador", "supervisor"].includes(role);
+
+    let query = client.from("crm_sales_goals").select("*");
+    if (!isLeadOrAdmin && crmUser?.email) {
+      query = query.eq("user_email", crmUser.email);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      console.error("Erro ao carregar metas:", error);
+      return;
+    }
+
+    state.goals = data || [];
+    renderSalesGoalsList();
+    renderPersonalGoalIfNeeded(crmUser);
+  };
+
+  const renderSalesGoalsList = () => {
+    const sectionEl = document.getElementById("seller-goals-section");
+    const tbodyEl = document.getElementById("seller-goals-tbody");
+    if (!sectionEl || !tbodyEl) return;
+
+    const crmUser = getCurrentCrmUser();
+    const role = normalizeRole(crmUser?.cargo);
+    const isLeadOrAdmin = ["dono", "admin", "administrador", "coordenador", "supervisor"].includes(role);
+    const isAdmin = ["dono", "admin", "administrador"].includes(role);
+
+    if (!isLeadOrAdmin) {
+      sectionEl.style.display = "none";
+      return;
+    }
+
+    sectionEl.style.display = "block";
+
+    const formSideEl = document.getElementById("goals-admin-side");
+    const actionsTh = document.getElementById("goals-actions-th");
+    if (isAdmin) {
+      if (formSideEl) formSideEl.style.display = "block";
+      if (actionsTh) actionsTh.style.display = "";
+    } else {
+      if (formSideEl) formSideEl.style.display = "none";
+      if (actionsTh) actionsTh.style.display = "none";
+    }
+
+    tbodyEl.innerHTML = "";
+    if (state.goals.length === 0) {
+      tbodyEl.innerHTML = `<tr><td colspan="${isAdmin ? 7 : 6}" style="padding: 16px; text-align: center; color: var(--muted);">Nenhuma meta cadastrada.</td></tr>`;
+      return;
+    }
+
+    state.goals.forEach((g) => {
+      const tr = document.createElement("tr");
+      tr.style.borderBottom = "1px solid var(--line)";
+      
+      const formattedMonth = g.month ? g.month.split("-").reverse().join("/") : "";
+
+      tr.innerHTML = `
+        <td style="padding: 12px;"><strong>${g.user_name || "Sem nome"}</strong><div style="font-size: 0.72rem; color: var(--muted);">${g.user_email}</div></td>
+        <td style="padding: 12px; color: var(--ink);">${formattedMonth}</td>
+        <td style="padding: 12px; color: var(--ink); font-weight: 600;">${g.target_leads}</td>
+        <td style="padding: 12px; color: var(--ink); font-weight: 600;">${g.target_appointments}</td>
+        <td style="padding: 12px; color: var(--ink); font-weight: 600;">${g.target_sales}</td>
+        <td style="padding: 12px; color: var(--muted); font-size: 0.8rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${g.notes || ""}">${g.notes || "-"}</td>
+        ${isAdmin ? `
+          <td style="padding: 12px;">
+            <button class="edit-goal-btn" data-id="${g.id}" style="border: none; background: transparent; color: var(--gold); font-size: 0.78rem; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0;">
+              Editar
+            </button>
+          </td>
+        ` : ""}
+      `;
+
+      if (isAdmin) {
+        tr.querySelector(".edit-goal-btn")?.addEventListener("click", () => {
+          editGoalFormFill(g);
+        });
+      }
+
+      tbodyEl.appendChild(tr);
+    });
+  };
+
+  const editGoalFormFill = (g) => {
+    const formEl = document.getElementById("goal-form");
+    if (!formEl) return;
+
+    formEl.elements.goal_id.value = g.id || "";
+    formEl.elements.user_email.value = g.user_email || "";
+    formEl.elements.month.value = g.month || "";
+    formEl.elements.target_leads.value = g.target_leads || 0;
+    formEl.elements.target_appointments.value = g.target_appointments || 0;
+    formEl.elements.target_sales.value = g.target_sales || 0;
+    formEl.elements.notes.value = g.notes || "";
+  };
+
+  const loadCrmUsersForGoalSelect = async () => {
+    const selectEl = document.getElementById("goal-user-select");
+    if (!selectEl) return;
+
+    const client = getClient();
+    if (!client) return;
+
+    const { data: users } = await client
+      .from("crm_users")
+      .select("nome, email, cargo, ativo")
+      .eq("ativo", true)
+      .order("nome", { ascending: true });
+
+    selectEl.innerHTML = '<option value="">Selecione um vendedor</option>';
+    if (users) {
+      users.forEach((u) => {
+        const cargoLabel = u.cargo ? u.cargo.charAt(0).toUpperCase() + u.cargo.slice(1) : "";
+        const option = document.createElement("option");
+        option.value = u.email;
+        option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
+        selectEl.appendChild(option);
+      });
+    }
+  };
+
+  const handleGoalFormSubmit = async (e) => {
+    e.preventDefault();
+    const formEl = document.getElementById("goal-form");
+    if (!formEl) return;
+
+    const client = getClient();
+    if (!client) return;
+
+    const submitBtn = formEl.querySelector("button[type='submit']");
+    if (submitBtn) submitBtn.disabled = true;
+
+    const goalId = formEl.elements.goal_id.value;
+    const userEmail = formEl.elements.user_email.value;
+    const month = formEl.elements.month.value;
+    const targetLeads = parseInt(formEl.elements.target_leads.value) || 0;
+    const targetAppointments = parseInt(formEl.elements.target_appointments.value) || 0;
+    const targetSales = parseInt(formEl.elements.target_sales.value) || 0;
+    const notes = formEl.elements.notes.value || "";
+
+    const selectEl = document.getElementById("goal-user-select");
+    const selectedOption = selectEl.options[selectEl.selectedIndex];
+    const userName = selectedOption ? selectedOption.textContent.split(" — ")[0] : "";
+
+    const payload = {
+      user_email: userEmail,
+      user_name: userName,
+      month,
+      target_leads: targetLeads,
+      target_appointments: targetAppointments,
+      target_sales: targetSales,
+      notes,
+      updated_at: new Date().toISOString()
+    };
+
+    let response;
+    if (goalId) {
+      response = await client
+        .from("crm_sales_goals")
+        .update(payload)
+        .eq("id", goalId);
+    } else {
+      response = await client
+        .from("crm_sales_goals")
+        .insert(payload);
+    }
+
+    if (submitBtn) submitBtn.disabled = false;
+
+    if (response.error) {
+      alert(`Erro ao salvar meta: ${response.error.message}`);
+    } else {
+      formEl.reset();
+      formEl.elements.goal_id.value = "";
+      alert("Meta salva com sucesso!");
+      await loadSalesGoals();
+      
+      const activeSellerDetails = document.getElementById("seller-detail-section");
+      if (activeSellerDetails && activeSellerDetails.style.display !== "none") {
+        const infoText = document.getElementById("seller-detail-info")?.textContent || "";
+        const emailMatch = infoText.match(/—\s*(.+)$/);
+        const nameMatch = infoText.match(/^(.+?)\s*—/);
+        if (emailMatch && nameMatch) {
+          renderSellerDetailsBlock(emailMatch[1].trim(), nameMatch[1].trim());
+        }
+      }
+    }
+  };
+
+  const renderSellerDetailsGoals = (email) => {
+    const containerEl = document.getElementById("seller-detail-goals-container");
+    if (!containerEl) return;
+
+    const goal = state.goals.find(g => g.user_email === email && g.month === state.month);
+
+    if (!goal) {
+      containerEl.innerHTML = `
+        <div style="padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.02); text-align: center; color: var(--muted); font-size: 0.85rem;">
+          Nenhuma meta cadastrada para este mês.
+        </div>
+      `;
+      return;
+    }
+
+    const userLeads = state.leads.filter(l => {
+      if (l.assigned_to_email !== email || !l.created_at) return false;
+      const leadDate = new Date(l.created_at);
+      const leadMonth = `${leadDate.getFullYear()}-${String(leadDate.getMonth() + 1).padStart(2, "0")}`;
+      return leadMonth === state.month;
+    });
+
+    const actualLeads = userLeads.length;
+    const actualSales = userLeads.filter(l => l.status === "venda_fechada").length;
+
+    const userAppointments = state.appointments.filter(a => {
+      if (a.assigned_to_email !== email || !a.data_agendamento) return false;
+      return a.data_agendamento.startsWith(state.month) && a.status !== "cancelado";
+    }).length;
+
+    const pctLeads = goal.target_leads > 0 ? (actualLeads / goal.target_leads) * 100 : 0;
+    const pctAppts = goal.target_appointments > 0 ? (userAppointments / goal.target_appointments) * 100 : 0;
+    const pctSales = goal.target_sales > 0 ? (actualSales / goal.target_sales) * 100 : 0;
+
+    containerEl.innerHTML = `
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <div class="lead-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
+          <span style="font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Meta de Leads</span>
+          <strong style="font-size: 1.5rem; font-weight: 800; color: var(--ink);">${actualLeads} <span style="font-size: 1rem; font-weight: 500; color: var(--muted);">/ ${goal.target_leads}</span></strong>
+          <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 4px;">
+            <div style="width: ${Math.min(100, pctLeads)}%; height: 100%; background: var(--gold); border-radius: 3px;"></div>
+          </div>
+          <span style="font-size: 0.72rem; color: var(--gold); font-weight: 700;">${pctLeads.toFixed(0)}% concluído</span>
+        </div>
+
+        <div class="lead-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
+          <span style="font-size: 0.72rem; font-weight: 700; color: #8b5cf6; text-transform: uppercase;">Meta de Agendamentos</span>
+          <strong style="font-size: 1.5rem; font-weight: 800; color: var(--ink);">${userAppointments} <span style="font-size: 1rem; font-weight: 500; color: var(--muted);">/ ${goal.target_appointments}</span></strong>
+          <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 4px;">
+            <div style="width: ${Math.min(100, pctAppts)}%; height: 100%; background: #8b5cf6; border-radius: 3px;"></div>
+          </div>
+          <span style="font-size: 0.72rem; color: #8b5cf6; font-weight: 700;">${pctAppts.toFixed(0)}% concluído</span>
+        </div>
+
+        <div class="lead-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
+          <span style="font-size: 0.72rem; font-weight: 700; color: #10b981; text-transform: uppercase;">Meta de Vendas</span>
+          <strong style="font-size: 1.5rem; font-weight: 800; color: var(--ink);">${actualSales} <span style="font-size: 1rem; font-weight: 500; color: var(--muted);">/ ${goal.target_sales}</span></strong>
+          <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 4px;">
+            <div style="width: ${Math.min(100, pctSales)}%; height: 100%; background: #10b981; border-radius: 3px;"></div>
+          </div>
+          <span style="font-size: 0.72rem; color: #10b981; font-weight: 700;">${pctSales.toFixed(0)}% concluído</span>
+        </div>
+      </div>
+      ${goal.notes ? `<div style="margin-top: 12px; font-size: 0.78rem; color: var(--muted); font-style: italic;">Obs: ${goal.notes}</div>` : ""}
+    `;
+  };
+
+  const renderPersonalGoalIfNeeded = (crmUser) => {
+    const containerEl = document.getElementById("seller-personal-goal-container");
+    if (!containerEl) return;
+
+    const role = normalizeRole(crmUser?.cargo);
+    const isLeadOrAdmin = ["dono", "admin", "administrador", "coordenador", "supervisor"].includes(role);
+
+    if (isLeadOrAdmin) {
+      containerEl.style.display = "none";
+      return;
+    }
+
+    containerEl.style.display = "block";
+    
+    // Render progress inside personal container
+    const email = crmUser?.email || "";
+    const goal = state.goals.find(g => g.user_email === email && g.month === state.month);
+
+    if (!goal) {
+      containerEl.innerHTML = `
+        <h2 style="font-size: 1.1rem; font-weight: 800; margin: 0 0 8px; color: var(--ink);">Minha Meta</h2>
+        <div style="color: var(--muted); font-size: 0.85rem;">
+          Nenhuma meta cadastrada para você neste mês (${state.month.split("-").reverse().join("/")}).
+        </div>
+      `;
+      return;
+    }
+
+    const userLeads = state.leads.filter(l => {
+      if (l.assigned_to_email !== email || !l.created_at) return false;
+      const leadDate = new Date(l.created_at);
+      const leadMonth = `${leadDate.getFullYear()}-${String(leadDate.getMonth() + 1).padStart(2, "0")}`;
+      return leadMonth === state.month;
+    });
+
+    const actualLeads = userLeads.length;
+    const actualSales = userLeads.filter(l => l.status === "venda_fechada").length;
+
+    const userAppointments = state.appointments.filter(a => {
+      if (a.assigned_to_email !== email || !a.data_agendamento) return false;
+      return a.data_agendamento.startsWith(state.month) && a.status !== "cancelado";
+    }).length;
+
+    const pctLeads = goal.target_leads > 0 ? (actualLeads / goal.target_leads) * 100 : 0;
+    const pctAppts = goal.target_appointments > 0 ? (userAppointments / goal.target_appointments) * 100 : 0;
+    const pctSales = goal.target_sales > 0 ? (actualSales / goal.target_sales) * 100 : 0;
+
+    containerEl.innerHTML = `
+      <h2 style="font-size: 1.1rem; font-weight: 800; margin: 0 0 16px; color: var(--ink);">Minha Meta — ${state.month.split("-").reverse().join("/")}</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <div class="lead-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
+          <span style="font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Meta de Leads</span>
+          <strong style="font-size: 1.5rem; font-weight: 800; color: var(--ink);">${actualLeads} <span style="font-size: 1rem; font-weight: 500; color: var(--muted);">/ ${goal.target_leads}</span></strong>
+          <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 4px;">
+            <div style="width: ${Math.min(100, pctLeads)}%; height: 100%; background: var(--gold); border-radius: 3px;"></div>
+          </div>
+          <span style="font-size: 0.72rem; color: var(--gold); font-weight: 700;">${pctLeads.toFixed(0)}% concluído</span>
+        </div>
+
+        <div class="lead-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
+          <span style="font-size: 0.72rem; font-weight: 700; color: #8b5cf6; text-transform: uppercase;">Meta de Agendamentos</span>
+          <strong style="font-size: 1.5rem; font-weight: 800; color: var(--ink);">${userAppointments} <span style="font-size: 1rem; font-weight: 500; color: var(--muted);">/ ${goal.target_appointments}</span></strong>
+          <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 4px;">
+            <div style="width: ${Math.min(100, pctAppts)}%; height: 100%; background: #8b5cf6; border-radius: 3px;"></div>
+          </div>
+          <span style="font-size: 0.72rem; color: #8b5cf6; font-weight: 700;">${pctAppts.toFixed(0)}% concluído</span>
+        </div>
+
+        <div class="lead-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
+          <span style="font-size: 0.72rem; font-weight: 700; color: #10b981; text-transform: uppercase;">Meta de Vendas</span>
+          <strong style="font-size: 1.5rem; font-weight: 800; color: var(--ink);">${actualSales} <span style="font-size: 1rem; font-weight: 500; color: var(--muted);">/ ${goal.target_sales}</span></strong>
+          <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 4px;">
+            <div style="width: ${Math.min(100, pctSales)}%; height: 100%; background: #10b981; border-radius: 3px;"></div>
+          </div>
+          <span style="font-size: 0.72rem; color: #10b981; font-weight: 700;">${pctSales.toFixed(0)}% concluído</span>
+        </div>
+      </div>
+      ${goal.notes ? `<div style="margin-top: 12px; font-size: 0.78rem; color: var(--muted); font-style: italic;">Obs: ${goal.notes}</div>` : ""}
+    `;
+  };
+
   const renderSellerPerformance = async () => {
     const sectionEl = document.getElementById("seller-performance-section");
     const tbodyEl = document.getElementById("seller-performance-tbody");
@@ -704,13 +1047,16 @@
       const sectionEl = document.getElementById("seller-detail-section");
       if (sectionEl) sectionEl.style.display = "none";
     }
+    const crmUser = getCurrentCrmUser();
     await Promise.all([
       loadSales(),
       loadLeadsSummary(),
       loadAppointmentsSummary(),
       loadTasksSummary(),
+      loadSalesGoals(),
     ]);
     await renderSellerPerformance();
+    if (crmUser) renderPersonalGoalIfNeeded(crmUser);
   });
 
   focusButton?.addEventListener("click", () => {
@@ -735,6 +1081,10 @@
     }
 
     await updatePersonFilter();
+    await loadCrmUsersForGoalSelect();
+
+    // Bind Goal Form Submit
+    document.getElementById("goal-form")?.addEventListener("submit", handleGoalFormSubmit);
 
     // Bind Voltar para visão geral button click
     document.getElementById("clear-seller-selection-btn")?.addEventListener("click", async () => {
@@ -751,8 +1101,10 @@
         loadLeadsSummary(),
         loadAppointmentsSummary(),
         loadTasksSummary(),
+        loadSalesGoals(),
       ]);
       await renderSellerPerformance();
+      if (crmUser) renderPersonalGoalIfNeeded(crmUser);
     });
 
     await Promise.all([
@@ -760,7 +1112,9 @@
       loadLeadsSummary(),
       loadAppointmentsSummary(),
       loadTasksSummary(),
+      loadSalesGoals(),
     ]);
     await renderSellerPerformance();
+    if (crmUser) renderPersonalGoalIfNeeded(crmUser);
   });
 })();
