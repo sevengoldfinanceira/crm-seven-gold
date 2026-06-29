@@ -211,6 +211,42 @@
     return ["dono", "admin", "administrador"].includes(normalized);
   };
 
+  let cachedPermissions = null;
+
+  const loadCachedPermissions = async (userRole) => {
+    const role = normalizeRole(userRole);
+    
+    try {
+      const stored = sessionStorage.getItem(`crm-permissions-${role}`);
+      if (stored) {
+        cachedPermissions = JSON.parse(stored);
+        return;
+      }
+    } catch (e) {
+      console.warn("sessionStorage not available:", e);
+    }
+
+    try {
+      const { data, error } = await client
+        .from("crm_role_permissions")
+        .select("area_key, permitido")
+        .eq("cargo", role);
+
+      if (!error && data) {
+        cachedPermissions = {};
+        data.forEach(item => {
+          cachedPermissions[item.area_key] = item.permitido;
+        });
+        
+        try {
+          sessionStorage.setItem(`crm-permissions-${role}`, JSON.stringify(cachedPermissions));
+        } catch (e) {}
+      }
+    } catch (err) {
+      console.error("Erro ao carregar permissões do Supabase:", err);
+    }
+  };
+
   const canAccessArea = (userRole, areaKey) => {
     if (!areaKey) {
       return true;
@@ -220,6 +256,10 @@
 
     if (["dono", "admin", "administrador"].includes(role)) {
       return true;
+    }
+
+    if (cachedPermissions && typeof cachedPermissions[areaKey] === "boolean") {
+      return cachedPermissions[areaKey];
     }
 
     const permissions = {
@@ -241,6 +281,7 @@
   window.normalizeRole = normalizeRole;
   window.isAdminRole = isAdminRole;
   window.canAccessArea = canAccessArea;
+  window.loadCachedPermissions = loadCachedPermissions;
 
   const cargoDisplayNames = {
     "diretor-ceo": "Diretor CEO",
@@ -639,6 +680,7 @@
     await ensureProfile(session);
     const profile = await getProfile(session);
     const role = normalizeSystemRole(authorizedPortalUser.cargo || profile?.role || "vendedor");
+    await loadCachedPermissions(role);
     window.currentUser = session.user;
     window.crmUser = authorizedPortalUser;
     window.userRole = role;

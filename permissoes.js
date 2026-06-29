@@ -174,6 +174,7 @@
         input.addEventListener("change", () => {
           text.textContent = input.checked ? "Ativo" : "Off";
           text.className = "perm-switch-label " + (input.checked ? "on-label" : "off-label");
+          state.permissions.set(permissionKey(role.key, area.key), input.checked);
           updateStats();
         });
 
@@ -361,18 +362,43 @@
 
     setStatus("Carregando permissoes...", "success");
 
-    const [permissionsResult, usersResult] = await Promise.all([
-      client.from("app_permissions").select("role, area, can_access"),
-      client
-        .from("crm_users")
-        .select("id, email, nome, cargo, ativo, created_at, updated_at")
-        .order("created_at", { ascending: false }),
-    ]);
+    let permissionsResult = await client
+      .from("crm_role_permissions")
+      .select("cargo, area_key, area_label, permitido");
+
+    const usersResult = await client
+      .from("crm_users")
+      .select("id, email, nome, cargo, ativo, created_at, updated_at")
+      .order("created_at", { ascending: false });
+
+    // Se a tabela estiver vazia, criar permissões padrão iniciais
+    if (!permissionsResult.error && (!permissionsResult.data || permissionsResult.data.length === 0)) {
+      const defaultRows = [];
+      roles.forEach((role) => {
+        areas.forEach((area) => {
+          const permitido = role.key === "dono" || (defaultAccess[role.key]?.includes(area.key) || false);
+          defaultRows.push({
+            cargo: role.key,
+            area_key: area.key,
+            area_label: area.label,
+            permitido: permitido,
+          });
+        });
+      });
+      const { data: insertedData, error: insertErr } = await client
+        .from("crm_role_permissions")
+        .insert(defaultRows)
+        .select("cargo, area_key, area_label, permitido");
+      
+      if (!insertErr && insertedData) {
+        permissionsResult = { data: insertedData, error: null };
+      }
+    }
 
     state.permissions.clear();
     if (!permissionsResult.error) {
       (permissionsResult.data || []).forEach((item) => {
-        state.permissions.set(permissionKey(item.role, item.area), Boolean(item.can_access));
+        state.permissions.set(permissionKey(item.cargo, item.area_key), Boolean(item.permitido));
       });
     }
 
@@ -392,9 +418,11 @@
 
   const collectPermissions = () =>
     Array.from(document.querySelectorAll("[data-role][data-area]")).map((input) => ({
-      role: input.dataset.role,
-      area: input.dataset.area,
-      can_access: input.checked,
+      cargo: input.dataset.role,
+      area_key: input.dataset.area,
+      area_label: areas.find(a => a.key === input.dataset.area)?.label || input.dataset.area,
+      permitido: input.checked,
+      updated_at: new Date().toISOString(),
     }));
 
   const saveData = async () => {
@@ -408,17 +436,29 @@
 
     const permissions = collectPermissions();
     const { error: permissionError } = await client
-      .from("app_permissions")
-      .upsert(permissions, { onConflict: "role,area" });
+      .from("crm_role_permissions")
+      .upsert(permissions, { onConflict: "cargo,area_key" });
 
     saveButton.disabled = false;
     saveButton.innerHTML = '<i data-lucide="save" style="width:16px;height:16px;"></i> Salvar permissoes';
     if (window.lucide) lucide.createIcons();
 
     if (permissionError) {
-      setStatus("Nao consegui salvar as permissoes. Confira a tabela app_permissions.");
+      setStatus("Nao consegui salvar as permissoes. Confira a tabela crm_role_permissions.");
       addAuditEntry("<strong>Erro</strong> ao salvar permissoes", "warning");
       return;
+    }
+
+    // Clear permissions cache in sessionStorage so pages reload it fresh
+    try {
+      for (let i = sessionStorage.length - 1; i >= 0; i--) {
+        const key = sessionStorage.key(i);
+        if (key && key.startsWith("crm-permissions-")) {
+          sessionStorage.removeItem(key);
+        }
+      }
+    } catch (e) {
+      console.warn("Error clearing permission cache:", e);
     }
 
     await loadData();
