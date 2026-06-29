@@ -1166,6 +1166,17 @@
     await updatePersonFilter();
     await loadCrmUsersForGoalSelect();
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlSellerEmail = urlParams.get("seller_email");
+    const urlSellerName = urlParams.get("seller_name");
+
+    if (urlSellerEmail) {
+      state.person = urlSellerEmail;
+      if (personFilter) {
+        personFilter.value = urlSellerEmail;
+      }
+    }
+
     // Bind Goal Form Submit
     document.getElementById("goal-form")?.addEventListener("submit", handleGoalFormSubmit);
 
@@ -1178,6 +1189,12 @@
       
       const detailSec = document.getElementById("seller-detail-section");
       if (detailSec) detailSec.style.display = "none";
+      
+      // Clean query parameters from URL without reloading
+      const url = new URL(window.location);
+      url.searchParams.delete("seller_email");
+      url.searchParams.delete("seller_name");
+      window.history.replaceState({}, "", url);
       
       await Promise.all([
         loadSales(),
@@ -1198,6 +1215,11 @@
       loadSalesGoals(),
     ]);
     await renderSellerPerformance();
-    if (crmUser) renderPersonalGoalIfNeeded(crmUser);
+    
+    if (urlSellerEmail) {
+      renderSellerDetailsBlock(urlSellerEmail, urlSellerName || urlSellerEmail);
+    } else if (crmUser) {
+      renderPersonalGoalIfNeeded(crmUser);
+    }
   });
 })();

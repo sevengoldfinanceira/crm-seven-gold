@@ -766,6 +766,7 @@ const loadDashboardMetrics = async () => {
           const isAtencao = realProgress >= (expectedProgress - 0.15);
           return {
             nome: user.nome || email,
+            email: email,
             type: typeLabel,
             plural: pluralLabel,
             actual,
@@ -813,11 +814,25 @@ const loadDashboardMetrics = async () => {
                ${alert.actual} / ${alert.target} ${alert.plural}
             </div>
           </div>
-          <span style="font-weight: 700; color: ${alert.color}; font-size: 0.75rem; border: 1px solid ${alert.color}; padding: 2px 8px; border-radius: 4px; text-transform: uppercase;">
-            ${alert.status}
-          </span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-weight: 700; color: ${alert.color}; font-size: 0.75rem; border: 1px solid ${alert.color}; padding: 2px 8px; border-radius: 4px; text-transform: uppercase;">
+              ${alert.status}
+            </span>
+            <button class="dash-goal-report-btn" data-email="${alert.email}" data-name="${alert.nome}" style="border: none; background: transparent; color: var(--gold); font-size: 0.78rem; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0;">
+              Ver relatório
+            </button>
+          </div>
         `;
         elAlertsList.appendChild(item);
+      });
+
+      // Attach click handlers to report buttons
+      elAlertsList.querySelectorAll(".dash-goal-report-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const email = btn.dataset.email;
+          const name = btn.dataset.name;
+          window.location.href = `relatorios.html?seller_email=${encodeURIComponent(email)}&seller_name=${encodeURIComponent(name)}`;
+        });
       });
     }
   }
