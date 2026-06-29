@@ -367,6 +367,52 @@ const initResponsibleFilter = async (currentCrmUser) => {
   });
 };
 
+let calendarResponsibleFilterInitialized = false;
+let selectedCalendarResponsibleEmail = "";
+
+const initCalendarResponsibleFilter = async (currentCrmUser) => {
+  if (calendarResponsibleFilterInitialized) return;
+
+  if (!shouldSeeAllLeads(currentCrmUser)) {
+    return; // Vendedor não vê o filtro
+  }
+
+  const selectEl = document.getElementById("calendar-responsible-filter-select");
+  const containerEl = document.getElementById("calendar-responsible-filter-container");
+  if (!selectEl || !containerEl) return;
+
+  const client = getClient();
+  if (!client) return;
+
+  calendarResponsibleFilterInitialized = true;
+  containerEl.style.display = "flex";
+
+  const { data: users, error } = await client
+    .from("crm_users")
+    .select("nome, email, cargo, ativo")
+    .eq("ativo", true)
+    .order("nome", { ascending: true });
+
+  if (error || !users) {
+    console.error("Erro ao carregar vendedores para filtro do calendário:", error);
+    return;
+  }
+
+  selectEl.innerHTML = '<option value="">Todos os vendedores</option>';
+  users.forEach((u) => {
+    const cargoLabel = u.cargo ? u.cargo.charAt(0).toUpperCase() + u.cargo.slice(1) : "";
+    const option = document.createElement("option");
+    option.value = u.email;
+    option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
+    selectEl.appendChild(option);
+  });
+
+  selectEl.addEventListener("change", (e) => {
+    selectedCalendarResponsibleEmail = e.target.value;
+    loadAppointments();
+  });
+};
+
 const loadCrmUsersForSelect = async (selectElement, currentAssignedEmail) => {
   const client = getClient();
   if (!client || !selectElement) return;
@@ -649,10 +695,17 @@ const renderCalendar = () => {
 const loadAppointments = async () => {
   const client = getClient();
   if (!client || !calendarWeekStart) return;
+
+  const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+  if (currentCrmUser) {
+    await initCalendarResponsibleFilter(currentCrmUser);
+  }
+
   setCalendarStatus("Carregando agendamentos...");
   const start = toDateKey(calendarWeekStart);
   const end = toDateKey(addDays(calendarWeekStart, 6));
-  const { data, error } = await client
+
+  let query = client
     .from("appointments")
     .select("id, lead_id, nome_cliente, telefone_cliente, usuario_id, nome_usuario, data_agendamento, hora_agendamento, observacao, status, created_at, updated_at")
     .gte("data_agendamento", start)
@@ -660,6 +713,12 @@ const loadAppointments = async () => {
     .neq("status", "cancelado")
     .order("data_agendamento")
     .order("hora_agendamento");
+
+  if (selectedCalendarResponsibleEmail) {
+    query = query.eq("assigned_to_email", selectedCalendarResponsibleEmail);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     calendarAppointments = [];
@@ -1722,4 +1781,8 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("crm-authorized", () => {
   window.currentCrmUser = window.crmUser || window.sevenGoldCrmSession?.crmUser;
   loadLeads();
+  const hash = window.location.hash.replace("#", "") || "pipeline";
+  if (hash === "calendario") {
+    loadAppointments();
+  }
 });
