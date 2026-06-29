@@ -195,6 +195,25 @@
     return sector.roles.filter((role) => role.key === "diretor-ceo" || !removedRoles.has(normalizeCargoKey(role.key)));
   };
 
+  const getRoleSectorId = (roleKey) => {
+    const key = normalizeCargoKey(roleKey);
+    const sector = sectors.find((item) =>
+      item.roles.some((role) => normalizeCargoKey(role.key) === key)
+    );
+    return sector?.id || "outros";
+  };
+
+  const getRoleGroupMeta = (role, index) => {
+    const sectorId = getRoleSectorId(role.key);
+    const previousSectorId = index > 0 ? getRoleSectorId(roles[index - 1].key) : "";
+    const nextSectorId = index < roles.length - 1 ? getRoleSectorId(roles[index + 1].key) : "";
+    return {
+      sectorId,
+      isStart: sectorId !== previousSectorId,
+      isEnd: sectorId !== nextSectorId,
+    };
+  };
+
   const refreshActiveRoles = () => {
     const removedRoles = loadRemovedRoles();
     const activeRoles = new Map();
@@ -259,8 +278,12 @@
 
   const renderMatrix = () => {
     head.innerHTML = "<th>Area</th>";
-    roles.forEach((role) => {
+    roles.forEach((role, index) => {
+      const groupMeta = getRoleGroupMeta(role, index);
       const th = document.createElement("th");
+      th.dataset.roleSector = groupMeta.sectorId;
+      th.classList.toggle("perm-sector-start", groupMeta.isStart);
+      th.classList.toggle("perm-sector-end", groupMeta.isEnd);
       th.textContent = role.label;
       head.append(th);
     });
@@ -284,8 +307,12 @@
         '</div>';
       row.append(label);
 
-      roles.forEach((role) => {
+      roles.forEach((role, index) => {
+        const groupMeta = getRoleGroupMeta(role, index);
         const cell = document.createElement("td");
+        cell.dataset.roleSector = groupMeta.sectorId;
+        cell.classList.toggle("perm-sector-start", groupMeta.isStart);
+        cell.classList.toggle("perm-sector-end", groupMeta.isEnd);
         const toggle = document.createElement("label");
         toggle.className = "permission-toggle";
 

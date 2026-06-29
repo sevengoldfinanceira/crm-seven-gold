@@ -291,6 +291,7 @@
 }
 
 .permission-table thead th {
+  position: relative;
   background: #f9fafb !important;
   color: var(--sg-text-secondary, #6b7280) !important;
   font-size: 0.62rem !important;
@@ -304,6 +305,38 @@
   padding: 8px 4px !important;
   vertical-align: middle !important;
   text-align: center !important;
+}
+
+.permission-table thead th.perm-sector-start:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.72), rgba(212, 175, 55, 0.24));
+  border-radius: 999px 0 0 999px;
+}
+
+.permission-table thead th.perm-sector-end::before {
+  right: 8px;
+  border-radius: 0 999px 999px 0;
+}
+
+.permission-table thead th.perm-sector-start.perm-sector-end::before {
+  left: 14px;
+  right: 14px;
+  border-radius: 999px;
+}
+
+.permission-table th.perm-sector-end,
+.permission-table td.perm-sector-end {
+  border-right: 1px solid rgba(212, 175, 55, 0.34) !important;
+}
+
+.permission-table th.perm-sector-end:last-child,
+.permission-table td.perm-sector-end:last-child {
+  border-right: 0 !important;
 }
 
 .permission-table thead th:first-child {
@@ -914,6 +947,15 @@ body.theme-dark .permission-table tbody th {
 
 body.theme-dark .permission-table td {
   border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+body.theme-dark .permission-table thead th.perm-sector-start:not(:first-child)::before {
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.74), rgba(212, 175, 55, 0.18));
+}
+
+body.theme-dark .permission-table th.perm-sector-end,
+body.theme-dark .permission-table td.perm-sector-end {
+  border-right-color: rgba(212, 175, 55, 0.32) !important;
 }
 
 body.theme-dark .permission-table tbody tr:hover {
