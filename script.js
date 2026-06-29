@@ -315,6 +315,58 @@ function shouldSeeAllLeads(crmUser) {
   return isAdminRole(crmUser.cargo) || isManagerRole(crmUser.cargo);
 }
 
+let responsibleFilterInitialized = false;
+let selectedResponsibleEmail = "";
+
+const initResponsibleFilter = async (currentCrmUser) => {
+  if (responsibleFilterInitialized) return;
+
+  if (!shouldSeeAllLeads(currentCrmUser)) {
+    return; // Vendedor não vê o filtro
+  }
+
+  const selectEl = document.getElementById("responsible-filter-select");
+  const containerEl = document.getElementById("responsible-filter-container");
+  if (!selectEl || !containerEl) return;
+
+  const client = getClient();
+  if (!client) return;
+
+  responsibleFilterInitialized = true;
+  containerEl.style.display = "grid";
+
+  const { data: users, error } = await client
+    .from("crm_users")
+    .select("nome, email, cargo, ativo")
+    .eq("ativo", true)
+    .order("nome", { ascending: true });
+
+  if (error || !users) {
+    console.error("Erro ao carregar vendedores para filtro:", error);
+    return;
+  }
+
+  selectEl.innerHTML = '<option value="">Todos os vendedores</option>';
+  users.forEach((u) => {
+    const cargoLabel = u.cargo ? u.cargo.charAt(0).toUpperCase() + u.cargo.slice(1) : "";
+    const option = document.createElement("option");
+    option.value = u.email;
+    option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
+    selectEl.appendChild(option);
+  });
+
+  selectEl.addEventListener("change", (e) => {
+    selectedResponsibleEmail = e.target.value;
+    loadLeads();
+  });
+
+  document.querySelector(".clear-button")?.addEventListener("click", () => {
+    selectEl.value = "";
+    selectedResponsibleEmail = "";
+    loadLeads();
+  });
+};
+
 const loadCrmUsersForSelect = async (selectElement, currentAssignedEmail) => {
   const client = getClient();
   if (!client || !selectElement) return;
@@ -1194,6 +1246,10 @@ const loadLeads = async () => {
 
   const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
 
+  if (currentCrmUser) {
+    await initResponsibleFilter(currentCrmUser);
+  }
+
   let query = client
     .from("leads")
     .select("id, name, origin, note, status, created_at, telefone, property_region, credit_value, down_payment_value, installment_value, tags, assigned_to_email, assigned_to_name, created_by_email, created_by_name, updated_by_email, updated_by_name")
@@ -1201,6 +1257,10 @@ const loadLeads = async () => {
 
   if (!shouldSeeAllLeads(currentCrmUser)) {
     query = query.eq("assigned_to_email", currentCrmUser.email);
+  } else {
+    if (selectedResponsibleEmail) {
+      query = query.eq("assigned_to_email", selectedResponsibleEmail);
+    }
   }
 
   const { data, error } = await query;
@@ -1656,5 +1716,10 @@ document.addEventListener("DOMContentLoaded", () => {
   setupTouchMove();
   setupBulkActions();
   switchTab();
+  loadLeads();
+});
+
+document.addEventListener("crm-authorized", () => {
+  window.currentCrmUser = window.crmUser || window.sevenGoldCrmSession?.crmUser;
   loadLeads();
 });

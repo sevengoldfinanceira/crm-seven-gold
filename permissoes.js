@@ -287,7 +287,11 @@
       meta.className = "perm-user-meta";
       const role = document.createElement("span");
       role.className = "perm-user-role";
+      const isMaster = user.email.toLowerCase().trim() === 'sevengoldfinanceira@gmail.com';
       const resolvedRoleLabel = (() => {
+        if (isMaster) {
+          return "Dono Master";
+        }
         for (const sec of sectors) {
           const r = sec.roles.find(x => x.key === user.cargo);
           if (r) return r.label;
@@ -295,6 +299,9 @@
         return roles.find((item) => item.key === user.cargo)?.label || user.cargo || "Sem cargo";
       })();
       role.textContent = resolvedRoleLabel;
+      if (isMaster) {
+        role.className = "perm-user-role master-role";
+      }
       const status = document.createElement("span");
       status.className = `perm-user-status ${user.ativo ? "is-active" : "is-inactive"}`;
       status.textContent = user.ativo ? "Ativo" : "Inativo";
@@ -309,7 +316,14 @@
       activeToggle.className = `perm-user-toggle ${user.ativo ? "is-active" : "is-inactive"}`;
       activeToggle.setAttribute("aria-label", user.ativo ? "Desativar usuario" : "Ativar usuario");
       activeToggle.innerHTML = `<span></span>`;
-      activeToggle.addEventListener("click", () => toggleUserStatus(user, activeToggle));
+      
+      if (isMaster) {
+        activeToggle.disabled = true;
+        activeToggle.style.opacity = "0.5";
+        activeToggle.style.cursor = "not-allowed";
+      } else {
+        activeToggle.addEventListener("click", () => toggleUserStatus(user, activeToggle));
+      }
 
       const editButton = document.createElement("button");
       editButton.type = "button";

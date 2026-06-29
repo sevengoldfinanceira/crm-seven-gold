@@ -708,6 +708,7 @@
     if (permissionArea === "crm") {
       applyCrmUserIdentity(session.user, authorizedPortalUser, role);
       document.body.classList.add("crm-authorized");
+      document.dispatchEvent(new CustomEvent("crm-authorized"));
 
       // Check if current hash is allowed for this role
       const hash = window.location.hash.replace("#", "") || "pipeline";
