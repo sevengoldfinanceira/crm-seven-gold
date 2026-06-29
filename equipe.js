@@ -613,37 +613,46 @@
 
     if (client) {
       try {
-        const { data: profiles, error } = await client
-          .from("profiles")
-          .select("id, full_name, email, role")
-          .order("full_name", { ascending: true });
-        if (!error && profiles && profiles.length > 0) {
-          data = profiles;
+        const { data: users, error } = await client
+          .from("crm_users")
+          .select("id, nome, email, cargo, ativo")
+          .order("nome", { ascending: true });
+        
+        if (!error && users && users.length > 0) {
+          data = users.map(u => ({
+            id: u.id,
+            full_name: u.nome,
+            email: u.email,
+            role: u.cargo || "vendedor",
+            status: u.ativo ? "ativo" : "inativo"
+          }));
         }
       } catch (e) {
         console.error("Supabase load error:", e);
       }
     }
 
-    const localProfiles = localStorage.getItem("seven-gold-profiles-local");
-    if (localProfiles) {
-      data = JSON.parse(localProfiles);
-    } else if (data.length === 0) {
-      data = [
-        { id: "1", full_name: "Jonatã", email: "jonata@sevengold.com.br", role: "dono", status: "ativo" },
-        { id: "2", full_name: "Maria Silva", email: "maria@sevengold.com.br", role: "supervisor-comercial", status: "ativo" },
-        { id: "3", full_name: "Lucas Santos", email: "lucas@sevengold.com.br", role: "coordenador-comercial", status: "ativo" },
-        { id: "4", full_name: "Ana Oliveira", email: "ana@sevengold.com.br", role: "vendedor", status: "ativo" },
-        { id: "5", full_name: "João Souza", email: "joao@sevengold.com.br", role: "vendedor", status: "ativo" },
-        { id: "6", full_name: "Mariana Costa", email: "mariana@sevengold.com.br", role: "assistente-vendas", status: "ativo" },
-        { id: "7", full_name: "Paula Souza", email: "paula@sevengold.com.br", role: "coordenador-posvenda", status: "ativo" },
-        { id: "8", full_name: "Roberto Dias", email: "roberto@sevengold.com.br", role: "coordenador-adm", status: "ativo" },
-        { id: "9", full_name: "Beatriz Lima", email: "beatriz@sevengold.com.br", role: "coordenador-financeiro", status: "ativo" },
-        { id: "10", full_name: "Thiago Rocha", email: "thiago@sevengold.com.br", role: "coordenador-mkt", status: "ativo" },
-        { id: "11", full_name: "Fernanda Melo", email: "fernanda@sevengold.com.br", role: "coordenador-rh", status: "ativo" },
-        { id: "12", full_name: "Carlos Eduardo", email: "carlos@sevengold.com.br", role: "advogado-juridico", status: "ativo" }
-      ];
-      localStorage.setItem("seven-gold-profiles-local", JSON.stringify(data));
+    if (data.length === 0) {
+      const localProfiles = localStorage.getItem("seven-gold-profiles-local");
+      if (localProfiles) {
+        data = JSON.parse(localProfiles);
+      } else {
+        data = [
+          { id: "1", full_name: "Jonatã", email: "jonata@sevengold.com.br", role: "diretor-ceo", status: "ativo" },
+          { id: "2", full_name: "Maria Silva", email: "maria@sevengold.com.br", role: "supervisor-comercial", status: "ativo" },
+          { id: "3", full_name: "Lucas Santos", email: "lucas@sevengold.com.br", role: "coordenador-comercial", status: "ativo" },
+          { id: "4", full_name: "Ana Oliveira", email: "ana@sevengold.com.br", role: "vendedor", status: "ativo" },
+          { id: "5", full_name: "João Souza", email: "joao@sevengold.com.br", role: "vendedor", status: "ativo" },
+          { id: "6", full_name: "Mariana Costa", email: "mariana@sevengold.com.br", role: "assistente-vendas", status: "ativo" },
+          { id: "7", full_name: "Paula Souza", email: "paula@sevengold.com.br", role: "coordenador-posvenda", status: "ativo" },
+          { id: "8", full_name: "Roberto Dias", email: "roberto@sevengold.com.br", role: "coordenador-adm", status: "ativo" },
+          { id: "9", full_name: "Beatriz Lima", email: "beatriz@sevengold.com.br", role: "coordenador-financeiro", status: "ativo" },
+          { id: "10", full_name: "Thiago Rocha", email: "thiago@sevengold.com.br", role: "coordenador-mkt", status: "ativo" },
+          { id: "11", full_name: "Fernanda Melo", email: "fernanda@sevengold.com.br", role: "coordenador-rh", status: "ativo" },
+          { id: "12", full_name: "Carlos Eduardo", email: "carlos@sevengold.com.br", role: "advogado-juridico", status: "ativo" }
+        ];
+        localStorage.setItem("seven-gold-profiles-local", JSON.stringify(data));
+      }
     } else {
       data.forEach(p => {
         if (!p.status) p.status = "ativo";
@@ -654,8 +663,76 @@
     state.profiles = data;
   };
 
-  const saveProfiles = () => {
+  const saveProfiles = async () => {
     localStorage.setItem("seven-gold-profiles-local", JSON.stringify(state.profiles));
+
+    const client = getClient();
+    if (!client) return;
+
+    try {
+      // 1. Get all current user IDs in Supabase crm_users
+      const { data: dbUsers, error: getErr } = await client
+        .from("crm_users")
+        .select("id, email");
+
+      if (getErr) {
+        console.error("Error fetching dbUsers for sync:", getErr);
+        return;
+      }
+
+      // 2. Identify deleted users (exist in DB but not in state.profiles)
+      const stateIds = new Set(state.profiles.map(p => p.id));
+      const deletedUsers = dbUsers.filter(dbU => {
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(dbU.id);
+        return isUuid && !stateIds.has(dbU.id);
+      });
+
+      for (const delU of deletedUsers) {
+        await client.from("crm_users").delete().eq("id", delU.id);
+      }
+
+      // 3. Upsert current profiles to Supabase crm_users
+      for (const profile of state.profiles) {
+        const cargo = profile.role || "vendedor";
+        const ativo = profile.status === "ativo";
+        const email = profile.email.toLowerCase().trim();
+        const nome = profile.full_name;
+
+        const payload = {
+          nome,
+          email,
+          cargo,
+          ativo,
+          updated_at: new Date().toISOString()
+        };
+
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id);
+
+        if (isUuid) {
+          await client.from("crm_users").update(payload).eq("id", profile.id);
+        } else {
+          const match = dbUsers.find(dbU => dbU.email.toLowerCase().trim() === email);
+          if (match) {
+            profile.id = match.id;
+            await client.from("crm_users").update(payload).eq("id", match.id);
+          } else {
+            const { data: inserted, error: insErr } = await client
+              .from("crm_users")
+              .insert(payload)
+              .select("id")
+              .maybeSingle();
+            
+            if (!insErr && inserted) {
+              profile.id = inserted.id;
+            }
+          }
+        }
+      }
+
+      localStorage.setItem("seven-gold-profiles-local", JSON.stringify(state.profiles));
+    } catch (err) {
+      console.error("Error syncing profiles to Supabase crm_users:", err);
+    }
   };
 
   // Load functions from company_role_functions

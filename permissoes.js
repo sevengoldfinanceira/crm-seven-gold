@@ -26,6 +26,70 @@
     { key: "rh", label: "RH" },
   ];
 
+  const sectors = [
+    {
+      id: "diretoria",
+      title: "Diretoria",
+      roles: [
+        { key: "diretor-ceo", label: "Diretor CEO" }
+      ]
+    },
+    {
+      id: "comercial",
+      title: "Comercial",
+      roles: [
+        { key: "vendedor", label: "Vendedor" },
+        { key: "assistente-vendas", label: "Assistente de Vendas" },
+        { key: "supervisor-comercial", label: "Supervisor Comercial" },
+        { key: "coordenador-comercial", label: "Coordenador Comercial" },
+        { key: "home-office", label: "Home Office" }
+      ]
+    },
+    {
+      id: "posvenda",
+      title: "Pós-Venda",
+      roles: [
+        { key: "coordenador-posvenda", label: "Coordenador de Pós-Venda" }
+      ]
+    },
+    {
+      id: "administrativo",
+      title: "Administrativo",
+      roles: [
+        { key: "coordenador-adm", label: "Coordenador Administrativo" },
+        { key: "administrador", label: "Administrador" }
+      ]
+    },
+    {
+      id: "financeiro",
+      title: "Financeiro",
+      roles: [
+        { key: "coordenador-financeiro", label: "Coordenador Financeiro" }
+      ]
+    },
+    {
+      id: "marketing",
+      title: "Marketing",
+      roles: [
+        { key: "coordenador-mkt", label: "Coordenador de Marketing" }
+      ]
+    },
+    {
+      id: "rh",
+      title: "Recursos Humanos (RH)",
+      roles: [
+        { key: "coordenador-rh", label: "Coordenador de RH" }
+      ]
+    },
+    {
+      id: "juridico",
+      title: "Jurídico",
+      roles: [
+        { key: "advogado-juridico", label: "Advogado Jurídico" }
+      ]
+    }
+  ];
+
   const areaIcons = {
     crm: "git-branch",
     empresa: "building-2",
@@ -223,7 +287,14 @@
       meta.className = "perm-user-meta";
       const role = document.createElement("span");
       role.className = "perm-user-role";
-      role.textContent = roles.find((item) => item.key === user.cargo)?.label || user.cargo || "Sem cargo";
+      const resolvedRoleLabel = (() => {
+        for (const sec of sectors) {
+          const r = sec.roles.find(x => x.key === user.cargo);
+          if (r) return r.label;
+        }
+        return roles.find((item) => item.key === user.cargo)?.label || user.cargo || "Sem cargo";
+      })();
+      role.textContent = resolvedRoleLabel;
       const status = document.createElement("span");
       status.className = `perm-user-status ${user.ativo ? "is-active" : "is-inactive"}`;
       status.textContent = user.ativo ? "Ativo" : "Inativo";
@@ -259,6 +330,41 @@
     userFormStatus.dataset.type = type;
   };
 
+  const updateCargoOptions = (sectorId, selectedCargo = "") => {
+    const cargoSelect = userForm?.elements.cargo;
+    if (!cargoSelect) return;
+    cargoSelect.innerHTML = "";
+    
+    if (!sectorId) {
+      cargoSelect.innerHTML = '<option value="">Selecione o setor primeiro</option>';
+      return;
+    }
+    
+    const sector = sectors.find(s => s.id === sectorId);
+    if (sector) {
+      const defaultOpt = document.createElement("option");
+      defaultOpt.value = "";
+      defaultOpt.textContent = "Selecione o cargo";
+      cargoSelect.appendChild(defaultOpt);
+
+      sector.roles.forEach(r => {
+        const opt = document.createElement("option");
+        opt.value = r.key;
+        opt.textContent = r.label;
+        if (r.key === selectedCargo) {
+          opt.selected = true;
+        }
+        cargoSelect.appendChild(opt);
+      });
+    }
+  };
+
+  if (userForm && userForm.elements.setor) {
+    userForm.elements.setor.addEventListener("change", () => {
+      updateCargoOptions(userForm.elements.setor.value);
+    });
+  }
+
   const openUserModal = (user = null) => {
     if (!userModal || !userForm) return;
     userForm.reset();
@@ -266,7 +372,22 @@
     userForm.elements.id.value = user?.id || "";
     userForm.elements.nome.value = user?.nome || "";
     userForm.elements.email.value = user?.email || "";
-    userForm.elements.cargo.value = user?.cargo || "";
+    
+    if (user && user.cargo) {
+      let userSectorId = "";
+      for (const sec of sectors) {
+        if (sec.roles.some(r => r.key === user.cargo)) {
+          userSectorId = sec.id;
+          break;
+        }
+      }
+      userForm.elements.setor.value = userSectorId;
+      updateCargoOptions(userSectorId, user.cargo);
+    } else {
+      userForm.elements.setor.value = "";
+      updateCargoOptions("");
+    }
+    
     userForm.elements.ativo.checked = user ? user.ativo === true : true;
     if (userModalTitle) userModalTitle.textContent = user ? "Editar usuario" : "Adicionar usuario";
     userModal.showModal();
@@ -305,15 +426,24 @@
     const id = String(userForm.elements.id.value || "").trim();
     const nome = String(userForm.elements.nome.value || "").trim();
     const email = String(userForm.elements.email.value || "").trim().toLowerCase();
+    const setor = String(userForm.elements.setor.value || "").trim();
     const cargo = String(userForm.elements.cargo.value || "").trim();
     const ativo = userForm.elements.ativo.checked;
     const submitButton = userForm.querySelector('button[type="submit"]');
 
-    if (!nome || !email || !cargo) {
-      setUserFormStatus("Preencha nome, e-mail e cargo.");
+    if (!nome || !email || !setor || !cargo) {
+      setUserFormStatus("Preencha todos os campos obrigatórios (nome, e-mail, setor e cargo).");
       return;
     }
-    if (!roles.some((role) => role.key === cargo)) {
+
+    let isValidCargo = false;
+    for (const sec of sectors) {
+      if (sec.roles.some(r => r.key === cargo)) {
+        isValidCargo = true;
+        break;
+      }
+    }
+    if (!isValidCargo) {
       setUserFormStatus("Selecione um cargo valido.");
       return;
     }
