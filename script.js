@@ -21,6 +21,41 @@ let calendarAppointments = [];
 let appointmentResolution = null;
 let currentEditingLead = null;
 
+const createLeadActivityLog = async ({
+  leadId,
+  actionType,
+  actionLabel,
+  description,
+  oldValue,
+  newValue
+}) => {
+  const client = getClient();
+  if (!client) return;
+
+  const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+
+  const payload = {
+    lead_id: leadId,
+    action_type: actionType,
+    action_label: actionLabel,
+    description: description || null,
+    old_value: oldValue ? String(oldValue) : null,
+    new_value: newValue ? String(newValue) : null,
+    created_by_email: currentCrmUser?.email || null,
+    created_by_name: currentCrmUser?.nome || currentCrmUser?.email || null,
+    created_by_role: currentCrmUser?.cargo || null,
+    created_at: new Date().toISOString()
+  };
+
+  const { error } = await client
+    .from("lead_activity_logs")
+    .insert(payload);
+
+  if (error) {
+    console.error("[Histórico Lead] Erro ao registrar ação da tarefa:", error);
+  }
+};
+
 const statusLabels = {
   lead_recebido: "Lead recebido",
   primeiro_contato: "Primeiro contato",
@@ -328,6 +363,14 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
               doneBtn.textContent = "Concluir";
             } else {
               alert("Tarefa concluída com sucesso.");
+              createLeadActivityLog({
+                leadId: lead.id,
+                actionType: "task_completed",
+                actionLabel: "Tarefa concluída",
+                description: `Tarefa/retorno concluído por ${currentCrmUser.nome || currentCrmUser.email}.`,
+                oldValue: "pending",
+                newValue: "done"
+              });
               await openEditLeadModal(lead, highlightTaskId);
               await loadDashboardMetrics();
             }
@@ -385,6 +428,26 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
               confirmReschBtn.textContent = "Confirmar";
             } else {
               alert("Tarefa reagendada com sucesso.");
+              const oldFormatted = new Date(task.scheduled_at).toLocaleString("pt-BR", {
+                day: "2-digit",
+                month: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit"
+              });
+              const newFormatted = new Date(newScheduledAt).toLocaleString("pt-BR", {
+                day: "2-digit",
+                month: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit"
+              });
+              createLeadActivityLog({
+                leadId: lead.id,
+                actionType: "task_rescheduled",
+                actionLabel: "Tarefa reagendada",
+                description: `Tarefa/retorno reagendado de ${oldFormatted} para ${newFormatted}.`,
+                oldValue: task.scheduled_at,
+                newValue: newScheduledAt
+              });
               await openEditLeadModal(lead, highlightTaskId);
               await loadDashboardMetrics();
             }
@@ -399,6 +462,52 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
             item.scrollIntoView({ behavior: "smooth", block: "center" });
           }, 200);
         }
+      });
+    }
+  }
+
+  // 3. Fetch and render activity logs for this lead
+  const historySection = document.getElementById("modal-lead-history-section");
+  const historyList = document.getElementById("modal-lead-history-list");
+  if (historySection && historyList && client) {
+    historyList.innerHTML = '<p style="color: var(--muted); font-size: 0.8rem; margin: 0;">Carregando histórico...</p>';
+    historySection.style.display = "block";
+
+    const { data: logs, error: logsError } = await client
+      .from("lead_activity_logs")
+      .select("*")
+      .eq("lead_id", lead.id)
+      .order("created_at", { ascending: false });
+
+    if (logsError || !logs || logs.length === 0) {
+      historyList.innerHTML = '<p style="color: var(--muted); font-size: 0.8rem; margin: 0;">Nenhum histórico registrado.</p>';
+    } else {
+      historyList.innerHTML = "";
+      logs.forEach((log) => {
+        const logItem = document.createElement("div");
+        logItem.style.padding = "8px 10px";
+        logItem.style.borderBottom = "1px solid var(--line)";
+        logItem.style.fontSize = "0.75rem";
+        logItem.style.lineHeight = "1.3";
+
+        const logDate = new Date(log.created_at).toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+
+        logItem.innerHTML = `
+          <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+            <strong style="color: var(--gold);">${log.action_label || "Ação"}</strong>
+            <span style="color: var(--muted); font-size: 0.7rem;">${logDate}</span>
+          </div>
+          <div style="color: var(--ink);">${log.description || ""}</div>
+          <div style="color: var(--muted); font-size: 0.7rem; margin-top: 2px;">
+            Executado por: ${log.created_by_name || log.created_by_email || "Sistema"}
+          </div>
+        `;
+        historyList.appendChild(logItem);
       });
     }
   }
