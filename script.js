@@ -872,37 +872,118 @@ const loadTasks = async () => {
     });
 
     const isPending = task.status === "pending";
+    const isOverdue = isPending && new Date(task.scheduled_at) < now;
+
+    if (isOverdue) {
+      card.style.border = "1px solid #ef4444";
+      card.style.background = "rgba(239, 68, 68, 0.02)";
+    }
 
     card.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: start; width: 100%;">
-        <span class="tag" style="background: ${task.type === "whatsapp_message" ? "rgba(34, 197, 94, 0.1)" : "rgba(59, 130, 246, 0.1)"}; color: ${task.type === "whatsapp_message" ? "#22c55e" : "#3b82f6"};">
-          ${task.type === "whatsapp_message" ? "WhatsApp" : "Lembrete"}
-        </span>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="tag" style="background: ${task.type === "whatsapp_message" ? "rgba(34, 197, 94, 0.1)" : "rgba(59, 130, 246, 0.1)"}; color: ${task.type === "whatsapp_message" ? "#22c55e" : "#3b82f6"};">
+            ${task.type === "whatsapp_message" ? "WhatsApp" : "Lembrete"}
+          </span>
+          ${isOverdue ? `<span style="font-size: 0.65rem; color: #ef4444; border: 1px solid #ef4444; padding: 1px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase;">Tarefa atrasada</span>` : ""}
+        </div>
         <span style="font-size: 0.72rem; color: var(--muted); font-weight: 600;">${formattedDate}</span>
       </div>
       <h3 style="font-size: 0.95rem; font-weight: 700; margin: 4px 0 2px; color: var(--ink);">${task.lead_nome}</h3>
       ${task.title ? `<p style="font-size: 0.82rem; font-weight: 600; color: var(--ink); margin: 0;">${task.title}</p>` : ""}
       ${task.internal_note ? `<p style="font-size: 0.78rem; color: var(--muted); margin: 0; line-height: 1.3;">${task.internal_note}</p>` : ""}
-      <div style="border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 0.72rem; color: var(--muted);">Resp: <strong>${task.assigned_to_name || "Sem atribuição"}</strong></span>
-        ${isPending ? `
-          <button class="complete-task-btn" data-task-id="${task.id}" style="border: none; background: #d4a017; color: #150126; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;">
-            Concluir
-          </button>
-        ` : `
-          <span style="font-size: 0.75rem; color: #22c55e; font-weight: 700;">Concluída</span>
-        `}
+      <div style="border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; display: flex; flex-direction: column; gap: 8px; width: 100%;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+          <span style="font-size: 0.72rem; color: var(--muted);">Resp: <strong>${task.assigned_to_name || "Sem atribuição"}</strong></span>
+          ${isPending ? `
+            <div style="display: flex; gap: 6px; align-items: center;">
+              ${task.lead_id ? `
+                <button class="task-open-lead-btn" style="border: none; background: transparent; color: var(--gold); font-size: 0.72rem; font-weight: 700; padding: 4px 6px; cursor: pointer; text-decoration: underline;">
+                  Abrir lead
+                </button>
+              ` : ""}
+              <button class="complete-task-btn" style="border: none; background: #22c55e; color: #150126; font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
+                Concluir
+              </button>
+              <button class="reschedule-task-btn" style="border: none; background: var(--gold); color: #150126; font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
+                Reagendar
+              </button>
+            </div>
+          ` : `
+            <span style="font-size: 0.75rem; color: #22c55e; font-weight: 700;">Concluída</span>
+          `}
+        </div>
+
+        <!-- Inline Reschedule Form -->
+        <div class="reschedule-form-inline" style="display: none; flex-direction: column; gap: 8px; margin-top: 4px; border-top: 1px dotted var(--line); padding-top: 8px; width: 100%;">
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <label style="flex: 1; min-width: 110px; display: flex; flex-direction: column; gap: 3px; font-size: 0.72rem; color: var(--muted);">
+              Nova data
+              <input type="date" class="reschedule-date-input" style="min-height: 28px; border: 1px solid var(--line); border-radius: 6px; padding: 0 8px; background: var(--surface); color: var(--ink); font-size: 0.78rem;" />
+            </label>
+            <label style="flex: 1; min-width: 100px; display: flex; flex-direction: column; gap: 3px; font-size: 0.72rem; color: var(--muted);">
+              Novo horário
+              <input type="time" class="reschedule-time-input" style="min-height: 28px; border: 1px solid var(--line); border-radius: 6px; padding: 0 8px; background: var(--surface); color: var(--ink); font-size: 0.78rem;" />
+            </label>
+          </div>
+          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button class="reschedule-cancel-inline-btn" style="border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Cancelar</button>
+            <button class="reschedule-confirm-inline-btn" style="border: none; background: var(--gold); color: #150126; font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Confirmar</button>
+          </div>
+        </div>
       </div>
     `;
 
+    const checkPermission = () => {
+      const uRole = normalizeRole(currentCrmUser?.cargo);
+      const isUserAdmin = ["dono", "admin", "administrador", "coordenador", "supervisor"].includes(uRole);
+      const isUserOwner = task.assigned_to_email === currentCrmUser?.email;
+      return isUserAdmin || isUserOwner;
+    };
+
+    const openLeadBtn = card.querySelector(".task-open-lead-btn");
     const completeBtn = card.querySelector(".complete-task-btn");
+    const rescheduleBtn = card.querySelector(".reschedule-task-btn");
+    const reschForm = card.querySelector(".reschedule-form-inline");
+    const cancelReschBtn = card.querySelector(".reschedule-cancel-inline-btn");
+    const confirmReschBtn = card.querySelector(".reschedule-confirm-inline-btn");
+
+    if (openLeadBtn) {
+      openLeadBtn.addEventListener("click", async () => {
+        openLeadBtn.disabled = true;
+        const originalText = openLeadBtn.textContent;
+        openLeadBtn.textContent = "Abrindo...";
+
+        const { data: lead, error: leadErr } = await client.from("leads").select("*").eq("id", task.lead_id).single();
+        openLeadBtn.disabled = false;
+        openLeadBtn.textContent = originalText;
+
+        if (leadErr || !lead) {
+          alert("Não foi possível localizar o lead desta tarefa.");
+        } else {
+          openEditLeadModal(lead, task.id);
+        }
+      });
+    }
+
     if (completeBtn) {
       completeBtn.addEventListener("click", async () => {
+        if (!checkPermission()) {
+          alert("Você não tem permissão para alterar esta tarefa.");
+          return;
+        }
         completeBtn.disabled = true;
         completeBtn.textContent = "Salvando...";
+
         const { error: updateErr } = await client
           .from("tasks")
-          .update({ status: "done", updated_at: new Date().toISOString() })
+          .update({
+            status: "done",
+            completed_at: new Date().toISOString(),
+            completed_by_email: currentCrmUser?.email || "",
+            completed_by_name: currentCrmUser?.nome || currentCrmUser?.email || "",
+            updated_at: new Date().toISOString()
+          })
           .eq("id", task.id);
 
         if (updateErr) {
@@ -910,7 +991,98 @@ const loadTasks = async () => {
           completeBtn.disabled = false;
           completeBtn.textContent = "Concluir";
         } else {
-          loadTasks();
+          alert("Tarefa concluída com sucesso.");
+          if (task.lead_id) {
+            createLeadActivityLog({
+              leadId: task.lead_id,
+              actionType: "task_completed",
+              actionLabel: "Tarefa concluída",
+              description: `Tarefa/retorno concluído por ${currentCrmUser.nome || currentCrmUser.email}.`,
+              oldValue: "pending",
+              newValue: "done"
+            });
+          }
+          await loadTasks();
+          await loadDashboardMetrics();
+        }
+      });
+    }
+
+    if (rescheduleBtn && reschForm) {
+      rescheduleBtn.addEventListener("click", () => {
+        if (!checkPermission()) {
+          alert("Você não tem permissão para alterar esta tarefa.");
+          return;
+        }
+        reschForm.style.display = "flex";
+      });
+    }
+
+    if (cancelReschBtn && reschForm) {
+      cancelReschBtn.addEventListener("click", () => {
+        reschForm.style.display = "none";
+      });
+    }
+
+    if (confirmReschBtn && reschForm) {
+      confirmReschBtn.addEventListener("click", async () => {
+        if (!checkPermission()) {
+          alert("Você não tem permissão para alterar esta tarefa.");
+          return;
+        }
+        const dateVal = reschForm.querySelector(".reschedule-date-input").value;
+        const timeVal = reschForm.querySelector(".reschedule-time-input").value;
+
+        if (!dateVal || !timeVal) {
+          alert("Favor selecionar data e hora para o reagendamento.");
+          return;
+        }
+
+        confirmReschBtn.disabled = true;
+        confirmReschBtn.textContent = "Salvando...";
+
+        const newScheduledAt = new Date(`${dateVal}T${timeVal}:00`).toISOString();
+
+        const { error: updateErr } = await client
+          .from("tasks")
+          .update({
+            scheduled_at: newScheduledAt,
+            updated_at: new Date().toISOString(),
+            updated_by_email: currentCrmUser?.email || "",
+            updated_by_name: currentCrmUser?.nome || currentCrmUser?.email || ""
+          })
+          .eq("id", task.id);
+
+        if (updateErr) {
+          alert(`Erro ao reagendar tarefa: ${updateErr.message}`);
+          confirmReschBtn.disabled = false;
+          confirmReschBtn.textContent = "Confirmar";
+        } else {
+          alert("Tarefa reagendada com sucesso.");
+          if (task.lead_id) {
+            const oldFormatted = new Date(task.scheduled_at).toLocaleString("pt-BR", {
+              day: "2-digit",
+              month: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit"
+            });
+            const newFormatted = new Date(newScheduledAt).toLocaleString("pt-BR", {
+              day: "2-digit",
+              month: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit"
+            });
+            createLeadActivityLog({
+              leadId: task.lead_id,
+              actionType: "task_rescheduled",
+              actionLabel: "Tarefa reagendada",
+              description: `Tarefa/retorno reagendado de ${oldFormatted} para ${newFormatted}.`,
+              oldValue: task.scheduled_at,
+              newValue: newScheduledAt
+            });
+          }
+          await loadTasks();
+          await loadDashboardMetrics();
         }
       });
     }
