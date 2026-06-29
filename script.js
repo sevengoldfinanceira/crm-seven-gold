@@ -1412,6 +1412,16 @@ leadForm?.addEventListener("submit", async (event) => {
     }
   } else {
     const crmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+    const responsibleEmail = crmUser?.email || user.email || null;
+    const responsibleName = crmUser?.nome || crmUser?.email || user.email || null;
+
+    if (!responsibleEmail) {
+      submitButton.disabled = false;
+      submitButton.textContent = "Salvar lead";
+      setFormStatus("Nao foi possivel identificar o usuario responsavel pelo lead.");
+      return;
+    }
+
     const { error } = await client.from("leads").insert({
       name,
       telefone: String(formData.get("telefone") || "").replace(/\D/g, ""),
@@ -1424,10 +1434,10 @@ leadForm?.addEventListener("submit", async (event) => {
       down_payment_value: parseOptionalMoney(formData.get("down_payment_value")),
       installment_value: parseOptionalMoney(formData.get("installment_value")),
       owner_id: user.id,
-      assigned_to_email: crmUser?.email || user.email || null,
-      assigned_to_name: crmUser?.nome || null,
-      created_by_email: crmUser?.email || user.email || null,
-      created_by_name: crmUser?.nome || null,
+      assigned_to_email: responsibleEmail,
+      assigned_to_name: responsibleName,
+      created_by_email: responsibleEmail,
+      created_by_name: responsibleName,
     });
 
     submitButton.disabled = false;
