@@ -22,9 +22,19 @@
     { key: "coordenador-comercial", label: "Coordenador Comercial" },
     { key: "home-office", label: "Home Office" },
     { key: "coordenador-posvenda", label: "Coordenador de Pós-Venda" },
+    { key: "analista-posvenda", label: "Analista Pós-Venda" },
+    { key: "pos-vendas", label: "Suporte ao Cliente" },
+    { key: "assistente-adm", label: "Assistente Adm." },
+    { key: "analista-adm", label: "Analista Adm." },
     { key: "coordenador-adm", label: "Coordenador Administrativo" },
+    { key: "financeiro", label: "Financeiro" },
+    { key: "auxiliar-financeiro", label: "Auxiliar Financeiro" },
     { key: "coordenador-financeiro", label: "Coordenador Financeiro" },
+    { key: "assistente-mkt", label: "Assistente Mkt." },
+    { key: "analista-mkt", label: "Auxilista Mkt." },
     { key: "coordenador-mkt", label: "Coordenador de Marketing" },
+    { key: "assistente-rh", label: "Assistente de RH" },
+    { key: "analista-rh", label: "Analista de RH" },
     { key: "coordenador-rh", label: "Coordenador de RH" },
     { key: "advogado-juridico", label: "Advogado Jurídico" },
   ];
@@ -51,16 +61,20 @@
       ]
     },
     {
-      id: "posvenda",
+      id: "pos-venda",
       title: "Pós-Venda",
       roles: [
-        { key: "coordenador-posvenda", label: "Coordenador de Pós-Venda" }
+        { key: "coordenador-posvenda", label: "Coordenador de Pós-Venda" },
+        { key: "analista-posvenda", label: "Analista Pós-Venda" },
+        { key: "pos-vendas", label: "Suporte ao Cliente" }
       ]
     },
     {
       id: "administrativo",
       title: "Administrativo",
       roles: [
+        { key: "assistente-adm", label: "Assistente Adm." },
+        { key: "analista-adm", label: "Analista Adm." },
         { key: "coordenador-adm", label: "Coordenador Administrativo" },
         { key: "administrador", label: "Administrador" }
       ]
@@ -69,6 +83,8 @@
       id: "financeiro",
       title: "Financeiro",
       roles: [
+        { key: "financeiro", label: "Financeiro" },
+        { key: "auxiliar-financeiro", label: "Auxiliar Financeiro" },
         { key: "coordenador-financeiro", label: "Coordenador Financeiro" }
       ]
     },
@@ -76,6 +92,8 @@
       id: "marketing",
       title: "Marketing",
       roles: [
+        { key: "assistente-mkt", label: "Assistente Mkt." },
+        { key: "analista-mkt", label: "Auxilista Mkt." },
         { key: "coordenador-mkt", label: "Coordenador de Marketing" }
       ]
     },
@@ -83,6 +101,8 @@
       id: "rh",
       title: "Recursos Humanos (RH)",
       roles: [
+        { key: "assistente-rh", label: "Assistente de RH" },
+        { key: "analista-rh", label: "Analista de RH" },
         { key: "coordenador-rh", label: "Coordenador de RH" }
       ]
     },

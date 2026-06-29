@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-permission-sector-groups-v1";
+const CACHE_VERSION = "seven-gold-all-team-permission-roles-v1";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
