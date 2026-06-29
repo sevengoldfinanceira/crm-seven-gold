@@ -96,9 +96,10 @@ document.getElementById("modal-lead-responsible-select")?.addEventListener("chan
   }
 });
 
-const openEditLeadModal = (lead) => {
+const openEditLeadModal = async (lead, highlightTaskId = null) => {
   if (!modal || !leadForm) return;
 
+  const client = getClient();
   const title = modal.querySelector("#modal-title");
   const submitButton = modal.querySelector("button[type='submit']");
   const statusLabel = modal.querySelector("#modal-status-label");
@@ -188,6 +189,89 @@ const openEditLeadModal = (lead) => {
   }
   if (leadForm.elements["installment_value"]) {
     leadForm.elements["installment_value"].value = lead.installment_value ?? "";
+  }
+
+  // Fetch and render tasks for this lead
+  const tasksSection = document.getElementById("modal-lead-tasks-section");
+  const tasksList = document.getElementById("modal-lead-tasks-list");
+  if (tasksSection && tasksList && client) {
+    tasksList.innerHTML = '<p style="color: var(--muted); font-size: 0.8rem; margin: 0;">Carregando tarefas...</p>';
+    tasksSection.style.display = "block";
+
+    const { data: leadTasks, error } = await client
+      .from("tasks")
+      .select("*")
+      .eq("lead_id", lead.id)
+      .order("scheduled_at", { ascending: true });
+
+    if (error || !leadTasks || leadTasks.length === 0) {
+      tasksSection.style.display = "none";
+    } else {
+      tasksList.innerHTML = "";
+      const now = new Date();
+
+      leadTasks.forEach((task) => {
+        const item = document.createElement("div");
+        item.style.padding = "10px 12px";
+        item.style.border = "1px solid var(--line)";
+        item.style.borderRadius = "8px";
+        item.style.background = "rgba(255, 255, 255, 0.02)";
+        item.style.display = "flex";
+        item.style.justifyContent = "space-between";
+        item.style.alignItems = "center";
+        item.style.fontSize = "0.8rem";
+
+        const formattedDate = new Date(task.scheduled_at).toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+
+        const typeLabel = task.type === "whatsapp_message" ? "Retorno WhatsApp" : "Lembrete / Retorno";
+
+        // Check if overdue
+        const isOverdue = task.status !== "done" && new Date(task.scheduled_at) < now;
+        const shouldHighlight = highlightTaskId && task.id === highlightTaskId;
+
+        if (shouldHighlight) {
+          item.style.border = "2px solid #ef4444";
+          item.style.background = "rgba(239, 68, 68, 0.05)";
+        } else if (isOverdue) {
+          item.style.border = "1px solid #ef4444";
+          item.style.background = "rgba(239, 68, 68, 0.02)";
+        }
+
+        item.innerHTML = `
+          <div>
+            <div style="font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+              <span>${typeLabel}</span>
+              ${shouldHighlight || isOverdue ? `<span style="font-size: 0.65rem; color: #ef4444; border: 1px solid #ef4444; padding: 1px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase;">Tarefa atrasada</span>` : ""}
+            </div>
+            ${task.title ? `<div style="color: var(--ink); font-weight: 600;">${task.title}</div>` : ""}
+            ${task.internal_note ? `<div style="font-size: 0.75rem; color: var(--muted); margin-top: 2px; line-height: 1.3;">${task.internal_note}</div>` : ""}
+            <div style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">
+              Agendado para: <strong>${formattedDate}</strong>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+            <span style="font-size: 0.72rem; color: var(--muted);">Resp: <strong>${task.assigned_to_name || "Sem atribuição"}</strong></span>
+            <span style="font-size: 0.72rem; color: ${task.status === "done" ? "#22c55e" : "#ef4444"}; font-weight: 700;">
+              ${task.status === "done" ? "Concluída" : "Pendente"}
+            </span>
+          </div>
+        `;
+
+        tasksList.appendChild(item);
+
+        // Scroll to highlighted task
+        if (shouldHighlight) {
+          setTimeout(() => {
+            item.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 200);
+        }
+      });
+    }
   }
 
   setFormStatus("");
