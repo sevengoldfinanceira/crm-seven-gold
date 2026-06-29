@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { name, phone, tags, notes, source, owner_id } = req.body;
+    const { name, phone, tags, notes, source, owner_id, owner_email, owner_name } = req.body;
 
     console.log('[from-whatsapp-extension] Requisição recebida');
 
@@ -68,6 +68,10 @@ module.exports = async (req, res) => {
       origin: source || 'whatsapp_web_extension',
       note: notes || '',
       owner_id: ownerId,
+      assigned_to_email: owner_email || null,
+      assigned_to_name: owner_name || null,
+      created_by_email: owner_email || null,
+      created_by_name: owner_name || null,
       ...normalizeLeadClientInfo(req.body),
     };
     if (tags) insertData.tags = tags;
