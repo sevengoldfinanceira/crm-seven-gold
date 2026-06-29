@@ -25,6 +25,9 @@
     period: "mes",
     month: "",
     person: "todos",
+    leads: [],
+    appointments: [],
+    tasks: [],
   };
 
   const getClient = () => window.sevenGoldAuth;
@@ -405,6 +408,7 @@
     if (error) return;
 
     const leads = data || [];
+    state.leads = leads;
     renderLeadsSummary(leads);
     renderLeadsByStatus(leads);
     renderLeadsByOrigin(leads);
@@ -427,6 +431,7 @@
     const { data, error } = await query;
     if (error) return;
 
+    state.appointments = data || [];
     renderAppointmentsSummary(data || []);
   };
 
@@ -447,7 +452,104 @@
     const { data, error } = await query;
     if (error) return;
 
+    state.tasks = data || [];
     renderTasksSummary(data || []);
+  };
+
+  const renderSellerPerformance = async () => {
+    const sectionEl = document.getElementById("seller-performance-section");
+    const tbodyEl = document.getElementById("seller-performance-tbody");
+    if (!sectionEl || !tbodyEl) return;
+
+    const crmUser = getCurrentCrmUser();
+    const seeAll = canSeeAllCommercialRecords(crmUser);
+
+    if (!seeAll) {
+      sectionEl.style.display = "none";
+      return;
+    }
+
+    sectionEl.style.display = "block";
+    tbodyEl.innerHTML = '<tr><td colspan="7" style="padding: 16px; text-align: center; color: var(--muted);">Carregando desempenho...</td></tr>';
+
+    const client = getClient();
+    if (!client) return;
+
+    const { data: users, error } = await client
+      .from("crm_users")
+      .select("nome, email, cargo, ativo")
+      .eq("ativo", true)
+      .order("nome", { ascending: true });
+
+    if (error || !users) {
+      tbodyEl.innerHTML = '<tr><td colspan="7" style="padding: 16px; text-align: center; color: #ef4444;">Erro ao carregar vendedores.</td></tr>';
+      return;
+    }
+
+    const performanceData = users.map((u) => {
+      const email = u.email;
+      const userLeads = state.leads.filter(l => l.assigned_to_email === email);
+      const totalLeads = userLeads.length;
+      const activeLeads = userLeads.filter(l => ["primeiro_contato", "agendamento", "cliente_em_loja", "proposta_enviada"].includes(l.status)).length;
+      const closedLeads = userLeads.filter(l => l.status === "venda_fechada").length;
+      const userAppointments = state.appointments.filter(a => a.assigned_to_email === email).length;
+      const userTasks = state.tasks.filter(t => t.assigned_to_email === email && t.status === "pending").length;
+      const conversionRate = totalLeads > 0 ? (closedLeads / totalLeads) * 100 : 0;
+
+      return {
+        nome: u.nome,
+        email: u.email,
+        cargo: u.cargo,
+        totalLeads,
+        activeLeads,
+        closedLeads,
+        appointments: userAppointments,
+        tasks: userTasks,
+        conversionRate
+      };
+    });
+
+    let filteredData = performanceData;
+    if (state.person !== "todos") {
+      filteredData = performanceData.filter(p => p.email === state.person);
+    }
+
+    filteredData.sort((a, b) => {
+      if (b.closedLeads !== a.closedLeads) {
+        return b.closedLeads - a.closedLeads;
+      }
+      if (b.conversionRate !== a.conversionRate) {
+        return b.conversionRate - a.conversionRate;
+      }
+      return b.totalLeads - a.totalLeads;
+    });
+
+    tbodyEl.innerHTML = "";
+    if (filteredData.length === 0) {
+      tbodyEl.innerHTML = '<tr><td colspan="7" style="padding: 16px; text-align: center; color: var(--muted);">Nenhum vendedor encontrado.</td></tr>';
+      return;
+    }
+
+    filteredData.forEach((item) => {
+      const cargoLabel = item.cargo ? item.cargo.charAt(0).toUpperCase() + item.cargo.slice(1) : "";
+      const displayCargo = cargoLabel ? ` — ${cargoLabel}` : "";
+      
+      const tr = document.createElement("tr");
+      tr.style.borderBottom = "1px solid var(--line)";
+      tr.innerHTML = `
+        <td style="padding: 12px;">
+          <strong style="color: var(--ink);">${item.nome}</strong>
+          <div style="color: var(--muted); font-size: 0.72rem; margin-top: 2px;">${displayCargo}</div>
+        </td>
+        <td style="padding: 12px; color: var(--ink);">${item.totalLeads}</td>
+        <td style="padding: 12px; color: var(--ink);">${item.activeLeads}</td>
+        <td style="padding: 12px; color: var(--ink);">${item.appointments}</td>
+        <td style="padding: 12px;"><strong style="color: #10b981;">${item.closedLeads}</strong></td>
+        <td style="padding: 12px;"><strong style="color: var(--gold);">${item.conversionRate.toFixed(1)}%</strong></td>
+        <td style="padding: 12px; color: var(--ink);">${item.tasks}</td>
+      `;
+      tbodyEl.appendChild(tr);
+    });
   };
 
   form?.addEventListener("submit", async (event) => {
@@ -523,6 +625,7 @@
       loadAppointmentsSummary(),
       loadTasksSummary(),
     ]);
+    await renderSellerPerformance();
   });
 
   focusButton?.addEventListener("click", () => {
@@ -554,5 +657,6 @@
       loadAppointmentsSummary(),
       loadTasksSummary(),
     ]);
+    await renderSellerPerformance();
   });
 })();
