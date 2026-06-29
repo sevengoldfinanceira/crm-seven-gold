@@ -297,7 +297,10 @@
       const isMaster = user.email.toLowerCase().trim() === 'sevengoldfinanceira@gmail.com';
       const resolvedRoleLabel = (() => {
         if (isMaster) {
-          return "Dono Master";
+          return "Diretor CEO";
+        }
+        if (user.cargo === "dono") {
+          return "Diretor CEO";
         }
         for (const sec of sectors) {
           const r = sec.roles.find(x => x.key === user.cargo);
