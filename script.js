@@ -689,7 +689,7 @@ const loadDashboardMetrics = async () => {
   const totalAppointments = (apptsData || []).length;
 
   // 3. Tarefas
-  let tasksQuery = client.from("tasks").select("status, assigned_to_email").eq("status", "pending");
+  let tasksQuery = client.from("tasks").select("id, lead_id, lead_nome, type, scheduled_at, assigned_to_name, assigned_to_email, status").eq("status", "pending");
   if (!shouldSeeAllLeads(currentCrmUser)) {
     tasksQuery = tasksQuery.eq("assigned_to_email", currentCrmUser.email);
   } else if (selectedDashResponsibleEmail) {
@@ -832,6 +832,87 @@ const loadDashboardMetrics = async () => {
           const email = btn.dataset.email;
           const name = btn.dataset.name;
           window.location.href = `relatorios.html?seller_email=${encodeURIComponent(email)}&seller_name=${encodeURIComponent(name)}`;
+        });
+      });
+    }
+  }
+
+  // 5. Alertas de Tarefas Atrasadas
+  const elTasksAlertsList = document.getElementById("dash-tasks-alerts-list");
+  if (elTasksAlertsList) {
+    const now = new Date();
+    const overdueTasks = (tasksData || []).filter(t => {
+      return t.scheduled_at && new Date(t.scheduled_at) < now;
+    });
+
+    if (overdueTasks.length === 0) {
+      elTasksAlertsList.innerHTML = `
+        <p style="color: #10b981; font-size: 0.85rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 6px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Nenhuma tarefa atrasada.
+        </p>
+      `;
+    } else {
+      elTasksAlertsList.innerHTML = "";
+      overdueTasks.forEach((task) => {
+        const item = document.createElement("div");
+        item.style.padding = "10px 12px";
+        item.style.border = "1px solid var(--line)";
+        item.style.borderRadius = "8px";
+        item.style.background = "rgba(255, 255, 255, 0.02)";
+        item.style.display = "flex";
+        item.style.justifyContent = "space-between";
+        item.style.alignItems = "center";
+        item.style.fontSize = "0.82rem";
+
+        const formattedDate = new Date(task.scheduled_at).toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+
+        const typeLabel = task.type === "whatsapp_message" ? "Retorno WhatsApp" : "Lembrete / Retorno";
+
+        item.innerHTML = `
+          <div>
+            <div style="font-weight: 700; color: var(--gold); margin-bottom: 2px;">
+              ${task.assigned_to_name || "Sem atribuição"} — ${typeLabel}
+            </div>
+            <div style="color: var(--ink); font-weight: 600;">
+              Cliente: ${task.lead_nome || "Sem nome"}
+            </div>
+            <div style="font-size: 0.72rem; color: #ef4444; font-weight: 700; margin-top: 4px;">
+              Atrasado desde ${formattedDate}
+            </div>
+          </div>
+          <button class="dash-task-open-btn" data-lead-id="${task.lead_id}" style="border: none; background: var(--gold); color: #150126; font-size: 0.75rem; font-weight: 700; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;">
+            Abrir lead
+          </button>
+        `;
+        elTasksAlertsList.appendChild(item);
+      });
+
+      // Bind click events to buttons
+      elTasksAlertsList.querySelectorAll(".dash-task-open-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const leadId = btn.dataset.leadId;
+          if (!leadId) return;
+          btn.disabled = true;
+          const originalText = btn.textContent;
+          btn.textContent = "Abrindo...";
+          
+          const client = getClient();
+          const { data, error } = await client.from("leads").select("*").eq("id", leadId).single();
+          
+          btn.disabled = false;
+          btn.textContent = originalText;
+          
+          if (error) {
+            alert(`Erro ao carregar lead: ${error.message}`);
+          } else if (data) {
+            openEditLeadModal(data);
+          }
         });
       });
     }
