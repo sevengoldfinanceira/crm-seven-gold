@@ -590,15 +590,8 @@ const formatSellerName = (value) => {
 
 const getCurrentSellerName = async () => {
   const user = await getCurrentUser();
-  const client = getClient();
-  if (client && user?.id) {
-    const { data: profile } = await client
-      .from("profiles")
-      .select("full_name")
-      .eq("id", user.id)
-      .maybeSingle();
-    if (profile?.full_name) return profile.full_name;
-  }
+  const crmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+  if (crmUser?.nome) return crmUser.nome;
   return user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "Usuario";
 };
 
@@ -1760,18 +1753,9 @@ const loadAppointments = async () => {
     return;
   }
   const appointments = data || [];
-  const sellerIds = [...new Set(appointments.map((item) => item.usuario_id).filter(Boolean))];
-  let sellerNames = new Map();
-  if (sellerIds.length) {
-    const { data: profiles } = await client
-      .from("profiles")
-      .select("id, full_name")
-      .in("id", sellerIds);
-    sellerNames = new Map((profiles || []).map((profile) => [profile.id, profile.full_name]));
-  }
   calendarAppointments = appointments.map((item) => ({
     ...item,
-    vendedor_nome: sellerNames.get(item.usuario_id) || item.nome_usuario,
+    vendedor_nome: item.vendedor_nome || item.nome_usuario,
   }));
   renderCalendar();
   setCalendarStatus(`${calendarAppointments.length} agendamento${calendarAppointments.length === 1 ? "" : "s"} nesta semana.`);

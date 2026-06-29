@@ -30,48 +30,7 @@
 
   const getTarget = (element) => element?.dataset.redirect || "painel.html";
 
-  const ensureProfile = async (session) => {
-    const user = session?.user;
-
-    if (!user) {
-      return;
-    }
-
-    const { data } = await client
-      .from("profiles")
-      .select("id")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (data) {
-      return;
-    }
-
-    await client.from("profiles").insert({
-      id: user.id,
-      full_name: user.user_metadata?.full_name || user.email,
-      email: user.email,
-      role: "vendedor",
-    });
-  };
-
-  const getProfile = async (session) => {
-    const user = session?.user;
-
-    if (!user) {
-      return null;
-    }
-
-    const { data } = await client
-      .from("profiles")
-      .select("id, full_name, email, role")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    return data;
-  };
-
-  const checkPortalUserAuthorization = async (userEmail, userId) => {
+  const checkPortalUserAuthorization = async (userEmail) => {
     if (!userEmail) {
       throw new Error("Nao foi possivel identificar o e-mail do usuario logado.");
     }
@@ -90,41 +49,6 @@
 
     if (crmUser) {
       return crmUser;
-    }
-
-    // Se nao estiver no crm_users, verifica se tem role de 'dono' ou 'administrador' na tabela profiles
-    if (userId) {
-      const { data: profile, error: profileError } = await client
-        .from("profiles")
-        .select("id, full_name, email, role")
-        .eq("id", userId)
-        .maybeSingle();
-
-      if (profileError) {
-        console.error("[Portal Auth] Erro ao buscar profile:", profileError);
-      }
-
-      if (profile && (profile.role === "dono" || profile.role === "administrador")) {
-        const newCrmUser = {
-          email: normalizedEmail,
-          nome: profile.full_name || normalizedEmail.split("@")[0],
-          cargo: profile.role,
-          ativo: true
-        };
-
-        const { data: insertedUser, error: insertError } = await client
-          .from("crm_users")
-          .insert(newCrmUser)
-          .select("email, nome, cargo, ativo")
-          .maybeSingle();
-
-        if (insertError) {
-          console.error("[Portal Auth] Erro ao registrar dono no crm_users:", insertError);
-          return newCrmUser;
-        }
-
-        return insertedUser || newCrmUser;
-      }
     }
 
     throw new Error("Usuario nao autorizado. Solicite acesso ao administrador.");
@@ -146,7 +70,7 @@
 
   const requirePortalAuthorization = async (session) => {
     try {
-      return await checkPortalUserAuthorization(session?.user?.email, session?.user?.id);
+      return await checkPortalUserAuthorization(session?.user?.email);
     } catch (error) {
       console.error("[Portal Auth] Acesso bloqueado:", error);
       await client.auth.signOut();
@@ -332,7 +256,7 @@
     }
   };
 
-  const applyRoleVisibility = (role, profile) => {
+  const applyRoleVisibility = (role, sessionUser) => {
     document.querySelectorAll("[data-visible-roles]").forEach((element) => {
       const roles = parseRoles(element.dataset.visibleRoles);
 
@@ -351,8 +275,8 @@
     });
 
     let displayRole = role || "sem perfil";
-    if (profile?.id) {
-      const cargoKey = resolveCargoForUser(profile.id);
+    if (sessionUser?.id) {
+      const cargoKey = resolveCargoForUser(sessionUser.id);
       if (cargoKey && cargoDisplayNames[cargoKey]) {
         displayRole = cargoDisplayNames[cargoKey];
       }
@@ -407,7 +331,6 @@
         const portalUser = await requirePortalAuthorization(data.session);
         if (!portalUser) return;
 
-        await ensureProfile(data.session);
         window.location.href = target;
       });
     });
@@ -426,9 +349,9 @@
     });
   };
 
-  const applyUserProfile = async (session, profile) => {
+  const applyUserProfile = async (session, crmUser) => {
     const user = session?.user;
-    const name = profile?.full_name || user?.user_metadata?.full_name || user?.email || "Usuario";
+    const name = crmUser?.nome || user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "Usuario";
     const firstName = name.trim().split(/\s+/)[0];
     const initial = firstName.charAt(0).toUpperCase();
 
@@ -439,7 +362,7 @@
       element.textContent = firstName;
     });
     document.querySelectorAll("[data-user-email]").forEach((element) => {
-      element.textContent = user?.email || profile?.email || "";
+      element.textContent = user?.email || crmUser?.email || "";
     });
     document.querySelectorAll("[data-user-avatar]").forEach((element) => {
       element.textContent = initial;
@@ -500,8 +423,8 @@
       return false;
     }
 
-    await ensureProfile(data.session);
-    const profile = await getProfile(data.session);
+    const portalUser = await requirePortalAuthorization(data.session);
+    if (!portalUser) return false;
 
     // Hide Google login button and its divider to simplify the form
     const googleBtn = form.querySelector("[data-google-login]");
@@ -510,7 +433,7 @@
     if (divider) divider.style.display = "none";
 
     // Update Header with user profile details
-    const name = profile?.full_name || data.session.user.user_metadata?.full_name || data.session.user.email || "Usuário";
+    const name = portalUser?.nome || data.session.user.user_metadata?.full_name || data.session.user.user_metadata?.name || data.session.user.email || "Usuário";
     const firstName = name.trim().split(/\s+/)[0];
     const initial = firstName.charAt(0).toUpperCase();
 
@@ -544,7 +467,7 @@
     }
 
     // Populate user details asynchronously
-    await applyUserProfile(data.session, profile);
+    await applyUserProfile(data.session, portalUser);
 
     return true;
   };
@@ -633,7 +556,6 @@
 
     const portalUser = await requirePortalAuthorization(session);
     if (!portalUser) return true;
-    await ensureProfile(session);
     window.location.href = next;
     return true;
   };
@@ -658,9 +580,7 @@
     const authorizedPortalUser = await requirePortalAuthorization(session);
     if (!authorizedPortalUser) return;
 
-    await ensureProfile(session);
-    const profile = await getProfile(session);
-    const role = normalizeSystemRole(authorizedPortalUser.cargo || profile?.role || "vendedor");
+    const role = normalizeSystemRole(authorizedPortalUser.cargo || "vendedor");
     await loadCachedPermissions(role);
     window.currentUser = session.user;
     window.crmUser = authorizedPortalUser;
@@ -684,8 +604,8 @@
       return;
     }
 
-    applyRoleVisibility(role, profile);
-    await applyUserProfile(session, profile);
+    applyRoleVisibility(role, session.user);
+    await applyUserProfile(session, authorizedPortalUser);
     if (permissionArea === "crm") {
       applyCrmUserIdentity(session.user, authorizedPortalUser, role);
       document.body.classList.add("crm-authorized");

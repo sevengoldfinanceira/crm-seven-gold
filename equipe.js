@@ -606,7 +606,7 @@
     return html;
   };
 
-  // Load active profiles from Supabase profiles
+  // Load active collaborators from Supabase crm_users
   const loadProfiles = async () => {
     const client = getClient();
     let data = [];
@@ -691,7 +691,7 @@
         await client.from("crm_users").delete().eq("id", delU.id);
       }
 
-      // 3. Upsert current profiles to Supabase crm_users
+      // 3. Upsert current collaborators to Supabase crm_users
       for (const profile of state.profiles) {
         const cargo = profile.role || "vendedor";
         const ativo = profile.status === "ativo";

@@ -35,15 +35,15 @@
     user = userResult.user;
     if (!user) return;
 
-    const { data: profile } = await client
-      .from("profiles")
-      .select("full_name, email")
-      .eq("id", user.id)
+    const { data: crmUser } = await client
+      .from("crm_users")
+      .select("nome, email")
+      .eq("email", String(user.email || "").trim().toLowerCase())
       .maybeSingle();
 
-    const name = profile?.full_name || user.user_metadata?.full_name || user.email;
+    const name = crmUser?.nome || user.user_metadata?.full_name || user.user_metadata?.name || user.email;
     form.elements.full_name.value = name;
-    form.elements.email.value = user.email || profile?.email || "";
+    form.elements.email.value = user.email || crmUser?.email || "";
 
     const { data: savedAvatar } = await client.storage
       .from("company-documents")
@@ -75,9 +75,9 @@
     setStatus("");
 
     const { error: profileError } = await client
-      .from("profiles")
-      .update({ full_name: name })
-      .eq("id", user.id);
+      .from("crm_users")
+      .update({ nome: name, updated_at: new Date().toISOString() })
+      .eq("email", String(user.email || "").trim().toLowerCase());
 
     let avatarError = null;
     if (file) {
