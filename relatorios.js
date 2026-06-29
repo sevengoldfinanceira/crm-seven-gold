@@ -456,6 +456,36 @@
     renderTasksSummary(data || []);
   };
 
+  const calculatePacingStatus = (actual, target, monthStr) => {
+    if (!target || target <= 0) return { label: "Sem meta definida", color: "var(--muted)" };
+
+    const today = new Date();
+    const [year, month] = monthStr.split("-").map(Number);
+    const targetMonthDate = new Date(year, month - 1, 1);
+    const daysInMonth = new Date(year, month, 0).getDate();
+    
+    let expectedProgress = 1.0; 
+    
+    const isCurrentMonth = today.getFullYear() === year && (today.getMonth() + 1) === month;
+    const isFutureMonth = new Date(today.getFullYear(), today.getMonth(), 1) < targetMonthDate;
+
+    if (isCurrentMonth) {
+      expectedProgress = today.getDate() / daysInMonth;
+    } else if (isFutureMonth) {
+      expectedProgress = 0.0;
+    }
+
+    const realProgress = actual / target;
+
+    if (realProgress >= expectedProgress) {
+      return { label: "No ritmo", color: "#10b981" };
+    } else if (realProgress >= (expectedProgress - 0.15)) {
+      return { label: "Atenção", color: "#eab308" };
+    } else {
+      return { label: "Atrasado", color: "#ef4444" };
+    }
+  };
+
   const loadSalesGoals = async () => {
     const client = getClient();
     if (!client) return;
@@ -519,12 +549,39 @@
       
       const formattedMonth = g.month ? g.month.split("-").reverse().join("/") : "";
 
+      const userLeads = state.leads.filter(l => {
+        if (l.assigned_to_email !== g.user_email || !l.created_at) return false;
+        const leadDate = new Date(l.created_at);
+        const leadMonth = `${leadDate.getFullYear()}-${String(leadDate.getMonth() + 1).padStart(2, "0")}`;
+        return leadMonth === g.month;
+      });
+      const actualLeads = userLeads.length;
+      const actualSales = userLeads.filter(l => l.status === "venda_fechada").length;
+
+      const actualAppointments = state.appointments.filter(a => {
+        if (a.assigned_to_email !== g.user_email || !a.data_agendamento) return false;
+        return a.data_agendamento.startsWith(g.month) && a.status !== "cancelado";
+      }).length;
+
+      const pacingLeads = calculatePacingStatus(actualLeads, g.target_leads, g.month);
+      const pacingAppts = calculatePacingStatus(actualAppointments, g.target_appointments, g.month);
+      const pacingSales = calculatePacingStatus(actualSales, g.target_sales, g.month);
+
       tr.innerHTML = `
         <td style="padding: 12px;"><strong>${g.user_name || "Sem nome"}</strong><div style="font-size: 0.72rem; color: var(--muted);">${g.user_email}</div></td>
         <td style="padding: 12px; color: var(--ink);">${formattedMonth}</td>
-        <td style="padding: 12px; color: var(--ink); font-weight: 600;">${g.target_leads}</td>
-        <td style="padding: 12px; color: var(--ink); font-weight: 600;">${g.target_appointments}</td>
-        <td style="padding: 12px; color: var(--ink); font-weight: 600;">${g.target_sales}</td>
+        <td style="padding: 12px;">
+          <div style="color: var(--ink); font-weight: 600;">${actualLeads} / ${g.target_leads}</div>
+          <small style="color: ${pacingLeads.color}; font-weight: 700; font-size: 0.7rem;">${pacingLeads.label}</small>
+        </td>
+        <td style="padding: 12px;">
+          <div style="color: var(--ink); font-weight: 600;">${actualAppointments} / ${g.target_appointments}</div>
+          <small style="color: ${pacingAppts.color}; font-weight: 700; font-size: 0.7rem;">${pacingAppts.label}</small>
+        </td>
+        <td style="padding: 12px;">
+          <div style="color: var(--ink); font-weight: 600;">${actualSales} / ${g.target_sales}</div>
+          <small style="color: ${pacingSales.color}; font-weight: 700; font-size: 0.7rem;">${pacingSales.label}</small>
+        </td>
         <td style="padding: 12px; color: var(--muted); font-size: 0.8rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${g.notes || ""}">${g.notes || "-"}</td>
         ${isAdmin ? `
           <td style="padding: 12px;">
@@ -685,10 +742,17 @@
     const pctAppts = goal.target_appointments > 0 ? (userAppointments / goal.target_appointments) * 100 : 0;
     const pctSales = goal.target_sales > 0 ? (actualSales / goal.target_sales) * 100 : 0;
 
+    const pacingLeads = calculatePacingStatus(actualLeads, goal.target_leads, goal.month);
+    const pacingAppts = calculatePacingStatus(userAppointments, goal.target_appointments, goal.month);
+    const pacingSales = calculatePacingStatus(actualSales, goal.target_sales, goal.month);
+
     containerEl.innerHTML = `
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
         <div class="lead-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
-          <span style="font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Meta de Leads</span>
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <span style="font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Meta de Leads</span>
+            <span style="font-size: 0.72rem; font-weight: 700; color: ${pacingLeads.color};">${pacingLeads.label}</span>
+          </div>
           <strong style="font-size: 1.5rem; font-weight: 800; color: var(--ink);">${actualLeads} <span style="font-size: 1rem; font-weight: 500; color: var(--muted);">/ ${goal.target_leads}</span></strong>
           <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 4px;">
             <div style="width: ${Math.min(100, pctLeads)}%; height: 100%; background: var(--gold); border-radius: 3px;"></div>
@@ -697,7 +761,10 @@
         </div>
 
         <div class="lead-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
-          <span style="font-size: 0.72rem; font-weight: 700; color: #8b5cf6; text-transform: uppercase;">Meta de Agendamentos</span>
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <span style="font-size: 0.72rem; font-weight: 700; color: #8b5cf6; text-transform: uppercase;">Meta de Agendamentos</span>
+            <span style="font-size: 0.72rem; font-weight: 700; color: ${pacingAppts.color};">${pacingAppts.label}</span>
+          </div>
           <strong style="font-size: 1.5rem; font-weight: 800; color: var(--ink);">${userAppointments} <span style="font-size: 1rem; font-weight: 500; color: var(--muted);">/ ${goal.target_appointments}</span></strong>
           <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 4px;">
             <div style="width: ${Math.min(100, pctAppts)}%; height: 100%; background: #8b5cf6; border-radius: 3px;"></div>
@@ -706,7 +773,10 @@
         </div>
 
         <div class="lead-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
-          <span style="font-size: 0.72rem; font-weight: 700; color: #10b981; text-transform: uppercase;">Meta de Vendas</span>
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <span style="font-size: 0.72rem; font-weight: 700; color: #10b981; text-transform: uppercase;">Meta de Vendas</span>
+            <span style="font-size: 0.72rem; font-weight: 700; color: ${pacingSales.color};">${pacingSales.label}</span>
+          </div>
           <strong style="font-size: 1.5rem; font-weight: 800; color: var(--ink);">${actualSales} <span style="font-size: 1rem; font-weight: 500; color: var(--muted);">/ ${goal.target_sales}</span></strong>
           <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 4px;">
             <div style="width: ${Math.min(100, pctSales)}%; height: 100%; background: #10b981; border-radius: 3px;"></div>
@@ -765,11 +835,18 @@
     const pctAppts = goal.target_appointments > 0 ? (userAppointments / goal.target_appointments) * 100 : 0;
     const pctSales = goal.target_sales > 0 ? (actualSales / goal.target_sales) * 100 : 0;
 
+    const pacingLeads = calculatePacingStatus(actualLeads, goal.target_leads, goal.month);
+    const pacingAppts = calculatePacingStatus(userAppointments, goal.target_appointments, goal.month);
+    const pacingSales = calculatePacingStatus(actualSales, goal.target_sales, goal.month);
+
     containerEl.innerHTML = `
       <h2 style="font-size: 1.1rem; font-weight: 800; margin: 0 0 16px; color: var(--ink);">Minha Meta — ${state.month.split("-").reverse().join("/")}</h2>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
         <div class="lead-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
-          <span style="font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Meta de Leads</span>
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <span style="font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Meta de Leads</span>
+            <span style="font-size: 0.72rem; font-weight: 700; color: ${pacingLeads.color};">${pacingLeads.label}</span>
+          </div>
           <strong style="font-size: 1.5rem; font-weight: 800; color: var(--ink);">${actualLeads} <span style="font-size: 1rem; font-weight: 500; color: var(--muted);">/ ${goal.target_leads}</span></strong>
           <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 4px;">
             <div style="width: ${Math.min(100, pctLeads)}%; height: 100%; background: var(--gold); border-radius: 3px;"></div>
@@ -778,7 +855,10 @@
         </div>
 
         <div class="lead-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
-          <span style="font-size: 0.72rem; font-weight: 700; color: #8b5cf6; text-transform: uppercase;">Meta de Agendamentos</span>
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <span style="font-size: 0.72rem; font-weight: 700; color: #8b5cf6; text-transform: uppercase;">Meta de Agendamentos</span>
+            <span style="font-size: 0.72rem; font-weight: 700; color: ${pacingAppts.color};">${pacingAppts.label}</span>
+          </div>
           <strong style="font-size: 1.5rem; font-weight: 800; color: var(--ink);">${userAppointments} <span style="font-size: 1rem; font-weight: 500; color: var(--muted);">/ ${goal.target_appointments}</span></strong>
           <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 4px;">
             <div style="width: ${Math.min(100, pctAppts)}%; height: 100%; background: #8b5cf6; border-radius: 3px;"></div>
@@ -787,7 +867,10 @@
         </div>
 
         <div class="lead-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px; cursor: default;">
-          <span style="font-size: 0.72rem; font-weight: 700; color: #10b981; text-transform: uppercase;">Meta de Vendas</span>
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <span style="font-size: 0.72rem; font-weight: 700; color: #10b981; text-transform: uppercase;">Meta de Vendas</span>
+            <span style="font-size: 0.72rem; font-weight: 700; color: ${pacingSales.color};">${pacingSales.label}</span>
+          </div>
           <strong style="font-size: 1.5rem; font-weight: 800; color: var(--ink);">${actualSales} <span style="font-size: 1rem; font-weight: 500; color: var(--muted);">/ ${goal.target_sales}</span></strong>
           <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 4px;">
             <div style="width: ${Math.min(100, pctSales)}%; height: 100%; background: #10b981; border-radius: 3px;"></div>
