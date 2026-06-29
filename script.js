@@ -19,6 +19,7 @@ let pointerDrag = null;
 let calendarWeekStart = null;
 let calendarAppointments = [];
 let appointmentResolution = null;
+let currentEditingLead = null;
 
 const statusLabels = {
   lead_recebido: "Lead recebido",
@@ -63,6 +64,8 @@ openModalButton?.addEventListener("click", () => {
     }
     const metaContainer = modal.querySelector("#modal-lead-meta");
     if (metaContainer) metaContainer.style.display = "none";
+    const responsibleSection = modal.querySelector("#modal-lead-responsible");
+    if (responsibleSection) responsibleSection.style.display = "none";
     setFormStatus("");
     modal.showModal();
   }
@@ -70,6 +73,27 @@ openModalButton?.addEventListener("click", () => {
 
 closeModalButton?.addEventListener("click", () => {
   modal?.close();
+  currentEditingLead = null;
+});
+
+document.getElementById("modal-lead-responsible-select")?.addEventListener("change", async (event) => {
+  const newEmail = event.target.value;
+  if (!currentEditingLead || !newEmail) return;
+
+  if (confirm(`Deseja alterar o responsavel deste lead para "${newEmail}"?`)) {
+    await changeLeadResponsible(currentEditingLead.id, newEmail, currentEditingLead);
+    const updatedLead = { ...currentEditingLead, assigned_to_email: newEmail, assigned_to_name: event.target.options[event.target.selectedIndex].text.split(" (")[0] };
+    currentEditingLead = updatedLead;
+    const responsibleName = modal.querySelector("#modal-lead-responsible-name");
+    const responsibleEmail = modal.querySelector("#modal-lead-responsible-email");
+    if (responsibleName) responsibleName.textContent = updatedLead.assigned_to_name || newEmail;
+    if (responsibleEmail) {
+      responsibleEmail.textContent = newEmail;
+      responsibleEmail.style.display = "inline";
+    }
+  } else {
+    event.target.value = currentEditingLead.assigned_to_email || "";
+  }
 });
 
 const openEditLeadModal = (lead) => {
@@ -88,6 +112,7 @@ const openEditLeadModal = (lead) => {
   leadForm.dataset.mode = "edit";
   leadForm.dataset.leadId = lead.id;
   leadForm.dataset.originalStatus = lead.status || "lead_recebido";
+  currentEditingLead = lead;
 
   const metaRow = modal.querySelector("#modal-lead-meta");
   const originDisplay = modal.querySelector("#modal-lead-origin-display");
@@ -96,6 +121,37 @@ const openEditLeadModal = (lead) => {
   if (metaRow) metaRow.style.display = "flex";
   if (originDisplay) originDisplay.textContent = lead.origin || "Site publico";
   if (createdDisplay) createdDisplay.textContent = formatLeadDate(lead.created_at);
+
+  const responsibleSection = modal.querySelector("#modal-lead-responsible");
+  const responsibleName = modal.querySelector("#modal-lead-responsible-name");
+  const responsibleEmail = modal.querySelector("#modal-lead-responsible-email");
+  const responsibleChange = modal.querySelector("#modal-lead-responsible-change");
+  const responsibleSelect = modal.querySelector("#modal-lead-responsible-select");
+
+  const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+
+  if (responsibleSection) {
+    responsibleSection.style.display = "flex";
+    if (lead.assigned_to_name) {
+      if (responsibleName) responsibleName.textContent = lead.assigned_to_name;
+      if (responsibleEmail) {
+        responsibleEmail.textContent = lead.assigned_to_email || "";
+        responsibleEmail.style.display = lead.assigned_to_email ? "inline" : "none";
+      }
+    } else {
+      if (responsibleName) responsibleName.textContent = "Sem responsavel";
+      if (responsibleEmail) responsibleEmail.style.display = "none";
+    }
+  }
+
+  if (responsibleChange && responsibleSelect) {
+    if (currentCrmUser && isAdminRole(currentCrmUser.cargo)) {
+      responsibleChange.style.display = "block";
+      loadCrmUsersForSelect(responsibleSelect, lead.assigned_to_email);
+    } else {
+      responsibleChange.style.display = "none";
+    }
+  }
 
   if (leadForm.elements["name"]) {
     leadForm.elements["name"].value = lead.name;
@@ -234,6 +290,102 @@ const setAppointmentStatus = (message = "", type = "error") => {
   if (!appointmentStatus) return;
   appointmentStatus.textContent = message;
   appointmentStatus.dataset.type = type;
+};
+
+function normalizeRole(role) {
+  return String(role || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function isAdminRole(role) {
+  const normalized = normalizeRole(role);
+  return ["dono", "admin", "administrador"].includes(normalized);
+}
+
+function isManagerRole(role) {
+  const normalized = normalizeRole(role);
+  return ["coordenador", "supervisor"].includes(normalized);
+}
+
+function shouldSeeAllLeads(crmUser) {
+  if (!crmUser) return true;
+  return isAdminRole(crmUser.cargo) || isManagerRole(crmUser.cargo);
+}
+
+const loadCrmUsersForSelect = async (selectElement, currentAssignedEmail) => {
+  const client = getClient();
+  if (!client || !selectElement) return;
+
+  const { data, error } = await client
+    .from("crm_users")
+    .select("id, nome, email, cargo, ativo")
+    .eq("ativo", true)
+    .order("nome", { ascending: true });
+
+  if (error || !data) return;
+
+  selectElement.innerHTML = '<option value="">Selecionar vendedor...</option>';
+  data.forEach((user) => {
+    const option = document.createElement("option");
+    option.value = user.email;
+    option.textContent = `${user.nome} (${user.cargo})`;
+    if (user.email === currentAssignedEmail) {
+      option.selected = true;
+    }
+    selectElement.appendChild(option);
+  });
+};
+
+const changeLeadResponsible = async (leadId, newEmail, lead) => {
+  const client = getClient();
+  if (!client || !leadId) return;
+
+  const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+
+  const { data: newAssignee, error: fetchError } = await client
+    .from("crm_users")
+    .select("nome, email")
+    .eq("email", newEmail)
+    .maybeSingle();
+
+  if (fetchError || !newAssignee) {
+    alert("Erro ao buscar dados do novo responsavel.");
+    return;
+  }
+
+  const oldName = lead.assigned_to_name || "Sem responsavel";
+  const newName = newAssignee.nome || newEmail;
+
+  const { error } = await client.from("leads").update({
+    assigned_to_email: newEmail || null,
+    assigned_to_name: newAssignee.nome || null,
+    updated_by_email: currentCrmUser?.email || null,
+    updated_by_name: currentCrmUser?.nome || null,
+    updated_at: new Date().toISOString(),
+  }).eq("id", leadId);
+
+  if (error) {
+    alert("Erro ao alterar responsavel: " + error.message);
+    return;
+  }
+
+  const { error: historyError } = await client.from("lead_history").insert({
+    lead_id: leadId,
+    action_type: "owner_changed",
+    action_label: "Responsavel alterado",
+    description: `Responsavel alterado de ${oldName} para ${newName}`,
+    performed_by_email: currentCrmUser?.email || null,
+    performed_by_name: currentCrmUser?.nome || null,
+  });
+
+  if (historyError) {
+    console.warn("Erro ao registrar historico de alteracao de responsavel:", historyError);
+  }
+
+  await loadLeads();
 };
 
 const closeAppointmentModal = (result = null) => {
@@ -766,7 +918,12 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
     }
   }
 
-  const { error } = await client.from("leads").update({ status }).eq("id", leadId);
+  const { error } = await client.from("leads").update({
+    status,
+    updated_by_email: (window.currentCrmUser || window.crmUser)?.email || null,
+    updated_by_name: (window.currentCrmUser || window.crmUser)?.nome || null,
+    updated_at: new Date().toISOString(),
+  }).eq("id", leadId);
 
   if (error) {
     if (createdAppointment?.id) {
@@ -877,6 +1034,24 @@ const createLeadCard = (lead) => {
   phoneLine.innerHTML = phoneIcon;
   phoneLine.append(phoneText);
 
+  // Responsible Badge
+  const responsibleBadge = document.createElement("div");
+  responsibleBadge.className = "lead-responsible-badge";
+  if (lead.assigned_to_name) {
+    const respIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-right: 4px; vertical-align: middle;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+    responsibleBadge.innerHTML = respIcon;
+    const respText = document.createElement("span");
+    respText.textContent = lead.assigned_to_name;
+    responsibleBadge.append(respText);
+  } else {
+    const respIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #9ca3af; margin-right: 4px; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+    responsibleBadge.innerHTML = respIcon;
+    const respText = document.createElement("span");
+    respText.textContent = "Sem responsavel";
+    respText.style.color = "#9ca3af";
+    responsibleBadge.append(respText);
+  }
+
   // Optional Note
   const hasCustomNote = lead.note && lead.note.trim() !== "" && lead.note.trim().toLowerCase() !== "sem observacao cadastrada.";
   let noteEl = null;
@@ -952,6 +1127,7 @@ const createLeadCard = (lead) => {
     card.append(tagsContainer);
   }
   card.append(phoneLine);
+  card.append(responsibleBadge);
   if (noteEl) {
     card.append(noteEl);
   }
@@ -1012,10 +1188,18 @@ const loadLeads = async () => {
     return;
   }
 
-  const { data, error } = await client
+  const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+
+  let query = client
     .from("leads")
-    .select("id, name, origin, note, status, created_at, telefone, property_region, credit_value, down_payment_value, installment_value, tags")
+    .select("id, name, origin, note, status, created_at, telefone, property_region, credit_value, down_payment_value, installment_value, tags, assigned_to_email, assigned_to_name, created_by_email, created_by_name, updated_by_email, updated_by_name")
     .order("created_at", { ascending: false });
+
+  if (!shouldSeeAllLeads(currentCrmUser)) {
+    query = query.eq("assigned_to_email", currentCrmUser.email);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     if (leadCount) {
@@ -1198,6 +1382,7 @@ leadForm?.addEventListener("submit", async (event) => {
       }
     }
 
+    const crmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
     const { error } = await client.from("leads").update({
       name,
       telefone: String(formData.get("telefone") || "").replace(/\D/g, ""),
@@ -1209,6 +1394,9 @@ leadForm?.addEventListener("submit", async (event) => {
       credit_value: parseOptionalMoney(formData.get("credit_value")),
       down_payment_value: parseOptionalMoney(formData.get("down_payment_value")),
       installment_value: parseOptionalMoney(formData.get("installment_value")),
+      updated_by_email: crmUser?.email || user.email || null,
+      updated_by_name: crmUser?.nome || null,
+      updated_at: new Date().toISOString(),
     }).eq("id", leadId);
 
     submitButton.disabled = false;
@@ -1223,6 +1411,7 @@ leadForm?.addEventListener("submit", async (event) => {
       return;
     }
   } else {
+    const crmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
     const { error } = await client.from("leads").insert({
       name,
       telefone: String(formData.get("telefone") || "").replace(/\D/g, ""),
@@ -1235,6 +1424,10 @@ leadForm?.addEventListener("submit", async (event) => {
       down_payment_value: parseOptionalMoney(formData.get("down_payment_value")),
       installment_value: parseOptionalMoney(formData.get("installment_value")),
       owner_id: user.id,
+      assigned_to_email: crmUser?.email || user.email || null,
+      assigned_to_name: crmUser?.nome || null,
+      created_by_email: crmUser?.email || user.email || null,
+      created_by_name: crmUser?.nome || null,
     });
 
     submitButton.disabled = false;

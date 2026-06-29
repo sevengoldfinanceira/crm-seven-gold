@@ -1806,3 +1806,92 @@ body.theme-dark .modal-lead-meta-row span strong {
   color: #f7f5ed !important;
 }
 
+/* Lead responsible badge on card */
+.lead-responsible-badge {
+  display: flex;
+  align-items: center;
+  font-size: 0.7rem;
+  color: #6b7280;
+  padding: 2px 0;
+  gap: 2px;
+}
+
+body.theme-dark .lead-responsible-badge {
+  color: #9ca3af;
+}
+
+/* Lead responsible section in modal */
+.modal-lead-responsible {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+
+body.theme-dark .modal-lead-responsible {
+  background: #211829;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.responsible-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 0.85rem;
+}
+
+.responsible-info strong {
+  color: #92400e;
+}
+
+body.theme-dark .responsible-info strong {
+  color: #f7f5ed;
+}
+
+.responsible-info small {
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin-left: 4px;
+}
+
+body.theme-dark .responsible-info small {
+  color: #9ca3af;
+}
+
+.responsible-change {
+  margin-top: 4px;
+}
+
+.responsible-change label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+body.theme-dark .responsible-change label {
+  color: #d1d5db;
+}
+
+.responsible-change select {
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: #fff;
+  color: #1f2937;
+}
+
+body.theme-dark .responsible-change select {
+  background: #1a1025;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #e5e7eb;
+}
+

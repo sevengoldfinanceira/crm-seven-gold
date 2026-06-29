@@ -351,6 +351,21 @@
           <span>Origem: <strong id="modal-lead-origin-display"></strong></span>
           <span>Cadastrado em: <strong id="modal-lead-created-display"></strong></span>
         </div>
+        <div class="modal-lead-responsible" id="modal-lead-responsible" style="display: none;">
+          <div class="responsible-info">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-right: 4px; vertical-align: middle;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Responsavel: <strong id="modal-lead-responsible-name">Sem responsavel</strong></span>
+            <small id="modal-lead-responsible-email" style="display: none;"></small>
+          </div>
+          <div class="responsible-change" id="modal-lead-responsible-change" style="display: none;">
+            <label>
+              Alterar responsavel
+              <select id="modal-lead-responsible-select">
+                <option value="">Selecionar vendedor...</option>
+              </select>
+            </label>
+          </div>
+        </div>
         <label>
           Nome do lead
           <input name="name" type="text" placeholder="Ex: Amanda Silva" required />
