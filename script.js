@@ -886,7 +886,7 @@ const loadDashboardMetrics = async () => {
               Atrasado desde ${formattedDate}
             </div>
           </div>
-          <button class="dash-task-open-btn" data-lead-id="${task.lead_id}" style="border: none; background: var(--gold); color: #150126; font-size: 0.75rem; font-weight: 700; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;">
+          <button class="dash-task-open-btn" data-lead-id="${task.lead_id || ""}" data-task-id="${task.id}" style="border: none; background: var(--gold); color: #150126; font-size: 0.75rem; font-weight: 700; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;">
             Abrir lead
           </button>
         `;
@@ -897,7 +897,25 @@ const loadDashboardMetrics = async () => {
       elTasksAlertsList.querySelectorAll(".dash-task-open-btn").forEach((btn) => {
         btn.addEventListener("click", async () => {
           const leadId = btn.dataset.leadId;
-          if (!leadId) return;
+          const taskObjId = btn.dataset.taskId;
+          const taskObj = overdueTasks.find(t => t.id === taskObjId);
+
+          if (!leadId) {
+            if (taskObj) {
+              const formattedDate = new Date(taskObj.scheduled_at).toLocaleString("pt-BR", {
+                day: "2-digit",
+                month: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit"
+              });
+              const typeLabel = taskObj.type === "whatsapp_message" ? "Retorno WhatsApp" : "Lembrete / Retorno";
+              alert(`Tarefa:\n${taskObj.title || "Sem título"}\nResponsável: ${taskObj.assigned_to_name || "Sem atribuição"}\nTipo: ${typeLabel}\nData/Hora: ${formattedDate}`);
+            } else {
+              alert("Não foi possível localizar o lead desta tarefa.");
+            }
+            return;
+          }
+
           btn.disabled = true;
           const originalText = btn.textContent;
           btn.textContent = "Abrindo...";
@@ -908,10 +926,17 @@ const loadDashboardMetrics = async () => {
           btn.disabled = false;
           btn.textContent = originalText;
           
-          if (error) {
-            alert(`Erro ao carregar lead: ${error.message}`);
-          } else if (data) {
+          if (error || !data) {
+            alert("Não foi possível localizar o lead desta tarefa.");
+          } else {
             openEditLeadModal(data);
+            setTimeout(() => {
+              const textarea = document.querySelector(".lead-modal textarea[name='note']");
+              if (textarea) {
+                textarea.scrollIntoView({ behavior: "smooth", block: "center" });
+                textarea.focus();
+              }
+            }, 100);
           }
         });
       });
