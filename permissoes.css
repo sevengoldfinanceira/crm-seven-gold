@@ -608,7 +608,12 @@ tr [data-area-icon="permissoes"] .perm-area-icon svg { stroke: #ef4444; }
 .perm-user-role { background: rgba(59,130,246,.1); color: #2563eb !important; }
 .perm-user-status.is-active { background: rgba(16,185,129,.11); color: #059669 !important; }
 .perm-user-status.is-inactive { background: rgba(239,68,68,.1); color: #dc2626 !important; }
-.perm-user-actions { display: flex; align-items: center; gap: 7px; }
+.perm-user-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
 .perm-user-toggle { position: relative; width: 38px; height: 22px; padding: 0; border: 0; border-radius: 999px; background: #d1d5db; }
 .perm-user-toggle span { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.2); transition: transform .2s ease; }
 .perm-user-toggle.is-active { background: #10b981; }
