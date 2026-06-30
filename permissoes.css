@@ -294,15 +294,15 @@
   position: relative;
   background: #f9fafb !important;
   color: var(--sg-text-secondary, #6b7280) !important;
-  font-size: 0.62rem !important;
+  font-size: 0.56rem !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.02em !important;
+  letter-spacing: -0.01em !important;
   border-bottom: 2px solid rgba(0, 0, 0, 0.04) !important;
-  white-space: normal !important;
+  white-space: nowrap !important;
   line-height: 1.15 !important;
-  word-break: break-word !important;
-  padding: 8px 4px !important;
+  word-break: normal !important;
+  padding: 8px 2px !important;
   vertical-align: middle !important;
   text-align: center !important;
 }
