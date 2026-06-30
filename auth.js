@@ -298,7 +298,8 @@
     });
 
     let displayRole = cargoDisplayNames[normalizedRole] || role || "sem perfil";
-    if (sessionUser?.id) {
+    const useAuthorizedRoleOnly = document.body.dataset.roleSource === "crm-users";
+    if (!useAuthorizedRoleOnly && sessionUser?.id) {
       const cargoKey = resolveCargoForUser(sessionUser.id);
       if (cargoKey && cargoDisplayNames[cargoKey]) {
         displayRole = cargoDisplayNames[cargoKey];
