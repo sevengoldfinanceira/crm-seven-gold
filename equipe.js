@@ -422,6 +422,9 @@
   // State Management
   const state = {
     profiles: [],
+    commercialTeams: [],
+    commercialTeamMembers: [],
+    commercialTeamsLoaded: false,
     functions: new Map(), // role_key -> array of string
     selectedItem: null, // { type: 'sector'|'role', id: string, sectorId: string }
     activeTab: 'hierarquia',
@@ -533,6 +536,246 @@
     if (profile && primaryFunc) {
       profile.role = primaryFunc.roleKey;
     }
+  };
+
+  const commercialMemberRoles = new Set(["vendedor", "assistente-vendas", "home-office"]);
+  const commercialCoordinatorRoles = new Set(["coordenador-comercial", "supervisor-comercial"]);
+
+  const setTeamStatus = (message, type = "info") => {
+    const status = document.getElementById("eq-team-status");
+    if (!status) return;
+    status.textContent = message || "";
+    status.style.color = type === "error" ? "#ef4444" : type === "success" ? "#16a34a" : "#64748b";
+  };
+
+  const getCommercialCoordinators = () => state.profiles.filter((profile) =>
+    profile.status === "ativo" && commercialCoordinatorRoles.has(getRoleKeyForProfile(profile.role))
+  );
+
+  const getCommercialMembers = () => state.profiles.filter((profile) =>
+    profile.status === "ativo" && commercialMemberRoles.has(getRoleKeyForProfile(profile.role))
+  );
+
+  const populateTeamCoordinatorSelect = () => {
+    const select = document.getElementById("eq-team-coordinator");
+    if (!select) return;
+    select.innerHTML = '<option value="">Selecione um coordenador</option>';
+    getCommercialCoordinators().forEach((profile) => {
+      const option = document.createElement("option");
+      option.value = profile.id;
+      option.textContent = `${profile.full_name} — ${getRoleKeyForProfile(profile.role).toUpperCase()}`;
+      select.appendChild(option);
+    });
+  };
+
+  const loadCommercialTeams = async () => {
+    const client = getClient();
+    if (!client) {
+      setTeamStatus("Conexão com o Supabase indisponível.", "error");
+      return false;
+    }
+
+    setTeamStatus("Carregando equipes...");
+    const [{ data: teams, error: teamsError }, { data: members, error: membersError }] = await Promise.all([
+      client.from("crm_teams").select("id,name,coordinator_user_id,created_at,updated_at").order("name"),
+      client.from("crm_team_members").select("id,team_id,user_id,created_at"),
+    ]);
+
+    if (teamsError || membersError) {
+      console.error("Erro ao carregar equipes comerciais:", teamsError || membersError);
+      setTeamStatus("Estrutura de equipes ainda não criada no Supabase. Execute supabase-crm-teams-setup.sql.", "error");
+      state.commercialTeamsLoaded = false;
+      return false;
+    }
+
+    state.commercialTeams = teams || [];
+    state.commercialTeamMembers = members || [];
+    state.commercialTeamsLoaded = true;
+    setTeamStatus("");
+    renderCommercialTeams();
+    return true;
+  };
+
+  const renderCommercialTeams = () => {
+    const container = document.getElementById("eq-commercial-teams-list");
+    if (!container) return;
+    container.replaceChildren();
+
+    if (!state.commercialTeams.length) {
+      const empty = document.createElement("div");
+      empty.className = "eq-team-empty";
+      empty.textContent = "Nenhuma equipe comercial cadastrada.";
+      container.appendChild(empty);
+      return;
+    }
+
+    const coordinators = getCommercialCoordinators();
+    const members = getCommercialMembers();
+    const memberTeamMap = new Map(state.commercialTeamMembers.map((item) => [item.user_id, item.team_id]));
+
+    state.commercialTeams.forEach((team) => {
+      const coordinator = state.profiles.find((profile) => profile.id === team.coordinator_user_id);
+      const teamMemberIds = new Set(
+        state.commercialTeamMembers.filter((item) => item.team_id === team.id).map((item) => item.user_id)
+      );
+
+      const card = document.createElement("article");
+      card.className = "eq-team-card";
+
+      const head = document.createElement("div");
+      head.className = "eq-team-card-head";
+      const titleBox = document.createElement("div");
+      const title = document.createElement("h3");
+      title.textContent = team.name;
+      const subtitle = document.createElement("p");
+      subtitle.textContent = `Coordenador: ${coordinator?.full_name || "Não definido"}`;
+      titleBox.append(title, subtitle);
+      const removeButton = document.createElement("button");
+      removeButton.type = "button";
+      removeButton.className = "eq-team-delete";
+      removeButton.textContent = "Excluir";
+      removeButton.addEventListener("click", () => deleteCommercialTeam(team));
+      head.append(titleBox, removeButton);
+      card.appendChild(head);
+
+      const coordinatorLabel = document.createElement("label");
+      coordinatorLabel.className = "eq-team-card-field";
+      coordinatorLabel.append("Coordenador responsável");
+      const coordinatorSelect = document.createElement("select");
+      coordinators.forEach((profile) => {
+        const option = document.createElement("option");
+        option.value = profile.id;
+        option.textContent = `${profile.full_name} — ${getRoleKeyForProfile(profile.role).toUpperCase()}`;
+        option.selected = profile.id === team.coordinator_user_id;
+        coordinatorSelect.appendChild(option);
+      });
+      coordinatorLabel.appendChild(coordinatorSelect);
+      card.appendChild(coordinatorLabel);
+
+      const membersLabel = document.createElement("div");
+      membersLabel.className = "eq-team-card-field";
+      membersLabel.append("Membros da equipe");
+      const membersBox = document.createElement("div");
+      membersBox.className = "eq-team-members";
+
+      members.forEach((profile) => {
+        const linkedTeamId = memberTeamMap.get(profile.id);
+        const optionLabel = document.createElement("label");
+        optionLabel.className = "eq-team-member-option";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = profile.id;
+        checkbox.checked = teamMemberIds.has(profile.id);
+        checkbox.disabled = Boolean(linkedTeamId && linkedTeamId !== team.id);
+        const description = document.createElement("span");
+        description.textContent = profile.full_name;
+        const details = document.createElement("small");
+        details.textContent = checkbox.disabled
+          ? `${profile.email} — já pertence a outra equipe`
+          : `${profile.email} — ${getRoleKeyForProfile(profile.role).toUpperCase()}`;
+        description.appendChild(details);
+        optionLabel.append(checkbox, description);
+        membersBox.appendChild(optionLabel);
+      });
+
+      membersLabel.appendChild(membersBox);
+      card.appendChild(membersLabel);
+
+      const actions = document.createElement("div");
+      actions.className = "eq-team-card-actions";
+      const saveButton = document.createElement("button");
+      saveButton.type = "button";
+      saveButton.className = "eq-btn-gold";
+      saveButton.textContent = "Salvar equipe";
+      saveButton.addEventListener("click", () => saveCommercialTeam(team, coordinatorSelect, membersBox, saveButton));
+      actions.appendChild(saveButton);
+      card.appendChild(actions);
+      container.appendChild(card);
+    });
+  };
+
+  const createCommercialTeam = async (event) => {
+    event.preventDefault();
+    const client = getClient();
+    const nameInput = document.getElementById("eq-team-name");
+    const coordinatorSelect = document.getElementById("eq-team-coordinator");
+    const name = nameInput?.value.trim();
+    const coordinatorUserId = coordinatorSelect?.value;
+    if (!client || !name || !coordinatorUserId) {
+      setTeamStatus("Informe o nome e o coordenador da equipe.", "error");
+      return;
+    }
+
+    setTeamStatus("Criando equipe...");
+    const { error } = await client.from("crm_teams").insert({
+      name,
+      coordinator_user_id: coordinatorUserId,
+      updated_at: new Date().toISOString(),
+    });
+    if (error) {
+      setTeamStatus(`Erro ao criar equipe: ${error.message}`, "error");
+      return;
+    }
+
+    event.currentTarget.reset();
+    setTeamStatus("Equipe criada com sucesso.", "success");
+    await loadCommercialTeams();
+  };
+
+  const saveCommercialTeam = async (team, coordinatorSelect, membersBox, saveButton) => {
+    const client = getClient();
+    if (!client || !coordinatorSelect.value) return;
+    const selectedMemberIds = [...membersBox.querySelectorAll('input[type="checkbox"]:checked')].map((item) => item.value);
+    const currentMemberIds = state.commercialTeamMembers
+      .filter((item) => item.team_id === team.id)
+      .map((item) => item.user_id);
+    const removedMemberIds = currentMemberIds.filter((userId) => !selectedMemberIds.includes(userId));
+    const addedMemberIds = selectedMemberIds.filter((userId) => !currentMemberIds.includes(userId));
+    saveButton.disabled = true;
+    setTeamStatus(`Salvando ${team.name}...`);
+
+    try {
+      const { error: teamError } = await client.from("crm_teams").update({
+        coordinator_user_id: coordinatorSelect.value,
+        updated_at: new Date().toISOString(),
+      }).eq("id", team.id);
+      if (teamError) throw teamError;
+
+      if (removedMemberIds.length) {
+        const { error: deleteError } = await client
+          .from("crm_team_members")
+          .delete()
+          .eq("team_id", team.id)
+          .in("user_id", removedMemberIds);
+        if (deleteError) throw deleteError;
+      }
+
+      if (addedMemberIds.length) {
+        const { error: insertError } = await client.from("crm_team_members").insert(
+          addedMemberIds.map((userId) => ({ team_id: team.id, user_id: userId }))
+        );
+        if (insertError) throw insertError;
+      }
+
+      setTeamStatus("Equipe atualizada com sucesso.", "success");
+      await loadCommercialTeams();
+    } catch (error) {
+      setTeamStatus(`Erro ao salvar equipe: ${error.message}`, "error");
+    } finally {
+      saveButton.disabled = false;
+    }
+  };
+
+  const deleteCommercialTeam = async (team) => {
+    if (!confirm(`Excluir a equipe "${team.name}"? Os colaboradores ficarão sem equipe.`)) return;
+    const client = getClient();
+    const { error } = await client.from("crm_teams").delete().eq("id", team.id);
+    if (error) {
+      setTeamStatus(`Erro ao excluir equipe: ${error.message}`, "error");
+      return;
+    }
+    setTeamStatus("Equipe excluída.", "success");
+    await loadCommercialTeams();
   };
 
   const removeRole = async (roleKey) => {
@@ -2146,7 +2389,7 @@
     refreshIcons();
   };
 
-  // Switch between Left Main tabs ("hierarquia", "funcoes", "lista")
+  // Switch between Left Main tabs
   const switchTab = (tabName) => {
     state.activeTab = tabName;
 
@@ -2163,6 +2406,7 @@
     document.getElementById("pane-hierarquia").style.display = tabName === 'hierarquia' ? 'block' : 'none';
     document.getElementById("pane-funcoes").style.display = tabName === 'funcoes' ? 'block' : 'none';
     document.getElementById("pane-lista").style.display = tabName === 'lista' ? 'block' : 'none';
+    document.getElementById("pane-equipes").style.display = tabName === 'equipes' ? 'block' : 'none';
 
     // Sidebar toggles
     const mainGrid = document.querySelector(".eq-main-grid");
@@ -2202,6 +2446,13 @@
       // Reset and apply filters for the list
       populateFilterCargos('todos');
       applyListFilters();
+    } else if (tabName === 'equipes') {
+      if (mainGrid) mainGrid.classList.add("hide-sidebar");
+      if (sidebar) sidebar.style.display = "none";
+      if (listFiltersSidebar) listFiltersSidebar.style.display = "none";
+      populateTeamCoordinatorSelect();
+      if (!state.commercialTeamsLoaded) loadCommercialTeams();
+      else renderCommercialTeams();
     }
 
     performSearch(); // Reapply search filter if any
@@ -2798,6 +3049,7 @@
     document.querySelector(".btn-new-sector")?.addEventListener("click", openNewSectorModal);
     document.querySelector(".btn-new-role")?.addEventListener("click", () => openNewRoleModal("comercial"));
     document.getElementById("btn-new-colab-header")?.addEventListener("click", () => openColabModal());
+    document.getElementById("eq-team-create-form")?.addEventListener("submit", createCommercialTeam);
 
     // 3. Setup Bottom quick actions strip
     document.querySelector(".btn-action-add-member")?.addEventListener("click", () => openAddColabModal());
@@ -2911,6 +3163,7 @@
 
     // 6. Fetch profiles and functions
     await loadProfiles();
+    populateTeamCoordinatorSelect();
     await loadSavedFunctions();
     applyRolesSnapshotFromLocalStorage();
     applySavedOrder();

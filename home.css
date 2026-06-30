@@ -13524,6 +13524,31 @@ body[data-unified-admin] .unified-admin-shell {
   padding-top: 100px !important;
 }
 
+/* Equipes comerciais */
+.eq-commercial-teams-header h2 { margin: 0; color: var(--company-text, #0f172a); font-size: 1.25rem; }
+.eq-commercial-teams-header p { margin: 6px 0 0; color: #64748b; font-size: .86rem; }
+.eq-team-create-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end; margin: 20px 0 12px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: var(--company-main-bg, #fff); }
+.eq-team-create-form label { display: flex; flex-direction: column; gap: 6px; color: #475569; font-size: .78rem; font-weight: 700; }
+.eq-team-create-form input, .eq-team-create-form select, .eq-team-card select { min-height: 40px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: var(--company-main-bg, #fff); color: var(--company-text, #0f172a); }
+.eq-team-status { min-height: 20px; margin-bottom: 8px; color: #64748b; font-size: .8rem; }
+.eq-commercial-teams-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.eq-team-card { padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: var(--company-main-bg, #fff); box-shadow: 0 4px 14px rgba(15, 23, 42, .05); }
+.eq-team-card-head { display: flex; justify-content: space-between; gap: 10px; align-items: start; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; }
+.eq-team-card-head h3 { margin: 0; color: var(--company-text, #0f172a); font-size: 1rem; }
+.eq-team-card-head p { margin: 4px 0 0; color: #64748b; font-size: .76rem; }
+.eq-team-card-field { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; color: #475569; font-size: .76rem; font-weight: 700; }
+.eq-team-members { display: flex; flex-direction: column; gap: 6px; max-height: 210px; overflow: auto; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px; }
+.eq-team-member-option { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; color: var(--company-text, #334155); font-size: .78rem; font-weight: 500; }
+.eq-team-member-option small { display: block; color: #94a3b8; }
+.eq-team-card-actions { display: flex; gap: 8px; margin-top: 14px; }
+.eq-team-card-actions button { flex: 1; }
+.eq-team-empty { padding: 24px; border: 1px dashed #cbd5e1; border-radius: 12px; color: #64748b; text-align: center; }
+.eq-team-delete { border: 1px solid #ef4444; border-radius: 8px; background: transparent; color: #ef4444; padding: 8px 10px; cursor: pointer; }
+body.theme-dark .eq-team-create-form, body.theme-dark .eq-team-card { border-color: #3b3150; background: #211530; }
+body.theme-dark .eq-team-create-form label, body.theme-dark .eq-team-card-field { color: #cbd5e1; }
+body.theme-dark .eq-team-members, body.theme-dark .eq-team-card-head { border-color: #3b3150; }
+@media (max-width: 860px) { .eq-team-create-form { grid-template-columns: 1fr; } }
+
 /* Header */
 .eq-header {
   display: flex;
