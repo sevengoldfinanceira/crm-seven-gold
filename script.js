@@ -20,6 +20,7 @@ let calendarWeekStart = null;
 let calendarAppointments = [];
 let appointmentResolution = null;
 let currentEditingLead = null;
+let deepLinkedLeadHandled = false;
 
 const createLeadActivityLog = async ({
   leadId,
@@ -2795,6 +2796,14 @@ const loadLeads = async () => {
   }
 
   renderLeads(data || []);
+  if (!deepLinkedLeadHandled) {
+    const requestedLeadId = new URLSearchParams(window.location.search).get("leadId");
+    const requestedLead = requestedLeadId ? (data || []).find((lead) => String(lead.id) === String(requestedLeadId)) : null;
+    if (requestedLead) {
+      deepLinkedLeadHandled = true;
+      openEditLeadModal(requestedLead);
+    }
+  }
 };
 
 const setupDragAndDrop = () => {

@@ -367,12 +367,88 @@ async function getCommercialSellerDetail(data, crmUser) {
   };
 }
 
+async function createCommercialLeadTask(data, crmUser) {
+  const leadId = String(data?.lead_id || '').trim();
+  const scheduledAt = new Date(data?.scheduled_at || '');
+  const taskType = data?.type === 'whatsapp_message' ? 'whatsapp_message' : 'reminder';
+  const note = String(data?.note || '').trim();
+  if (!leadId || Number.isNaN(scheduledAt.getTime())) {
+    return { status: 400, error: 'Lead, data e horário são obrigatórios.' };
+  }
+  if (scheduledAt <= new Date()) {
+    return { status: 400, error: 'Escolha uma data futura para a próxima ação.' };
+  }
+
+  const { data: lead, error: leadError } = await supabase
+    .from('leads')
+    .select('id,name,telefone,assigned_to_email,assigned_to_name')
+    .eq('id', leadId)
+    .maybeSingle();
+  if (leadError) return { status: 500, error: leadError.message };
+  if (!lead) return { status: 404, error: 'Lead não encontrado.' };
+
+  const assignedEmail = String(lead.assigned_to_email || '').trim().toLowerCase();
+  const { data: seller, error: sellerError } = await supabase
+    .from('crm_users')
+    .select('id,email,nome,cargo,ativo')
+    .ilike('email', assignedEmail)
+    .eq('ativo', true)
+    .maybeSingle();
+  if (sellerError) return { status: 500, error: sellerError.message };
+  if (!seller) return { status: 404, error: 'Responsável do lead não encontrado.' };
+
+  const role = normalizeRole(crmUser.cargo);
+  const isAdmin = ADMIN_ROLES.has(role) || role === 'coordenador-rh';
+  const isCoordinator = TEAM_MANAGER_ROLES.has(role) && !isAdmin;
+  if (isCoordinator) {
+    const { data: membership } = await supabase
+      .from('crm_team_members')
+      .select('team_id')
+      .eq('user_id', seller.id)
+      .maybeSingle();
+    const { data: team } = membership?.team_id
+      ? await supabase.from('crm_teams').select('id').eq('id', membership.team_id).eq('coordinator_user_id', crmUser.id).maybeSingle()
+      : { data: null };
+    if (!team) return { status: 403, error: 'Você só pode criar ações para leads da sua equipe.' };
+  } else if (!isAdmin && String(seller.id) !== String(crmUser.id)) {
+    return { status: 403, error: 'Você só pode criar ações para os próprios leads.' };
+  }
+
+  const taskPayload = {
+    lead_id: lead.id,
+    lead_nome: lead.name || 'Lead sem nome',
+    lead_telefone: lead.telefone || null,
+    type: taskType,
+    scheduled_at: scheduledAt.toISOString(),
+    title: taskType === 'whatsapp_message' ? 'Retorno WhatsApp' : 'Próxima ação',
+    internal_note: note || null,
+    status: 'pending',
+    updated_at: new Date().toISOString(),
+  };
+  const { data: task, error: taskError } = await supabase.from('tasks').insert(taskPayload).select('id').single();
+  if (taskError) return { status: 500, error: taskError.message };
+
+  await supabase.from('lead_activity_logs').insert({
+    lead_id: lead.id,
+    action_type: 'task_created',
+    action_label: 'Próxima ação criada',
+    description: `${taskPayload.title} agendado para ${scheduledAt.toISOString()}.`,
+    created_by_email: crmUser.email,
+    created_by_name: crmUser.nome || crmUser.email,
+    created_by_role: crmUser.cargo,
+  });
+  return { status: 200, task_id: task.id };
+}
+
 async function manageCommercialTeams(action, data, crmUser) {
   const role = normalizeRole(crmUser.cargo);
   const isAdmin = ADMIN_ROLES.has(role) || role === 'coordenador-rh';
 
   if (action === 'seller_detail') {
     return getCommercialSellerDetail(data, crmUser);
+  }
+  if (action === 'create_task') {
+    return createCommercialLeadTask(data, crmUser);
   }
 
   if (action === 'list') {
@@ -594,6 +670,20 @@ async function manageCommercialTeams(action, data, crmUser) {
         if (!leadsBySeller.has(user.id)) leadsBySeller.set(user.id, []);
         leadsBySeller.get(user.id).push(lead);
       });
+      const selectedLeadIds = [...leadsBySeller.values()].flat().map((lead) => lead.id);
+      if (selectedLeadIds.length) {
+        const { data: taskRows, error: tasksError } = await supabase
+          .from('tasks')
+          .select('lead_id,status,scheduled_at')
+          .in('lead_id', selectedLeadIds)
+          .in('status', ['pending', 'triggered'])
+          .gte('scheduled_at', `${requestedMonth}-01T00:00:00.000Z`);
+        if (!tasksError) {
+          (taskRows || []).forEach((task) => {
+            if (task.lead_id) scheduledLeadIds.add(task.lead_id);
+          });
+        }
+      }
       const periodEnd = new Date(rangeEnd);
       const alertReferenceDate = periodEnd < new Date() ? periodEnd : new Date();
 
@@ -602,6 +692,7 @@ async function manageCommercialTeams(action, data, crmUser) {
         if ((metric.target_leads > 0 || metric.target_appointments > 0 || metric.target_sales > 0) && progress < 70) {
           appendAlert(metric.team_id, {
             id: `seller-goal-${metric.user_id}`,
+            type: 'seller_below_goal',
             level: progress < 40 ? 'critical' : 'attention',
             title: 'Vendedor abaixo da meta',
             description: `${progress.toFixed(0)}% da meta atingida no período.`,
@@ -612,6 +703,7 @@ async function manageCommercialTeams(action, data, crmUser) {
         if (metric.leads_actual > 0 && metric.appointments_actual === 0) {
           appendAlert(metric.team_id, {
             id: `seller-no-appointments-${metric.user_id}`,
+            type: 'seller_no_appointments',
             level: 'critical',
             title: 'Sem agendamentos',
             description: `${metric.leads_actual} lead(s) recebido(s), mas nenhum agendamento no período.`,
@@ -621,6 +713,7 @@ async function manageCommercialTeams(action, data, crmUser) {
         } else if (metric.leads_actual >= 5 && metric.appointments_actual / metric.leads_actual < 0.2) {
           appendAlert(metric.team_id, {
             id: `seller-low-appointments-${metric.user_id}`,
+            type: 'seller_low_appointments',
             level: 'attention',
             title: 'Poucos agendamentos',
             description: `${metric.leads_actual} leads e apenas ${metric.appointments_actual} agendamento(s).`,
@@ -638,11 +731,13 @@ async function manageCommercialTeams(action, data, crmUser) {
         if (stalledLeads.length) {
           appendAlert(metric.team_id, {
             id: `seller-stalled-${metric.user_id}`,
+            type: 'stalled_leads',
             level: 'critical',
             title: 'Leads parados há 7 dias ou mais',
             description: `${stalledLeads.length} lead(s) sem movimentação recente.`,
             seller_id: metric.user_id,
             seller_name: metric.user_name,
+            lead_ids: stalledLeads.map((lead) => lead.id).slice(0, 20),
           });
         }
         const leadsWithoutNextAction = sellerLeads.filter((lead) => {
@@ -653,11 +748,13 @@ async function manageCommercialTeams(action, data, crmUser) {
         if (leadsWithoutNextAction.length) {
           appendAlert(metric.team_id, {
             id: `seller-no-next-action-${metric.user_id}`,
+            type: 'leads_without_next_action',
             level: 'attention',
             title: 'Leads sem próxima ação',
             description: `${leadsWithoutNextAction.length} lead(s) sem follow-up ou agendamento definido.`,
             seller_id: metric.user_id,
             seller_name: metric.user_name,
+            lead_ids: leadsWithoutNextAction.map((lead) => lead.id).slice(0, 20),
           });
         }
       });
@@ -670,6 +767,8 @@ async function manageCommercialTeams(action, data, crmUser) {
         if (hasTeamGoal && current.goal_progress < 70) {
           appendAlert(teamId, {
             id: `team-goal-${teamId}`,
+            type: 'team_below_goal',
+            team_id: teamId,
             level: current.goal_progress < 40 ? 'critical' : 'attention',
             title: 'Equipe abaixo da meta geral',
             description: `${current.goal_progress.toFixed(0)}% da meta da equipe atingida no mês.`,
@@ -684,6 +783,8 @@ async function manageCommercialTeams(action, data, crmUser) {
           if (drop >= 20) {
             appendAlert(teamId, {
               id: `team-drop-${teamId}`,
+              type: 'performance_drop',
+              team_id: teamId,
               level: drop >= 40 ? 'critical' : 'attention',
               title: 'Queda de desempenho',
               description: `Desempenho ${drop.toFixed(0)}% abaixo do mês anterior.`,
@@ -693,6 +794,7 @@ async function manageCommercialTeams(action, data, crmUser) {
         if (!teamAlerts[teamId].length) {
           appendAlert(teamId, {
             id: `team-positive-${teamId}`,
+            type: 'positive',
             level: 'informative',
             title: 'Nenhum alerta encontrado',
             description: 'A equipe não possui alertas para este período.',

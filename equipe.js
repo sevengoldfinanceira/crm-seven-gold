@@ -766,6 +766,34 @@
     return grid;
   };
 
+  const openLeadInCrm = (leadId) => {
+    if (!leadId) return;
+    window.location.href = `crm.html?leadId=${encodeURIComponent(leadId)}`;
+  };
+
+  const closeLeadActionModal = () => {
+    const modal = document.getElementById("lead-action-modal");
+    if (!modal) return;
+    modal.style.display = "none";
+    modal.setAttribute("aria-hidden", "true");
+  };
+
+  const openLeadActionModal = (lead) => {
+    const modal = document.getElementById("lead-action-modal");
+    const dateInput = document.getElementById("lead-action-datetime");
+    if (!modal || !dateInput || !lead?.id) return;
+    document.getElementById("lead-action-id").value = lead.id;
+    document.getElementById("lead-action-name").textContent = lead.name || "Lead sem nome";
+    document.getElementById("lead-action-type").value = "reminder";
+    document.getElementById("lead-action-note").value = "";
+    document.getElementById("lead-action-status").textContent = "";
+    const nextHour = new Date(Date.now() + 60 * 60 * 1000);
+    nextHour.setMinutes(0, 0, 0);
+    dateInput.value = `${nextHour.getFullYear()}-${String(nextHour.getMonth() + 1).padStart(2, "0")}-${String(nextHour.getDate()).padStart(2, "0")}T${String(nextHour.getHours()).padStart(2, "0")}:00`;
+    modal.style.display = "flex";
+    modal.setAttribute("aria-hidden", "false");
+  };
+
   const createRecentLeadsTable = (leads) => {
     const section = document.createElement("section");
     section.className = "eq-seller-detail-section";
@@ -776,7 +804,7 @@
     wrapper.className = "eq-seller-leads-wrap";
     const table = document.createElement("table");
     table.className = "eq-seller-leads-table";
-    table.innerHTML = "<thead><tr><th>Lead</th><th>Telefone</th><th>Etapa atual</th><th>Criação</th><th>Última movimentação</th><th>Próximo agendamento</th></tr></thead>";
+    table.innerHTML = "<thead><tr><th>Lead</th><th>Telefone</th><th>Etapa atual</th><th>Criação</th><th>Última movimentação</th><th>Próximo agendamento</th><th>Ações</th></tr></thead>";
     const body = document.createElement("tbody");
     (Array.isArray(leads) ? leads : []).forEach((lead) => {
       const tr = document.createElement("tr");
@@ -799,12 +827,24 @@
         cell.textContent = String(value);
         tr.appendChild(cell);
       });
+      const actions = document.createElement("td");
+      actions.className = "eq-seller-lead-actions";
+      const openButton = document.createElement("button");
+      openButton.type = "button";
+      openButton.textContent = "Abrir lead";
+      openButton.addEventListener("click", () => openLeadInCrm(lead.id));
+      const taskButton = document.createElement("button");
+      taskButton.type = "button";
+      taskButton.textContent = "Agendar ação";
+      taskButton.addEventListener("click", () => openLeadActionModal(lead));
+      actions.append(openButton, taskButton);
+      tr.appendChild(actions);
       body.appendChild(tr);
     });
     if (!body.children.length) {
       const tr = document.createElement("tr");
       const td = document.createElement("td");
-      td.colSpan = 6;
+      td.colSpan = 7;
       td.className = "eq-monthly-empty";
       td.textContent = "Nenhum lead encontrado no período selecionado.";
       tr.appendChild(td);
@@ -823,7 +863,7 @@
     modal.setAttribute("aria-hidden", "true");
   };
 
-  const renderSellerDetail = (result) => {
+  const renderSellerDetail = (result, options = {}) => {
     const content = document.getElementById("seller-detail-content");
     if (!content) return;
     content.replaceChildren();
@@ -854,15 +894,26 @@
     subtitle.textContent = `${String(seller.cargo || "Vendedor").replace(/[-_]/g, " ")} · ${seller.team_name || "Sem equipe"} · ${formatTeamPeriod(state.teamPeriod)}`;
     identity.append(eyebrow, title, subtitle);
     header.append(avatar, identity);
+    if (options.title) {
+      eyebrow.textContent = options.title;
+    }
+    const visibleLeads = Array.isArray(options.leadIds)
+      ? (result.recentLeads || []).filter((lead) => options.leadIds.includes(lead.id))
+      : (result.recentLeads || []);
+    if (options.focusLeads) {
+      content.append(header, createRecentLeadsTable(visibleLeads));
+      refreshIcons();
+      return;
+    }
     content.append(header, createSellerDetailMetricGrid(result.metrics || {}));
 
     const comparison = createMonthlyComparison(result.comparison || []);
     comparison.classList.add("eq-seller-detail-section");
-    content.append(comparison, createRecentLeadsTable(result.recentLeads || []));
+    content.append(comparison, createRecentLeadsTable(visibleLeads));
     refreshIcons();
   };
 
-  const openSellerDetail = async (sellerId) => {
+  const openSellerDetail = async (sellerId, options = {}) => {
     const modal = document.getElementById("seller-detail-modal");
     const content = document.getElementById("seller-detail-content");
     if (!modal || !content) return;
@@ -871,7 +922,7 @@
     content.innerHTML = '<p class="eq-seller-detail-loading">Carregando detalhamento...</p>';
     try {
       const result = await callCommercialTeamsApi("seller_detail", { seller_id: sellerId, month: state.teamPeriod });
-      renderSellerDetail(result);
+      renderSellerDetail(result, options);
     } catch (error) {
       content.replaceChildren();
       const message = document.createElement("p");
@@ -946,13 +997,41 @@
         content.appendChild(seller);
       }
       item.append(icon, content);
-      if (alert.seller_id) {
-        const detailButton = document.createElement("button");
-        detailButton.type = "button";
-        detailButton.textContent = "Ver detalhes";
-        detailButton.addEventListener("click", () => openSellerDetail(alert.seller_id));
-        item.appendChild(detailButton);
+      const actions = document.createElement("div");
+      actions.className = "eq-team-alert-actions";
+      const addAction = (label, handler) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = label;
+        button.addEventListener("click", handler);
+        actions.appendChild(button);
+      };
+      const openFilteredLeads = (title, leadIds = null) => openSellerDetail(alert.seller_id, {
+        focusLeads: true,
+        title,
+        ...(Array.isArray(leadIds) ? { leadIds } : {}),
+      });
+      if (alert.type === "seller_below_goal") {
+        addAction("Ver vendedor", () => openSellerDetail(alert.seller_id));
+        addAction("Ver leads do vendedor", () => openFilteredLeads("Leads do vendedor"));
+      } else if (alert.type === "seller_no_appointments" || alert.type === "seller_low_appointments") {
+        addAction("Ver leads sem agendamento", () => openFilteredLeads("Leads sem agendamento"));
+        addAction("Ver vendedor", () => openSellerDetail(alert.seller_id));
+      } else if (alert.type === "stalled_leads") {
+        addAction("Ver leads parados", () => openFilteredLeads("Leads parados", alert.lead_ids));
+        addAction("Criar próxima ação", () => openFilteredLeads("Selecione um lead para criar a ação", alert.lead_ids));
+      } else if (alert.type === "leads_without_next_action") {
+        addAction("Agendar ação", () => openFilteredLeads("Leads sem próxima ação", alert.lead_ids));
+        addAction("Abrir lead", () => alert.lead_ids?.length === 1
+          ? openLeadInCrm(alert.lead_ids[0])
+          : openFilteredLeads("Selecione o lead que deseja abrir", alert.lead_ids));
+      } else if (alert.type === "performance_drop") {
+        addAction("Ver comparativo", () => document.querySelector(`[data-team-id="${alert.team_id}"] .eq-monthly-comparison`)?.scrollIntoView({ behavior: "smooth", block: "center" }));
+        addAction("Ver detalhes da equipe", () => document.querySelector(`[data-team-id="${alert.team_id}"] .eq-team-dashboard`)?.scrollIntoView({ behavior: "smooth", block: "center" }));
+      } else if (alert.type === "team_below_goal") {
+        addAction("Ver detalhes da equipe", () => document.querySelector(`[data-team-id="${alert.team_id}"] .eq-team-dashboard`)?.scrollIntoView({ behavior: "smooth", block: "center" }));
       }
+      if (actions.children.length) item.appendChild(actions);
       list.appendChild(item);
     });
 
@@ -1103,6 +1182,7 @@
 
       const card = document.createElement("article");
       card.className = "eq-team-card" + (isActive ? "" : " eq-team-card-inactive");
+      card.dataset.teamId = team.id;
 
       const head = document.createElement("div");
       head.className = "eq-team-card-head";
@@ -3647,12 +3727,49 @@
     }
 
     const sellerDetailModal = document.getElementById("seller-detail-modal");
+    const leadActionModal = document.getElementById("lead-action-modal");
     document.getElementById("seller-detail-close")?.addEventListener("click", closeSellerDetail);
     sellerDetailModal?.addEventListener("click", (event) => {
       if (event.target === sellerDetailModal) closeSellerDetail();
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && sellerDetailModal?.style.display === "flex") closeSellerDetail();
+      if (event.key === "Escape" && leadActionModal?.style.display === "flex") closeLeadActionModal();
+    });
+    document.getElementById("lead-action-close")?.addEventListener("click", closeLeadActionModal);
+    leadActionModal?.addEventListener("click", (event) => {
+      if (event.target === leadActionModal) closeLeadActionModal();
+    });
+    document.getElementById("lead-action-form")?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const submitButton = form.querySelector('button[type="submit"]');
+      const status = document.getElementById("lead-action-status");
+      const localDate = document.getElementById("lead-action-datetime").value;
+      if (!localDate) return;
+      submitButton.disabled = true;
+      status.textContent = "Salvando próxima ação...";
+      status.className = "eq-lead-action-status";
+      try {
+        await callCommercialTeamsApi("create_task", {
+          lead_id: document.getElementById("lead-action-id").value,
+          type: document.getElementById("lead-action-type").value,
+          scheduled_at: new Date(localDate).toISOString(),
+          note: document.getElementById("lead-action-note").value,
+        });
+        status.textContent = "Próxima ação criada com sucesso.";
+        status.className = "eq-lead-action-status is-success";
+        await loadCommercialTeams();
+        setTimeout(() => {
+          closeLeadActionModal();
+          closeSellerDetail();
+        }, 500);
+      } catch (error) {
+        status.textContent = error.message || "Não foi possível criar a ação.";
+        status.className = "eq-lead-action-status is-error";
+      } finally {
+        submitButton.disabled = false;
+      }
     });
 
     // 1. Setup Tab switching click listeners

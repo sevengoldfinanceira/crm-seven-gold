@@ -12,7 +12,7 @@
       rel="stylesheet"
     />
     <script>document.documentElement.dataset.adminSidebar = localStorage.getItem("seven-gold-admin-sidebar-collapsed") === "true" ? "collapsed" : "expanded";</script>
-    <link rel="stylesheet" href="home.css?v=team-alerts-v1" />
+    <link rel="stylesheet" href="home.css?v=alert-quick-actions-v1" />
     <link rel="stylesheet" href="searchable-select.css?v=mr00opji" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
@@ -488,6 +488,21 @@
       </div>
     </div>
 
+    <div id="lead-action-modal" class="eq-modal eq-lead-action-modal" aria-hidden="true">
+      <form id="lead-action-form" class="eq-lead-action-dialog">
+        <button id="lead-action-close" type="button" class="eq-seller-detail-close" aria-label="Fechar ação"><i data-lucide="x"></i></button>
+        <span class="eq-lead-action-kicker">Ação rápida</span>
+        <h2>Agendar próxima ação</h2>
+        <p id="lead-action-name"></p>
+        <input id="lead-action-id" type="hidden" />
+        <label><span>Tipo</span><select id="lead-action-type"><option value="reminder">Lembrete / retorno</option><option value="whatsapp_message">Retorno pelo WhatsApp</option></select></label>
+        <label><span>Data e horário</span><input id="lead-action-datetime" type="datetime-local" required /></label>
+        <label><span>Observação</span><textarea id="lead-action-note" rows="3" placeholder="Descreva a próxima ação"></textarea></label>
+        <p id="lead-action-status" class="eq-lead-action-status"></p>
+        <button type="submit" class="eq-btn-gold">Salvar próxima ação</button>
+      </form>
+    </div>
+
     <!-- Modal: Metas da Equipe -->
     <div id="team-goals-modal" class="eq-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1200; align-items: center; justify-content: center;">
       <div style="background: #fff; border-radius: 16px; padding: 28px 32px; max-width: 520px; width: 92vw; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 24px 48px rgba(0,0,0,0.18);">
@@ -569,7 +584,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=role-visibility-admin-v1"></script>
-    <script src="equipe.js?v=team-alerts-v1"></script>
+    <script src="equipe.js?v=alert-quick-actions-v1"></script>
     <script src="/admin-shell.js?v=mqreizkw"></script>
     <script src="/searchable-select.js?v=mr00opji"></script>
     <script src="/pwa.js"></script>
