@@ -2774,11 +2774,6 @@ const loadLeads = async () => {
     await initResponsibleFilter(currentCrmUser);
   }
 
-  let query = client
-    .from("leads")
-    .select("id, name, origin, note, status, created_at, telefone, property_region, credit_value, down_payment_value, installment_value, tags, assigned_to_email, assigned_to_name, created_by_email, created_by_name, updated_by_email, updated_by_name")
-    .order("created_at", { ascending: false });
-
   let activeTeamId = selectedPipelineTeamId;
   let activeResponsibleEmail = selectedResponsibleEmail;
 
@@ -2793,36 +2788,51 @@ const loadLeads = async () => {
     }
   }
 
-  if (!shouldSeeAllLeads(currentCrmUser)) {
-    query = query.eq("assigned_to_email", currentCrmUser.email);
-  } else if (activeResponsibleEmail) {
-    query = query.eq("assigned_to_email", activeResponsibleEmail);
-  } else if (activeTeamId) {
-    const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
-    if (teamEmails?.length) {
-      query = query.in("assigned_to_email", teamEmails);
-    }
+  let teamEmails = null;
+  if (activeTeamId) {
+    teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
   } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
     const coordTeamId = getCoordinatedTeamId(currentCrmUser);
-    const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
-    if (coordTeamId && teamEmails?.length) {
-      query = query.in("assigned_to_email", teamEmails);
-    }
+    if (coordTeamId) teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
   }
 
-  const { data, error } = await query;
-
-  if (error) {
-    if (leadCount) {
-      leadCount.textContent = "Tabela de leads ainda nao criada.";
-    }
+  const { data: sessionData } = await client.auth.getSession();
+  const token = sessionData?.session?.access_token;
+  if (!token) {
+    if (leadCount) leadCount.textContent = "Sessão expirada. Entre novamente.";
     return;
   }
 
-  renderLeads(data || []);
+  let result;
+  try {
+    const response = await fetch("/api/leads/list", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    result = await response.json().catch(() => ({}));
+    if (!response.ok || result.ok !== true) {
+      throw new Error(result.error || "Não foi possível carregar os leads.");
+    }
+  } catch (error) {
+    console.error("Erro ao carregar pipeline pelo servidor:", error);
+    if (leadCount) leadCount.textContent = error.message || "Não foi possível carregar os leads.";
+    return;
+  }
+
+  const normalizeLeadEmail = (value) => String(value || "").trim().toLowerCase();
+  let visibleLeads = Array.isArray(result.leads) ? result.leads : [];
+
+  if (activeResponsibleEmail) {
+    const responsibleEmail = normalizeLeadEmail(activeResponsibleEmail);
+    visibleLeads = visibleLeads.filter((lead) => normalizeLeadEmail(lead.assigned_to_email) === responsibleEmail);
+  } else if (teamEmails?.length) {
+    const allowedTeamEmails = new Set(teamEmails.map(normalizeLeadEmail));
+    visibleLeads = visibleLeads.filter((lead) => allowedTeamEmails.has(normalizeLeadEmail(lead.assigned_to_email)));
+  }
+
+  renderLeads(visibleLeads);
   if (!deepLinkedLeadHandled) {
     const requestedLeadId = new URLSearchParams(window.location.search).get("leadId");
-    const requestedLead = requestedLeadId ? (data || []).find((lead) => String(lead.id) === String(requestedLeadId)) : null;
+    const requestedLead = requestedLeadId ? visibleLeads.find((lead) => String(lead.id) === String(requestedLeadId)) : null;
     if (requestedLead) {
       deepLinkedLeadHandled = true;
       openEditLeadModal(requestedLead);

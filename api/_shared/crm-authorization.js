@@ -25,11 +25,13 @@ const normalizeRole = (value) => {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[\s_]+/g, '-');
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
   const aliases = {
     admin: 'administrador', administrator: 'administrador',
     owner: 'dono', proprietario: 'dono',
-    'diretor-executivo': 'diretor-ceo', ceo: 'diretor-ceo',
+    'diretor-executivo': 'diretor-ceo', 'diretor-e-ceo': 'diretor-ceo',
+    diretor: 'diretor-ceo', ceo: 'diretor-ceo',
   };
   return aliases[normalized] || normalized;
 };
