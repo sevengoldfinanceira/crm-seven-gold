@@ -12,7 +12,7 @@
       rel="stylesheet"
     />
     <script>document.documentElement.dataset.adminSidebar = localStorage.getItem("seven-gold-admin-sidebar-collapsed") === "true" ? "collapsed" : "expanded";</script>
-    <link rel="stylesheet" href="home.css?v=commercial-team-dashboard-v1" />
+    <link rel="stylesheet" href="home.css?v=team-period-filter-v1" />
     <link rel="stylesheet" href="searchable-select.css?v=mr00opji" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
@@ -318,9 +318,32 @@
               </div>
               <div class="eq-team-header-actions">
                 <label class="eq-team-period-field">
-                  <span>Mês de referência</span>
-                  <input id="eq-team-period" type="month" />
+                  <span>Mês</span>
+                  <select id="eq-team-filter-month" aria-label="Mês do painel da equipe">
+                    <option value="01">Janeiro</option>
+                    <option value="02">Fevereiro</option>
+                    <option value="03">Março</option>
+                    <option value="04">Abril</option>
+                    <option value="05">Maio</option>
+                    <option value="06">Junho</option>
+                    <option value="07">Julho</option>
+                    <option value="08">Agosto</option>
+                    <option value="09">Setembro</option>
+                    <option value="10">Outubro</option>
+                    <option value="11">Novembro</option>
+                    <option value="12">Dezembro</option>
+                  </select>
                 </label>
+                <label class="eq-team-period-field">
+                  <span>Ano</span>
+                  <select id="eq-team-filter-year" aria-label="Ano do painel da equipe"></select>
+                </label>
+                <button id="eq-team-apply-filter" type="button" class="eq-btn-gold eq-team-filter-button">
+                  <i data-lucide="filter"></i> Aplicar filtro
+                </button>
+                <button id="eq-team-current-month" type="button" class="eq-team-current-button">
+                  <i data-lucide="calendar-clock"></i> Mês atual
+                </button>
                 <button id="eq-team-goals-btn" class="eq-btn-gold" style="display: none; white-space: nowrap;">
                   <i data-lucide="target"></i> Definir metas
                 </button>
@@ -535,7 +558,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=role-visibility-admin-v1"></script>
-    <script src="equipe.js?v=commercial-team-dashboard-v1"></script>
+    <script src="equipe.js?v=team-period-filter-v1"></script>
     <script src="/admin-shell.js?v=mqreizkw"></script>
     <script src="/searchable-select.js?v=mr00opji"></script>
     <script src="/pwa.js"></script>

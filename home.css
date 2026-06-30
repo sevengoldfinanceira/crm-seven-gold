@@ -13609,7 +13609,12 @@ body[data-unified-admin] .unified-admin-shell {
 .eq-commercial-teams-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .eq-team-header-actions { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
 .eq-team-period-field { display: flex; flex-direction: column; gap: 5px; color: #64748b; font-size: .72rem; font-weight: 700; }
-.eq-team-period-field input { min-height: 40px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: var(--company-main-bg, #fff); color: var(--company-text, #0f172a); }
+.eq-team-period-field select { min-width: 116px; min-height: 40px; padding: 8px 30px 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: var(--company-main-bg, #fff); color: var(--company-text, #0f172a); }
+.eq-team-filter-button, .eq-team-current-button { min-height: 40px; white-space: nowrap; }
+.eq-team-current-button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; border: 1px solid #d4af37; border-radius: 8px; background: transparent; color: #9a7410; font-size: .78rem; font-weight: 700; cursor: pointer; }
+.eq-team-current-button svg { width: 15px; height: 15px; }
+.eq-team-filter-button:disabled, .eq-team-current-button:disabled { cursor: wait; opacity: .6; }
+body.theme-dark .eq-team-current-button { color: #f1d47a; }
 .eq-team-create-form { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; align-items: end; margin: 20px 0 12px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: var(--company-main-bg, #fff); }
 .eq-team-create-form label { display: flex; flex-direction: column; gap: 6px; color: #475569; font-size: .78rem; font-weight: 700; }
 .eq-team-create-form input, .eq-team-create-form select, .eq-team-card select { min-height: 40px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: var(--company-main-bg, #fff); color: var(--company-text, #0f172a); }

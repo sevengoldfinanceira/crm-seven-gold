@@ -3322,13 +3322,42 @@
   const init = async () => {
     const now = new Date();
     state.teamPeriod = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-    const teamPeriodInput = document.getElementById("eq-team-period");
-    if (teamPeriodInput) {
-      teamPeriodInput.value = state.teamPeriod;
-      teamPeriodInput.addEventListener("change", async () => {
-        if (!/^\d{4}-\d{2}$/.test(teamPeriodInput.value)) return;
-        state.teamPeriod = teamPeriodInput.value;
-        if (state.activeTab === "equipes") await loadCommercialTeams();
+    const teamMonthSelect = document.getElementById("eq-team-filter-month");
+    const teamYearSelect = document.getElementById("eq-team-filter-year");
+    const applyTeamFilterButton = document.getElementById("eq-team-apply-filter");
+    const currentMonthButton = document.getElementById("eq-team-current-month");
+
+    if (teamMonthSelect && teamYearSelect) {
+      const currentYear = now.getFullYear();
+      for (let year = currentYear + 1; year >= currentYear - 5; year -= 1) {
+        const option = document.createElement("option");
+        option.value = String(year);
+        option.textContent = String(year);
+        teamYearSelect.appendChild(option);
+      }
+      teamMonthSelect.value = String(now.getMonth() + 1).padStart(2, "0");
+      teamYearSelect.value = String(currentYear);
+
+      const applySelectedTeamPeriod = async () => {
+        const nextPeriod = `${teamYearSelect.value}-${teamMonthSelect.value}`;
+        if (!/^\d{4}-\d{2}$/.test(nextPeriod)) return;
+        state.teamPeriod = nextPeriod;
+        applyTeamFilterButton.disabled = true;
+        currentMonthButton.disabled = true;
+        try {
+          if (state.activeTab === "equipes") await loadCommercialTeams();
+        } finally {
+          applyTeamFilterButton.disabled = false;
+          currentMonthButton.disabled = false;
+        }
+      };
+
+      applyTeamFilterButton?.addEventListener("click", applySelectedTeamPeriod);
+      currentMonthButton?.addEventListener("click", async () => {
+        const today = new Date();
+        teamMonthSelect.value = String(today.getMonth() + 1).padStart(2, "0");
+        teamYearSelect.value = String(today.getFullYear());
+        await applySelectedTeamPeriod();
       });
     }
 
