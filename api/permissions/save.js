@@ -31,6 +31,49 @@ const readBody = (req) =>
     req.on('error', reject);
   });
 
+async function saveCrmUser(user) {
+  const targetId = String(user?.id || '').trim();
+  const nome = String(user?.nome || '').trim();
+  const email = String(user?.email || '').trim().toLowerCase();
+  const cargo = normalizeRole(user?.cargo);
+  const ativo = user?.ativo === true;
+
+  if (!nome || !email || !cargo) {
+    return { status: 400, error: 'Nome, e-mail e cargo são obrigatórios.' };
+  }
+
+  const { data: emailOwner, error: emailError } = await supabase
+    .from('crm_users')
+    .select('id')
+    .ilike('email', email)
+    .maybeSingle();
+  if (emailError) return { status: 500, error: emailError.message };
+  if (targetId && emailOwner?.id && String(emailOwner.id) !== targetId) {
+    return { status: 409, error: 'Este e-mail já pertence a outro usuário.' };
+  }
+
+  const resolvedId = targetId || emailOwner?.id || null;
+  if (cargo === 'diretor-ceo') {
+    let directorQuery = supabase.from('crm_users').select('id').eq('cargo', 'diretor-ceo');
+    if (resolvedId) directorQuery = directorQuery.neq('id', resolvedId);
+    const { data: otherDirector, error: directorError } = await directorQuery.limit(1);
+    if (directorError) return { status: 500, error: directorError.message };
+    if (otherDirector?.length) {
+      return { status: 409, error: 'O cargo Diretor CEO já está vinculado a outro usuário.' };
+    }
+  }
+
+  const userPayload = { nome, email, cargo, ativo, updated_at: new Date().toISOString() };
+  const operation = resolvedId
+    ? supabase.from('crm_users').update(userPayload).eq('id', resolvedId)
+    : supabase.from('crm_users').insert(userPayload);
+  const { data: savedUser, error: saveError } = await operation
+    .select('id,email,nome,cargo,ativo,created_at,updated_at')
+    .single();
+  if (saveError) return { status: 500, error: saveError.message };
+  return { status: 200, user: savedUser };
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -69,6 +112,12 @@ module.exports = async (req, res) => {
     }
 
     const payload = req.body && Object.keys(req.body).length ? req.body : await readBody(req);
+    if (payload.user) {
+      const result = await saveCrmUser(payload.user);
+      if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });
+      return sendJson(res, 200, { ok: true, user: result.user });
+    }
+
     const permissions = Array.isArray(payload.permissions) ? payload.permissions : [];
     if (!permissions.length) {
       return sendJson(res, 400, { ok: false, error: 'Nenhuma permissao enviada.' });

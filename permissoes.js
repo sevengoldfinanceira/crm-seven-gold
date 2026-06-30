@@ -561,13 +561,13 @@
     const token = sessionData?.session?.access_token;
     if (!token) throw new Error("Sessão expirada. Entre novamente para salvar o usuário.");
 
-    const response = await fetch("/api/users/save", {
+    const response = await fetch("/api/permissions/save", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ id: id || null, nome, email, cargo, ativo }),
+      body: JSON.stringify({ user: { id: id || null, nome, email, cargo, ativo } }),
     });
 
     const result = await response.json().catch(() => ({}));
