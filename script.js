@@ -694,7 +694,10 @@ let selectedResponsibleEmail = "";
 
 let allTeams = [];
 let allTeamMembers = [];
-let selectedTeamId = "";
+let selectedPipelineTeamId = "";
+let selectedDashTeamId = "";
+let selectedCalendarTeamId = "";
+let selectedTasksTeamId = "";
 let dashTeamFilterInitialized = false;
 let pipelineTeamFilterInitialized = false;
 let calendarTeamFilterInitialized = false;
@@ -774,9 +777,8 @@ const populateTeamFilter = (selectEl, currentCrmUser) => {
   }
 };
 
-const refreshResponsibleFilterForTeam = async (selectEl, client, currentCrmUser) => {
+const refreshResponsibleFilterForTeam = async (selectEl, client, currentCrmUser, teamId = "") => {
   if (!selectEl) return;
-  const teamId = selectEl.closest("[data-team-filter]")?.querySelector("select")?.value || selectedTeamId;
 
   const allUsers = await client
     .from("crm_users")
@@ -826,18 +828,20 @@ const initPipelineTeamFilter = async (currentCrmUser) => {
   if (isTeamCoordinatorRole(currentCrmUser)) {
     const myTeam = allTeams.find((t) => t.coordinator_user_id === currentCrmUser?.id);
     if (myTeam) {
-      selectedTeamId = myTeam.id;
+      selectedPipelineTeamId = myTeam.id;
       selectEl.value = myTeam.id;
     }
+  } else {
+    selectedPipelineTeamId = selectEl.value || "";
   }
 
   selectEl.addEventListener("change", async (e) => {
-    selectedTeamId = e.target.value;
+    selectedPipelineTeamId = e.target.value;
     const respSelect = document.getElementById("responsible-filter-select");
     if (respSelect) {
       selectedResponsibleEmail = "";
       respSelect.value = "";
-      await refreshResponsibleFilterForTeam(respSelect, client, currentCrmUser);
+      await refreshResponsibleFilterForTeam(respSelect, client, currentCrmUser, selectedPipelineTeamId);
     }
     loadLeads();
   });
@@ -861,18 +865,20 @@ const initDashTeamFilter = async (currentCrmUser) => {
   if (isTeamCoordinatorRole(currentCrmUser)) {
     const myTeam = allTeams.find((t) => t.coordinator_user_id === currentCrmUser?.id);
     if (myTeam) {
-      selectedTeamId = myTeam.id;
+      selectedDashTeamId = myTeam.id;
       selectEl.value = myTeam.id;
     }
+  } else {
+    selectedDashTeamId = selectEl.value || "";
   }
 
   selectEl.addEventListener("change", async (e) => {
-    selectedTeamId = e.target.value;
+    selectedDashTeamId = e.target.value;
     const respSelect = document.getElementById("dash-responsible-filter-select");
     if (respSelect) {
       selectedDashResponsibleEmail = "";
       respSelect.value = "";
-      await refreshResponsibleFilterForTeam(respSelect, client, currentCrmUser);
+      await refreshResponsibleFilterForTeam(respSelect, client, currentCrmUser, selectedDashTeamId);
     }
     loadDashboardMetrics();
   });
@@ -897,13 +903,15 @@ const initCalendarTeamFilter = async (currentCrmUser) => {
   if (isTeamCoordinatorRole(currentCrmUser)) {
     const myTeam = allTeams.find((t) => t.coordinator_user_id === currentCrmUser?.id);
     if (myTeam) {
-      selectedTeamId = myTeam.id;
+      selectedCalendarTeamId = myTeam.id;
       selectEl.value = myTeam.id;
     }
+  } else {
+    selectedCalendarTeamId = selectEl.value || "";
   }
 
   selectEl.addEventListener("change", async (e) => {
-    selectedTeamId = e.target.value;
+    selectedCalendarTeamId = e.target.value;
     const respSelect = document.getElementById("calendar-responsible-filter-select");
     if (respSelect) {
       selectedCalendarResponsibleId = "";
@@ -916,7 +924,7 @@ const initCalendarTeamFilter = async (currentCrmUser) => {
 
 const refreshCalendarResponsibleFilterForTeam = async (selectEl, client, currentCrmUser) => {
   if (!selectEl) return;
-  const teamId = selectedTeamId;
+  const teamId = selectedCalendarTeamId;
 
   const allUsers = await client
     .from("crm_users")
@@ -972,18 +980,20 @@ const initTasksTeamFilter = async (currentCrmUser) => {
   if (isTeamCoordinatorRole(currentCrmUser)) {
     const myTeam = allTeams.find((t) => t.coordinator_user_id === currentCrmUser?.id);
     if (myTeam) {
-      selectedTeamId = myTeam.id;
+      selectedTasksTeamId = myTeam.id;
       selectEl.value = myTeam.id;
     }
+  } else {
+    selectedTasksTeamId = selectEl.value || "";
   }
 
   selectEl.addEventListener("change", async (e) => {
-    selectedTeamId = e.target.value;
+    selectedTasksTeamId = e.target.value;
     const respSelect = document.getElementById("tasks-responsible-filter-select");
     if (respSelect) {
       selectedTasksResponsibleEmail = "";
       respSelect.value = "";
-      await refreshResponsibleFilterForTeam(respSelect, client, currentCrmUser);
+      await refreshResponsibleFilterForTeam(respSelect, client, currentCrmUser, selectedTasksTeamId);
     }
     loadTasks();
   });
@@ -1008,7 +1018,7 @@ const initResponsibleFilter = async (currentCrmUser) => {
   responsibleFilterInitialized = true;
   containerEl.style.display = "grid";
 
-  await refreshResponsibleFilterForTeam(selectEl, client, currentCrmUser);
+  await refreshResponsibleFilterForTeam(selectEl, client, currentCrmUser, selectedPipelineTeamId);
 
   selectEl.addEventListener("change", (e) => {
     selectedResponsibleEmail = e.target.value;
@@ -1018,7 +1028,7 @@ const initResponsibleFilter = async (currentCrmUser) => {
   document.querySelector(".clear-button")?.addEventListener("click", () => {
     selectEl.value = "";
     selectedResponsibleEmail = "";
-    selectedTeamId = "";
+    selectedPipelineTeamId = "";
     const teamSelect = document.getElementById("pipeline-team-filter-select");
     if (teamSelect) teamSelect.value = "";
     loadLeads();
@@ -1077,7 +1087,7 @@ const initTasksResponsibleFilter = async (currentCrmUser) => {
   tasksResponsibleFilterInitialized = true;
   containerEl.style.display = "flex";
 
-  await refreshResponsibleFilterForTeam(selectEl, client, currentCrmUser);
+  await refreshResponsibleFilterForTeam(selectEl, client, currentCrmUser, selectedTasksTeamId);
 
   selectEl.addEventListener("change", (e) => {
     selectedTasksResponsibleEmail = e.target.value;
@@ -1109,7 +1119,7 @@ const loadTasks = async () => {
     .order("scheduled_at", { ascending: true });
 
   // 1. Filtragem por Responsável (RLS já restringe vendedores)
-  let activeTeamId = selectedTeamId;
+  let activeTeamId = selectedTasksTeamId;
   let activeTasksResponsibleEmail = selectedTasksResponsibleEmail;
 
   if (isTeamCoordinatorRole(currentCrmUser)) {
@@ -1486,7 +1496,7 @@ const loadDashboardMetrics = async () => {
   // 1. Leads
   let leadsQuery = client.from("leads").select("status, assigned_to_email, created_at");
 
-  let activeTeamId = selectedTeamId;
+  let activeTeamId = selectedDashTeamId;
   let activeDashResponsibleEmail = selectedDashResponsibleEmail;
 
   if (isTeamCoordinatorRole(currentCrmUser)) {
@@ -2133,7 +2143,7 @@ const loadAppointments = async () => {
     .order("data_agendamento")
     .order("hora_agendamento");
 
-  let activeTeamId = selectedTeamId;
+  let activeTeamId = selectedCalendarTeamId;
   let activeResponsibleId = selectedCalendarResponsibleId;
 
   if (isTeamCoordinatorRole(currentCrmUser)) {
@@ -2755,7 +2765,7 @@ const loadLeads = async () => {
     .select("id, name, origin, note, status, created_at, telefone, property_region, credit_value, down_payment_value, installment_value, tags, assigned_to_email, assigned_to_name, created_by_email, created_by_name, updated_by_email, updated_by_name")
     .order("created_at", { ascending: false });
 
-  let activeTeamId = selectedTeamId;
+  let activeTeamId = selectedPipelineTeamId;
   let activeResponsibleEmail = selectedResponsibleEmail;
 
   if (isTeamCoordinatorRole(currentCrmUser)) {
