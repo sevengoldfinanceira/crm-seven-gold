@@ -1780,7 +1780,6 @@
           </div>
           <div class="eq-sector-title-wrapper">
             <h4>${sector.title}</h4>
-            <span>${sector.description}</span>
           </div>
           <span class="eq-sector-count">${sectorMembersCount}</span>
         </header>
