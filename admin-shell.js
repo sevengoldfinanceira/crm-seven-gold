@@ -81,7 +81,6 @@
           <span class="empresa-topbar-avatar" data-user-avatar>U</span>
           <span class="empresa-topbar-user">
             <strong data-user-name>Usuário</strong>
-            <small class="empresa-topbar-email" data-user-email>email@empresa.com</small>
             <mark class="empresa-topbar-role" data-user-role>Administrador</mark>
           </span>
         </a>
@@ -187,7 +186,6 @@
                 <span class="verified-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#d4af37"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               </div>
               <span class="profile-role" data-user-role>Perfil</span>
-              <span class="profile-email" data-user-email></span>
             </div>
           </div>
           <div class="sidebar-copyright">
