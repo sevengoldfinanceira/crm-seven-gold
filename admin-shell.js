@@ -57,6 +57,10 @@
       <a class="empresa-topbar-brand" href="empresa.html" aria-label="Seven Gold">
         <img src="assets/icons/LOGO COPA.png?v=1" alt="" />
       </a>
+      <a class="empresa-topbar-panels" href="painel.html" title="Voltar aos painéis">
+        <i data-lucide="layout-grid"></i>
+        <span>Voltar aos painéis</span>
+      </a>
       <nav class="empresa-topbar-nav" aria-label="Navegação da empresa">
         ${allItems
           .map(
@@ -77,7 +81,8 @@
           <span class="empresa-topbar-avatar" data-user-avatar>U</span>
           <span class="empresa-topbar-user">
             <strong data-user-name>Usuário</strong>
-            <small data-user-role>Administrador</small>
+            <small class="empresa-topbar-email" data-user-email>email@empresa.com</small>
+            <mark class="empresa-topbar-role" data-user-role>Administrador</mark>
           </span>
         </a>
       </div>

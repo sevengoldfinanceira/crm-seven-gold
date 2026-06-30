@@ -11837,6 +11837,54 @@ body.theme-dark .company-module-grid>a:hover {
   text-transform: uppercase;
 }
 
+.empresa-topbar-panels {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 13px;
+  flex-shrink: 0;
+  border: 1px solid rgba(212, 175, 55, .34);
+  border-radius: 999px;
+  background: rgba(212, 175, 55, .1);
+  color: #f5d46b;
+  font-size: 12px;
+  font-weight: 750;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform .2s ease, background .2s ease, border-color .2s ease;
+}
+
+.empresa-topbar-panels:hover {
+  transform: translateY(-1px);
+  border-color: rgba(212, 175, 55, .58);
+  background: rgba(212, 175, 55, .18);
+}
+
+.empresa-topbar-panels svg {
+  width: 16px;
+  height: 16px;
+  color: currentColor;
+  stroke: currentColor;
+}
+
+@media (min-width: 1024px) and (max-width: 1220px) {
+  .empresa-topbar-panels {
+    width: 38px;
+    padding: 0;
+  }
+
+  .empresa-topbar-panels span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
 /* --- Nav Links --- */
 .empresa-topbar-nav {
   display: flex;
@@ -11932,7 +11980,8 @@ body.theme-dark .company-module-grid>a:hover {
   text-decoration: none;
   color: inherit;
   padding: 6px 12px 6px 6px;
-  border-radius: 999px;
+  min-width: 218px;
+  border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   background: rgba(255, 255, 255, 0.04) !important;
   transition: all 0.2s ease;
@@ -11960,18 +12009,48 @@ body.theme-dark .company-module-grid>a:hover {
 .empresa-topbar-user {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
   line-height: 1.2;
 }
 
 .empresa-topbar-user strong {
+  display: block;
+  max-width: 148px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 750;
   color: #D7DEEA !important;
 }
 
-.empresa-topbar-user small {
+.empresa-topbar-email {
+  display: block;
+  max-width: 148px;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 11px;
   color: #9CA6B8 !important;
+}
+
+.empresa-topbar-role {
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  margin-top: 5px;
+  padding: 2px 8px;
+  border: 1px solid rgba(156, 91, 240, .5);
+  border-radius: 5px;
+  background: rgba(76, 43, 191, .24);
+  color: #b979ff !important;
+  font-size: 9px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: .025em;
+  text-transform: uppercase;
 }
 
 /* ============================================================

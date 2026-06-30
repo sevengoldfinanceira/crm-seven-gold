@@ -2275,6 +2275,64 @@ body.theme-dark .crm-workspace {
   border: 1px solid rgba(156, 91, 240, 0.3) !important;
 }
 
+/* Card de identidade alinhado ao painel da empresa */
+.user-box .user-profile-link {
+  padding: 11px;
+  border: 1px solid rgba(255, 255, 255, .11);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .045);
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+.user-box .user-profile-link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(212, 175, 55, .3);
+  background: rgba(255, 255, 255, .075);
+}
+
+.user-box .user-box-avatar {
+  width: 42px;
+  height: 42px;
+}
+
+.user-box .user-profile-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.user-box .user-profile-meta .user-name {
+  width: 100%;
+  color: #fff !important;
+  font-size: .86rem;
+  font-weight: 750;
+}
+
+.user-box .user-profile-meta .user-email {
+  width: 100%;
+  margin-top: 2px;
+  color: #aaa5ad !important;
+  font-size: .66rem;
+}
+
+.user-box .user-profile-meta .user-role {
+  display: inline-flex !important;
+  align-items: center;
+  min-height: 18px;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border: 1px solid rgba(156, 91, 240, .5) !important;
+  border-radius: 5px;
+  background: rgba(76, 43, 191, .24) !important;
+  color: #b979ff !important;
+  font-size: .56rem;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: .025em;
+  text-transform: uppercase;
+}
+
 /* Metric Cards style override */
 .dash-metric-card {
   position: relative;
