@@ -82,6 +82,77 @@ async function saveCrmUser(user) {
   return { status: 200, user: savedUser };
 }
 
+async function listCrmUserAvatars() {
+  const { data: crmUsers, error: crmUsersError } = await supabase
+    .from('crm_users')
+    .select('id,email');
+  if (crmUsersError) return { status: 500, error: crmUsersError.message };
+
+  const authUsers = [];
+  let page = 1;
+  while (true) {
+    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage: 1000 });
+    if (error) return { status: 500, error: error.message };
+    const users = data?.users || [];
+    authUsers.push(...users);
+    if (users.length < 1000) break;
+    page += 1;
+  }
+
+  const authById = new Map(authUsers.map((user) => [String(user.id), user]));
+  const authByEmail = new Map(
+    authUsers.map((user) => [String(user.email || '').trim().toLowerCase(), user])
+  );
+  const resolvedUsers = (crmUsers || []).map((crmUser) => ({
+    crmUser,
+    authUser: authById.get(String(crmUser.id))
+      || authByEmail.get(String(crmUser.email || '').trim().toLowerCase())
+      || null,
+  }));
+  const avatarCandidates = resolvedUsers
+    .filter(({ authUser }) => authUser?.id)
+    .map(({ authUser }) => ({
+      directory: `${authUser.id}/profile`,
+      path: `${authUser.id}/profile/avatar.jpg`,
+    }));
+
+  const avatarChecks = await Promise.all(avatarCandidates.map(async (candidate) => {
+    const { data, error } = await supabase.storage
+      .from('company-documents')
+      .list(candidate.directory, { limit: 1, search: 'avatar.jpg' });
+    if (error) {
+      console.error('[permissions/save] avatar lookup error:', error);
+      return null;
+    }
+    return (data || []).some((file) => file.name === 'avatar.jpg') ? candidate.path : null;
+  }));
+  const avatarPaths = avatarChecks.filter(Boolean);
+
+  let signedUrls = [];
+  if (avatarPaths.length) {
+    const { data, error } = await supabase.storage
+      .from('company-documents')
+      .createSignedUrls(avatarPaths, 60 * 60);
+    if (error) console.error('[permissions/save] avatar signed URLs error:', error);
+    signedUrls = data || [];
+  }
+  const customAvatarByPath = new Map(
+    signedUrls.filter((item) => item?.signedUrl).map((item) => [item.path, item.signedUrl])
+  );
+
+  return {
+    status: 200,
+    avatars: resolvedUsers.map(({ crmUser, authUser }) => {
+      const path = authUser?.id ? `${authUser.id}/profile/avatar.jpg` : '';
+      const customAvatar = customAvatarByPath.get(path) || null;
+      const googleAvatar = authUser?.user_metadata?.avatar_url
+        || authUser?.user_metadata?.picture
+        || null;
+      return { id: crmUser.id, url: customAvatar || googleAvatar || null };
+    }),
+  };
+}
+
 async function manageCommercialTeams(action, data, crmUser) {
   const role = normalizeRole(crmUser.cargo);
   const isAdmin = ADMIN_ROLES.has(role) || role === 'coordenador-rh';
@@ -233,6 +304,11 @@ module.exports = async (req, res) => {
       const result = await manageCommercialTeams(payload.team_action, payload.team_data, crmUser);
       if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });
       return sendJson(res, 200, { ok: true, ...result });
+    }
+    if (payload.list_user_avatars === true) {
+      const result = await listCrmUserAvatars();
+      if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });
+      return sendJson(res, 200, { ok: true, avatars: result.avatars });
     }
     if (!ADMIN_ROLES.has(normalizeRole(crmUser.cargo))) {
       return sendJson(res, 403, { ok: false, error: 'Usuario sem permissao para salvar permissoes.' });

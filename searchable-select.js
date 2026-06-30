@@ -60,6 +60,8 @@
 
       this.dropdown = document.createElement("div");
       this.dropdown.className = "sg-search-select__dropdown";
+      this.supportsPopover = typeof this.dropdown.showPopover === "function";
+      if (this.supportsPopover) this.dropdown.setAttribute("popover", "manual");
 
       this.searchWrap = document.createElement("div");
       this.searchWrap.className = "sg-search-select__search-wrap";
@@ -243,6 +245,16 @@
       openInstance = this;
       this.root.classList.add("is-open");
       this.dropdown.classList.add("is-open");
+      if (this.supportsPopover && !this.dropdown.matches(":popover-open")) {
+        try {
+          this.dropdown.showPopover();
+        } catch (error) {
+          this.supportsPopover = false;
+          this.dropdown.removeAttribute("popover");
+          const dialog = this.select.closest("dialog[open]");
+          if (dialog) dialog.append(this.dropdown);
+        }
+      }
       this.trigger.setAttribute("aria-expanded", "true");
       this.search.value = "";
       this.renderOptions();
@@ -253,6 +265,11 @@
     close() {
       this.root.classList.remove("is-open");
       this.dropdown.classList.remove("is-open");
+      if (this.supportsPopover && this.dropdown.matches(":popover-open")) {
+        try {
+          this.dropdown.hidePopover();
+        } catch (_) {}
+      }
       this.trigger.setAttribute("aria-expanded", "false");
       this.search.removeAttribute("aria-activedescendant");
       if (openInstance === this) openInstance = null;

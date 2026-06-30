@@ -911,12 +911,23 @@
         .order("nome", { ascending: true });
       if (error) throw error;
 
+      let avatarsById = new Map();
+      try {
+        const avatarResult = await callCrmUserApi({ list_user_avatars: true });
+        avatarsById = new Map(
+          (avatarResult.avatars || []).map((avatar) => [String(avatar.id), avatar.url || null])
+        );
+      } catch (avatarError) {
+        console.warn("Não foi possível carregar as fotos dos colaboradores:", avatarError);
+      }
+
       state.profiles = (users || []).map((user) => ({
         id: user.id,
         full_name: user.nome,
         email: user.email,
         role: user.cargo || "vendedor",
         status: user.ativo ? "ativo" : "inativo",
+        avatar_url: avatarsById.get(String(user.id)) || null,
       }));
       state.profiles.forEach((profile) => getEmployeeFunctions(profile));
       return true;
@@ -926,6 +937,27 @@
       return false;
     }
   };
+
+  const escapeAvatarAttribute = (value) => String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  const renderProfileAvatar = (profile, style = "") => {
+    const initial = String(profile?.full_name || "?").trim().charAt(0).toUpperCase() || "?";
+    const image = profile?.avatar_url
+      ? `<img src="${escapeAvatarAttribute(profile.avatar_url)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+      : "";
+    return `<div class="eq-avatar${image ? " has-user-photo" : ""}"${style ? ` style="${style}"` : ""}><span>${initial}</span>${image}</div>`;
+  };
+
+  document.addEventListener("error", (event) => {
+    if (event.target instanceof HTMLImageElement && event.target.matches(".eq-avatar img")) {
+      event.target.closest(".eq-avatar")?.classList.remove("has-user-photo");
+      event.target.remove();
+    }
+  }, true);
 
   const callCrmUserApi = async (body) => {
     const client = getClient();
@@ -1065,9 +1097,12 @@
       const dirRoleKey = 'diretor-ceo';
       const dirMembers = getProfilesForRole(dirRoleKey);
       
-      const ceoName = dirMembers[0]?.full_name || "Jonatã";
+      const ceoProfile = dirMembers[0] || { full_name: "Jonatã", avatar_url: null };
+      const ceoName = ceoProfile.full_name;
       document.getElementById("dir-name").textContent = ceoName;
-      document.getElementById("dir-avatar").textContent = ceoName.charAt(0);
+      const dirAvatar = document.getElementById("dir-avatar");
+      dirAvatar.innerHTML = `<span>${ceoName.charAt(0).toUpperCase()}</span>${ceoProfile.avatar_url ? `<img src="${escapeAvatarAttribute(ceoProfile.avatar_url)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ""}`;
+      dirAvatar.classList.toggle("has-user-photo", Boolean(ceoProfile.avatar_url));
       dirCard.querySelector(".eq-profile-tag").textContent = `${dirMembers.length} ${dirMembers.length === 1 ? 'pessoa' : 'pessoas'}`;
 
       // Reset selection state
@@ -1768,7 +1803,7 @@
       tr.innerHTML = `
         <td>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="eq-avatar">${p.full_name.charAt(0)}</div>
+            ${renderProfileAvatar(p)}
             <div>
               <strong style="display: block; font-size: 0.85rem;">${p.full_name}</strong>
               <small style="color: #64748b; font-size: 0.75rem;">${p.email}</small>
@@ -2118,7 +2153,7 @@
                   <strong style="font-size: 0.8rem; color: #0f172a; display: block;">${m.full_name}</strong>
                   <span style="font-size: 0.72rem; color: #64748b;">${m.email}</span>
                 </div>
-                <div class="eq-avatar" style="width: 32px; height: 32px; font-size: 0.85rem; font-weight: 700; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #cbd5e1; color: #475569;">${m.full_name.charAt(0)}</div>
+                ${renderProfileAvatar(m, "width: 32px; height: 32px; font-size: 0.85rem; font-weight: 700; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #cbd5e1; color: #475569;")}
               </div>
             `).join("")}
             ${members.length === 0 ? '<p style="color:#94a3b8; font-size:0.75rem; margin: 0; font-style: italic;">Nenhum colaborador vinculado.</p>' : ''}
@@ -2188,7 +2223,7 @@
         <div class="eq-sidebar-header" style="position: relative; padding-bottom: 16px;">
           <button type="button" id="btn-close-sidebar" style="position: absolute; top: 0; right: 0; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #94a3b8;"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
           <div style="display: flex; align-items: center; gap: 12px; margin-top: 10px;">
-            <div class="eq-avatar" style="width: 44px; height: 44px; font-size: 1.1rem; font-weight: 700; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #cbd5e1; color: #475569;">${profile.full_name.charAt(0)}</div>
+            ${renderProfileAvatar(profile, "width: 44px; height: 44px; font-size: 1.1rem; font-weight: 700; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #cbd5e1; color: #475569;")}
             <div>
               <h2 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0;">${profile.full_name}</h2>
               <span class="eq-sidebar-tag" style="background: ${isActive ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)'}; color: ${isActive ? '#10b981' : '#ef4444'}; font-weight: 600; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">

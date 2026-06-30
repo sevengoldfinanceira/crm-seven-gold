@@ -96,6 +96,11 @@
   animation: sg-select-open .16s ease-out;
 }
 
+.sg-search-select__dropdown[popover] {
+  inset: auto;
+  margin: 0;
+}
+
 .sg-search-select__dropdown.is-open { display: block; }
 
 @keyframes sg-select-open {
