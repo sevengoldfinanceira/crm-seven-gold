@@ -504,25 +504,19 @@
 
   const getEmployeeFunctions = (profile) => {
     const map = loadEmployeeFunctionsMap();
-    if (map[profile.id] && map[profile.id].length > 0) {
-      return map[profile.id];
-    }
-    
-    // Auto-migrate old single role/sector logic
     const roleKey = getRoleKeyForProfile(profile.role);
     const sectorObj = sectors.find(s => s.roles.some(r => r.key === roleKey));
     const sectorId = sectorObj ? sectorObj.id : "comercial";
-    
-    const initialFuncs = [
-      {
-        sectorId: sectorId,
-        roleKey: roleKey,
-        primary: true
-      }
-    ];
-    map[profile.id] = initialFuncs;
-    saveEmployeeFunctionsMap(map);
-    return initialFuncs;
+    const savedFunctions = Array.isArray(map[profile.id]) ? map[profile.id] : [];
+    const currentPrimary = savedFunctions.find((item) => item.primary);
+
+    if (!currentPrimary || currentPrimary.roleKey !== roleKey) {
+      const secondaryFunctions = savedFunctions.filter((item) => !item.primary && item.roleKey !== roleKey);
+      map[profile.id] = [{ sectorId, roleKey, primary: true }, ...secondaryFunctions];
+      saveEmployeeFunctionsMap(map);
+    }
+
+    return map[profile.id];
   };
 
   const saveEmployeeFunctions = (profileId, funcs) => {
@@ -539,7 +533,12 @@
   };
 
   const commercialMemberRoles = new Set(["vendedor", "assistente-vendas", "home-office"]);
-  const commercialCoordinatorRoles = new Set(["coordenador-comercial", "supervisor-comercial"]);
+  const commercialCoordinatorRoles = new Set([
+    "coordenador-comercial",
+    "supervisor-comercial",
+    "coordenador",
+    "supervisor",
+  ]);
 
   const setTeamStatus = (message, type = "info") => {
     const status = document.getElementById("eq-team-status");
@@ -548,9 +547,13 @@
     status.style.color = type === "error" ? "#ef4444" : type === "success" ? "#16a34a" : "#64748b";
   };
 
-  const getCommercialCoordinators = () => state.profiles.filter((profile) =>
-    profile.status === "ativo" && commercialCoordinatorRoles.has(getRoleKeyForProfile(profile.role))
-  );
+  const getCommercialCoordinators = () => state.profiles.filter((profile) => {
+    const rawRole = String(profile.role || "").trim().toLowerCase().replace(/[\s_]+/g, "-");
+    const roleKey = getRoleKeyForProfile(profile.role);
+    return profile.status === "ativo" && (
+      commercialCoordinatorRoles.has(rawRole) || commercialCoordinatorRoles.has(roleKey)
+    );
+  });
 
   const getCommercialMembers = () => state.profiles.filter((profile) =>
     profile.status === "ativo" && commercialMemberRoles.has(getRoleKeyForProfile(profile.role))
@@ -559,13 +562,34 @@
   const populateTeamCoordinatorSelect = () => {
     const select = document.getElementById("eq-team-coordinator");
     if (!select) return;
-    select.innerHTML = '<option value="">Selecione um coordenador</option>';
+    select.innerHTML = '<option value="">Selecione coordenador ou supervisor</option>';
     getCommercialCoordinators().forEach((profile) => {
       const option = document.createElement("option");
       option.value = profile.id;
       option.textContent = `${profile.full_name} — ${getRoleKeyForProfile(profile.role).toUpperCase()}`;
       select.appendChild(option);
     });
+  };
+
+  const callCommercialTeamsApi = async (action, data = {}) => {
+    const client = getClient();
+    const { data: sessionData } = await client.auth.getSession();
+    const token = sessionData?.session?.access_token;
+    if (!token) throw new Error("Sessão expirada. Entre novamente no CRM.");
+
+    const response = await fetch("/api/permissions/save", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ team_action: action, team_data: data }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || result.ok !== true) {
+      throw new Error(result.error || "Não foi possível salvar a equipe.");
+    }
+    return result;
   };
 
   const loadCommercialTeams = async () => {
@@ -576,20 +600,18 @@
     }
 
     setTeamStatus("Carregando equipes...");
-    const [{ data: teams, error: teamsError }, { data: members, error: membersError }] = await Promise.all([
-      client.from("crm_teams").select("id,name,coordinator_user_id,created_at,updated_at").order("name"),
-      client.from("crm_team_members").select("id,team_id,user_id,created_at"),
-    ]);
-
-    if (teamsError || membersError) {
-      console.error("Erro ao carregar equipes comerciais:", teamsError || membersError);
-      setTeamStatus("Estrutura de equipes ainda não criada no Supabase. Execute supabase-crm-teams-setup.sql.", "error");
+    let result;
+    try {
+      result = await callCommercialTeamsApi("list");
+    } catch (error) {
+      console.error("Erro ao carregar equipes comerciais:", error);
+      setTeamStatus(error.message, "error");
       state.commercialTeamsLoaded = false;
       return false;
     }
 
-    state.commercialTeams = teams || [];
-    state.commercialTeamMembers = members || [];
+    state.commercialTeams = result.teams || [];
+    state.commercialTeamMembers = result.members || [];
     state.commercialTeamsLoaded = true;
     setTeamStatus("");
     renderCommercialTeams();
@@ -628,7 +650,7 @@
       const title = document.createElement("h3");
       title.textContent = team.name;
       const subtitle = document.createElement("p");
-      subtitle.textContent = `Coordenador: ${coordinator?.full_name || "Não definido"}`;
+      subtitle.textContent = `Gestor: ${coordinator?.full_name || "Não definido"}`;
       titleBox.append(title, subtitle);
       const removeButton = document.createElement("button");
       removeButton.type = "button";
@@ -640,7 +662,7 @@
 
       const coordinatorLabel = document.createElement("label");
       coordinatorLabel.className = "eq-team-card-field";
-      coordinatorLabel.append("Coordenador responsável");
+      coordinatorLabel.append("Gestor responsável");
       const coordinatorSelect = document.createElement("select");
       coordinators.forEach((profile) => {
         const option = document.createElement("option");
@@ -707,13 +729,11 @@
     }
 
     setTeamStatus("Criando equipe...");
-    const { error } = await client.from("crm_teams").insert({
-      name,
-      coordinator_user_id: coordinatorUserId,
-      updated_at: new Date().toISOString(),
-    });
-    if (error) {
-      setTeamStatus(`Erro ao criar equipe: ${error.message}`, "error");
+    try {
+      await callCommercialTeamsApi("create", { name, coordinator_user_id: coordinatorUserId });
+    } catch (error) {
+      await loadCommercialTeams();
+      setTeamStatus(error.message, "error");
       return;
     }
 
@@ -726,36 +746,15 @@
     const client = getClient();
     if (!client || !coordinatorSelect.value) return;
     const selectedMemberIds = [...membersBox.querySelectorAll('input[type="checkbox"]:checked')].map((item) => item.value);
-    const currentMemberIds = state.commercialTeamMembers
-      .filter((item) => item.team_id === team.id)
-      .map((item) => item.user_id);
-    const removedMemberIds = currentMemberIds.filter((userId) => !selectedMemberIds.includes(userId));
-    const addedMemberIds = selectedMemberIds.filter((userId) => !currentMemberIds.includes(userId));
     saveButton.disabled = true;
     setTeamStatus(`Salvando ${team.name}...`);
 
     try {
-      const { error: teamError } = await client.from("crm_teams").update({
+      await callCommercialTeamsApi("save", {
+        team_id: team.id,
         coordinator_user_id: coordinatorSelect.value,
-        updated_at: new Date().toISOString(),
-      }).eq("id", team.id);
-      if (teamError) throw teamError;
-
-      if (removedMemberIds.length) {
-        const { error: deleteError } = await client
-          .from("crm_team_members")
-          .delete()
-          .eq("team_id", team.id)
-          .in("user_id", removedMemberIds);
-        if (deleteError) throw deleteError;
-      }
-
-      if (addedMemberIds.length) {
-        const { error: insertError } = await client.from("crm_team_members").insert(
-          addedMemberIds.map((userId) => ({ team_id: team.id, user_id: userId }))
-        );
-        if (insertError) throw insertError;
-      }
+        member_ids: selectedMemberIds,
+      });
 
       setTeamStatus("Equipe atualizada com sucesso.", "success");
       await loadCommercialTeams();
@@ -768,9 +767,9 @@
 
   const deleteCommercialTeam = async (team) => {
     if (!confirm(`Excluir a equipe "${team.name}"? Os colaboradores ficarão sem equipe.`)) return;
-    const client = getClient();
-    const { error } = await client.from("crm_teams").delete().eq("id", team.id);
-    if (error) {
+    try {
+      await callCommercialTeamsApi("delete", { team_id: team.id });
+    } catch (error) {
       setTeamStatus(`Erro ao excluir equipe: ${error.message}`, "error");
       return;
     }
@@ -899,129 +898,86 @@
   // Load active collaborators from Supabase crm_users
   const loadProfiles = async () => {
     const client = getClient();
-    let data = [];
-
-    if (client) {
-      try {
-        const { data: users, error } = await client
-          .from("crm_users")
-          .select("id, nome, email, cargo, ativo")
-          .order("nome", { ascending: true });
-        
-        if (!error && users && users.length > 0) {
-          data = users.map(u => ({
-            id: u.id,
-            full_name: u.nome,
-            email: u.email,
-            role: u.cargo || "vendedor",
-            status: u.ativo ? "ativo" : "inativo"
-          }));
-        }
-      } catch (e) {
-        console.error("Supabase load error:", e);
-      }
+    localStorage.removeItem("seven-gold-profiles-local");
+    if (!client) {
+      state.profiles = [];
+      return false;
     }
 
-    if (data.length === 0) {
-      const localProfiles = localStorage.getItem("seven-gold-profiles-local");
-      if (localProfiles) {
-        data = JSON.parse(localProfiles);
-      } else {
-        data = [
-          { id: "1", full_name: "Jonatã", email: "jonata@sevengold.com.br", role: "diretor-ceo", status: "ativo" },
-          { id: "2", full_name: "Maria Silva", email: "maria@sevengold.com.br", role: "supervisor-comercial", status: "ativo" },
-          { id: "3", full_name: "Lucas Santos", email: "lucas@sevengold.com.br", role: "coordenador-comercial", status: "ativo" },
-          { id: "4", full_name: "Ana Oliveira", email: "ana@sevengold.com.br", role: "vendedor", status: "ativo" },
-          { id: "5", full_name: "João Souza", email: "joao@sevengold.com.br", role: "vendedor", status: "ativo" },
-          { id: "6", full_name: "Mariana Costa", email: "mariana@sevengold.com.br", role: "assistente-vendas", status: "ativo" },
-          { id: "7", full_name: "Paula Souza", email: "paula@sevengold.com.br", role: "coordenador-posvenda", status: "ativo" },
-          { id: "8", full_name: "Roberto Dias", email: "roberto@sevengold.com.br", role: "coordenador-adm", status: "ativo" },
-          { id: "9", full_name: "Beatriz Lima", email: "beatriz@sevengold.com.br", role: "coordenador-financeiro", status: "ativo" },
-          { id: "10", full_name: "Thiago Rocha", email: "thiago@sevengold.com.br", role: "coordenador-mkt", status: "ativo" },
-          { id: "11", full_name: "Fernanda Melo", email: "fernanda@sevengold.com.br", role: "coordenador-rh", status: "ativo" },
-          { id: "12", full_name: "Carlos Eduardo", email: "carlos@sevengold.com.br", role: "advogado-juridico", status: "ativo" }
-        ];
-        localStorage.setItem("seven-gold-profiles-local", JSON.stringify(data));
-      }
-    } else {
-      data.forEach(p => {
-        if (!p.status) p.status = "ativo";
-      });
-      localStorage.setItem("seven-gold-profiles-local", JSON.stringify(data));
-    }
+    try {
+      const { data: users, error } = await client
+        .from("crm_users")
+        .select("id, nome, email, cargo, ativo")
+        .order("nome", { ascending: true });
+      if (error) throw error;
 
-    state.profiles = data;
+      state.profiles = (users || []).map((user) => ({
+        id: user.id,
+        full_name: user.nome,
+        email: user.email,
+        role: user.cargo || "vendedor",
+        status: user.ativo ? "ativo" : "inativo",
+      }));
+      state.profiles.forEach((profile) => getEmployeeFunctions(profile));
+      return true;
+    } catch (error) {
+      console.error("Erro ao carregar crm_users:", error);
+      state.profiles = [];
+      return false;
+    }
+  };
+
+  const callCrmUserApi = async (body) => {
+    const client = getClient();
+    const { data: sessionData } = await client.auth.getSession();
+    const token = sessionData?.session?.access_token;
+    if (!token) throw new Error("Sessão expirada. Entre novamente no CRM.");
+
+    const response = await fetch("/api/permissions/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || result.ok !== true) {
+      throw new Error(result.error || "Não foi possível salvar o colaborador.");
+    }
+    return result;
   };
 
   const saveProfiles = async () => {
-    localStorage.setItem("seven-gold-profiles-local", JSON.stringify(state.profiles));
-
-    const client = getClient();
-    if (!client) return;
+    if (!getClient()) return false;
 
     try {
-      // 1. Get all current user IDs in Supabase crm_users
-      const { data: dbUsers, error: getErr } = await client
-        .from("crm_users")
-        .select("id, email");
-
-      if (getErr) {
-        console.error("Error fetching dbUsers for sync:", getErr);
-        return;
-      }
-
-      // 2. Identify deleted users (exist in DB but not in state.profiles)
-      const stateIds = new Set(state.profiles.map(p => p.id));
-      const deletedUsers = dbUsers.filter(dbU => {
-        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(dbU.id);
-        return isUuid && !stateIds.has(dbU.id);
-      });
-
-      for (const delU of deletedUsers) {
-        await client.from("crm_users").delete().eq("id", delU.id);
-      }
-
-      // 3. Upsert current collaborators to Supabase crm_users
       for (const profile of state.profiles) {
-        const cargo = profile.role || "vendedor";
-        const ativo = profile.status === "ativo";
-        const email = profile.email.toLowerCase().trim();
-        const nome = profile.full_name;
-
-        const payload = {
-          nome,
-          email,
-          cargo,
-          ativo,
-          updated_at: new Date().toISOString()
-        };
-
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id);
-
-        if (isUuid) {
-          await client.from("crm_users").update(payload).eq("id", profile.id);
-        } else {
-          const match = dbUsers.find(dbU => dbU.email.toLowerCase().trim() === email);
-          if (match) {
-            profile.id = match.id;
-            await client.from("crm_users").update(payload).eq("id", match.id);
-          } else {
-            const { data: inserted, error: insErr } = await client
-              .from("crm_users")
-              .insert(payload)
-              .select("id")
-              .maybeSingle();
-            
-            if (!insErr && inserted) {
-              profile.id = inserted.id;
+        const previousId = profile.id;
+        const result = await callCrmUserApi({
+          user: {
+            id: isUuid ? profile.id : null,
+            nome: profile.full_name,
+            email: String(profile.email || "").trim().toLowerCase(),
+            cargo: profile.role || "vendedor",
+            ativo: profile.status === "ativo",
+          },
+        });
+        if (result.user?.id) {
+          profile.id = result.user.id;
+          if (String(previousId) !== String(profile.id)) {
+            const functionsMap = loadEmployeeFunctionsMap();
+            if (functionsMap[previousId]) {
+              functionsMap[profile.id] = functionsMap[previousId];
+              delete functionsMap[previousId];
+              saveEmployeeFunctionsMap(functionsMap);
             }
           }
         }
       }
-
-      localStorage.setItem("seven-gold-profiles-local", JSON.stringify(state.profiles));
+      await loadProfiles();
+      return true;
     } catch (err) {
-      console.error("Error syncing profiles to Supabase crm_users:", err);
+      console.error("Erro ao sincronizar crm_users:", err);
+      return false;
     }
   };
 
@@ -1865,12 +1821,17 @@
       });
 
       // Delete action inside context menu
-      tr.querySelector(".btn-delete-colab").addEventListener("click", (e) => {
+      tr.querySelector(".btn-delete-colab").addEventListener("click", async (e) => {
         e.stopPropagation();
         ctxMenu.style.display = "none";
         if (confirm(`Tem certeza de que deseja excluir o colaborador "${p.full_name}"?`)) {
+          try {
+            await callCrmUserApi({ delete_user_id: p.id });
+          } catch (error) {
+            alert(`Não foi possível excluir o colaborador: ${error.message}`);
+            return;
+          }
           state.profiles = state.profiles.filter(item => item.id !== p.id);
-          saveProfiles();
           
           // Clear employee roles mapping
           const map = loadEmployeeFunctionsMap();
@@ -2814,7 +2775,7 @@
     };
     
     // Form submission
-    formEl.onsubmit = (e) => {
+    formEl.onsubmit = async (e) => {
       e.preventDefault();
       
       const idVal = formEl.elements.colabId.value;
@@ -2879,7 +2840,12 @@
         saveEmployeeFunctions(newId, tempRolesList);
       }
       
-      saveProfiles();
+      const saved = await saveProfiles();
+      if (!saved) {
+        await loadProfiles();
+        alert("Não foi possível salvar o colaborador no Supabase. Nenhuma alteração foi confirmada.");
+        return;
+      }
       modal.style.display = "none";
       
       // Refresh UI
@@ -2941,7 +2907,7 @@
     secSelect.onchange = updateRolesList;
     updateRolesList();
     
-    formEl.onsubmit = (e) => {
+    formEl.onsubmit = async (e) => {
       e.preventDefault();
       const sectorId = secSelect.value;
       const roleKey = roleSelect.value;
@@ -2970,7 +2936,12 @@
       });
       
       saveEmployeeFunctions(profile.id, updatedFuncs);
-      saveProfiles();
+      const saved = await saveProfiles();
+      if (!saved) {
+        await loadProfiles();
+        alert("Não foi possível salvar a função principal no Supabase.");
+        return;
+      }
       
       modal.style.display = "none";
       renderOrganograma();
@@ -3178,6 +3149,19 @@
     // 9. Setup Drag scroll support
     setupDragScroll();
   };
+
+  window.addEventListener("focus", async () => {
+    const modalOpen = [...document.querySelectorAll(".eq-modal")].some((modal) => modal.style.display !== "none");
+    if (modalOpen) return;
+    const loaded = await loadProfiles();
+    if (!loaded) return;
+    populateTeamCoordinatorSelect();
+    renderSummaryCards();
+    if (state.activeTab === "hierarquia") renderOrganograma();
+    if (state.activeTab === "lista") applyListFilters();
+    if (state.activeTab === "equipes") renderCommercialTeams();
+    renderSidebarDetails();
+  });
 
   document.addEventListener("DOMContentLoaded", init);
 })();

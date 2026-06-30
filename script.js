@@ -1630,12 +1630,13 @@ const renderCalendar = () => {
     calendarGrid.innerHTML = "";
     const corner = document.createElement("div");
     corner.className = "calendar-corner";
-    corner.textContent = "Horario";
+    corner.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Horário</span>';
     calendarGrid.append(corner);
 
     days.forEach((day) => {
       const header = document.createElement("div");
-      header.className = `calendar-day-header${toDateKey(day) === todayKey ? " is-today" : ""}`;
+      const weekendClass = day.getDay() === 6 ? " is-saturday" : day.getDay() === 0 ? " is-sunday" : "";
+      header.className = `calendar-day-header${toDateKey(day) === todayKey ? " is-today" : ""}${weekendClass}`;
       const weekday = document.createElement("strong");
       weekday.textContent = new Intl.DateTimeFormat("pt-BR", { weekday: "short" }).format(day).replace(".", "");
       const date = document.createElement("span");
@@ -1653,7 +1654,8 @@ const renderCalendar = () => {
       days.forEach((day) => {
         const dateKey = toDateKey(day);
         const slot = document.createElement("div");
-        slot.className = `calendar-slot${dateKey === todayKey ? " is-today" : ""}`;
+        const weekendClass = day.getDay() === 6 ? " is-saturday" : day.getDay() === 0 ? " is-sunday" : "";
+        slot.className = `calendar-slot${dateKey === todayKey ? " is-today" : ""}${weekendClass}`;
         slot.dataset.date = dateKey;
         slot.dataset.time = time;
         slot.tabIndex = 0;
@@ -1686,7 +1688,7 @@ const renderCalendar = () => {
         .filter((item) => item.data_agendamento === dateKey)
         .sort((a, b) => normalizeAppointmentTime(a.hora_agendamento).localeCompare(normalizeAppointmentTime(b.hora_agendamento)));
       const section = document.createElement("section");
-      section.className = "calendar-mobile-day";
+      section.className = `calendar-mobile-day${toDateKey(day) === todayKey ? " is-today" : ""}${day.getDay() === 6 ? " is-saturday" : day.getDay() === 0 ? " is-sunday" : ""}`;
       const header = document.createElement("header");
       const title = document.createElement("strong");
       title.textContent = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit" }).format(day);

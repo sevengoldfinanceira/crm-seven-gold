@@ -13,6 +13,7 @@
     />
     <script>document.documentElement.dataset.adminSidebar = localStorage.getItem("seven-gold-admin-sidebar-collapsed") === "true" ? "collapsed" : "expanded";</script>
     <link rel="stylesheet" href="home.css?v=crm-teams-v1" />
+    <link rel="stylesheet" href="searchable-select.css?v=1" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -313,7 +314,7 @@
             <div class="eq-commercial-teams-header">
               <div>
                 <h2>Equipes comerciais</h2>
-                <p>Defina qual coordenador é responsável por cada vendedor, assistente de vendas e home office.</p>
+                <p>Defina qual coordenador ou supervisor é responsável por cada vendedor, assistente de vendas e home office.</p>
               </div>
             </div>
 
@@ -323,9 +324,9 @@
                 <input id="eq-team-name" type="text" placeholder="Ex.: Equipe Gold" required />
               </label>
               <label>
-                <span>Coordenador responsável</span>
+                <span>Gestor responsável</span>
                 <select id="eq-team-coordinator" required>
-                  <option value="">Selecione um coordenador</option>
+                  <option value="">Selecione coordenador ou supervisor</option>
                 </select>
               </label>
               <button type="submit" class="eq-btn-gold"><i data-lucide="plus"></i> Criar equipe</button>
@@ -445,8 +446,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=role-visibility-admin-v1"></script>
-    <script src="equipe.js?v=crm-teams-v1"></script>
+    <script src="equipe.js?v=crm-data-sync-v1"></script>
     <script src="/admin-shell.js?v=mqreizkw"></script>
+    <script src="/searchable-select.js?v=1"></script>
     <script src="/pwa.js"></script>
   </body>
 </html>

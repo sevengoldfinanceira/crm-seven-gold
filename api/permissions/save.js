@@ -1,6 +1,14 @@
 const { supabase } = require('../_shared/supabase');
 
 const ADMIN_ROLES = new Set(['diretor-ceo', 'dono', 'admin', 'administrador']);
+const TEAM_MANAGER_ROLES = new Set([
+  ...ADMIN_ROLES,
+  'coordenador-comercial',
+  'supervisor-comercial',
+  'coordenador',
+  'supervisor',
+  'coordenador-rh',
+]);
 
 const normalizeRole = (value) =>
   String(value || '')
@@ -74,6 +82,116 @@ async function saveCrmUser(user) {
   return { status: 200, user: savedUser };
 }
 
+async function manageCommercialTeams(action, data, crmUser) {
+  const role = normalizeRole(crmUser.cargo);
+  const isAdmin = ADMIN_ROLES.has(role) || role === 'coordenador-rh';
+  if (!TEAM_MANAGER_ROLES.has(role)) {
+    return { status: 403, error: 'Usuário sem permissão para gerenciar equipes.' };
+  }
+
+  if (action === 'list') {
+    let teamsQuery = supabase
+      .from('crm_teams')
+      .select('id,name,coordinator_user_id,created_at,updated_at')
+      .order('name');
+    if (!isAdmin) teamsQuery = teamsQuery.eq('coordinator_user_id', crmUser.id);
+    const { data: teams, error: teamsError } = await teamsQuery;
+    if (teamsError) return { status: 500, error: teamsError.message };
+
+    const teamIds = (teams || []).map((team) => team.id);
+    let members = [];
+    if (teamIds.length) {
+      const { data: memberRows, error: membersError } = await supabase
+        .from('crm_team_members')
+        .select('id,team_id,user_id,created_at')
+        .in('team_id', teamIds);
+      if (membersError) return { status: 500, error: membersError.message };
+      members = memberRows || [];
+    }
+    return { status: 200, teams: teams || [], members };
+  }
+
+  if (action === 'create') {
+    const name = String(data?.name || '').trim();
+    const coordinatorUserId = String(data?.coordinator_user_id || '').trim();
+    if (!name || !coordinatorUserId) return { status: 400, error: 'Nome e gestor são obrigatórios.' };
+    if (!isAdmin && coordinatorUserId !== String(crmUser.id)) {
+      return { status: 403, error: 'Você só pode criar uma equipe sob sua responsabilidade.' };
+    }
+
+    const { data: team, error } = await supabase
+      .from('crm_teams')
+      .insert({ name, coordinator_user_id: coordinatorUserId, updated_at: new Date().toISOString() })
+      .select('id,name,coordinator_user_id,created_at,updated_at')
+      .single();
+    if (error?.code === '23505') return { status: 409, error: 'Já existe uma equipe com esse nome.' };
+    if (error) return { status: 500, error: error.message };
+    return { status: 200, team };
+  }
+
+  const teamId = String(data?.team_id || '').trim();
+  if (!teamId) return { status: 400, error: 'Equipe não informada.' };
+  const { data: currentTeam, error: currentTeamError } = await supabase
+    .from('crm_teams')
+    .select('id,coordinator_user_id')
+    .eq('id', teamId)
+    .maybeSingle();
+  if (currentTeamError) return { status: 500, error: currentTeamError.message };
+  if (!currentTeam) return { status: 404, error: 'Equipe não encontrada.' };
+  if (!isAdmin && String(currentTeam.coordinator_user_id) !== String(crmUser.id)) {
+    return { status: 403, error: 'Você não pode alterar a equipe de outro gestor.' };
+  }
+
+  if (action === 'delete') {
+    const { error } = await supabase.from('crm_teams').delete().eq('id', teamId);
+    if (error) return { status: 500, error: error.message };
+    return { status: 200, deleted: true };
+  }
+
+  if (action === 'save') {
+    const coordinatorUserId = String(data?.coordinator_user_id || '').trim();
+    const memberIds = [...new Set(Array.isArray(data?.member_ids) ? data.member_ids.map(String) : [])];
+    if (!coordinatorUserId) return { status: 400, error: 'Gestor responsável não informado.' };
+    if (!isAdmin && coordinatorUserId !== String(crmUser.id)) {
+      return { status: 403, error: 'Você não pode transferir a equipe para outro gestor.' };
+    }
+
+    if (memberIds.length) {
+      const { data: conflictingMembers, error: conflictError } = await supabase
+        .from('crm_team_members')
+        .select('user_id,team_id')
+        .in('user_id', memberIds)
+        .neq('team_id', teamId)
+        .limit(1);
+      if (conflictError) return { status: 500, error: conflictError.message };
+      if (conflictingMembers?.length) {
+        return { status: 409, error: 'Um dos colaboradores já pertence a outra equipe.' };
+      }
+    }
+
+    const { error: teamError } = await supabase
+      .from('crm_teams')
+      .update({ coordinator_user_id: coordinatorUserId, updated_at: new Date().toISOString() })
+      .eq('id', teamId);
+    if (teamError) return { status: 500, error: teamError.message };
+
+    const { error: deleteError } = await supabase.from('crm_team_members').delete().eq('team_id', teamId);
+    if (deleteError) return { status: 500, error: deleteError.message };
+    if (memberIds.length) {
+      const { error: insertError } = await supabase.from('crm_team_members').insert(
+        memberIds.map((userId) => ({ team_id: teamId, user_id: userId }))
+      );
+      if (insertError?.code === '23505') {
+        return { status: 409, error: 'Um dos colaboradores já pertence a outra equipe.' };
+      }
+      if (insertError) return { status: 500, error: insertError.message };
+    }
+    return { status: 200, saved: true };
+  }
+
+  return { status: 400, error: 'Ação de equipe inválida.' };
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -102,16 +220,33 @@ module.exports = async (req, res) => {
 
     const { data: crmUser, error: crmUserError } = await supabase
       .from('crm_users')
-      .select('email,cargo,ativo')
+      .select('id,email,cargo,ativo')
       .ilike('email', userEmail)
       .eq('ativo', true)
       .maybeSingle();
 
-    if (crmUserError || !crmUser || !ADMIN_ROLES.has(normalizeRole(crmUser.cargo))) {
+    const payload = req.body && Object.keys(req.body).length ? req.body : await readBody(req);
+    if (crmUserError || !crmUser) {
+      return sendJson(res, 403, { ok: false, error: 'Usuário sem acesso ao CRM.' });
+    }
+    if (payload.team_action) {
+      const result = await manageCommercialTeams(payload.team_action, payload.team_data, crmUser);
+      if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });
+      return sendJson(res, 200, { ok: true, ...result });
+    }
+    if (!ADMIN_ROLES.has(normalizeRole(crmUser.cargo))) {
       return sendJson(res, 403, { ok: false, error: 'Usuario sem permissao para salvar permissoes.' });
     }
-
-    const payload = req.body && Object.keys(req.body).length ? req.body : await readBody(req);
+    if (payload.delete_user_id) {
+      const deleteUserId = String(payload.delete_user_id).trim();
+      if (!deleteUserId) return sendJson(res, 400, { ok: false, error: 'Usuário não informado.' });
+      if (deleteUserId === String(crmUser.id)) {
+        return sendJson(res, 400, { ok: false, error: 'Você não pode excluir o próprio usuário.' });
+      }
+      const { error: deleteUserError } = await supabase.from('crm_users').delete().eq('id', deleteUserId);
+      if (deleteUserError) return sendJson(res, 500, { ok: false, error: deleteUserError.message });
+      return sendJson(res, 200, { ok: true, deleted: true });
+    }
     if (payload.user) {
       const result = await saveCrmUser(payload.user);
       if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });

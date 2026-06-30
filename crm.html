@@ -11,7 +11,8 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=crm-users-auth-v2" />
+    <link rel="stylesheet" href="styles.css?v=calendar-premium-v1" />
+    <link rel="stylesheet" href="searchable-select.css?v=1" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -87,12 +88,6 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </span>
             Minha equipe
-          </a>
-          <a class="nav-item" href="relatorios.html" target="_self">
-            <span class="nav-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            </span>
-            Relatórios
           </a>
         </nav>
 
@@ -488,13 +483,13 @@
             <header class="calendar-toolbar">
               <div>
                 <p class="route-label">Agenda comercial</p>
-                <h1 id="calendar-title">Calendario de atendimentos</h1>
+                <h1 id="calendar-title">Calendário de atendimentos</h1>
                 <p class="calendar-week-label" data-calendar-week-label></p>
               </div>
               <div class="calendar-toolbar-actions">
-                <label id="calendar-responsible-filter-container" style="display: none; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: bold; color: var(--ink);">
+                <label id="calendar-responsible-filter-container" class="calendar-responsible-filter" style="display: none;">
                   <span>Responsável</span>
-                  <select id="calendar-responsible-filter-select" style="min-width: 144px; min-height: 36px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 0 12px; font-size: 0.82rem;">
+                  <select id="calendar-responsible-filter-select">
                     <option value="">Todos os vendedores</option>
                   </select>
                 </label>
@@ -768,6 +763,7 @@
     <script src="auth.js?v=role-visibility-admin-v1"></script>
     <script src="perfil.js?v=crm-profile-v1"></script>
     <script src="script.js?v=crm-profile-v1"></script>
+    <script src="/searchable-select.js?v=1"></script>
     <script src="/pwa.js"></script>
   </body>
 </html>
