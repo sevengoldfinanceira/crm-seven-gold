@@ -1797,7 +1797,6 @@
                   <strong>${role.title}</strong>
                   <span>${roleMembers.length} ${roleMembers.length === 1 ? 'pessoa' : 'pessoas'}</span>
                 </div>
-                <i data-lucide="chevron-right"></i>
               </button>
             `;
           }).join("")}

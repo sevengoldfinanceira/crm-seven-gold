@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-atendimento-sidebar-actions-v1";
+const CACHE_VERSION = "seven-gold-hierarchy-role-card-v1";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
