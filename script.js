@@ -2305,7 +2305,9 @@ const renderLeads = (leads) => {
     counter.textContent = leadsInColumn.length;
 
     if (leadsInColumn.length === 0) {
-      renderEmptyState(stack);
+      if (leads.length === 0) {
+        renderEmptyState(stack);
+      }
       return;
     }
 
