@@ -231,7 +231,7 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
   const tasksList = document.getElementById("modal-lead-tasks-list");
   if (tasksSection && tasksList && client) {
     tasksList.innerHTML = '<p style="color: var(--muted); font-size: 0.8rem; margin: 0;">Carregando tarefas...</p>';
-    tasksSection.style.display = "block";
+    // tasksSection display managed by tabs
 
     const { data: leadTasks, error } = await client
       .from("tasks")
@@ -240,7 +240,7 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
       .order("scheduled_at", { ascending: true });
 
     if (error || !leadTasks || leadTasks.length === 0) {
-      tasksSection.style.display = "none";
+      tasksList.innerHTML = '<p style="color: var(--muted); font-size: 0.85rem; text-align: center; padding: 20px 0; margin: 0;">Nenhuma tarefa vinculada a este lead.</p>';
     } else {
       tasksList.innerHTML = "";
       const now = new Date();
@@ -471,7 +471,7 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
   const historyList = document.getElementById("modal-lead-history-list");
   if (historySection && historyList && client) {
     historyList.innerHTML = '<p style="color: var(--muted); font-size: 0.8rem; margin: 0;">Carregando histórico...</p>';
-    historySection.style.display = "block";
+    // historySection display managed by tabs
 
     const { data: logs, error: logsError } = await client
       .from("lead_activity_logs")
@@ -480,7 +480,7 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
       .order("created_at", { ascending: false });
 
     if (logsError || !logs || logs.length === 0) {
-      historyList.innerHTML = '<p style="color: var(--muted); font-size: 0.8rem; margin: 0;">Nenhum histórico registrado.</p>';
+      historyList.innerHTML = '<p style="color: var(--muted); font-size: 0.85rem; text-align: center; padding: 20px 0; margin: 0;">Nenhum histórico registrado.</p>';
     } else {
       historyList.innerHTML = "";
       logs.forEach((log) => {
@@ -513,6 +513,12 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
   }
 
   setFormStatus("");
+  
+  // Reset tabs to default active state ("dados" or "tarefas" if we have a highlightTaskId)
+  const defaultTab = highlightTaskId ? "tarefas" : "dados";
+  const targetTabBtn = document.querySelector(`.lead-modal-tab-btn[data-tab='${defaultTab}']`);
+  if (targetTabBtn) targetTabBtn.click();
+
   modal.showModal();
 };
 
@@ -2789,12 +2795,63 @@ const switchTab = () => {
 
 window.addEventListener("hashchange", switchTab);
 
+const initLeadModalTabs = () => {
+  const tabsContainer = document.querySelector(".lead-modal-tabs");
+  if (!tabsContainer) return;
+
+  const tabButtons = tabsContainer.querySelectorAll(".lead-modal-tab-btn");
+  const tabContents = document.querySelectorAll(".lead-modal-tab-content");
+  const submitButton = document.querySelector(".lead-modal button[type='submit']");
+  const deleteButton = document.getElementById("delete-lead-modal-btn");
+
+  tabButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetTab = btn.dataset.tab;
+
+      // Update button active states
+      tabButtons.forEach((b) => {
+        b.classList.remove("active");
+        b.style.color = "var(--muted)";
+        b.style.borderBottomColor = "transparent";
+      });
+      btn.classList.add("active");
+      btn.style.color = "var(--gold)";
+      btn.style.borderBottomColor = "var(--gold)";
+
+      // Update content visibility
+      tabContents.forEach((content) => {
+        content.style.display = "none";
+      });
+
+      // Map tabs to content divs
+      if (targetTab === "dados") {
+        const dadosContainer = document.getElementById("modal-lead-tab-dados");
+        if (dadosContainer) dadosContainer.style.display = "block";
+        if (submitButton) submitButton.style.display = "block";
+        const mode = leadForm?.dataset.mode;
+        if (deleteButton && mode === "edit") deleteButton.style.display = "block";
+      } else if (targetTab === "tarefas") {
+        const tasksContainer = document.getElementById("modal-lead-tasks-section");
+        if (tasksContainer) tasksContainer.style.display = "block";
+        if (submitButton) submitButton.style.display = "none";
+        if (deleteButton) deleteButton.style.display = "none";
+      } else if (targetTab === "historico") {
+        const historyContainer = document.getElementById("modal-lead-history-section");
+        if (historyContainer) historyContainer.style.display = "block";
+        if (submitButton) submitButton.style.display = "none";
+        if (deleteButton) deleteButton.style.display = "none";
+      }
+    });
+  });
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   calendarWeekStart = getWeekStart();
   renderCalendar();
   setupDragAndDrop();
   setupTouchMove();
   setupBulkActions();
+  initLeadModalTabs();
   switchTab();
   loadLeads();
 });

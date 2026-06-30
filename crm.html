@@ -485,72 +485,82 @@
             </label>
           </div>
         </div>
-        <label>
-          Nome do lead
-          <input name="name" type="text" placeholder="Ex: Amanda Silva" required />
-        </label>
-        <label>
-          Telefone
-          <input name="telefone" type="text" placeholder="Ex: 11999998888" />
-        </label>
-        <label id="modal-status-label" style="display: none;">
-          Etapa do Funil
-          <select name="status">
-            <option value="lead_recebido">Lead recebido</option>
-            <option value="primeiro_contato">Primeiro contato</option>
-            <option value="agendamento">Agendamento</option>
-            <option value="cliente_em_loja">Cliente em loja</option>
-            <option value="proposta_enviada">Proposta enviada</option>
-            <option value="venda_fechada">Venda fechada</option>
-          </select>
-        </label>
-        <label>
-          Origem
-          <select name="origin">
-            <option>Site publico</option>
-            <option>Instagram</option>
-            <option>WhatsApp</option>
-            <option>Indicacao</option>
-          </select>
-        </label>
-        <label>
-          Anota&ccedil;&otilde;es
-          <textarea name="note" rows="4" placeholder="Anota&ccedil;&otilde;es gerais sobre o cliente"></textarea>
-        </label>
-        <label>
-          Etiquetas (separadas por v&iacute;rgula)
-          <input name="tags" type="text" placeholder="Ex: Quente, WhatsApp, Cons&oacute;rcio" />
-        </label>
-        <fieldset class="lead-client-info">
-          <legend>Informa&ccedil;&otilde;es do cliente</legend>
-          <div class="lead-client-info-grid">
-            <label>
-              Regi&atilde;o do im&oacute;vel
-              <input name="property_region" type="text" placeholder="Ex: Zona Sul, Centro, bairro..." />
-            </label>
-            <label>
-              Valor do cr&eacute;dito
-              <input name="credit_value" type="number" min="0" step="0.01" inputmode="decimal" placeholder="R$ 0,00" />
-            </label>
-            <label>
-              Valor da entrada
-              <input name="down_payment_value" type="number" min="0" step="0.01" inputmode="decimal" placeholder="R$ 0,00" />
-            </label>
-            <label>
-              Valor da parcela
-              <input name="installment_value" type="number" min="0" step="0.01" inputmode="decimal" placeholder="R$ 0,00" />
-            </label>
-          </div>
-        </fieldset>
 
-        <div id="modal-lead-tasks-section" style="margin-top: 16px; border-top: 1px solid var(--line); padding-top: 16px; display: none; width: 100%;">
+        <!-- Tab Navigation inside Lead Modal -->
+        <div class="lead-modal-tabs" style="display: flex; border-bottom: 2px solid var(--line); margin-bottom: 20px; gap: 8px; width: 100%; margin-top: 12px;">
+          <button type="button" class="lead-modal-tab-btn active" data-tab="dados" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 3px solid var(--gold); color: var(--gold); font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;">Dados</button>
+          <button type="button" class="lead-modal-tab-btn" data-tab="tarefas" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 3px solid transparent; color: var(--muted); font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;">Tarefas</button>
+          <button type="button" class="lead-modal-tab-btn" data-tab="historico" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 3px solid transparent; color: var(--muted); font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;">Histórico</button>
+        </div>
+
+        <div id="modal-lead-tab-dados" class="lead-modal-tab-content" style="display: block; width: 100%;">
+          <label>
+            Nome do lead
+            <input name="name" type="text" placeholder="Ex: Amanda Silva" required />
+          </label>
+          <label>
+            Telefone
+            <input name="telefone" type="text" placeholder="Ex: 11999998888" />
+          </label>
+          <label id="modal-status-label" style="display: none;">
+            Etapa do Funil
+            <select name="status">
+              <option value="lead_recebido">Lead recebido</option>
+              <option value="primeiro_contato">Primeiro contato</option>
+              <option value="agendamento">Agendamento</option>
+              <option value="cliente_em_loja">Cliente em loja</option>
+              <option value="proposta_enviada">Proposta enviada</option>
+              <option value="venda_fechada">Venda fechada</option>
+            </select>
+          </label>
+          <label>
+            Origem
+            <select name="origin">
+              <option>Site publico</option>
+              <option>Instagram</option>
+              <option>WhatsApp</option>
+              <option>Indicacao</option>
+            </select>
+          </label>
+          <label>
+            Anota&ccedil;&otilde;es
+            <textarea name="note" rows="4" placeholder="Anota&ccedil;&otilde;es gerais sobre o cliente"></textarea>
+          </label>
+          <label>
+            Etiquetas (separadas por v&iacute;rgula)
+            <input name="tags" type="text" placeholder="Ex: Quente, WhatsApp, Cons&oacute;rcio" />
+          </label>
+          <fieldset class="lead-client-info">
+            <legend>Informa&ccedil;&otilde;es do cliente</legend>
+            <div class="lead-client-info-grid">
+              <label>
+                Regi&atilde;o do im&oacute;vel
+                <input name="property_region" type="text" placeholder="Ex: Zona Sul, Centro, bairro..." />
+              </label>
+              <label>
+                Valor do cr&eacute;dito
+                <input name="credit_value" type="number" min="0" step="0.01" inputmode="decimal" placeholder="R$ 0,00" />
+              </label>
+              <label>
+                Valor da entrada
+                <input name="down_payment_value" type="number" min="0" step="0.01" inputmode="decimal" placeholder="R$ 0,00" />
+              </label>
+              <label>
+                Valor da parcela
+                <input name="installment_value" type="number" min="0" step="0.01" inputmode="decimal" placeholder="R$ 0,00" />
+              </label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div id="modal-lead-tasks-section" class="lead-modal-tab-content" style="display: none; width: 100%;">
           <h3 style="font-size: 0.95rem; font-weight: 700; margin: 0 0 12px; color: var(--ink);">Tarefas / Retornos</h3>
           <div id="modal-lead-tasks-list" style="display: grid; gap: 10px;"></div>
         </div>
 
-        <div id="modal-lead-history-section" style="margin-top: 16px; border-top: 1px solid var(--line); padding-top: 16px; display: none; width: 100%;">
+        <div id="modal-lead-history-section" class="lead-modal-tab-content" style="display: none; width: 100%;">
           <h3 style="font-size: 0.95rem; font-weight: 700; margin: 0 0 12px; color: var(--ink);">Histórico / Linha do Tempo</h3>
-          <div id="modal-lead-history-list" style="display: grid; gap: 10px; max-height: 200px; overflow-y: auto; padding-right: 4px;"></div>
+          <div id="modal-lead-history-list" style="display: grid; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 4px;"></div>
         </div>
 
         <p class="form-status" data-lead-form-status></p>
