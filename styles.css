@@ -54,7 +54,7 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
 
 .app-shell {
   display: grid;
-  grid-template-columns: 228px minmax(0, 1fr);
+  grid-template-columns: 244px minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -2310,10 +2310,14 @@ body.theme-dark .crm-workspace {
 }
 
 .user-box .user-profile-meta .user-email {
+  display: block !important;
   width: 100%;
   margin-top: 2px;
-  color: #aaa5ad !important;
-  font-size: .66rem;
+  color: #cbd5e1 !important;
+  font-size: .65rem !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .user-box .user-profile-meta .user-role {
