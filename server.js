@@ -69,6 +69,13 @@ try {
 }
 
 try {
+  apiRoutes["/api/leads/assignees"] = require("./api/leads/assignees");
+  console.log("Rota de API carregada: /api/leads/assignees");
+} catch (e) {
+  console.warn("Aviso: leads/assignees.js nao pode ser carregado.", e.message);
+}
+
+try {
   apiRoutes["/api/appointments/list"] = require("./api/appointments/list");
   console.log("Rota de API carregada: /api/appointments/list");
 } catch (e) {

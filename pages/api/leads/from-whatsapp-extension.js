@@ -1,11 +1,12 @@
 const { supabase } = require('../../../api/_shared/supabase');
 const { normalizeLeadClientInfo } = require('../../../api/_shared/lead-client-info');
+const { getAuthorizedCrmUser, canAccessLead } = require('../../../api/_shared/crm-authorization');
 
 module.exports = async (req, res) => {
   const origin = req.headers?.origin || '*';
   res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -16,7 +17,15 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { name, phone, tags, notes, source, owner_id, owner_email, owner_name } = req.body;
+    const authorization = await getAuthorizedCrmUser(req);
+    if (authorization.error) {
+      return res.status(authorization.status).json({ ok: false, error: authorization.error });
+    }
+
+    const { name, phone, tags, notes, source } = req.body;
+    const owner_id = authorization.user.id;
+    const owner_email = authorization.user.email;
+    const owner_name = authorization.user.nome || authorization.user.email;
 
     console.log('[from-whatsapp-extension] Requisição recebida');
 
@@ -30,13 +39,7 @@ module.exports = async (req, res) => {
     const cleanedPhone = String(phone).replace(/\D/g, '');
 
 
-    const ownerId = owner_id || process.env.DEFAULT_OWNER_ID;
-    if (!ownerId) {
-      return res.status(400).json({
-        ok: false,
-        error: 'owner_id obrigatório. Configure DEFAULT_OWNER_ID no .env.',
-      });
-    }
+    const ownerId = owner_id;
 
 
     const { data: existingLead, error: findError } = await supabase
@@ -54,11 +57,14 @@ module.exports = async (req, res) => {
 
     if (existingLead) {
       console.log('[from-whatsapp-extension] Lead duplicado encontrado, retornando 409');
+      const mayAccessExistingLead = canAccessLead(authorization.user, existingLead);
       return res.status(409).json({
         ok: false,
         action: 'duplicate',
-        error: 'Número já cadastrado no CRM. Edite esse lead diretamente no CRM ou use outro número para criar um novo cadastro.',
-        lead: existingLead,
+        error: mayAccessExistingLead
+          ? 'Número já cadastrado no CRM. Edite esse lead diretamente no CRM ou use outro número para criar um novo cadastro.'
+          : 'Este número já está cadastrado e atribuído a outro responsável.',
+        lead: mayAccessExistingLead ? existingLead : null,
       });
     }
     const insertData = {

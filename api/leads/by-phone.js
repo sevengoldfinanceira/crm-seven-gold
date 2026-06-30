@@ -1,9 +1,10 @@
 const { supabase } = require('../_shared/supabase');
+const { getAuthorizedCrmUser } = require('../_shared/crm-authorization');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(200);
@@ -16,6 +17,12 @@ module.exports = async (req, res) => {
   }
 
   try {
+    const authorization = await getAuthorizedCrmUser(req);
+    if (authorization.error) {
+      res.writeHead(authorization.status, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: false, error: authorization.error }));
+    }
+
     const phone = req.query?.phone;
 
     if (!phone) {
@@ -25,11 +32,16 @@ module.exports = async (req, res) => {
 
     const normalizedPhone = String(phone).replace(/\D/g, '');
 
-    const { data, error } = await supabase
+    let query = supabase
       .from('leads')
       .select('id, name, telefone, status, tags, note, origin, created_at, ultima_interacao, property_region, credit_value, down_payment_value, installment_value, assigned_to_email, assigned_to_name, created_by_email, created_by_name')
-      .eq('telefone', normalizedPhone)
-      .limit(1);
+      .eq('telefone', normalizedPhone);
+
+    if (!authorization.user.canAccessAllLeads) {
+      query = query.ilike('assigned_to_email', authorization.user.email);
+    }
+
+    const { data, error } = await query.limit(1);
 
     if (error) {
       console.error('Error fetching lead by phone');

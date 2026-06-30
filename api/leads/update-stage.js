@@ -1,5 +1,6 @@
 const { supabase } = require('../_shared/supabase');
 const { hasBasicLeadInfo, hasLeadClientInfo, normalizeBasicLeadInfo, normalizeLeadClientInfo } = require('../_shared/lead-client-info');
+const { getAuthorizedCrmUser, canAccessLead } = require('../_shared/crm-authorization');
 
 const ALLOWED_STATUSES = [
   "lead_recebido",
@@ -13,7 +14,7 @@ const ALLOWED_STATUSES = [
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'PATCH, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(200);
@@ -26,6 +27,12 @@ module.exports = async (req, res) => {
   }
 
   try {
+    const authorization = await getAuthorizedCrmUser(req);
+    if (authorization.error) {
+      res.writeHead(authorization.status, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: false, error: authorization.error }));
+    }
+
     const payload = req.body || {};
     const { phone, status } = payload;
 
@@ -58,7 +65,7 @@ module.exports = async (req, res) => {
 
     const { data: fetchLead, error: fetchError } = await supabase
       .from('leads')
-      .select('id, name, telefone')
+      .select('id, name, telefone, assigned_to_email')
       .eq('telefone', normalizedPhone)
       .limit(1);
 
@@ -82,6 +89,11 @@ module.exports = async (req, res) => {
     if (status) {
       updateData.status = status;
       updateData.ultima_interacao = updateTime;
+    }
+
+    if (!canAccessLead(authorization.user, fetchLead[0])) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: false, error: 'Você não pode alterar leads atribuídos a outro responsável.' }));
     }
 
     const { data: updatedLead, error: updateError } = await supabase
