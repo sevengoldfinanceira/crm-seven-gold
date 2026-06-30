@@ -113,6 +113,45 @@ body { font-family: Inter, sans-serif; background: var(--page); color: var(--ink
   text-transform: uppercase;
 }
 
+.service-user-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 0 8px;
+}
+
+.service-user-actions a,
+.service-user-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 5px 0;
+  border: 0;
+  background: transparent;
+  color: #c7becd;
+  font: inherit;
+  font-size: .68rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color .2s ease;
+}
+
+.service-user-actions a:hover,
+.service-user-actions button:hover {
+  color: #fff;
+}
+
+.service-user-actions svg {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+}
+
 .service-content { min-width: 0; padding: 34px; }
 .service-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding: 28px; border: 1px solid var(--line); border-radius: 26px; background: #fff; box-shadow: 0 18px 55px rgba(31,22,37,.08); }
 .service-header .eyebrow { margin: 0 0 7px; color: #a87900; font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }

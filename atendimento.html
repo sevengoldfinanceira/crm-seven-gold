@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="atendimento.css?v=atendimento-v4" />
+    <link rel="stylesheet" href="atendimento.css?v=sidebar-actions-v1" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
   </head>
@@ -37,6 +37,16 @@
               <mark class="user-role" data-user-role>...</mark>
             </span>
           </a>
+          <div class="service-user-actions">
+            <a href="painel.html">
+              <i data-lucide="layout-grid"></i>
+              <span>Voltar para painéis</span>
+            </a>
+            <button type="button" data-logout data-logout-redirect="index.html">
+              <i data-lucide="log-out"></i>
+              <span>Sair</span>
+            </button>
+          </div>
         </div>
       </aside>
 
