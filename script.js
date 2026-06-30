@@ -1288,12 +1288,14 @@ const loadDashboardMetrics = async () => {
       if (alertSales) alerts.push(alertSales);
     });
 
-    if (alerts.length === 0) {
       elAlertsList.innerHTML = `
-        <p style="color: #10b981; font-size: 0.85rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 6px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          Metas no ritmo este mês.
-        </p>
+        <div class="empty-alert-state">
+          <div style="width: 48px; height: 48px; border-radius: 50%; background: #fef9c3; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; color: #ca8a04;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+          </div>
+          <strong style="color: #101233; font-size: 0.88rem; font-weight: 700; margin-bottom: 4px;">Nenhum alerta no momento</strong>
+          <span style="color: #667085; font-size: 0.78rem;">Suas metas estão em dia. Continue assim!</span>
+        </div>
       `;
     } else {
       elAlertsList.innerHTML = "";
@@ -1346,12 +1348,14 @@ const loadDashboardMetrics = async () => {
       return t.scheduled_at && new Date(t.scheduled_at) < now;
     });
 
-    if (overdueTasks.length === 0) {
       elTasksAlertsList.innerHTML = `
-        <p style="color: #10b981; font-size: 0.85rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 6px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          Nenhuma tarefa atrasada.
-        </p>
+        <div class="empty-alert-state">
+          <div style="width: 48px; height: 48px; border-radius: 50%; background: #fee2e2; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; color: #ef4444;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <strong style="color: #101233; font-size: 0.88rem; font-weight: 700; margin-bottom: 4px;">Tudo certo por aqui!</strong>
+          <span style="color: #667085; font-size: 0.78rem;">Não há tarefas atrasadas no momento.</span>
+        </div>
       `;
     } else {
       elTasksAlertsList.innerHTML = "";

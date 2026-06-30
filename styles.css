@@ -1895,3 +1895,168 @@ body.theme-dark .responsible-change select {
   color: #e5e7eb;
 }
 
+/* Dashboard Refactor & Premium Styling Overhaul */
+.crm-workspace {
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%) !important;
+}
+
+body.theme-dark .crm-workspace {
+  background: linear-gradient(135deg, #090018 0%, #160033 100%) !important;
+}
+
+.sidebar {
+  background: linear-gradient(180deg, #160033 0%, #090018 100%) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.brand {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.nav-item.active {
+  background: #4c2bbf !important;
+  color: #ffffff !important;
+}
+
+.nav-item {
+  color: rgba(255, 255, 255, 0.6) !important;
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #ffffff !important;
+}
+
+/* User Box refinement */
+.user-box {
+  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.user-profile-meta .user-role {
+  background: rgba(76, 43, 191, 0.2) !important;
+  color: #9c5bf0 !important;
+  border: 1px solid rgba(156, 91, 240, 0.3) !important;
+}
+
+/* Metric Cards style override */
+.dash-metric-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: default;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+body.theme-dark .dash-metric-card {
+  background: #111827 !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none !important;
+}
+
+.dash-metric-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--card-border-color);
+}
+
+.dash-metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+}
+
+body.theme-dark .dash-metric-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dash-metric-icon-row {
+  display: flex;
+  margin-bottom: 4px;
+}
+
+.dash-metric-icon-box {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+}
+
+.dash-metric-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+body.theme-dark .dash-metric-title {
+  color: #94a3b8;
+}
+
+.dash-metric-number {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+body.theme-dark .dash-metric-number {
+  color: #f1f5f9;
+}
+
+.dash-metric-subtext {
+  font-size: 0.76rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+body.theme-dark .dash-metric-subtext {
+  color: #94a3b8;
+}
+
+/* Empty alert states */
+.empty-alert-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+/* Skeleton Loading Shimmer */
+.skeleton-shimmer {
+  height: 48px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+body.theme-dark .skeleton-shimmer {
+  background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
