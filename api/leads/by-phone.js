@@ -1,5 +1,5 @@
 const { supabase } = require('../_shared/supabase');
-const { getAuthorizedCrmUser } = require('../_shared/crm-authorization');
+const { getAuthorizedCrmUser, canAccessLead } = require('../_shared/crm-authorization');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -32,16 +32,11 @@ module.exports = async (req, res) => {
 
     const normalizedPhone = String(phone).replace(/\D/g, '');
 
-    let query = supabase
+    const { data, error } = await supabase
       .from('leads')
       .select('id, name, telefone, status, tags, note, origin, created_at, ultima_interacao, property_region, credit_value, down_payment_value, installment_value, assigned_to_email, assigned_to_name, created_by_email, created_by_name')
-      .eq('telefone', normalizedPhone);
-
-    if (!authorization.user.canAccessAllLeads) {
-      query = query.ilike('assigned_to_email', authorization.user.email);
-    }
-
-    const { data, error } = await query.limit(1);
+      .eq('telefone', normalizedPhone)
+      .limit(1);
 
     if (error) {
       console.error('Error fetching lead by phone');
@@ -55,6 +50,19 @@ module.exports = async (req, res) => {
     }
 
     const lead = data[0];
+    if (!canAccessLead(authorization.user, lead)) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({
+        ok: true,
+        found: false,
+        assigned_elsewhere: true,
+        responsible: {
+          name: lead.assigned_to_name || lead.created_by_name || 'Sem responsável',
+          email: lead.assigned_to_email || lead.created_by_email || null,
+        },
+      }));
+    }
+
     const responsePayload = {
       ok: true,
       found: true,
