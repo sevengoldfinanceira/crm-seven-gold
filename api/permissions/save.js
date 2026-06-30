@@ -16,7 +16,54 @@ const normalizeRole = (value) =>
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[\s_]+/g, '-');
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/^diretor-e-ceo$/, 'diretor-ceo');
+
+const PIPELINE_TEAM_ROLES = new Set(['coordenador-comercial', 'supervisor-comercial']);
+
+async function listAuthorizedPipelineLeads(crmUser) {
+  const role = normalizeRole(crmUser.cargo);
+  let query = supabase
+    .from('leads')
+    .select('id,name,origin,note,status,created_at,telefone,property_region,credit_value,down_payment_value,installment_value,tags,assigned_to_email,assigned_to_name,created_by_email,created_by_name,updated_by_email,updated_by_name')
+    .order('created_at', { ascending: false });
+
+  if (PIPELINE_TEAM_ROLES.has(role)) {
+    const { data: team, error: teamError } = await supabase
+      .from('crm_teams')
+      .select('id')
+      .eq('coordinator_user_id', crmUser.id)
+      .maybeSingle();
+    if (teamError) return { status: 500, error: teamError.message };
+
+    let teamEmails = [String(crmUser.email || '').trim().toLowerCase()].filter(Boolean);
+    if (team?.id) {
+      const { data: members, error: membersError } = await supabase
+        .from('crm_team_members')
+        .select('user_id')
+        .eq('team_id', team.id);
+      if (membersError) return { status: 500, error: membersError.message };
+
+      if (members?.length) {
+        const { data: users, error: usersError } = await supabase
+          .from('crm_users')
+          .select('email')
+          .in('id', members.map((member) => member.user_id))
+          .eq('ativo', true);
+        if (usersError) return { status: 500, error: usersError.message };
+        teamEmails = [...new Set([...teamEmails, ...(users || []).map((user) => String(user.email || '').trim().toLowerCase())].filter(Boolean))];
+      }
+    }
+    query = query.in('assigned_to_email', teamEmails);
+  } else if (!ADMIN_ROLES.has(role)) {
+    query = query.ilike('assigned_to_email', String(crmUser.email || '').trim().toLowerCase());
+  }
+
+  const { data, error } = await query;
+  if (error) return { status: 500, error: error.message };
+  return { status: 200, leads: data || [] };
+}
 
 const getPreviousMonthKeys = (period, count = 6) => {
   const [year, month] = period.split('-').map(Number);
@@ -1085,6 +1132,11 @@ module.exports = async (req, res) => {
       const result = await updateOwnProfile(crmUser, payload.profile);
       if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });
       return sendJson(res, 200, { ok: true, user: result.user });
+    }
+    if (payload.pipeline_action === 'list_leads') {
+      const result = await listAuthorizedPipelineLeads(crmUser);
+      if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });
+      return sendJson(res, 200, { ok: true, leads: result.leads });
     }
     if (!ADMIN_ROLES.has(normalizeRole(crmUser.cargo))) {
       return sendJson(res, 403, { ok: false, error: 'Usuario sem permissao para salvar permissoes.' });

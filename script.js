@@ -2805,8 +2805,13 @@ const loadLeads = async () => {
 
   let result;
   try {
-    const response = await fetch("/api/leads/list", {
-      headers: { Authorization: `Bearer ${token}` },
+    const response = await fetch("/api/permissions/save", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ pipeline_action: "list_leads" }),
     });
     result = await response.json().catch(() => ({}));
     if (!response.ok || result.ok !== true) {
