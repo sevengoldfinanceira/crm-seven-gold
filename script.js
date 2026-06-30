@@ -671,7 +671,7 @@ const initResponsibleFilter = async (currentCrmUser) => {
 
   selectEl.innerHTML = '<option value="">Todos os vendedores</option>';
   users.forEach((u) => {
-    const cargoLabel = u.cargo ? u.cargo.charAt(0).toUpperCase() + u.cargo.slice(1) : "";
+    const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
     const option = document.createElement("option");
     option.value = u.email;
     option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
@@ -723,7 +723,7 @@ const initCalendarResponsibleFilter = async (currentCrmUser) => {
 
   selectEl.innerHTML = '<option value="">Todos os vendedores</option>';
   users.forEach((u) => {
-    const cargoLabel = u.cargo ? u.cargo.charAt(0).toUpperCase() + u.cargo.slice(1) : "";
+    const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
     const option = document.createElement("option");
     option.value = u.email;
     option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
@@ -769,7 +769,7 @@ const initTasksResponsibleFilter = async (currentCrmUser) => {
 
   selectEl.innerHTML = '<option value="">Todos os vendedores</option>';
   users.forEach((u) => {
-    const cargoLabel = u.cargo ? u.cargo.charAt(0).toUpperCase() + u.cargo.slice(1) : "";
+    const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
     const option = document.createElement("option");
     option.value = u.email;
     option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
@@ -1125,7 +1125,7 @@ const initDashResponsibleFilter = async (currentCrmUser) => {
 
   selectEl.innerHTML = '<option value="">Todos os vendedores</option>';
   users.forEach((u) => {
-    const cargoLabel = u.cargo ? u.cargo.charAt(0).toUpperCase() + u.cargo.slice(1) : "";
+    const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
     const option = document.createElement("option");
     option.value = u.email;
     option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
@@ -1451,11 +1451,11 @@ const loadCrmUsersForSelect = async (selectElement, currentAssignedEmail) => {
 
   if (error || !data) return;
 
-  selectElement.innerHTML = '<option value="">Selecionar vendedor...</option>';
+  selectElement.innerHTML = '<option value="">Selecionar Vendedor...</option>';
   data.forEach((user) => {
     const option = document.createElement("option");
     option.value = user.email;
-    option.textContent = `${user.nome} (${user.cargo})`;
+    option.textContent = `${user.nome} (${(user.cargo || "").toUpperCase()})`;
     if (user.email === currentAssignedEmail) {
       option.selected = true;
     }

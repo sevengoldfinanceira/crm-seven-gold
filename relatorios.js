@@ -133,7 +133,7 @@
     personFilter.innerHTML = '<option value="todos">Todos os vendedores</option>';
     if (users) {
       users.forEach((u) => {
-        const cargoLabel = u.cargo ? u.cargo.charAt(0).toUpperCase() + u.cargo.slice(1) : "";
+        const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
         const option = document.createElement("option");
         option.value = u.email;
         option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
@@ -628,10 +628,10 @@
       .eq("ativo", true)
       .order("nome", { ascending: true });
 
-    selectEl.innerHTML = '<option value="">Selecione um vendedor</option>';
+    selectEl.innerHTML = '<option value="">Selecionar Vendedor</option>';
     if (users) {
       users.forEach((u) => {
-        const cargoLabel = u.cargo ? u.cargo.charAt(0).toUpperCase() + u.cargo.slice(1) : "";
+        const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
         const option = document.createElement("option");
         option.value = u.email;
         option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
@@ -957,7 +957,7 @@
     }
 
     filteredData.forEach((item) => {
-      const cargoLabel = item.cargo ? item.cargo.charAt(0).toUpperCase() + item.cargo.slice(1) : "";
+      const cargoLabel = item.cargo ? item.cargo.toUpperCase() : "";
       const displayCargo = cargoLabel ? ` — ${cargoLabel}` : "";
       
       const tr = document.createElement("tr");
