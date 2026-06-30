@@ -157,48 +157,39 @@
     <dialog class="perm-user-modal" data-user-modal aria-labelledby="perm-user-modal-title">
       <form data-user-form>
         <header>
-          <div>
-            <p class="eyebrow">Usuarios do sistema</p>
-            <h2 id="perm-user-modal-title" data-user-modal-title>Adicionar usuario</h2>
-          </div>
+          <h2 id="perm-user-modal-title" data-user-modal-title><i data-lucide="user-plus"></i> Adicionar colaborador</h2>
           <button type="button" class="perm-modal-close" data-close-user-modal aria-label="Fechar">×</button>
         </header>
         <input type="hidden" name="id" />
-        <label>Nome<input type="text" name="nome" required placeholder="Nome completo" /></label>
-        <label>E-mail<input type="email" name="email" required placeholder="usuario@empresa.com" /></label>
-        <label>Setor
-          <select name="setor" required>
-            <option value="">Selecione o setor</option>
-            <option value="diretoria">Diretoria</option>
-            <option value="comercial">Comercial</option>
-            <option value="posvenda">Pós-Venda</option>
-            <option value="administrativo">Administrativo</option>
-            <option value="financeiro">Financeiro</option>
-            <option value="marketing">Marketing</option>
-            <option value="rh">Recursos Humanos (RH)</option>
-            <option value="juridico">Jurídico</option>
-          </select>
-        </label>
-        <label>Cargo
-          <select name="cargo" required>
-            <option value="">Selecione o setor primeiro</option>
-          </select>
-        </label>
-        <label class="perm-user-active-field">
-          <input type="checkbox" name="ativo" checked />
-          <span>Usuario ativo e autorizado</span>
-        </label>
+        <div class="perm-collaborator-grid">
+          <section class="perm-collaborator-data">
+            <h3>Dados do colaborador</h3>
+            <label>Nome completo *<input type="text" name="nome" required placeholder="Ex: João da Silva" /></label>
+            <label>E-mail *<input type="email" name="email" required placeholder="exemplo@email.com" /></label>
+            <label>Status *
+              <select name="status" required>
+                <option value="ativo">Ativo</option>
+                <option value="inativo">Inativo</option>
+              </select>
+            </label>
+          </section>
+          <section class="perm-collaborator-functions">
+            <h3>Funções do colaborador</h3>
+            <div class="perm-user-role-list" data-user-role-list></div>
+            <button type="button" class="perm-add-role-button" data-add-user-role>+ Adicionar outra função</button>
+          </section>
+        </div>
         <p class="perm-user-form-status" data-user-form-status></p>
         <footer>
           <button type="button" class="perm-modal-cancel" data-close-user-modal>Cancelar</button>
-          <button type="submit" class="perm-modal-save">Salvar usuario</button>
+          <button type="submit" class="perm-modal-save">Salvar colaborador</button>
         </footer>
       </form>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=role-visibility-admin-v1"></script>
-    <script src="permissoes.js?v=users-api-save-v2"></script>
+    <script src="permissoes.js?v=unified-collaborator-modal-v1"></script>
     <script src="/admin-shell.js?v=mqreizkw"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>

@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-roles-two-columns-v1";
+const CACHE_VERSION = "seven-gold-unified-collaborator-modal-v1";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",

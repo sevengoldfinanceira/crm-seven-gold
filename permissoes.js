@@ -489,40 +489,124 @@
     userFormStatus.dataset.type = type;
   };
 
-  const updateCargoOptions = (sectorId, selectedCargo = "") => {
-    const cargoSelect = userForm?.elements.cargo;
-    if (!cargoSelect) return;
-    cargoSelect.innerHTML = "";
-    
-    if (!sectorId) {
-      cargoSelect.innerHTML = '<option value="">Selecione o setor primeiro</option>';
-      return;
-    }
-    
-    const sectorRoles = getAvailableSectorRoles(sectorId);
-    if (sectorRoles.length > 0) {
-      const defaultOpt = document.createElement("option");
-      defaultOpt.value = "";
-      defaultOpt.textContent = "Selecione o cargo";
-      cargoSelect.appendChild(defaultOpt);
+  const employeeRolesKey = "seven-gold-employee-roles";
+  const userRoleList = document.querySelector("[data-user-role-list]");
+  const addUserRoleButton = document.querySelector("[data-add-user-role]");
+  let modalUserRoles = [];
 
-      sectorRoles.forEach(r => {
-        const opt = document.createElement("option");
-        opt.value = r.key;
-        opt.textContent = r.label;
-        if (r.key === selectedCargo) {
-          opt.selected = true;
-        }
-        cargoSelect.appendChild(opt);
-      });
+  const loadEmployeeRolesMap = () => {
+    try {
+      return JSON.parse(localStorage.getItem(employeeRolesKey) || "{}");
+    } catch (error) {
+      console.warn("Nao foi possivel carregar as funcoes dos colaboradores:", error);
+      return {};
     }
   };
 
-  if (userForm && userForm.elements.setor) {
-    userForm.elements.setor.addEventListener("change", () => {
-      updateCargoOptions(userForm.elements.setor.value);
+  const saveEmployeeRoles = (userId, roleList, previousId = "") => {
+    if (!userId) return;
+    const map = loadEmployeeRolesMap();
+    if (previousId && previousId !== userId) delete map[previousId];
+    map[userId] = roleList.map((item) => ({
+      sectorId: item.sectorId,
+      roleKey: item.roleKey,
+      primary: item.primary === true,
+    }));
+    localStorage.setItem(employeeRolesKey, JSON.stringify(map));
+  };
+
+  const getDefaultModalRole = () => {
+    const preferredSector = sectors.find((sector) => sector.id === "comercial") || sectors[0];
+    const preferredRoles = getAvailableSectorRoles(preferredSector?.id);
+    const preferredRole = preferredRoles.find((role) => role.key === "vendedor") || preferredRoles[0];
+    return { sectorId: preferredSector?.id || "", roleKey: preferredRole?.key || "", primary: true };
+  };
+
+  const renderUserRoleList = () => {
+    if (!userRoleList) return;
+    userRoleList.innerHTML = "";
+
+    modalUserRoles.forEach((item, index) => {
+      const row = document.createElement("div");
+      row.className = "perm-user-role-row";
+
+      const sectorField = document.createElement("label");
+      sectorField.innerHTML = "<span>Setor *</span>";
+      const sectorSelect = document.createElement("select");
+      sectors.forEach((sector) => {
+        if (getAvailableSectorRoles(sector.id).length === 0) return;
+        const option = document.createElement("option");
+        option.value = sector.id;
+        option.textContent = sector.title;
+        sectorSelect.appendChild(option);
+      });
+      sectorSelect.value = item.sectorId;
+      sectorField.appendChild(sectorSelect);
+
+      const roleField = document.createElement("label");
+      roleField.innerHTML = "<span>Cargo *</span>";
+      const roleSelect = document.createElement("select");
+      const populateRoleSelect = () => {
+        roleSelect.innerHTML = "";
+        getAvailableSectorRoles(sectorSelect.value).forEach((role) => {
+          const option = document.createElement("option");
+          option.value = role.key;
+          option.textContent = role.label;
+          roleSelect.appendChild(option);
+        });
+        roleSelect.value = item.roleKey;
+        if (!roleSelect.value) {
+          roleSelect.selectedIndex = 0;
+          item.roleKey = roleSelect.value;
+        }
+      };
+      populateRoleSelect();
+      roleField.appendChild(roleSelect);
+
+      const primaryField = document.createElement("label");
+      primaryField.className = "perm-primary-role-field";
+      primaryField.innerHTML = "<span>Função principal</span>";
+      const primarySwitch = document.createElement("input");
+      primarySwitch.type = "checkbox";
+      primarySwitch.checked = item.primary === true;
+      primaryField.appendChild(primarySwitch);
+
+      const removeButton = document.createElement("button");
+      removeButton.type = "button";
+      removeButton.className = "perm-remove-role-button";
+      removeButton.setAttribute("aria-label", "Remover função");
+      removeButton.innerHTML = '<i data-lucide="trash-2"></i>';
+
+      sectorSelect.addEventListener("change", () => {
+        item.sectorId = sectorSelect.value;
+        populateRoleSelect();
+      });
+      roleSelect.addEventListener("change", () => {
+        item.roleKey = roleSelect.value;
+      });
+      primarySwitch.addEventListener("change", () => {
+        if (!primarySwitch.checked) {
+          primarySwitch.checked = true;
+          return;
+        }
+        modalUserRoles.forEach((role, roleIndex) => {
+          role.primary = roleIndex === index;
+        });
+        renderUserRoleList();
+      });
+      removeButton.addEventListener("click", () => {
+        const removedPrimary = item.primary;
+        modalUserRoles.splice(index, 1);
+        if (removedPrimary && modalUserRoles[0]) modalUserRoles[0].primary = true;
+        renderUserRoleList();
+      });
+
+      row.append(sectorField, roleField, primaryField, removeButton);
+      userRoleList.appendChild(row);
     });
-  }
+
+    if (window.lucide) lucide.createIcons();
+  };
 
   const openUserModal = (user = null) => {
     if (!userModal || !userForm) return;
@@ -531,25 +615,24 @@
     userForm.elements.id.value = user?.id || "";
     userForm.elements.nome.value = user?.nome || "";
     userForm.elements.email.value = user?.email || "";
-    
-    if (user && user.cargo) {
-      let userSectorId = "";
-      for (const sec of sectors) {
-        if (getAvailableSectorRoles(sec.id).some(r => r.key === user.cargo)) {
-          userSectorId = sec.id;
-          break;
-        }
-      }
-      userForm.elements.setor.value = userSectorId;
-      updateCargoOptions(userSectorId, user.cargo);
+    userForm.elements.status.value = user && user.ativo !== true ? "inativo" : "ativo";
+
+    const savedRoles = user?.id ? loadEmployeeRolesMap()[user.id] : null;
+    if (Array.isArray(savedRoles) && savedRoles.length > 0) {
+      modalUserRoles = savedRoles.map((item) => ({ ...item }));
+    } else if (user?.cargo) {
+      modalUserRoles = [{ sectorId: getRoleSectorId(user.cargo), roleKey: user.cargo, primary: true }];
     } else {
-      userForm.elements.setor.value = "";
-      updateCargoOptions("");
+      modalUserRoles = [getDefaultModalRole()];
     }
-    
-    userForm.elements.ativo.checked = user ? user.ativo === true : true;
-    if (userModalTitle) userModalTitle.textContent = user ? "Editar usuario" : "Adicionar usuario";
+    if (!modalUserRoles.some((item) => item.primary) && modalUserRoles[0]) modalUserRoles[0].primary = true;
+    renderUserRoleList();
+
+    if (userModalTitle) {
+      userModalTitle.innerHTML = `<i data-lucide="${user ? "user-pen" : "user-plus"}"></i> ${user ? "Editar colaborador" : "Adicionar colaborador"}`;
+    }
     userModal.showModal();
+    if (window.lucide) lucide.createIcons();
     userForm.elements.nome.focus();
   };
 
@@ -602,13 +685,19 @@
     const id = String(userForm.elements.id.value || "").trim();
     const nome = String(userForm.elements.nome.value || "").trim();
     const email = String(userForm.elements.email.value || "").trim().toLowerCase();
-    const setor = String(userForm.elements.setor.value || "").trim();
-    const cargo = String(userForm.elements.cargo.value || "").trim();
-    const ativo = userForm.elements.ativo.checked;
+    const ativo = userForm.elements.status.value === "ativo";
+    const primaryRole = modalUserRoles.find((item) => item.primary) || modalUserRoles[0];
+    const cargo = String(primaryRole?.roleKey || "").trim();
     const submitButton = userForm.querySelector('button[type="submit"]');
 
-    if (!nome || !email || !setor || !cargo) {
-      setUserFormStatus("Preencha todos os campos obrigatórios (nome, e-mail, setor e cargo).");
+    if (!nome || !email || modalUserRoles.length === 0 || !cargo) {
+      setUserFormStatus("Preencha os dados e vincule pelo menos uma função ao colaborador.");
+      return;
+    }
+
+    const roleKeys = modalUserRoles.map((item) => `${item.sectorId}:${item.roleKey}`);
+    if (new Set(roleKeys).size !== roleKeys.length) {
+      setUserFormStatus("Não é permitido vincular a mesma função mais de uma vez.");
       return;
     }
 
@@ -642,13 +731,14 @@
 
     let error = null;
     try {
-      await saveUserWithApi({ id, nome, email, cargo, ativo });
+      const savedUser = await saveUserWithApi({ id, nome, email, cargo, ativo });
+      saveEmployeeRoles(savedUser.id, modalUserRoles, id);
     } catch (saveError) {
       error = saveError;
     }
 
     submitButton.disabled = false;
-    submitButton.textContent = "Salvar usuario";
+    submitButton.textContent = "Salvar colaborador";
     if (error) {
       setUserFormStatus(error.message || "Nao foi possivel salvar o usuario.");
       return;
@@ -656,8 +746,8 @@
 
     closeUserModal();
     await loadData();
-    setStatus("Usuario salvo com sucesso.", "success");
-    addAuditEntry(`<strong>Usuario</strong> ${id ? "atualizado" : "adicionado"}`, "success");
+    setStatus("Colaborador salvo com sucesso.", "success");
+    addAuditEntry(`<strong>Colaborador</strong> ${id ? "atualizado" : "adicionado"}`, "success");
   };
 
   const loadData = async () => {
@@ -855,6 +945,24 @@
   saveButton?.addEventListener("click", saveData);
   reloadButton?.addEventListener("click", loadData);
   addUserButton?.addEventListener("click", () => openUserModal());
+  addUserRoleButton?.addEventListener("click", () => {
+    const usedRoles = new Set(modalUserRoles.map((item) => `${item.sectorId}:${item.roleKey}`));
+    let nextRole = null;
+    for (const sector of sectors) {
+      const availableRole = getAvailableSectorRoles(sector.id)
+        .find((role) => !usedRoles.has(`${sector.id}:${role.key}`));
+      if (availableRole) {
+        nextRole = { sectorId: sector.id, roleKey: availableRole.key, primary: modalUserRoles.length === 0 };
+        break;
+      }
+    }
+    if (!nextRole) {
+      setUserFormStatus("Todas as funções disponíveis já foram vinculadas.");
+      return;
+    }
+    modalUserRoles.push(nextRole);
+    renderUserRoleList();
+  });
   userForm?.addEventListener("submit", saveUser);
   document.querySelectorAll("[data-close-user-modal]").forEach((button) => {
     button.addEventListener("click", closeUserModal);
