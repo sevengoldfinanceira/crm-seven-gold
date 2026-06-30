@@ -2031,7 +2031,7 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
 
     if (sourceCard && targetColumn) {
       const targetStack = targetColumn.querySelector(".card-stack");
-      const emptyMsg = targetStack.querySelector(".empty-column");
+      const emptyMsg = targetStack.querySelector(".empty-column, .empty-column-card");
       if (emptyMsg) emptyMsg.remove();
       targetStack.append(sourceCard);
 
@@ -2047,7 +2047,8 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
         if (sourceCounter) {
           sourceCounter.textContent = sourceStack.querySelectorAll(".lead-card").length;
         }
-        if (sourceStack.querySelectorAll(".lead-card").length === 0) {
+        const totalLeadsOnBoard = document.querySelectorAll(".lead-card").length;
+        if (sourceStack.querySelectorAll(".lead-card").length === 0 && totalLeadsOnBoard === 0) {
           renderEmptyState(sourceStack);
         }
       }
