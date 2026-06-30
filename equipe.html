@@ -12,7 +12,7 @@
       rel="stylesheet"
     />
     <script>document.documentElement.dataset.adminSidebar = localStorage.getItem("seven-gold-admin-sidebar-collapsed") === "true" ? "collapsed" : "expanded";</script>
-    <link rel="stylesheet" href="home.css?v=monthly-team-comparison-v1" />
+    <link rel="stylesheet" href="home.css?v=seller-detail-v1" />
     <link rel="stylesheet" href="searchable-select.css?v=mr00opji" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
@@ -477,6 +477,17 @@
       </div>
     </div>
 
+    <div id="seller-detail-modal" class="eq-modal eq-seller-detail-modal" aria-hidden="true">
+      <div class="eq-seller-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="seller-detail-title">
+        <button id="seller-detail-close" type="button" class="eq-seller-detail-close" aria-label="Fechar detalhamento">
+          <i data-lucide="x"></i>
+        </button>
+        <div id="seller-detail-content" class="eq-seller-detail-content">
+          <p class="eq-seller-detail-loading">Carregando detalhamento...</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: Metas da Equipe -->
     <div id="team-goals-modal" class="eq-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1200; align-items: center; justify-content: center;">
       <div style="background: #fff; border-radius: 16px; padding: 28px 32px; max-width: 520px; width: 92vw; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 24px 48px rgba(0,0,0,0.18);">
@@ -558,7 +569,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=role-visibility-admin-v1"></script>
-    <script src="equipe.js?v=monthly-team-comparison-v1"></script>
+    <script src="equipe.js?v=seller-detail-v1"></script>
     <script src="/admin-shell.js?v=mqreizkw"></script>
     <script src="/searchable-select.js?v=mr00opji"></script>
     <script src="/pwa.js"></script>

@@ -188,9 +188,192 @@ async function updateOwnProfile(crmUser, profile) {
   return { status: 200, user: data };
 }
 
+async function getCommercialSellerDetail(data, crmUser) {
+  const role = normalizeRole(crmUser.cargo);
+  const isAdmin = ADMIN_ROLES.has(role) || role === 'coordenador-rh';
+  const isCoordinator = TEAM_MANAGER_ROLES.has(role) && !isAdmin;
+  const sellerId = String(data?.seller_id || '').trim();
+  const requestedMonth = /^\d{4}-\d{2}$/.test(String(data?.month || ''))
+    ? String(data.month)
+    : new Date().toISOString().slice(0, 7);
+  if (!sellerId) return { status: 400, error: 'Vendedor não informado.' };
+
+  const { data: seller, error: sellerError } = await supabase
+    .from('crm_users')
+    .select('id,email,nome,cargo,ativo')
+    .eq('id', sellerId)
+    .eq('ativo', true)
+    .maybeSingle();
+  if (sellerError) return { status: 500, error: sellerError.message };
+  if (!seller) return { status: 404, error: 'Vendedor não encontrado.' };
+
+  const { data: membership, error: membershipError } = await supabase
+    .from('crm_team_members')
+    .select('team_id,user_id')
+    .eq('user_id', sellerId)
+    .maybeSingle();
+  if (membershipError) return { status: 500, error: membershipError.message };
+  if (!membership) return { status: 404, error: 'Vendedor não pertence a uma equipe comercial.' };
+
+  const { data: team, error: teamError } = await supabase
+    .from('crm_teams')
+    .select('id,name,coordinator_user_id')
+    .eq('id', membership.team_id)
+    .maybeSingle();
+  if (teamError) return { status: 500, error: teamError.message };
+  if (!team) return { status: 404, error: 'Equipe do vendedor não encontrada.' };
+
+  if (!isAdmin && isCoordinator && String(team.coordinator_user_id) !== String(crmUser.id)) {
+    return { status: 403, error: 'Você só pode visualizar vendedores da sua equipe.' };
+  }
+  if (!isAdmin && !isCoordinator && String(seller.id) !== String(crmUser.id)) {
+    return { status: 403, error: 'Você só pode visualizar o próprio desempenho.' };
+  }
+
+  const months = getPreviousMonthKeys(requestedMonth);
+  const oldestMonth = months[months.length - 1];
+  const [year, month] = requestedMonth.split('-').map(Number);
+  const rangeEnd = new Date(Date.UTC(year, month, 1, 3)).toISOString();
+  const normalizedEmail = String(seller.email || '').trim().toLowerCase();
+  const comparison = months.map((period) => ({
+    month: period,
+    leads: 0,
+    appointments: 0,
+    closings: 0,
+    conversion_rate: 0,
+    sold_value: 0,
+    target_leads: 0,
+    target_appointments: 0,
+    target_sales: 0,
+    goal_progress: 0,
+  }));
+  const comparisonByMonth = new Map(comparison.map((row) => [row.month, row]));
+
+  const [goalsResult, leadsResult, appointmentsResult] = await Promise.all([
+    supabase
+      .from('crm_sales_goals')
+      .select('month,target_leads,target_appointments,target_sales')
+      .eq('user_email', normalizedEmail)
+      .in('month', months),
+    supabase
+      .from('leads')
+      .select('id,name,telefone,status,created_at,updated_at,ultima_interacao,credit_value')
+      .ilike('assigned_to_email', normalizedEmail)
+      .gte('created_at', `${oldestMonth}-01T03:00:00.000Z`)
+      .lt('created_at', rangeEnd)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('appointments')
+      .select('id,lead_id,usuario_id,status,data_agendamento,hora_agendamento')
+      .eq('usuario_id', sellerId)
+      .gte('data_agendamento', `${oldestMonth}-01`)
+      .lt('data_agendamento', rangeEnd.slice(0, 10)),
+  ]);
+
+  if (goalsResult.error && goalsResult.error.code !== 'PGRST205') return { status: 500, error: goalsResult.error.message };
+  if (leadsResult.error) return { status: 500, error: leadsResult.error.message };
+  if (appointmentsResult.error) return { status: 500, error: appointmentsResult.error.message };
+
+  (goalsResult.data || []).forEach((goal) => {
+    const row = comparisonByMonth.get(goal.month);
+    if (!row) return;
+    row.target_leads = Number(goal.target_leads) || 0;
+    row.target_appointments = Number(goal.target_appointments) || 0;
+    row.target_sales = Number(goal.target_sales) || 0;
+  });
+  (leadsResult.data || []).forEach((lead) => {
+    const row = comparisonByMonth.get(getSaoPauloMonthKey(lead.created_at));
+    if (!row) return;
+    row.leads += 1;
+    if (lead.status === 'venda_fechada') {
+      row.closings += 1;
+      row.sold_value += Number(lead.credit_value) || 0;
+    }
+  });
+  (appointmentsResult.data || []).forEach((appointment) => {
+    if (appointment.status === 'cancelado') return;
+    const row = comparisonByMonth.get(String(appointment.data_agendamento || '').slice(0, 7));
+    if (row) row.appointments += 1;
+  });
+  comparison.forEach((row) => {
+    row.conversion_rate = row.leads > 0 ? Number(((row.closings / row.leads) * 100).toFixed(1)) : 0;
+    const progressParts = [
+      [row.leads, row.target_leads],
+      [row.appointments, row.target_appointments],
+      [row.closings, row.target_sales],
+    ].filter(([, target]) => target > 0);
+    row.goal_progress = progressParts.length
+      ? Number((progressParts.reduce((sum, [actual, target]) => sum + Math.min((actual / target) * 100, 100), 0) / progressParts.length).toFixed(1))
+      : 0;
+  });
+
+  const currentMetrics = comparisonByMonth.get(requestedMonth) || comparison[0];
+  const recentLeads = (leadsResult.data || [])
+    .filter((lead) => getSaoPauloMonthKey(lead.created_at) === requestedMonth)
+    .slice(0, 20);
+  const recentLeadIds = recentLeads.map((lead) => lead.id);
+  const activityByLead = new Map();
+  const nextAppointmentByLead = new Map();
+
+  if (recentLeadIds.length) {
+    const today = new Date().toISOString().slice(0, 10);
+    const [activitiesResult, nextAppointmentsResult] = await Promise.all([
+      supabase
+        .from('lead_activity_logs')
+        .select('lead_id,action_label,description,created_at')
+        .in('lead_id', recentLeadIds)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('appointments')
+        .select('lead_id,data_agendamento,hora_agendamento,status')
+        .in('lead_id', recentLeadIds)
+        .gte('data_agendamento', today)
+        .neq('status', 'cancelado')
+        .order('data_agendamento', { ascending: true })
+        .order('hora_agendamento', { ascending: true }),
+    ]);
+    if (!activitiesResult.error) {
+      (activitiesResult.data || []).forEach((activity) => {
+        if (!activityByLead.has(activity.lead_id)) activityByLead.set(activity.lead_id, activity);
+      });
+    }
+    if (!nextAppointmentsResult.error) {
+      (nextAppointmentsResult.data || []).forEach((appointment) => {
+        if (!nextAppointmentByLead.has(appointment.lead_id)) nextAppointmentByLead.set(appointment.lead_id, appointment);
+      });
+    }
+  }
+
+  return {
+    status: 200,
+    seller: { ...seller, team_id: team.id, team_name: team.name },
+    metrics: currentMetrics,
+    comparison,
+    recentLeads: recentLeads.map((lead) => {
+      const activity = activityByLead.get(lead.id);
+      const appointment = nextAppointmentByLead.get(lead.id);
+      return {
+        id: lead.id,
+        name: lead.name || 'Lead sem nome',
+        phone: lead.telefone || '',
+        status: lead.status || '',
+        created_at: lead.created_at,
+        last_movement: activity?.action_label || activity?.description || '',
+        last_movement_at: activity?.created_at || lead.ultima_interacao || lead.updated_at || '',
+        next_appointment_date: appointment?.data_agendamento || '',
+        next_appointment_time: appointment?.hora_agendamento || '',
+      };
+    }),
+  };
+}
+
 async function manageCommercialTeams(action, data, crmUser) {
   const role = normalizeRole(crmUser.cargo);
   const isAdmin = ADMIN_ROLES.has(role) || role === 'coordenador-rh';
+
+  if (action === 'seller_detail') {
+    return getCommercialSellerDetail(data, crmUser);
+  }
 
   if (action === 'list') {
     const isCoordinator = TEAM_MANAGER_ROLES.has(role) && !isAdmin;

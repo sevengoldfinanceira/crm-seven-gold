@@ -722,6 +722,163 @@
     return section;
   };
 
+  const formatDetailDate = (value, includeTime = false) => {
+    if (!value) return "-";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+    return new Intl.DateTimeFormat("pt-BR", includeTime
+      ? { dateStyle: "short", timeStyle: "short" }
+      : { dateStyle: "short" }).format(date);
+  };
+
+  const sellerStageLabels = {
+    lead_recebido: "Lead recebido",
+    primeiro_contato: "Primeiro contato",
+    agendamento: "Agendamento",
+    cliente_em_loja: "Cliente em loja",
+    proposta_enviada: "Proposta enviada",
+    venda_fechada: "Venda fechada",
+    perdido: "Perdido",
+  };
+
+  const createSellerDetailMetricGrid = (metrics) => {
+    const values = [
+      ["Leads recebidos", Number(metrics.leads) || 0],
+      ["Agendamentos", Number(metrics.appointments) || 0],
+      ["Fechamentos", Number(metrics.closings) || 0],
+      ["Taxa de conversão", `${Number(metrics.conversion_rate || 0).toFixed(1)}%`],
+      ["Meta atingida", `${Number(metrics.goal_progress || 0).toFixed(1)}%`],
+      ["Valor vendido", formatCurrency(metrics.sold_value)],
+    ];
+    const grid = document.createElement("div");
+    grid.className = "eq-seller-detail-metrics";
+    values.forEach(([label, value]) => {
+      const item = document.createElement("div");
+      const title = document.createElement("span");
+      title.textContent = label;
+      const amount = document.createElement("strong");
+      amount.textContent = String(value);
+      item.append(title, amount);
+      grid.appendChild(item);
+    });
+    return grid;
+  };
+
+  const createRecentLeadsTable = (leads) => {
+    const section = document.createElement("section");
+    section.className = "eq-seller-detail-section";
+    const title = document.createElement("h3");
+    title.textContent = "Leads recentes no período";
+    section.appendChild(title);
+    const wrapper = document.createElement("div");
+    wrapper.className = "eq-seller-leads-wrap";
+    const table = document.createElement("table");
+    table.className = "eq-seller-leads-table";
+    table.innerHTML = "<thead><tr><th>Lead</th><th>Telefone</th><th>Etapa atual</th><th>Criação</th><th>Última movimentação</th><th>Próximo agendamento</th></tr></thead>";
+    const body = document.createElement("tbody");
+    (Array.isArray(leads) ? leads : []).forEach((lead) => {
+      const tr = document.createElement("tr");
+      const appointment = lead.next_appointment_date
+        ? `${formatDetailDate(`${lead.next_appointment_date}T12:00:00`)}${lead.next_appointment_time ? ` às ${String(lead.next_appointment_time).slice(0, 5)}` : ""}`
+        : "-";
+      const lastMovement = lead.last_movement
+        ? `${lead.last_movement}${lead.last_movement_at ? ` · ${formatDetailDate(lead.last_movement_at, true)}` : ""}`
+        : formatDetailDate(lead.last_movement_at, true);
+      const values = [
+        lead.name || "Lead sem nome",
+        lead.phone || "-",
+        sellerStageLabels[lead.status] || String(lead.status || "-").replace(/_/g, " "),
+        formatDetailDate(lead.created_at),
+        lastMovement,
+        appointment,
+      ];
+      values.forEach((value, index) => {
+        const cell = document.createElement(index === 0 ? "th" : "td");
+        cell.textContent = String(value);
+        tr.appendChild(cell);
+      });
+      body.appendChild(tr);
+    });
+    if (!body.children.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 6;
+      td.className = "eq-monthly-empty";
+      td.textContent = "Nenhum lead encontrado no período selecionado.";
+      tr.appendChild(td);
+      body.appendChild(tr);
+    }
+    table.appendChild(body);
+    wrapper.appendChild(table);
+    section.appendChild(wrapper);
+    return section;
+  };
+
+  const closeSellerDetail = () => {
+    const modal = document.getElementById("seller-detail-modal");
+    if (!modal) return;
+    modal.style.display = "none";
+    modal.setAttribute("aria-hidden", "true");
+  };
+
+  const renderSellerDetail = (result) => {
+    const content = document.getElementById("seller-detail-content");
+    if (!content) return;
+    content.replaceChildren();
+    const seller = result.seller || {};
+    const profile = state.profiles.find((item) => String(item.id) === String(seller.id));
+    const header = document.createElement("header");
+    header.className = "eq-seller-detail-header";
+    const avatar = document.createElement("div");
+    avatar.className = "eq-seller-detail-avatar";
+    const initial = document.createElement("span");
+    initial.textContent = String(seller.nome || seller.email || "V").trim().charAt(0).toUpperCase();
+    avatar.appendChild(initial);
+    if (profile?.avatar_url) {
+      const image = document.createElement("img");
+      image.src = profile.avatar_url;
+      image.alt = "";
+      image.referrerPolicy = "no-referrer";
+      image.addEventListener("error", () => image.remove());
+      avatar.appendChild(image);
+    }
+    const identity = document.createElement("div");
+    const eyebrow = document.createElement("span");
+    eyebrow.textContent = "Detalhamento individual";
+    const title = document.createElement("h2");
+    title.id = "seller-detail-title";
+    title.textContent = seller.nome || seller.email || "Vendedor";
+    const subtitle = document.createElement("p");
+    subtitle.textContent = `${String(seller.cargo || "Vendedor").replace(/[-_]/g, " ")} · ${seller.team_name || "Sem equipe"} · ${formatTeamPeriod(state.teamPeriod)}`;
+    identity.append(eyebrow, title, subtitle);
+    header.append(avatar, identity);
+    content.append(header, createSellerDetailMetricGrid(result.metrics || {}));
+
+    const comparison = createMonthlyComparison(result.comparison || []);
+    comparison.classList.add("eq-seller-detail-section");
+    content.append(comparison, createRecentLeadsTable(result.recentLeads || []));
+    refreshIcons();
+  };
+
+  const openSellerDetail = async (sellerId) => {
+    const modal = document.getElementById("seller-detail-modal");
+    const content = document.getElementById("seller-detail-content");
+    if (!modal || !content) return;
+    modal.style.display = "flex";
+    modal.setAttribute("aria-hidden", "false");
+    content.innerHTML = '<p class="eq-seller-detail-loading">Carregando detalhamento...</p>';
+    try {
+      const result = await callCommercialTeamsApi("seller_detail", { seller_id: sellerId, month: state.teamPeriod });
+      renderSellerDetail(result);
+    } catch (error) {
+      content.replaceChildren();
+      const message = document.createElement("p");
+      message.className = "eq-seller-detail-error";
+      message.textContent = error.message || "Não foi possível carregar o detalhamento.";
+      content.appendChild(message);
+    }
+  };
+
   const createTeamSummary = (metrics) => {
     const summary = metrics.reduce((total, metric) => ({
       sellers: total.sellers + 1,
@@ -761,7 +918,17 @@
 
   const createSellerPerformanceCard = (metric) => {
     const item = document.createElement("article");
-    item.className = "eq-seller-performance";
+    item.className = "eq-seller-performance is-clickable";
+    item.tabIndex = 0;
+    item.setAttribute("role", "button");
+    item.setAttribute("aria-label", `Ver detalhamento de ${metric.user_name || metric.user_email || "vendedor"}`);
+    item.addEventListener("click", () => openSellerDetail(metric.user_id));
+    item.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openSellerDetail(metric.user_id);
+      }
+    });
 
     const statusCandidates = [
       getMetricStatus(metric.leads_actual, metric.target_leads),
@@ -3425,6 +3592,15 @@
         await applySelectedTeamPeriod();
       });
     }
+
+    const sellerDetailModal = document.getElementById("seller-detail-modal");
+    document.getElementById("seller-detail-close")?.addEventListener("click", closeSellerDetail);
+    sellerDetailModal?.addEventListener("click", (event) => {
+      if (event.target === sellerDetailModal) closeSellerDetail();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && sellerDetailModal?.style.display === "flex") closeSellerDetail();
+    });
 
     // 1. Setup Tab switching click listeners
     document.querySelectorAll(".eq-tab-btn").forEach(btn => {
