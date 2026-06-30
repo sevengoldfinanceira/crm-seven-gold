@@ -250,6 +250,7 @@ async function manageCommercialTeams(action, data, crmUser) {
           appointments_actual: 0,
           closings_actual: 0,
           conversion_rate: 0,
+          sold_value: 0,
         };
       });
 
@@ -270,7 +271,7 @@ async function manageCommercialTeams(action, data, crmUser) {
 
       const { data: leadRows, error: leadsError } = await supabase
         .from('leads')
-        .select('assigned_to_email,status,created_at')
+        .select('assigned_to_email,status,created_at,credit_value')
         .in('assigned_to_email', normalizedEmails)
         .gte('created_at', rangeStart)
         .lt('created_at', rangeEnd);
@@ -280,7 +281,10 @@ async function manageCommercialTeams(action, data, crmUser) {
         const metric = user ? sellerMetrics[user.id] : null;
         if (!metric) return;
         metric.leads_actual += 1;
-        if (lead.status === 'venda_fechada') metric.closings_actual += 1;
+        if (lead.status === 'venda_fechada') {
+          metric.closings_actual += 1;
+          metric.sold_value += Number(lead.credit_value) || 0;
+        }
         const teamId = metric.team_id;
         if (teamId) leadCounts[teamId] = (leadCounts[teamId] || 0) + 1;
       });

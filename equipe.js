@@ -644,6 +644,59 @@
     return { key: "below", label: "Abaixo da meta" };
   };
 
+  const getGoalProgress = (metric) => {
+    const goals = [
+      [metric.leads_actual, metric.target_leads],
+      [metric.appointments_actual, metric.target_appointments],
+      [metric.closings_actual, metric.target_sales],
+    ].filter(([, target]) => Number(target) > 0);
+    if (!goals.length) return 0;
+    return goals.reduce((total, [actual, target]) => total + Math.min((Number(actual) / Number(target)) * 100, 100), 0) / goals.length;
+  };
+
+  const formatCurrency = (value) => new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    maximumFractionDigits: 0,
+  }).format(Number(value) || 0);
+
+  const createTeamSummary = (metrics) => {
+    const summary = metrics.reduce((total, metric) => ({
+      sellers: total.sellers + 1,
+      leads: total.leads + (Number(metric.leads_actual) || 0),
+      appointments: total.appointments + (Number(metric.appointments_actual) || 0),
+      closings: total.closings + (Number(metric.closings_actual) || 0),
+      soldValue: total.soldValue + (Number(metric.sold_value) || 0),
+    }), { sellers: 0, leads: 0, appointments: 0, closings: 0, soldValue: 0 });
+    const conversion = summary.leads > 0 ? (summary.closings / summary.leads) * 100 : 0;
+    const values = [
+      ["Vendedores", summary.sellers, "users"],
+      ["Leads no mês", summary.leads, "user-plus"],
+      ["Agendamentos", summary.appointments, "calendar-check"],
+      ["Fechamentos", summary.closings, "badge-check"],
+      ["Conversão", `${conversion.toFixed(1)}%`, "chart-no-axes-combined"],
+      ["Valor vendido", formatCurrency(summary.soldValue), "circle-dollar-sign"],
+    ];
+    const box = document.createElement("div");
+    box.className = "eq-team-summary-grid";
+    values.forEach(([label, value, icon]) => {
+      const item = document.createElement("div");
+      item.className = "eq-team-summary-item";
+      const iconBox = document.createElement("span");
+      iconBox.className = "eq-team-summary-icon";
+      iconBox.innerHTML = `<i data-lucide="${icon}"></i>`;
+      const text = document.createElement("div");
+      const title = document.createElement("span");
+      title.textContent = label;
+      const amount = document.createElement("strong");
+      amount.textContent = String(value);
+      text.append(title, amount);
+      item.append(iconBox, text);
+      box.appendChild(item);
+    });
+    return box;
+  };
+
   const createSellerPerformanceCard = (metric) => {
     const item = document.createElement("article");
     item.className = "eq-seller-performance";
@@ -663,18 +716,38 @@
       ["Fechamentos", metric.closings_actual, metric.target_sales],
     ];
 
+    const profile = state.profiles.find((item) => String(item.id) === String(metric.user_id));
+    const progress = getGoalProgress(metric);
     const header = document.createElement("header");
     header.className = "eq-seller-performance-head";
+    const avatar = document.createElement("div");
+    avatar.className = "eq-ranking-avatar";
+    const initial = String(metric.user_name || metric.user_email || "V").trim().charAt(0).toUpperCase();
+    const initialText = document.createElement("span");
+    initialText.textContent = initial;
+    avatar.appendChild(initialText);
+    if (profile?.avatar_url) {
+      const image = document.createElement("img");
+      image.src = profile.avatar_url;
+      image.alt = "";
+      image.loading = "lazy";
+      image.referrerPolicy = "no-referrer";
+      image.addEventListener("error", () => image.remove());
+      avatar.appendChild(image);
+    }
     const identity = document.createElement("div");
     const name = document.createElement("strong");
     name.textContent = metric.user_name || metric.user_email || "Vendedor";
     const email = document.createElement("small");
-    email.textContent = metric.user_email || "";
+    email.textContent = profile ? getRoleKeyForProfile(profile.role).replace(/-/g, " ") : (metric.cargo || "Vendedor").replace(/[-_]/g, " ");
     identity.append(name, email);
     const status = document.createElement("span");
     status.className = `eq-performance-status is-${overallStatus.key}`;
     status.textContent = overallStatus.label;
-    header.append(identity, status);
+    const identityWrap = document.createElement("div");
+    identityWrap.className = "eq-ranking-identity";
+    identityWrap.append(avatar, identity);
+    header.append(identityWrap, status);
     item.appendChild(header);
 
     const grid = document.createElement("div");
@@ -703,6 +776,22 @@
     conversion.append(conversionLabel, conversionValue);
     grid.appendChild(conversion);
     item.appendChild(grid);
+
+    const progressBox = document.createElement("div");
+    progressBox.className = "eq-ranking-progress";
+    const progressLabel = document.createElement("div");
+    const progressTitle = document.createElement("span");
+    progressTitle.textContent = "Meta atingida";
+    const progressValue = document.createElement("strong");
+    progressValue.textContent = `${progress.toFixed(0)}%`;
+    progressLabel.append(progressTitle, progressValue);
+    const progressTrack = document.createElement("div");
+    progressTrack.className = "eq-ranking-progress-track";
+    const progressFill = document.createElement("span");
+    progressFill.style.width = `${Math.min(progress, 100)}%`;
+    progressTrack.appendChild(progressFill);
+    progressBox.append(progressLabel, progressTrack);
+    item.appendChild(progressBox);
     return item;
   };
 
@@ -779,6 +868,23 @@
       head.append(titleBox, badges, removeButton);
       card.appendChild(head);
 
+      const visibleMetrics = [...teamMemberIds]
+        .map((userId) => state.sellerMetrics?.[userId])
+        .filter(Boolean)
+        .sort((left, right) =>
+          getGoalProgress(right) - getGoalProgress(left)
+          || Number(right.conversion_rate || 0) - Number(left.conversion_rate || 0)
+          || Number(right.closings_actual || 0) - Number(left.closings_actual || 0)
+        );
+
+      const dashboard = document.createElement("section");
+      dashboard.className = "eq-team-dashboard";
+      const dashboardTitle = document.createElement("div");
+      dashboardTitle.className = "eq-team-dashboard-title";
+      dashboardTitle.innerHTML = `<div><strong>Painel da equipe comercial</strong><span>${formatTeamPeriod(state.teamPeriod)}</span></div>`;
+      dashboard.append(dashboardTitle, createTeamSummary(visibleMetrics));
+      card.appendChild(dashboard);
+
       const coordinatorLabel = document.createElement("label");
       coordinatorLabel.className = "eq-team-card-field";
       coordinatorLabel.append("Gestor responsável");
@@ -848,21 +954,26 @@
       performanceBox.className = "eq-team-performance";
       const performanceTitle = document.createElement("div");
       performanceTitle.className = "eq-team-performance-title";
-      performanceTitle.innerHTML = `<strong>Meta x realizado</strong><span>${formatTeamPeriod(state.teamPeriod)}</span>`;
+      performanceTitle.innerHTML = `<strong>Ranking de vendedores</strong><span>Melhor desempenho primeiro</span>`;
       performanceBox.appendChild(performanceTitle);
 
-      const visibleMemberIds = [...teamMemberIds].filter((userId) => state.sellerMetrics?.[userId]);
-      if (!visibleMemberIds.length) {
+      if (!visibleMetrics.length) {
         const emptyMetrics = document.createElement("p");
         emptyMetrics.className = "eq-team-performance-empty";
         emptyMetrics.textContent = "Nenhum vendedor com dados disponível nesta equipe.";
         performanceBox.appendChild(emptyMetrics);
       } else {
-        visibleMemberIds.forEach((userId) => {
-          performanceBox.appendChild(createSellerPerformanceCard(state.sellerMetrics[userId]));
+        visibleMetrics.forEach((metric, index) => {
+          const rankingRow = document.createElement("div");
+          rankingRow.className = "eq-ranking-row";
+          const position = document.createElement("strong");
+          position.className = "eq-ranking-position";
+          position.textContent = `${index + 1}º`;
+          rankingRow.append(position, createSellerPerformanceCard(metric));
+          performanceBox.appendChild(rankingRow);
         });
       }
-      card.appendChild(performanceBox);
+      card.insertBefore(performanceBox, coordinatorLabel);
 
       const actions = document.createElement("div");
       actions.className = "eq-team-card-actions";
