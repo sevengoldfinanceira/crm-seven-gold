@@ -429,6 +429,7 @@
     appointmentCounts: {},
     sellerMetrics: {},
     monthlyComparison: {},
+    teamAlerts: {},
     teamPeriod: "",
     functions: new Map(), // role_key -> array of string
     selectedItem: null, // { type: 'sector'|'role', id: string, sectorId: string }
@@ -621,6 +622,7 @@
     state.appointmentCounts = result.appointmentCounts || {};
     state.sellerMetrics = result.sellerMetrics || {};
     state.monthlyComparison = result.monthlyComparison || {};
+    state.teamAlerts = result.teamAlerts || {};
     state.commercialTeamsLoaded = true;
     setTeamStatus("");
     renderCommercialTeams();
@@ -916,6 +918,54 @@
     return box;
   };
 
+  const createTeamAlerts = (alerts) => {
+    const section = document.createElement("section");
+    section.className = "eq-team-alerts";
+    const heading = document.createElement("div");
+    heading.className = "eq-team-performance-title";
+    heading.innerHTML = "<strong>Alertas da Equipe</strong><span>Desempenho e operação</span>";
+    section.appendChild(heading);
+    const list = document.createElement("div");
+    list.className = "eq-team-alerts-list";
+
+    (Array.isArray(alerts) ? alerts : []).forEach((alert) => {
+      const item = document.createElement("article");
+      item.className = `eq-team-alert is-${alert.level || "informative"}${alert.positive ? " is-positive" : ""}`;
+      const icon = document.createElement("span");
+      icon.className = "eq-team-alert-icon";
+      icon.innerHTML = `<i data-lucide="${alert.positive ? "circle-check" : alert.level === "critical" ? "octagon-alert" : alert.level === "attention" ? "triangle-alert" : "info"}"></i>`;
+      const content = document.createElement("div");
+      const title = document.createElement("strong");
+      title.textContent = alert.title || "Alerta";
+      const description = document.createElement("p");
+      description.textContent = alert.description || "";
+      content.append(title, description);
+      if (alert.seller_name) {
+        const seller = document.createElement("small");
+        seller.textContent = `Vendedor: ${alert.seller_name}`;
+        content.appendChild(seller);
+      }
+      item.append(icon, content);
+      if (alert.seller_id) {
+        const detailButton = document.createElement("button");
+        detailButton.type = "button";
+        detailButton.textContent = "Ver detalhes";
+        detailButton.addEventListener("click", () => openSellerDetail(alert.seller_id));
+        item.appendChild(detailButton);
+      }
+      list.appendChild(item);
+    });
+
+    if (!list.children.length) {
+      const empty = document.createElement("p");
+      empty.className = "eq-team-performance-empty";
+      empty.textContent = "Nenhum alerta encontrado para este período.";
+      list.appendChild(empty);
+    }
+    section.appendChild(list);
+    return section;
+  };
+
   const createSellerPerformanceCard = (metric) => {
     const item = document.createElement("article");
     item.className = "eq-seller-performance is-clickable";
@@ -1113,6 +1163,9 @@
       dashboardTitle.innerHTML = `<div><strong>Painel da equipe comercial</strong><span>${formatTeamPeriod(state.teamPeriod)}</span></div>`;
       dashboard.append(dashboardTitle, createTeamSummary(visibleMetrics));
       card.appendChild(dashboard);
+
+      const alertsSection = createTeamAlerts(state.teamAlerts?.[team.id] || []);
+      card.appendChild(alertsSection);
 
       const coordinatorLabel = document.createElement("label");
       coordinatorLabel.className = "eq-team-card-field";

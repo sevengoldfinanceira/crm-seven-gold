@@ -13660,6 +13660,24 @@ body.theme-dark .eq-team-current-button { color: #f1d47a; }
 .eq-team-summary-item span, .eq-team-summary-item strong { display: block; }
 .eq-team-summary-item div > span { overflow: hidden; color: #64748b; font-size: .62rem; text-overflow: ellipsis; white-space: nowrap; }
 .eq-team-summary-item strong { margin-top: 2px; overflow: hidden; color: var(--company-text, #0f172a); font-size: .88rem; text-overflow: ellipsis; white-space: nowrap; }
+.eq-team-alerts { display: grid; gap: 9px; margin-top: 14px; padding-top: 14px; border-top: 1px solid #e2e8f0; }
+.eq-team-alerts-list { display: grid; gap: 7px; }
+.eq-team-alert { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 9px; align-items: center; padding: 10px; border: 1px solid #e2e8f0; border-left-width: 4px; border-radius: 10px; background: rgba(248, 250, 252, .8); }
+.eq-team-alert.is-critical { border-left-color: #dc2626; background: rgba(254, 226, 226, .45); }
+.eq-team-alert.is-attention { border-left-color: #d97706; background: rgba(254, 243, 199, .48); }
+.eq-team-alert.is-informative { border-left-color: #2563eb; background: rgba(219, 234, 254, .38); }
+.eq-team-alert.is-positive { border-left-color: #16a34a; background: rgba(220, 252, 231, .45); }
+.eq-team-alert-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: rgba(255, 255, 255, .72); color: #475569; }
+.eq-team-alert-icon svg { width: 15px; height: 15px; }
+.eq-team-alert.is-critical .eq-team-alert-icon { color: #dc2626; }
+.eq-team-alert.is-attention .eq-team-alert-icon { color: #d97706; }
+.eq-team-alert.is-informative .eq-team-alert-icon { color: #2563eb; }
+.eq-team-alert.is-positive .eq-team-alert-icon { color: #16a34a; }
+.eq-team-alert strong, .eq-team-alert p, .eq-team-alert small { display: block; }
+.eq-team-alert strong { color: var(--company-text, #0f172a); font-size: .76rem; }
+.eq-team-alert p { margin: 2px 0 0; color: #64748b; font-size: .68rem; }
+.eq-team-alert small { margin-top: 3px; color: #475569; font-size: .62rem; font-weight: 700; }
+.eq-team-alert button { padding: 6px 9px; border: 1px solid currentColor; border-radius: 7px; background: transparent; color: #9a7410; font-size: .65rem; font-weight: 800; cursor: pointer; white-space: nowrap; }
 .eq-team-performance-empty { margin: 0; padding: 12px; border: 1px dashed #cbd5e1; border-radius: 10px; color: #64748b; font-size: .76rem; text-align: center; }
 .eq-ranking-row { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 7px; align-items: stretch; }
 .eq-ranking-position { display: grid; place-items: center; border-radius: 9px; background: #fef3c7; color: #a16207; font-size: .7rem; }
@@ -13740,11 +13758,13 @@ body.theme-dark .eq-seller-detail-dialog, body.theme-dark .eq-seller-detail-clos
 body.theme-dark .eq-seller-detail-metrics > div, body.theme-dark .eq-seller-leads-wrap, body.theme-dark .eq-seller-leads-table th, body.theme-dark .eq-seller-leads-table td { border-color: #3b3150; }
 body.theme-dark .eq-seller-detail-metrics > div, body.theme-dark .eq-seller-leads-table thead th { background: rgba(15, 23, 42, .3); }
 body.theme-dark .eq-team-summary-item { border-color: #3b3150; background: rgba(15, 23, 42, .28); }
+body.theme-dark .eq-team-alerts, body.theme-dark .eq-team-alert { border-color: #3b3150; }
+body.theme-dark .eq-team-alert { background: rgba(15, 23, 42, .3); }
 body.theme-dark .eq-seller-performance { border-color: #3b3150; background: rgba(15, 23, 42, .28); }
 body.theme-dark .eq-seller-conversion { background: rgba(37, 99, 235, .12); }
 @media (max-width: 860px) { .eq-team-create-form { grid-template-columns: 1fr; } .eq-team-summary-grid, .eq-seller-metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 860px) { .eq-seller-detail-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 480px) { .eq-team-summary-grid, .eq-seller-detail-metrics { grid-template-columns: 1fr; } .eq-seller-detail-dialog { padding: 16px; border-radius: 16px; } .eq-seller-detail-header { align-items: flex-start; } }
+@media (max-width: 480px) { .eq-team-summary-grid, .eq-seller-detail-metrics { grid-template-columns: 1fr; } .eq-team-alert { grid-template-columns: 30px minmax(0, 1fr); } .eq-team-alert button { grid-column: 2; justify-self: start; } .eq-seller-detail-dialog { padding: 16px; border-radius: 16px; } .eq-seller-detail-header { align-items: flex-start; } }
 
 /* Header */
 .eq-header {

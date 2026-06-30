@@ -399,7 +399,7 @@ async function manageCommercialTeams(action, data, crmUser) {
       if (ownMembershipsError) return { status: 500, error: ownMembershipsError.message };
       const ownTeamIds = (ownMemberships || []).map((item) => item.team_id);
       if (!ownTeamIds.length) {
-        return { status: 200, teams: [], members: [], leadCounts: {}, appointmentCounts: {}, sellerMetrics: {}, monthlyComparison: {} };
+        return { status: 200, teams: [], members: [], leadCounts: {}, appointmentCounts: {}, sellerMetrics: {}, monthlyComparison: {}, teamAlerts: {} };
       }
       teamsQuery = teamsQuery.in('id', ownTeamIds);
     }
@@ -424,6 +424,7 @@ async function manageCommercialTeams(action, data, crmUser) {
     let appointmentCounts = {};
     const sellerMetrics = {};
     const monthlyComparison = {};
+    const teamAlerts = {};
     const visibleUserIds = [...new Set(members.map((item) => item.user_id))];
     if (teamIds.length && visibleUserIds.length) {
       const { data: visibleUsers, error: visibleUsersError } = await supabase
@@ -437,12 +438,13 @@ async function manageCommercialTeams(action, data, crmUser) {
         .map((user) => String(user.email || '').trim().toLowerCase())
         .filter(Boolean);
       if (!normalizedEmails.length) {
-        return { status: 200, teams: teams || [], members, leadCounts, appointmentCounts, sellerMetrics, monthlyComparison, month: requestedMonth };
+        return { status: 200, teams: teams || [], members, leadCounts, appointmentCounts, sellerMetrics, monthlyComparison, teamAlerts, month: requestedMonth };
       }
       const userByEmail = new Map((visibleUsers || []).map((user) => [String(user.email || '').trim().toLowerCase(), user]));
       const teamByUserId = new Map(members.map((item) => [String(item.user_id), item.team_id]));
 
       teamIds.forEach((teamId) => {
+        teamAlerts[teamId] = [];
         monthlyComparison[teamId] = comparisonMonths.map((month) => ({
           month,
           leads: 0,
@@ -504,7 +506,7 @@ async function manageCommercialTeams(action, data, crmUser) {
 
       const { data: leadRows, error: leadsError } = await supabase
         .from('leads')
-        .select('assigned_to_email,status,created_at,credit_value')
+        .select('id,name,assigned_to_email,status,created_at,updated_at,ultima_interacao,proximo_followup,credit_value')
         .in('assigned_to_email', normalizedEmails)
         .gte('created_at', comparisonRangeStart)
         .lt('created_at', rangeEnd);
@@ -533,10 +535,9 @@ async function manageCommercialTeams(action, data, crmUser) {
 
       const { data: apptRows, error: appointmentsError } = await supabase
         .from('appointments')
-        .select('usuario_id,status,data_agendamento')
+        .select('lead_id,usuario_id,status,data_agendamento')
         .in('usuario_id', visibleUserIds)
-        .gte('data_agendamento', `${comparisonMonths[comparisonMonths.length - 1]}-01`)
-        .lt('data_agendamento', rangeEnd.slice(0, 10));
+        .gte('data_agendamento', `${comparisonMonths[comparisonMonths.length - 1]}-01`);
       if (appointmentsError) return { status: 500, error: appointmentsError.message };
       (apptRows || []).forEach((appointment) => {
         if (appointment.status === 'cancelado') return;
@@ -567,9 +568,141 @@ async function manageCommercialTeams(action, data, crmUser) {
           ? Number((progressParts.reduce((sum, [actual, target]) => sum + Math.min((actual / target) * 100, 100), 0) / progressParts.length).toFixed(1))
           : 0;
       });
+
+      const getProgress = (metric) => {
+        const parts = [
+          [metric.leads_actual, metric.target_leads],
+          [metric.appointments_actual, metric.target_appointments],
+          [metric.closings_actual, metric.target_sales],
+        ].filter(([, target]) => Number(target) > 0);
+        return parts.length
+          ? parts.reduce((sum, [actual, target]) => sum + Math.min((Number(actual) / Number(target)) * 100, 100), 0) / parts.length
+          : 0;
+      };
+      const appendAlert = (teamId, alert) => {
+        if (teamAlerts[teamId]) teamAlerts[teamId].push(alert);
+      };
+      const scheduledLeadIds = new Set((apptRows || [])
+        .filter((appointment) => appointment.status !== 'cancelado' && appointment.data_agendamento >= `${requestedMonth}-01`)
+        .map((appointment) => appointment.lead_id)
+        .filter(Boolean));
+      const leadsBySeller = new Map();
+      (leadRows || []).forEach((lead) => {
+        if (getSaoPauloMonthKey(lead.created_at) !== requestedMonth) return;
+        const user = userByEmail.get(String(lead.assigned_to_email || '').trim().toLowerCase());
+        if (!user) return;
+        if (!leadsBySeller.has(user.id)) leadsBySeller.set(user.id, []);
+        leadsBySeller.get(user.id).push(lead);
+      });
+      const periodEnd = new Date(rangeEnd);
+      const alertReferenceDate = periodEnd < new Date() ? periodEnd : new Date();
+
+      Object.values(sellerMetrics).forEach((metric) => {
+        const progress = getProgress(metric);
+        if ((metric.target_leads > 0 || metric.target_appointments > 0 || metric.target_sales > 0) && progress < 70) {
+          appendAlert(metric.team_id, {
+            id: `seller-goal-${metric.user_id}`,
+            level: progress < 40 ? 'critical' : 'attention',
+            title: 'Vendedor abaixo da meta',
+            description: `${progress.toFixed(0)}% da meta atingida no período.`,
+            seller_id: metric.user_id,
+            seller_name: metric.user_name,
+          });
+        }
+        if (metric.leads_actual > 0 && metric.appointments_actual === 0) {
+          appendAlert(metric.team_id, {
+            id: `seller-no-appointments-${metric.user_id}`,
+            level: 'critical',
+            title: 'Sem agendamentos',
+            description: `${metric.leads_actual} lead(s) recebido(s), mas nenhum agendamento no período.`,
+            seller_id: metric.user_id,
+            seller_name: metric.user_name,
+          });
+        } else if (metric.leads_actual >= 5 && metric.appointments_actual / metric.leads_actual < 0.2) {
+          appendAlert(metric.team_id, {
+            id: `seller-low-appointments-${metric.user_id}`,
+            level: 'attention',
+            title: 'Poucos agendamentos',
+            description: `${metric.leads_actual} leads e apenas ${metric.appointments_actual} agendamento(s).`,
+            seller_id: metric.user_id,
+            seller_name: metric.user_name,
+          });
+        }
+
+        const sellerLeads = leadsBySeller.get(metric.user_id) || [];
+        const stalledLeads = sellerLeads.filter((lead) => {
+          const lastMovement = new Date(lead.ultima_interacao || lead.updated_at || lead.created_at);
+          return !Number.isNaN(lastMovement.getTime())
+            && Math.floor((alertReferenceDate - lastMovement) / 86400000) >= 7;
+        });
+        if (stalledLeads.length) {
+          appendAlert(metric.team_id, {
+            id: `seller-stalled-${metric.user_id}`,
+            level: 'critical',
+            title: 'Leads parados há 7 dias ou mais',
+            description: `${stalledLeads.length} lead(s) sem movimentação recente.`,
+            seller_id: metric.user_id,
+            seller_name: metric.user_name,
+          });
+        }
+        const leadsWithoutNextAction = sellerLeads.filter((lead) => {
+          const followupDate = lead.proximo_followup ? new Date(lead.proximo_followup) : null;
+          const hasFutureFollowup = followupDate && !Number.isNaN(followupDate.getTime()) && followupDate >= new Date(`${requestedMonth}-01T00:00:00`);
+          return !hasFutureFollowup && !scheduledLeadIds.has(lead.id) && lead.status !== 'venda_fechada';
+        });
+        if (leadsWithoutNextAction.length) {
+          appendAlert(metric.team_id, {
+            id: `seller-no-next-action-${metric.user_id}`,
+            level: 'attention',
+            title: 'Leads sem próxima ação',
+            description: `${leadsWithoutNextAction.length} lead(s) sem follow-up ou agendamento definido.`,
+            seller_id: metric.user_id,
+            seller_name: metric.user_name,
+          });
+        }
+      });
+
+      teamIds.forEach((teamId) => {
+        const rows = monthlyComparison[teamId] || [];
+        const current = rows[0];
+        const previous = rows[1];
+        const hasTeamGoal = current && (current.target_leads > 0 || current.target_appointments > 0 || current.target_sales > 0);
+        if (hasTeamGoal && current.goal_progress < 70) {
+          appendAlert(teamId, {
+            id: `team-goal-${teamId}`,
+            level: current.goal_progress < 40 ? 'critical' : 'attention',
+            title: 'Equipe abaixo da meta geral',
+            description: `${current.goal_progress.toFixed(0)}% da meta da equipe atingida no mês.`,
+          });
+        }
+        if (current && previous) {
+          const currentPerformance = previous.closings > 0 ? current.closings
+            : previous.appointments > 0 ? current.appointments : current.leads;
+          const previousPerformance = previous.closings > 0 ? previous.closings
+            : previous.appointments > 0 ? previous.appointments : previous.leads;
+          const drop = previousPerformance > 0 ? ((previousPerformance - currentPerformance) / previousPerformance) * 100 : 0;
+          if (drop >= 20) {
+            appendAlert(teamId, {
+              id: `team-drop-${teamId}`,
+              level: drop >= 40 ? 'critical' : 'attention',
+              title: 'Queda de desempenho',
+              description: `Desempenho ${drop.toFixed(0)}% abaixo do mês anterior.`,
+            });
+          }
+        }
+        if (!teamAlerts[teamId].length) {
+          appendAlert(teamId, {
+            id: `team-positive-${teamId}`,
+            level: 'informative',
+            title: 'Nenhum alerta encontrado',
+            description: 'A equipe não possui alertas para este período.',
+            positive: true,
+          });
+        }
+      });
     }
 
-    return { status: 200, teams: teams || [], members, leadCounts, appointmentCounts, sellerMetrics, monthlyComparison, month: requestedMonth };
+    return { status: 200, teams: teams || [], members, leadCounts, appointmentCounts, sellerMetrics, monthlyComparison, teamAlerts, month: requestedMonth };
   }
 
   if (!TEAM_MANAGER_ROLES.has(role)) {
