@@ -1287,7 +1287,7 @@ const loadDashboardMetrics = async () => {
       if (alertAppts) alerts.push(alertAppts);
       if (alertSales) alerts.push(alertSales);
     });
-
+    if (alerts.length === 0) {
       elAlertsList.innerHTML = `
         <div class="empty-alert-state">
           <div style="width: 48px; height: 48px; border-radius: 50%; background: #fef9c3; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; color: #ca8a04;">
@@ -1347,7 +1347,7 @@ const loadDashboardMetrics = async () => {
     const overdueTasks = (tasksData || []).filter(t => {
       return t.scheduled_at && new Date(t.scheduled_at) < now;
     });
-
+    if (overdueTasks.length === 0) {
       elTasksAlertsList.innerHTML = `
         <div class="empty-alert-state">
           <div style="width: 48px; height: 48px; border-radius: 50%; background: #fee2e2; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; color: #ef4444;">
