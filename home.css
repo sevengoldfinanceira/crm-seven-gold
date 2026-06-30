@@ -16888,7 +16888,8 @@ body[data-unified-admin]:not(.theme-dark) .sidebar-copyright {
 
 .sidebar-profile-card {
   margin-top: 0 !important;
-  padding: 12px 14px !important;
+  padding: 8px 10px !important;
+  border-radius: 12px !important;
   border: 1px solid rgba(212, 175, 55, 0.25) !important;
 }
 

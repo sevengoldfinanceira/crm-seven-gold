@@ -38,9 +38,9 @@ body { font-family: Inter, sans-serif; background: var(--page); color: var(--ink
   gap: 10px;
   align-items: center;
   text-decoration: none;
-  padding: 11px;
+  padding: 8px 10px;
   border: 1px solid rgba(255, 255, 255, .11);
-  border-radius: 16px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, .045);
   transition: background .2s ease, border-color .2s ease, transform .2s ease;
 }
