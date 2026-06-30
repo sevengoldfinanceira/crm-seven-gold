@@ -898,7 +898,7 @@ body[data-unified-admin]>.unified-admin-shell {
 
 .company-dashboard-shell {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-columns: 244px minmax(0, 1fr);
   min-height: 100vh;
   background: var(--sg-bg-page, #090a0b);
 }
@@ -1210,15 +1210,15 @@ body[data-unified-admin]>.unified-admin-shell {
 .profile-avatar {
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 52px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background-color: rgba(212, 175, 55, 0.12);
   background-position: center;
   background-size: cover;
   border: 2px solid rgba(212, 175, 55, 0.6);
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: #d4af37;
   flex-shrink: 0;
 }
@@ -1308,7 +1308,7 @@ body[data-unified-admin]>.unified-admin-shell {
 /* --- Layout Shell --- */
 .unified-admin-shell {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
+  grid-template-columns: 244px minmax(0, 1fr);
   min-height: 100vh;
   background: var(--sg-bg-page, #f3f3f2);
 }
@@ -9886,8 +9886,8 @@ body[data-unified-admin] .sidebar-collapsed .unified-sidebar-profile {
 }
 
 body[data-unified-admin] .sidebar-collapsed .profile-avatar {
-  width: 46px !important;
-  height: 46px !important;
+  width: 50px !important;
+  height: 50px !important;
 }
 
 body[data-unified-admin] .unified-admin-shell.sidebar-collapsed>main,
@@ -10890,8 +10890,8 @@ body[data-unified-admin] .sidebar-collapsed .unified-sidebar-profile {
 }
 
 body[data-unified-admin] .sidebar-collapsed .profile-avatar {
-  width: 44px !important;
-  height: 44px !important;
+  width: 48px !important;
+  height: 48px !important;
 }
 
 body[data-unified-admin] .unified-admin-shell>main,
@@ -11135,8 +11135,8 @@ body[data-unified-admin].theme-dark .marketing-shell {
   }
 
   body[data-unified-admin] .sidebar-collapsed .profile-avatar {
-    width: 40px !important;
-    height: 40px !important;
+    width: 44px !important;
+    height: 44px !important;
   }
 }
 

@@ -12,7 +12,7 @@
 html, body { min-height: 100%; margin: 0; }
 body { font-family: Inter, sans-serif; background: var(--page); color: var(--ink); }
 
-.service-shell { display: grid; grid-template-columns: 230px minmax(0, 1fr); min-height: 100vh; }
+.service-shell { display: grid; grid-template-columns: 244px minmax(0, 1fr); min-height: 100vh; }
 .service-sidebar { position: sticky; top: 0; display: flex; flex-direction: column; height: 100vh; padding: 20px 16px; background: linear-gradient(180deg, var(--purple), #0d0118); color: #fff; }
 .service-brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
 .service-brand img { width: 48px; height: 48px; border: 1px solid rgba(227,182,50,.35); border-radius: 14px; object-fit: cover; }
@@ -89,7 +89,8 @@ body { font-family: Inter, sans-serif; background: var(--page); color: var(--ink
   width: 100%;
   margin-top: 2px;
   color: #cbd5e1 !important;
-  font-size: .65rem !important;
+  font-size: .56rem !important;
+  letter-spacing: -0.01em !important;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

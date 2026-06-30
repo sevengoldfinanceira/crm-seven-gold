@@ -54,7 +54,7 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
 
 .app-shell {
   display: grid;
-  grid-template-columns: 230px minmax(0, 1fr);
+  grid-template-columns: 244px minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -2315,7 +2315,8 @@ body.theme-dark .crm-workspace {
   width: 100%;
   margin-top: 2px;
   color: #cbd5e1 !important;
-  font-size: .65rem !important;
+  font-size: .56rem !important;
+  letter-spacing: -0.01em !important;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
