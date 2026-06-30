@@ -18198,3 +18198,85 @@ body.theme-dark #team-detail-modal {
 
 
 
+/* Comissões premium 2026 */
+.commission-premium-shell{display:grid;gap:18px;padding:24px!important;background:linear-gradient(135deg,#f8fafc 0%,#eef2ff 58%,#faf5ff 100%)!important;color:#15162f}
+.commission-premium-header,.commission-table-section,.commission-level-card,.commission-about-card,.commission-strategic-callout,.commission-subarea-heading,.strategic-table-card,.commission-empty-area{border:1px solid rgba(220,224,234,.9);background:rgba(255,255,255,.94);box-shadow:0 18px 50px rgba(42,48,82,.08)}
+.commission-premium-header{display:grid;gap:22px;padding:25px;border-radius:22px}
+.commission-title-block{display:flex;align-items:center;gap:15px}.commission-title-icon,.commission-level-icon,.commission-strategic-icon,.commission-about-icon{display:grid;place-items:center;flex:0 0 auto;color:#b17c08;background:#fff7df;border:1px solid #f0d58a}
+.commission-title-icon{width:48px;height:48px;border-radius:15px}.commission-title-icon svg{width:23px}.commission-eyebrow,.commission-section-heading span,.commission-subarea-heading p,.commission-strategic-callout>div>p{margin:0 0 5px;color:#b17c08;font-size:.68rem;font-weight:850;letter-spacing:.08em;text-transform:uppercase}
+.commission-title-block h1{margin:0;color:#101233;font-size:clamp(1.75rem,3vw,2.35rem)}.commission-title-block div>p:last-child{margin:5px 0 0;color:#667085;font-size:.84rem}
+.commission-category-tabs,.commission-level-tabs,.strategic-level-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}.commission-category-tabs button,.commission-level-tabs button,.strategic-level-tabs button{min-height:39px;padding:0 15px;border:1px solid #e3e6ed;border-radius:999px;background:#fff;color:#667085;font-weight:750;white-space:nowrap;transition:.2s}.commission-category-tabs button:hover,.commission-category-tabs button.active,.commission-level-tabs button.active,.strategic-level-tabs button.active{border-color:#d8a018;background:#fff7df;color:#9d6c00;box-shadow:0 5px 16px rgba(216,160,24,.12)}
+.commission-area{display:grid;gap:18px}.commission-area[hidden]{display:none!important}.commission-level-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.commission-level-card{position:relative;display:flex;flex-direction:column;min-width:0;padding:17px;border-radius:18px;transition:.2s}.commission-level-card:hover,.commission-level-card.active{transform:translateY(-3px);border-color:rgba(216,160,24,.55);box-shadow:0 18px 40px rgba(42,48,82,.13)}.commission-level-icon{width:36px;height:36px;border-radius:11px}.commission-level-icon svg{width:18px}.commission-level-number{position:absolute;right:14px;top:15px;color:#967021;font-size:.62rem;font-weight:850;text-transform:uppercase}.commission-level-card h2{margin:14px 0 5px;color:#15162f;font-size:.91rem}.commission-level-card p{min-height:34px;margin:0;color:#768095;font-size:.72rem;line-height:1.45}.commission-level-card button{display:inline-flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px;padding:0;border:0;background:transparent;color:#b17c08;font-size:.72rem;font-weight:800}.commission-level-card button svg{width:14px}
+.commission-table-section{display:grid;gap:17px;padding:22px;border-radius:22px;scroll-margin-top:100px}.commission-section-heading{display:flex;align-items:center;justify-content:space-between;gap:15px}.commission-section-heading h2,.commission-subarea-heading h2,.commission-strategic-callout h2,.commission-empty-area h2{margin:0;color:#101233;font-size:1.18rem}.commission-export-button{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:0 12px;border:1px solid #e8ca76;border-radius:10px;background:#fffaf0;color:#9d6c00;font-size:.72rem;font-weight:800;text-decoration:none}.commission-export-button svg{width:15px}
+.commission-table-layout{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:15px;align-items:start}.commission-table-card{min-width:0;border:1px solid #e7e9ef;border-radius:16px;background:#fff;overflow:hidden}.commission-table-scroll{overflow-x:auto}.commission-data-table{width:100%;min-width:650px;border-collapse:collapse}.commission-data-table th,.commission-data-table td{padding:13px 15px;border-bottom:1px solid #edf0f4;text-align:left;font-size:.76rem}.commission-data-table th{background:#f7f8fb;color:#687085;font-size:.65rem;letter-spacing:.045em;text-transform:uppercase}.commission-data-table td{color:#4c5569}.commission-data-table tr:last-child td{border-bottom:0}.commission-data-table .featured-row td{background:#fffaf0}.commission-data-table td:nth-last-child(-n+2){color:#195f73;font-weight:750}.commission-value-pill{display:inline-flex;padding:4px 9px;border-radius:999px;background:#eaf9f2;color:#16815b;font-weight:850}.commission-table-note{margin:0;padding:13px 15px;border-top:1px solid #edf0f4;background:#fafbfc;color:#727b8e;font-size:.7rem;line-height:1.5}
+.commission-about-card{padding:18px;border-radius:16px}.commission-about-icon{width:35px;height:35px;border-radius:11px}.commission-about-icon svg{width:17px}.commission-about-card h3{margin:12px 0;color:#15162f;font-size:.9rem}.commission-about-card dl{display:grid;margin:0}.commission-about-card dl div{display:grid;grid-template-columns:1fr auto;gap:12px;padding:9px 0;border-bottom:1px solid #edf0f4}.commission-about-card dl div:last-child{border:0}.commission-about-card dt{color:#7a8396;font-size:.68rem}.commission-about-card dd{margin:0;color:#30384d;font-size:.68rem;font-weight:750;text-align:right}.commission-active-badge{padding:3px 7px;border-radius:999px;background:#e8f9ef;color:#16815b}
+.commission-strategic-callout{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;padding:21px;border-radius:20px;border-color:rgba(127,72,190,.28);background:linear-gradient(135deg,#fff 0%,#fbf7ff 100%)}.commission-strategic-icon{width:45px;height:45px;border-radius:14px;background:#f4eaff;border-color:#d9bdf6;color:#7d3db4}.commission-strategic-callout>div>span,.commission-subarea-heading div>span{color:#737d91;font-size:.76rem}.commission-strategic-callout button,.commission-subarea-heading button{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 15px;border:1px solid #7d3db4;border-radius:11px;background:#6f2da8;color:#fff;font-size:.72rem;font-weight:800}.commission-strategic-callout button svg,.commission-subarea-heading button svg{width:15px}
+.commission-subarea-heading{display:flex;align-items:center;gap:18px;padding:21px;border-radius:20px}.strategic-table-card{padding:20px;border-radius:20px}.strategic-table-card .commission-section-heading{margin-bottom:15px}.commission-empty-area{display:grid;place-items:center;min-height:330px;padding:30px;border-radius:22px;text-align:center}.commission-empty-area svg{width:42px;height:42px;color:#b17c08}.commission-empty-area p{margin:5px 0;color:#788196}
+body.theme-dark .commission-premium-shell{background:linear-gradient(135deg,#0d0912,#17101f 60%,#120d19)!important;color:#f5f2f8}body.theme-dark .commission-premium-header,body.theme-dark .commission-table-section,body.theme-dark .commission-level-card,body.theme-dark .commission-about-card,body.theme-dark .commission-strategic-callout,body.theme-dark .commission-subarea-heading,body.theme-dark .strategic-table-card,body.theme-dark .commission-empty-area,body.theme-dark .commission-table-card{border-color:rgba(255,255,255,.09);background:#18131e;box-shadow:0 18px 50px rgba(0,0,0,.25)}body.theme-dark .commission-title-block h1,body.theme-dark .commission-level-card h2,body.theme-dark .commission-section-heading h2,body.theme-dark .commission-about-card h3,body.theme-dark .commission-subarea-heading h2,body.theme-dark .commission-strategic-callout h2,body.theme-dark .commission-empty-area h2{color:#f8f5fb}body.theme-dark .commission-category-tabs button,body.theme-dark .commission-level-tabs button,body.theme-dark .strategic-level-tabs button{border-color:rgba(255,255,255,.1);background:#211929;color:#aaa2b3}body.theme-dark .commission-category-tabs button.active,body.theme-dark .commission-level-tabs button.active,body.theme-dark .strategic-level-tabs button.active{border-color:#b98b25;background:#322615;color:#f1c95d}body.theme-dark .commission-data-table th{background:#211a29;color:#aaa2b3}body.theme-dark .commission-data-table td,body.theme-dark .commission-about-card dd{color:#d9d4df}body.theme-dark .commission-data-table th,body.theme-dark .commission-data-table td,body.theme-dark .commission-about-card dl div{border-color:rgba(255,255,255,.07)}body.theme-dark .commission-data-table .featured-row td{background:#2a2116}body.theme-dark .commission-table-note{border-color:rgba(255,255,255,.07);background:#151019;color:#aaa2b3}body.theme-dark .commission-strategic-callout{background:linear-gradient(135deg,#18131e,#25172e)}
+@media(max-width:1180px){.commission-level-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.commission-table-layout{grid-template-columns:1fr}.commission-about-card dl{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 22px}}
+@media(max-width:720px){.commission-premium-shell{padding:12px!important}.commission-premium-header,.commission-table-section{padding:16px;border-radius:17px}.commission-title-block{align-items:flex-start}.commission-level-grid{grid-template-columns:1fr}.commission-level-card p{min-height:0}.commission-strategic-callout{grid-template-columns:auto 1fr}.commission-strategic-callout button{grid-column:1/-1;justify-content:center}.commission-section-heading{align-items:flex-start}.commission-about-card dl{grid-template-columns:1fr}.commission-subarea-heading{align-items:flex-start;flex-direction:column}.commission-category-tabs{margin:0 -2px}.commission-data-table th,.commission-data-table td{padding:11px 12px}}
+.commission-export-button[aria-disabled="true"]{cursor:not-allowed;opacity:.72}
+
+/* Organograma: centralização dos textos dos setores e cargos */
+.eq-sector-card { text-align: center; }
+.eq-sector-header {
+  display: grid;
+  grid-template-columns: 18px 24px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+}
+.eq-sector-header .eq-drag-handle { margin: 0; }
+.eq-sector-title-wrapper {
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.eq-sector-title-wrapper h4,
+.eq-sector-title-wrapper span { width: 100%; text-align: center; }
+.eq-sector-count {
+  position: static;
+  justify-self: end;
+}
+.eq-role-pill {
+  position: relative;
+  justify-content: center;
+  text-align: center;
+}
+.eq-role-pill-grip {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  margin: 0;
+  transform: translateY(-50%);
+}
+.eq-role-pill:hover .eq-role-pill-grip { transform: translateY(-50%); }
+.eq-role-pill-info {
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  text-align: center;
+}
+.eq-role-pill-info strong,
+.eq-role-pill-info span,
+.eq-sec-add-role-btn { text-align: center; }
+
+/* Cargos e funções: elimina lacunas causadas por linhas de alturas diferentes */
+.team-role-board {
+  display: block;
+  columns: 2;
+  column-gap: 14px;
+}
+.team-role-board > .role-section {
+  display: inline-grid;
+  width: 100%;
+  margin: 0 0 14px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  vertical-align: top;
+}
+@media (max-width: 1100px) {
+  .team-role-board { columns: 1; }
+}
