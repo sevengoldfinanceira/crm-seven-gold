@@ -615,11 +615,25 @@ const setAppointmentStatus = (message = "", type = "error") => {
 };
 
 function normalizeRole(role) {
-  return String(role || "")
+  const normalized = String(role || "")
     .trim()
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  const aliases = {
+    ceo: "diretor-ceo",
+    diretor: "diretor-ceo",
+    "diretor-executivo": "diretor-ceo",
+    "diretor-e-ceo": "diretor-ceo",
+    owner: "dono",
+    proprietario: "dono",
+    administrator: "administrador",
+  };
+
+  return aliases[normalized] || normalized;
 }
 
 function isAdminRole(role) {

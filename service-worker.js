@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-permission-sector-colors-v2";
+const CACHE_VERSION = "seven-gold-pipeline-role-normalization-v2";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
