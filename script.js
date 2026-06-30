@@ -2030,6 +2030,7 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
     const sourceCard = document.querySelector(`[data-lead-id="${leadId}"]`);
 
     if (sourceCard && targetColumn) {
+      const sourceColumn = sourceCard.closest?.(".kanban-column");
       const targetStack = targetColumn.querySelector(".card-stack");
       const emptyMsg = targetStack.querySelector(".empty-column, .empty-column-card");
       if (emptyMsg) emptyMsg.remove();
@@ -2040,7 +2041,6 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
         counter.textContent = targetStack.querySelectorAll(".lead-card").length;
       }
 
-      const sourceColumn = sourceCard.closest?.(".kanban-column");
       if (sourceColumn && sourceColumn !== targetColumn) {
         const sourceStack = sourceColumn.querySelector(".card-stack");
         const sourceCounter = sourceColumn.querySelector("small");
