@@ -81,7 +81,6 @@
           <span class="empresa-topbar-avatar" data-user-avatar>U</span>
           <span class="empresa-topbar-user">
             <strong data-user-name>Usuário</strong>
-            <small class="empresa-topbar-email" data-user-email>email@empresa.com</small>
             <mark class="empresa-topbar-role" data-user-role>Administrador</mark>
           </span>
         </a>

@@ -13192,6 +13192,17 @@ body[data-unified-admin]:not(.theme-dark) .empresa-topbar-user small {
   color: #64748b !important;
 }
 
+/* Cartão compacto exclusivo do cabeçalho da área Empresa */
+body[data-unified-admin] .empresa-topbar-profile {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 176px !important;
+}
+
+body[data-unified-admin] .empresa-topbar-user strong {
+  max-width: 104px !important;
+}
+
 /* Topbar Action Buttons & Badge */
 .topbar-action-btn {
   position: relative !important;
