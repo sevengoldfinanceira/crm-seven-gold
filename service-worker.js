@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-empresa-compact-profile-v1";
+const CACHE_VERSION = "seven-gold-permission-sector-colors-v2";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",

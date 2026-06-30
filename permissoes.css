@@ -962,6 +962,54 @@ body.theme-dark .permission-table tbody tr:hover {
   background: rgba(212, 175, 55, 0.04) !important;
 }
 
+/* Identificação visual dos setores na matriz */
+.permission-table [data-role-sector="diretoria"] { --perm-sector-color: #d4a017; --perm-sector-soft: rgba(212, 160, 23, 0.12); }
+.permission-table [data-role-sector="comercial"] { --perm-sector-color: #2563eb; --perm-sector-soft: rgba(37, 99, 235, 0.10); }
+.permission-table [data-role-sector="pos-venda"] { --perm-sector-color: #0d9488; --perm-sector-soft: rgba(13, 148, 136, 0.10); }
+.permission-table [data-role-sector="administrativo"] { --perm-sector-color: #7c3aed; --perm-sector-soft: rgba(124, 58, 237, 0.10); }
+.permission-table [data-role-sector="financeiro"] { --perm-sector-color: #16a34a; --perm-sector-soft: rgba(22, 163, 74, 0.10); }
+.permission-table [data-role-sector="marketing"] { --perm-sector-color: #db2777; --perm-sector-soft: rgba(219, 39, 119, 0.10); }
+.permission-table [data-role-sector="rh"] { --perm-sector-color: #ea580c; --perm-sector-soft: rgba(234, 88, 12, 0.10); }
+.permission-table [data-role-sector="juridico"] { --perm-sector-color: #dc2626; --perm-sector-soft: rgba(220, 38, 38, 0.10); }
+.permission-table [data-role-sector="outros"] { --perm-sector-color: #64748b; --perm-sector-soft: rgba(100, 116, 139, 0.10); }
+
+.permission-table thead th[data-role-sector] {
+  border-top: 4px solid var(--perm-sector-color) !important;
+  background: linear-gradient(180deg, var(--perm-sector-soft), #f9fafb 72%) !important;
+  color: #374151 !important;
+}
+
+.permission-table thead th.perm-sector-start::before {
+  display: none !important;
+}
+
+.permission-table th.perm-sector-start,
+.permission-table td.perm-sector-start {
+  border-left: 2px solid var(--perm-sector-color) !important;
+}
+
+.permission-table th.perm-sector-end,
+.permission-table td.perm-sector-end {
+  border-right: 2px solid var(--perm-sector-color) !important;
+}
+
+.permission-table tbody td[data-role-sector] {
+  background: var(--perm-sector-soft) !important;
+}
+
+.permission-table tbody tr:hover td[data-role-sector] {
+  filter: saturate(1.35) brightness(0.98);
+}
+
+body.theme-dark .permission-table thead th[data-role-sector] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--perm-sector-color) 22%, #0d0f12), #0d0f12 78%) !important;
+  color: #f3f4f6 !important;
+}
+
+body.theme-dark .permission-table tbody td[data-role-sector] {
+  background: color-mix(in srgb, var(--perm-sector-color) 9%, #111318) !important;
+}
+
 body.theme-dark .perm-switch-track {
   background: #1e222b !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
