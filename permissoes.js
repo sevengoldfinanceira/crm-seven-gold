@@ -555,20 +555,37 @@
 
   const closeUserModal = () => userModal?.close();
 
-  const toggleUserStatus = async (user, button) => {
+  const saveUserWithApi = async ({ id, nome, email, cargo, ativo }) => {
     const client = getClient();
-    if (!client || !user?.id) return;
+    const { data: sessionData } = await client.auth.getSession();
+    const token = sessionData?.session?.access_token;
+    if (!token) throw new Error("Sessão expirada. Entre novamente para salvar o usuário.");
+
+    const response = await fetch("/api/users/save", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id: id || null, nome, email, cargo, ativo }),
+    });
+
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || result.ok !== true || !result.user) {
+      throw new Error(result.error || "O Supabase não confirmou a gravação.");
+    }
+    return result.user;
+  };
+
+  const toggleUserStatus = async (user, button) => {
+    if (!getClient() || !user?.id) return;
     button.disabled = true;
     const nextActive = user.ativo !== true;
-    const { data, error } = await client
-      .from("crm_users")
-      .update({ ativo: nextActive, updated_at: new Date().toISOString() })
-      .eq("id", user.id)
-      .select("id")
-      .maybeSingle();
-    if (error || !data) {
+    try {
+      await saveUserWithApi({ ...user, ativo: nextActive });
+    } catch (error) {
       button.disabled = false;
-      setStatus("Nao foi possivel alterar o acesso. Confira as politicas de crm_users.");
+      setStatus("Nao foi possivel alterar o acesso: " + error.message);
       addAuditEntry("<strong>Erro</strong> ao alterar acesso do usuario", "warning");
       return;
     }
@@ -623,25 +640,11 @@
     submitButton.textContent = "Salvando...";
     setUserFormStatus("");
 
-    const payload = { nome, email, cargo, ativo, updated_at: new Date().toISOString() };
     let error = null;
-
-    const existing = await client
-      .from("crm_users")
-      .select("id")
-      .eq("email", email)
-      .maybeSingle();
-
-    if (existing.error) {
-      error = existing.error;
-    } else if (id && existing.data?.id && String(existing.data.id) !== id) {
-      error = { message: "Este e-mail ja pertence a outro usuario." };
-    } else {
-      const targetId = id || existing.data?.id;
-      const result = targetId
-        ? await client.from("crm_users").update(payload).eq("id", targetId).select("id").maybeSingle()
-        : await client.from("crm_users").insert(payload).select("id").maybeSingle();
-      error = result.error || (!result.data ? { message: "O Supabase nao confirmou a gravacao." } : null);
+    try {
+      await saveUserWithApi({ id, nome, email, cargo, ativo });
+    } catch (saveError) {
+      error = saveError;
     }
 
     submitButton.disabled = false;

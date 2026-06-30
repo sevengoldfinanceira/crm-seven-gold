@@ -76,6 +76,13 @@ try {
 }
 
 try {
+  apiRoutes["/api/users/save"] = require("./api/users/save");
+  console.log("Rota de API carregada: /api/users/save");
+} catch (e) {
+  console.warn("Aviso: users/save.js nao pode ser carregado.", e.message);
+}
+
+try {
   apiRoutes["/api/appointments/list"] = require("./api/appointments/list");
   console.log("Rota de API carregada: /api/appointments/list");
 } catch (e) {
