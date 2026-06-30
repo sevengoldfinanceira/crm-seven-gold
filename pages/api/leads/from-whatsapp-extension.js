@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
     }
 
     const { name, phone, tags, notes, source } = req.body;
-    const owner_id = authorization.user.id;
+    const owner_id = authorization.user.auth_user_id;
     const owner_email = authorization.user.email;
     const owner_name = authorization.user.nome || authorization.user.email;
 

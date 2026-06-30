@@ -50,6 +50,7 @@ async function getAuthorizedCrmUser(req) {
   return {
     user: {
       ...crmUser,
+      auth_user_id: authData.user.id,
       email: normalizeEmail(crmUser.email),
       canAccessAllLeads: FULL_LEAD_ACCESS_ROLES.has(normalizeRole(crmUser.cargo)),
     },
