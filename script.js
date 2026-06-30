@@ -1129,15 +1129,13 @@ const loadTasks = async () => {
   } else if (activeTeamId) {
     const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
     if (teamEmails?.length) {
-      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
-      query = query.or(`team_id.eq.${activeTeamId},assigned_to_email.in.(${emailInList})`);
+      query = query.in("assigned_to_email", teamEmails);
     }
   } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
     const coordTeamId = getCoordinatedTeamId(currentCrmUser);
     const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
     if (coordTeamId && teamEmails?.length) {
-      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
-      query = query.or(`team_id.eq.${coordTeamId},assigned_to_email.in.(${emailInList})`);
+      query = query.in("assigned_to_email", teamEmails);
     }
   }
 
@@ -1508,15 +1506,13 @@ const loadDashboardMetrics = async () => {
   } else if (activeTeamId) {
     const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
     if (teamEmails?.length) {
-      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
-      leadsQuery = leadsQuery.or(`team_id.eq.${activeTeamId},assigned_to_email.in.(${emailInList})`);
+      leadsQuery = leadsQuery.in("assigned_to_email", teamEmails);
     }
   } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
     const coordTeamId = getCoordinatedTeamId(currentCrmUser);
     const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
     if (coordTeamId && teamEmails?.length) {
-      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
-      leadsQuery = leadsQuery.or(`team_id.eq.${coordTeamId},assigned_to_email.in.(${emailInList})`);
+      leadsQuery = leadsQuery.in("assigned_to_email", teamEmails);
     }
   }
   const { data: leadsData } = await leadsQuery;
@@ -1529,26 +1525,37 @@ const loadDashboardMetrics = async () => {
   const conversionRate = totalLeads > 0 ? ((closedLeads / totalLeads) * 100).toFixed(1) : "0.0";
 
   // 2. Agendamentos
-  let apptsQuery = client.from("appointments").select("status, data_agendamento, assigned_to_email").neq("status", "cancelado");
+  let appointmentVisibleEmails = null;
   if (!shouldSeeAllLeads(currentCrmUser)) {
-    apptsQuery = apptsQuery.eq("assigned_to_email", currentCrmUser.email);
+    appointmentVisibleEmails = [currentCrmUser.email];
   } else if (activeDashResponsibleEmail) {
-    apptsQuery = apptsQuery.eq("assigned_to_email", activeDashResponsibleEmail);
+    appointmentVisibleEmails = [activeDashResponsibleEmail];
   } else if (activeTeamId) {
     const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
-    if (teamEmails?.length) {
-      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
-      apptsQuery = apptsQuery.or(`team_id.eq.${activeTeamId},assigned_to_email.in.(${emailInList})`);
-    }
+    if (teamEmails?.length) appointmentVisibleEmails = teamEmails;
   } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
     const coordTeamId = getCoordinatedTeamId(currentCrmUser);
     const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
-    if (coordTeamId && teamEmails?.length) {
-      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
-      apptsQuery = apptsQuery.or(`team_id.eq.${coordTeamId},assigned_to_email.in.(${emailInList})`);
-    }
+    if (coordTeamId && teamEmails?.length) appointmentVisibleEmails = teamEmails;
   }
-  const { data: apptsData } = await apptsQuery;
+
+  let appointmentUsersQuery = client.from("crm_users").select("id,email").eq("ativo", true);
+  if (appointmentVisibleEmails?.length) appointmentUsersQuery = appointmentUsersQuery.in("email", appointmentVisibleEmails);
+  const { data: appointmentUsersData } = await appointmentUsersQuery;
+  const appointmentUsers = appointmentUsersData || [];
+  const appointmentUserIds = appointmentUsers.map((user) => user.id);
+  const appointmentEmailById = new Map(appointmentUsers.map((user) => [String(user.id), user.email]));
+  let apptsQuery = client.from("appointments").select("status,data_agendamento,usuario_id").neq("status", "cancelado");
+  if (appointmentVisibleEmails) {
+    apptsQuery = appointmentUserIds.length
+      ? apptsQuery.in("usuario_id", appointmentUserIds)
+      : apptsQuery.in("usuario_id", ["00000000-0000-0000-0000-000000000000"]);
+  }
+  const { data: rawApptsData } = await apptsQuery;
+  const apptsData = (rawApptsData || []).map((appointment) => ({
+    ...appointment,
+    assigned_to_email: appointmentEmailById.get(String(appointment.usuario_id)) || "",
+  }));
   const totalAppointments = (apptsData || []).length;
 
   // 3. Tarefas
@@ -1560,15 +1567,13 @@ const loadDashboardMetrics = async () => {
   } else if (activeTeamId) {
     const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
     if (teamEmails?.length) {
-      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
-      tasksQuery = tasksQuery.or(`team_id.eq.${activeTeamId},assigned_to_email.in.(${emailInList})`);
+      tasksQuery = tasksQuery.in("assigned_to_email", teamEmails);
     }
   } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
     const coordTeamId = getCoordinatedTeamId(currentCrmUser);
     const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
     if (coordTeamId && teamEmails?.length) {
-      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
-      tasksQuery = tasksQuery.or(`team_id.eq.${coordTeamId},assigned_to_email.in.(${emailInList})`);
+      tasksQuery = tasksQuery.in("assigned_to_email", teamEmails);
     }
   }
   const { data: tasksData } = await tasksQuery;
@@ -2153,7 +2158,7 @@ const loadAppointments = async () => {
       const { data: teamUsers } = await client.from("crm_users").select("id").in("email", teamEmails);
       const userIds = (teamUsers || []).map((u) => u.id);
       if (userIds.length) {
-        query = query.or(`team_id.eq.${activeTeamId},usuario_id.in.(${userIds.join(',')})`);
+        query = query.in("usuario_id", userIds);
       }
     }
   } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
@@ -2163,7 +2168,7 @@ const loadAppointments = async () => {
       const { data: teamUsers } = await client.from("crm_users").select("id").in("email", teamEmails);
       const userIds = (teamUsers || []).map((u) => u.id);
       if (userIds.length) {
-        query = query.or(`team_id.eq.${coordTeamId},usuario_id.in.(${userIds.join(',')})`);
+        query = query.in("usuario_id", userIds);
       }
     }
   }
@@ -2770,15 +2775,13 @@ const loadLeads = async () => {
   } else if (activeTeamId) {
     const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
     if (teamEmails?.length) {
-      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
-      query = query.or(`team_id.eq.${activeTeamId},assigned_to_email.in.(${emailInList})`);
+      query = query.in("assigned_to_email", teamEmails);
     }
   } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
     const coordTeamId = getCoordinatedTeamId(currentCrmUser);
     const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
     if (coordTeamId && teamEmails?.length) {
-      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
-      query = query.or(`team_id.eq.${coordTeamId},assigned_to_email.in.(${emailInList})`);
+      query = query.in("assigned_to_email", teamEmails);
     }
   }
 

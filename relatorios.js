@@ -476,21 +476,36 @@
     const crmUser = getCurrentCrmUser();
     const seeAll = canSeeAllCommercialRecords(crmUser);
 
-    let query = client.from("appointments").select("id, status, assigned_to_email");
-    if (!seeAll && crmUser?.email) {
-      query = query.eq("assigned_to_email", crmUser.email);
-    } else if (state.person !== "todos") {
-      query = query.eq("assigned_to_email", state.person);
-    } else if (isTeamCoordinator(crmUser) && crmUser?.email) {
-      const teamEmails = await getTeamMemberEmailsForReport(crmUser.email);
-      if (teamEmails?.length) query = query.in("assigned_to_email", teamEmails);
+    let visibleEmails = null;
+    if (!seeAll && crmUser?.email) visibleEmails = [crmUser.email];
+    else if (state.person !== "todos") visibleEmails = [state.person];
+    else if (isTeamCoordinator(crmUser) && crmUser?.email) {
+      visibleEmails = await getTeamMemberEmailsForReport(crmUser.email);
     }
+
+    let usersQuery = client.from("crm_users").select("id,email").eq("ativo", true);
+    if (visibleEmails?.length) usersQuery = usersQuery.in("email", visibleEmails);
+    const { data: appointmentUsers, error: appointmentUsersError } = await usersQuery;
+    if (appointmentUsersError) return;
+
+    const userIds = (appointmentUsers || []).map((user) => user.id);
+    const emailByUserId = new Map((appointmentUsers || []).map((user) => [String(user.id), user.email]));
+    let query = client.from("appointments").select("id,status,usuario_id,data_agendamento");
+    if (visibleEmails && !userIds.length) {
+      state.appointments = [];
+      renderAppointmentsSummary([]);
+      return;
+    }
+    if (visibleEmails) query = query.in("usuario_id", userIds);
 
     const { data, error } = await query;
     if (error) return;
 
-    state.appointments = data || [];
-    renderAppointmentsSummary(data || []);
+    state.appointments = (data || []).map((appointment) => ({
+      ...appointment,
+      assigned_to_email: emailByUserId.get(String(appointment.usuario_id)) || "",
+    }));
+    renderAppointmentsSummary(state.appointments);
   };
 
   const loadTasksSummary = async () => {

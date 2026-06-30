@@ -258,7 +258,7 @@ async function manageCommercialTeams(action, data, crmUser) {
         .select('user_email,user_name,target_leads,target_appointments,target_sales')
         .eq('month', requestedMonth)
         .in('user_email', normalizedEmails);
-      if (goalsError) return { status: 500, error: goalsError.message };
+      if (goalsError && goalsError.code !== 'PGRST205') return { status: 500, error: goalsError.message };
       (goals || []).forEach((goal) => {
         const user = userByEmail.get(String(goal.user_email || '').trim().toLowerCase());
         const metric = user ? sellerMetrics[user.id] : null;
@@ -270,7 +270,7 @@ async function manageCommercialTeams(action, data, crmUser) {
 
       const { data: leadRows, error: leadsError } = await supabase
         .from('leads')
-        .select('team_id,assigned_to_email,status,created_at')
+        .select('assigned_to_email,status,created_at')
         .in('assigned_to_email', normalizedEmails)
         .gte('created_at', rangeStart)
         .lt('created_at', rangeEnd);
@@ -281,24 +281,23 @@ async function manageCommercialTeams(action, data, crmUser) {
         if (!metric) return;
         metric.leads_actual += 1;
         if (lead.status === 'venda_fechada') metric.closings_actual += 1;
-        const teamId = lead.team_id || metric.team_id;
+        const teamId = metric.team_id;
         if (teamId) leadCounts[teamId] = (leadCounts[teamId] || 0) + 1;
       });
 
       const { data: apptRows, error: appointmentsError } = await supabase
         .from('appointments')
-        .select('team_id,assigned_to_email,status,data_agendamento')
-        .in('assigned_to_email', normalizedEmails)
+        .select('usuario_id,status,data_agendamento')
+        .in('usuario_id', visibleUserIds)
         .gte('data_agendamento', `${requestedMonth}-01`)
         .lt('data_agendamento', rangeEnd.slice(0, 10));
       if (appointmentsError) return { status: 500, error: appointmentsError.message };
       (apptRows || []).forEach((appointment) => {
         if (appointment.status === 'cancelado') return;
-        const user = userByEmail.get(String(appointment.assigned_to_email || '').trim().toLowerCase());
-        const metric = user ? sellerMetrics[user.id] : null;
+        const metric = sellerMetrics[appointment.usuario_id];
         if (!metric) return;
         metric.appointments_actual += 1;
-        const teamId = appointment.team_id || metric.team_id;
+        const teamId = metric.team_id;
         if (teamId) appointmentCounts[teamId] = (appointmentCounts[teamId] || 0) + 1;
       });
 
