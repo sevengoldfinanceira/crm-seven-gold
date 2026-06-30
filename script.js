@@ -2047,8 +2047,7 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
         if (sourceCounter) {
           sourceCounter.textContent = sourceStack.querySelectorAll(".lead-card").length;
         }
-        const totalLeadsOnBoard = document.querySelectorAll(".lead-card").length;
-        if (sourceStack.querySelectorAll(".lead-card").length === 0 && totalLeadsOnBoard === 0) {
+        if (sourceStack.querySelectorAll(".lead-card").length === 0) {
           renderEmptyState(sourceStack);
         }
       }
@@ -2306,9 +2305,7 @@ const renderLeads = (leads) => {
     counter.textContent = leadsInColumn.length;
 
     if (leadsInColumn.length === 0) {
-      if (leads.length === 0) {
-        renderEmptyState(stack);
-      }
+      renderEmptyState(stack);
       return;
     }
 
