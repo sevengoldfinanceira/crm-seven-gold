@@ -3677,9 +3677,17 @@
     const role = sectors.flatMap(s => s.roles).find(r => r.key === roleKey);
     if (!role) return;
     const newTitle = prompt("Editar nome do cargo:", role.title);
-    if (newTitle) role.title = newTitle;
+    if (newTitle === null) return;
+    const normalizedTitle = newTitle.trim();
+    if (!normalizedTitle) {
+      alert("Informe um nome válido para o cargo.");
+      return;
+    }
+    role.title = normalizedTitle;
+    saveRolesSnapshotToLocalStorage();
     alert("Cargo atualizado!");
     renderOrganograma();
+    renderRolesAndFunctions();
     renderSidebarDetails();
   };
 
