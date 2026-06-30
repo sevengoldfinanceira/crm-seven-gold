@@ -12,7 +12,7 @@
 html, body { min-height: 100%; margin: 0; }
 body { font-family: Inter, sans-serif; background: var(--page); color: var(--ink); }
 
-.service-shell { display: grid; grid-template-columns: 280px minmax(0, 1fr); min-height: 100vh; }
+.service-shell { display: grid; grid-template-columns: 230px minmax(0, 1fr); min-height: 100vh; }
 .service-sidebar { position: sticky; top: 0; display: flex; flex-direction: column; height: 100vh; padding: 20px 16px; background: linear-gradient(180deg, var(--purple), #0d0118); color: #fff; }
 .service-brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
 .service-brand img { width: 48px; height: 48px; border: 1px solid rgba(227,182,50,.35); border-radius: 14px; object-fit: cover; }
