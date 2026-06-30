@@ -13691,6 +13691,15 @@ body.theme-dark .eq-team-current-button { color: #f1d47a; }
 .eq-ranking-progress > div:first-child strong { color: var(--company-text, #0f172a); font-size: .7rem; }
 .eq-ranking-progress-track { height: 6px; overflow: hidden; border-radius: 999px; background: #e2e8f0; }
 .eq-ranking-progress-track span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #d4af37, #22c55e); }
+.eq-monthly-comparison { display: grid; gap: 9px; margin-top: 14px; padding-top: 14px; border-top: 1px solid #e2e8f0; }
+.eq-monthly-table-wrap { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 10px; }
+.eq-monthly-table { width: 100%; min-width: 720px; border-collapse: collapse; background: var(--company-main-bg, #fff); }
+.eq-monthly-table th, .eq-monthly-table td { padding: 9px 10px; border-bottom: 1px solid #e2e8f0; color: var(--company-text, #0f172a); font-size: .7rem; text-align: right; white-space: nowrap; }
+.eq-monthly-table thead th { background: rgba(248, 250, 252, .9); color: #64748b; font-size: .62rem; text-transform: uppercase; }
+.eq-monthly-table th:first-child, .eq-monthly-table td:first-child { text-align: left; }
+.eq-monthly-table tbody tr:last-child th, .eq-monthly-table tbody tr:last-child td { border-bottom: 0; }
+.eq-monthly-goal-value { color: #b8860b !important; font-weight: 800; }
+.eq-monthly-empty { padding: 18px !important; color: #64748b !important; text-align: center !important; }
 .eq-team-empty { padding: 24px; border: 1px dashed #cbd5e1; border-radius: 12px; color: #64748b; text-align: center; }
 .eq-team-delete { border: 1px solid #ef4444; border-radius: 8px; background: transparent; color: #ef4444; padding: 8px 10px; cursor: pointer; }
 body.theme-dark .eq-team-create-form, body.theme-dark .eq-team-card { border-color: #3b3150; background: #211530; }
@@ -13698,6 +13707,8 @@ body.theme-dark .eq-team-create-form label, body.theme-dark .eq-team-card-field 
 body.theme-dark .eq-team-members, body.theme-dark .eq-team-card-head { border-color: #3b3150; }
 body.theme-dark .eq-team-avatar-fallback { background: linear-gradient(135deg, #d4af37 0%, #8b6914 100%); }
 body.theme-dark .eq-team-performance { border-color: #3b3150; }
+body.theme-dark .eq-monthly-comparison, body.theme-dark .eq-monthly-table-wrap, body.theme-dark .eq-monthly-table th, body.theme-dark .eq-monthly-table td { border-color: #3b3150; }
+body.theme-dark .eq-monthly-table thead th { background: rgba(15, 23, 42, .3); }
 body.theme-dark .eq-team-summary-item { border-color: #3b3150; background: rgba(15, 23, 42, .28); }
 body.theme-dark .eq-seller-performance { border-color: #3b3150; background: rgba(15, 23, 42, .28); }
 body.theme-dark .eq-seller-conversion { background: rgba(37, 99, 235, .12); }

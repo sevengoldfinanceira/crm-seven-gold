@@ -18,6 +18,27 @@ const normalizeRole = (value) =>
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[\s_]+/g, '-');
 
+const getPreviousMonthKeys = (period, count = 6) => {
+  const [year, month] = period.split('-').map(Number);
+  return Array.from({ length: count }, (_, index) => {
+    const date = new Date(Date.UTC(year, month - 1 - index, 1));
+    return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
+  });
+};
+
+const getSaoPauloMonthKey = (value) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+  }).formatToParts(date);
+  const year = parts.find((part) => part.type === 'year')?.value;
+  const month = parts.find((part) => part.type === 'month')?.value;
+  return year && month ? `${year}-${month}` : '';
+};
+
 const sendJson = (res, status, payload) => {
   res.writeHead(status, { 'Content-Type': 'application/json' });
   return res.end(JSON.stringify(payload));
@@ -176,9 +197,10 @@ async function manageCommercialTeams(action, data, crmUser) {
     const requestedMonth = /^\d{4}-\d{2}$/.test(String(data?.month || ''))
       ? String(data.month)
       : new Date().toISOString().slice(0, 7);
-    const rangeStart = `${requestedMonth}-01T03:00:00.000Z`;
     const [rangeYear, rangeMonth] = requestedMonth.split('-').map(Number);
     const rangeEnd = new Date(Date.UTC(rangeYear, rangeMonth, 1, 3)).toISOString();
+    const comparisonMonths = getPreviousMonthKeys(requestedMonth);
+    const comparisonRangeStart = `${comparisonMonths[comparisonMonths.length - 1]}-01T03:00:00.000Z`;
 
     let teamsQuery = supabase
       .from('crm_teams')
@@ -194,7 +216,7 @@ async function manageCommercialTeams(action, data, crmUser) {
       if (ownMembershipsError) return { status: 500, error: ownMembershipsError.message };
       const ownTeamIds = (ownMemberships || []).map((item) => item.team_id);
       if (!ownTeamIds.length) {
-        return { status: 200, teams: [], members: [], leadCounts: {}, appointmentCounts: {}, sellerMetrics: {} };
+        return { status: 200, teams: [], members: [], leadCounts: {}, appointmentCounts: {}, sellerMetrics: {}, monthlyComparison: {} };
       }
       teamsQuery = teamsQuery.in('id', ownTeamIds);
     }
@@ -218,6 +240,7 @@ async function manageCommercialTeams(action, data, crmUser) {
     let leadCounts = {};
     let appointmentCounts = {};
     const sellerMetrics = {};
+    const monthlyComparison = {};
     const visibleUserIds = [...new Set(members.map((item) => item.user_id))];
     if (teamIds.length && visibleUserIds.length) {
       const { data: visibleUsers, error: visibleUsersError } = await supabase
@@ -231,10 +254,29 @@ async function manageCommercialTeams(action, data, crmUser) {
         .map((user) => String(user.email || '').trim().toLowerCase())
         .filter(Boolean);
       if (!normalizedEmails.length) {
-        return { status: 200, teams: teams || [], members, leadCounts, appointmentCounts, sellerMetrics, month: requestedMonth };
+        return { status: 200, teams: teams || [], members, leadCounts, appointmentCounts, sellerMetrics, monthlyComparison, month: requestedMonth };
       }
       const userByEmail = new Map((visibleUsers || []).map((user) => [String(user.email || '').trim().toLowerCase(), user]));
       const teamByUserId = new Map(members.map((item) => [String(item.user_id), item.team_id]));
+
+      teamIds.forEach((teamId) => {
+        monthlyComparison[teamId] = comparisonMonths.map((month) => ({
+          month,
+          leads: 0,
+          appointments: 0,
+          closings: 0,
+          conversion_rate: 0,
+          sold_value: 0,
+          target_leads: 0,
+          target_appointments: 0,
+          target_sales: 0,
+          goal_progress: 0,
+        }));
+      });
+      const comparisonByTeamMonth = new Map();
+      Object.entries(monthlyComparison).forEach(([teamId, rows]) => {
+        rows.forEach((row) => comparisonByTeamMonth.set(`${teamId}:${row.month}`, row));
+      });
 
       (visibleUsers || []).forEach((user) => {
         sellerMetrics[user.id] = {
@@ -256,53 +298,73 @@ async function manageCommercialTeams(action, data, crmUser) {
 
       const { data: goals, error: goalsError } = await supabase
         .from('crm_sales_goals')
-        .select('user_email,user_name,target_leads,target_appointments,target_sales')
-        .eq('month', requestedMonth)
+        .select('user_email,user_name,month,target_leads,target_appointments,target_sales')
+        .in('month', comparisonMonths)
         .in('user_email', normalizedEmails);
       if (goalsError && goalsError.code !== 'PGRST205') return { status: 500, error: goalsError.message };
       (goals || []).forEach((goal) => {
         const user = userByEmail.get(String(goal.user_email || '').trim().toLowerCase());
         const metric = user ? sellerMetrics[user.id] : null;
         if (!metric) return;
-        metric.target_leads = Number(goal.target_leads) || 0;
-        metric.target_appointments = Number(goal.target_appointments) || 0;
-        metric.target_sales = Number(goal.target_sales) || 0;
+        if (goal.month === requestedMonth) {
+          metric.target_leads = Number(goal.target_leads) || 0;
+          metric.target_appointments = Number(goal.target_appointments) || 0;
+          metric.target_sales = Number(goal.target_sales) || 0;
+        }
+        const comparison = comparisonByTeamMonth.get(`${metric.team_id}:${goal.month}`);
+        if (comparison) {
+          comparison.target_leads += Number(goal.target_leads) || 0;
+          comparison.target_appointments += Number(goal.target_appointments) || 0;
+          comparison.target_sales += Number(goal.target_sales) || 0;
+        }
       });
 
       const { data: leadRows, error: leadsError } = await supabase
         .from('leads')
         .select('assigned_to_email,status,created_at,credit_value')
         .in('assigned_to_email', normalizedEmails)
-        .gte('created_at', rangeStart)
+        .gte('created_at', comparisonRangeStart)
         .lt('created_at', rangeEnd);
       if (leadsError) return { status: 500, error: leadsError.message };
       (leadRows || []).forEach((lead) => {
         const user = userByEmail.get(String(lead.assigned_to_email || '').trim().toLowerCase());
         const metric = user ? sellerMetrics[user.id] : null;
         if (!metric) return;
-        metric.leads_actual += 1;
+        const recordMonth = getSaoPauloMonthKey(lead.created_at);
+        const comparison = comparisonByTeamMonth.get(`${metric.team_id}:${recordMonth}`);
+        if (comparison) comparison.leads += 1;
+        if (recordMonth === requestedMonth) metric.leads_actual += 1;
         if (lead.status === 'venda_fechada') {
-          metric.closings_actual += 1;
-          metric.sold_value += Number(lead.credit_value) || 0;
+          if (comparison) {
+            comparison.closings += 1;
+            comparison.sold_value += Number(lead.credit_value) || 0;
+          }
+          if (recordMonth === requestedMonth) {
+            metric.closings_actual += 1;
+            metric.sold_value += Number(lead.credit_value) || 0;
+          }
         }
         const teamId = metric.team_id;
-        if (teamId) leadCounts[teamId] = (leadCounts[teamId] || 0) + 1;
+        if (teamId && recordMonth === requestedMonth) leadCounts[teamId] = (leadCounts[teamId] || 0) + 1;
       });
 
       const { data: apptRows, error: appointmentsError } = await supabase
         .from('appointments')
         .select('usuario_id,status,data_agendamento')
         .in('usuario_id', visibleUserIds)
-        .gte('data_agendamento', `${requestedMonth}-01`)
+        .gte('data_agendamento', `${comparisonMonths[comparisonMonths.length - 1]}-01`)
         .lt('data_agendamento', rangeEnd.slice(0, 10));
       if (appointmentsError) return { status: 500, error: appointmentsError.message };
       (apptRows || []).forEach((appointment) => {
         if (appointment.status === 'cancelado') return;
         const metric = sellerMetrics[appointment.usuario_id];
         if (!metric) return;
-        metric.appointments_actual += 1;
+        const recordMonth = String(appointment.data_agendamento || '').slice(0, 7);
+        const comparison = comparisonByTeamMonth.get(`${metric.team_id}:${recordMonth}`);
+        if (comparison) comparison.appointments += 1;
+        if (recordMonth === requestedMonth) metric.appointments_actual += 1;
         const teamId = metric.team_id;
-        if (teamId) appointmentCounts[teamId] = (appointmentCounts[teamId] || 0) + 1;
+        if (teamId && recordMonth === requestedMonth) appointmentCounts[teamId] = (appointmentCounts[teamId] || 0) + 1;
       });
 
       Object.values(sellerMetrics).forEach((metric) => {
@@ -310,9 +372,21 @@ async function manageCommercialTeams(action, data, crmUser) {
           ? Number(((metric.closings_actual / metric.leads_actual) * 100).toFixed(1))
           : 0;
       });
+
+      Object.values(monthlyComparison).flat().forEach((row) => {
+        row.conversion_rate = row.leads > 0 ? Number(((row.closings / row.leads) * 100).toFixed(1)) : 0;
+        const progressParts = [
+          [row.leads, row.target_leads],
+          [row.appointments, row.target_appointments],
+          [row.closings, row.target_sales],
+        ].filter(([, target]) => target > 0);
+        row.goal_progress = progressParts.length
+          ? Number((progressParts.reduce((sum, [actual, target]) => sum + Math.min((actual / target) * 100, 100), 0) / progressParts.length).toFixed(1))
+          : 0;
+      });
     }
 
-    return { status: 200, teams: teams || [], members, leadCounts, appointmentCounts, sellerMetrics, month: requestedMonth };
+    return { status: 200, teams: teams || [], members, leadCounts, appointmentCounts, sellerMetrics, monthlyComparison, month: requestedMonth };
   }
 
   if (!TEAM_MANAGER_ROLES.has(role)) {

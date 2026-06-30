@@ -428,6 +428,7 @@
     leadCounts: {},
     appointmentCounts: {},
     sellerMetrics: {},
+    monthlyComparison: {},
     teamPeriod: "",
     functions: new Map(), // role_key -> array of string
     selectedItem: null, // { type: 'sector'|'role', id: string, sectorId: string }
@@ -619,6 +620,7 @@
     state.leadCounts = result.leadCounts || {};
     state.appointmentCounts = result.appointmentCounts || {};
     state.sellerMetrics = result.sellerMetrics || {};
+    state.monthlyComparison = result.monthlyComparison || {};
     state.commercialTeamsLoaded = true;
     setTeamStatus("");
     renderCommercialTeams();
@@ -659,6 +661,66 @@
     currency: "BRL",
     maximumFractionDigits: 0,
   }).format(Number(value) || 0);
+
+  const formatShortPeriod = (period) => {
+    if (!/^\d{4}-\d{2}$/.test(period || "")) return period || "-";
+    const [year, month] = period.split("-").map(Number);
+    return new Intl.DateTimeFormat("pt-BR", { month: "short", year: "numeric" })
+      .format(new Date(year, month - 1, 1))
+      .replace(" de ", "/");
+  };
+
+  const createMonthlyComparison = (rows) => {
+    const section = document.createElement("section");
+    section.className = "eq-monthly-comparison";
+    const header = document.createElement("div");
+    header.className = "eq-team-performance-title";
+    header.innerHTML = "<strong>Comparativo Mensal</strong><span>Últimos 6 meses</span>";
+    section.appendChild(header);
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "eq-monthly-table-wrap";
+    const table = document.createElement("table");
+    table.className = "eq-monthly-table";
+    const head = document.createElement("thead");
+    head.innerHTML = "<tr><th>Mês/Ano</th><th>Leads</th><th>Agendamentos</th><th>Fechamentos</th><th>Conversão</th><th>Valor vendido</th><th>Meta atingida</th></tr>";
+    table.appendChild(head);
+    const body = document.createElement("tbody");
+
+    (Array.isArray(rows) ? rows : []).forEach((row) => {
+      const tr = document.createElement("tr");
+      const values = [
+        formatShortPeriod(row.month),
+        Number(row.leads) || 0,
+        Number(row.appointments) || 0,
+        Number(row.closings) || 0,
+        `${Number(row.conversion_rate || 0).toFixed(1)}%`,
+        formatCurrency(row.sold_value),
+        `${Number(row.goal_progress || 0).toFixed(1)}%`,
+      ];
+      values.forEach((value, index) => {
+        const cell = document.createElement(index === 0 ? "th" : "td");
+        cell.textContent = String(value);
+        if (index === 6) cell.className = "eq-monthly-goal-value";
+        tr.appendChild(cell);
+      });
+      body.appendChild(tr);
+    });
+
+    if (!body.children.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 7;
+      td.className = "eq-monthly-empty";
+      td.textContent = "Nenhum dado disponível para o período.";
+      tr.appendChild(td);
+      body.appendChild(tr);
+    }
+    table.appendChild(body);
+    wrapper.appendChild(table);
+    section.appendChild(wrapper);
+    return section;
+  };
 
   const createTeamSummary = (metrics) => {
     const summary = metrics.reduce((total, metric) => ({
@@ -974,6 +1036,9 @@
         });
       }
       card.insertBefore(performanceBox, coordinatorLabel);
+
+      const monthlyComparison = createMonthlyComparison(state.monthlyComparison?.[team.id] || []);
+      card.insertBefore(monthlyComparison, coordinatorLabel);
 
       const actions = document.createElement("div");
       actions.className = "eq-team-card-actions";
