@@ -89,6 +89,12 @@
             </span>
             Minha equipe
           </a>
+          <a class="nav-item" href="#equipes-desempenho" data-permission-key="equipes-desempenho">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="7" height="7" rx="1"/><rect x="1" y="13" width="7" height="7" rx="1"/><rect x="13" y="3" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>
+            </span>
+            Desempenho Equipes
+          </a>
         </nav>
 
         <div class="user-box">
@@ -132,6 +138,12 @@
               </div>
               
               <div id="dash-responsible-filter-container" style="display: none; align-items: center; gap: 12px;">
+                <label style="display: flex; flex-direction: column; gap: 4px;">
+                  <span style="color: var(--muted); font-size: 0.72rem; font-weight: 700;">Equipe</span>
+                  <select id="dash-team-filter-select" style="min-width: 180px; min-height: 36px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 0 12px; font-size: 0.82rem;">
+                    <option value="">Todas as equipes</option>
+                  </select>
+                </label>
                 <span style="font-size: 0.82rem; font-weight: 700; color: #4b5563;">Responsável</span>
                 <div style="position: relative; display: flex; align-items: center;">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" style="position: absolute; left: 12px; pointer-events: none;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -270,6 +282,22 @@
                 </div>
               </article>
 
+              <!-- Card: Alertas de Metas por Equipe -->
+              <article id="dash-team-goals-section" style="border-left: 4px solid #9b59b6; background: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); padding: 24px; display: none; flex-direction: column; gap: 16px; position: relative;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="width: 42px; height: 42px; border-radius: 50%; background: rgba(155,89,182,0.12); color: #9b59b6; display: grid; place-items: center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                  </div>
+                  <div>
+                    <h3 style="font-size: 0.95rem; font-weight: 800; color: #101233; margin: 0;">Metas por Equipe</h3>
+                    <span style="font-size: 0.76rem; color: #667085;">Progresso das metas mensais das equipes</span>
+                  </div>
+                </div>
+                <div id="dash-team-goals-alerts-list" class="dash-alerts-list-wrapper" style="border: 2px dashed #e2e8f0; border-radius: 12px; min-height: 80px; padding: 12px; display: flex; flex-direction: column; justify-content: center; gap: 10px;">
+                  <div class="skeleton-shimmer"></div>
+                </div>
+              </article>
+
               <!-- Card 2: Alertas de tarefas atrasadas -->
               <article id="dash-tasks-alerts-section" style="border-left: 4px solid #ef4444; background: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); padding: 24px; display: flex; flex-direction: column; gap: 16px; position: relative;">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -328,6 +356,12 @@
           </section>
 
           <section class="filter-row" aria-label="Filtros do pipeline">
+            <label id="pipeline-team-filter-container" style="display: none;">
+              <span>Equipe</span>
+              <select id="pipeline-team-filter-select">
+                <option value="">Todas as equipes</option>
+              </select>
+            </label>
             <label id="responsible-filter-container" style="display: none;">
               <span>Responsável</span>
               <select id="responsible-filter-select">
@@ -435,6 +469,13 @@
             </header>
 
             <section class="tasks-filter-row" style="display: flex; align-items: end; flex-wrap: wrap; gap: 12px; margin-bottom: 24px;">
+              <label id="tasks-team-filter-container" style="display: none; flex-direction: column; gap: 5px;">
+                <span style="color: var(--muted); font-size: 0.72rem; font-weight: 700;">Equipe</span>
+                <select id="tasks-team-filter-select" style="min-width: 144px; min-height: 36px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 0 12px; font-size: 0.82rem;">
+                  <option value="">Todas as equipes</option>
+                </select>
+              </label>
+
               <label id="tasks-responsible-filter-container" style="display: none; flex-direction: column; gap: 5px;">
                 <span style="color: var(--muted); font-size: 0.72rem; font-weight: 700;">Responsável</span>
                 <select id="tasks-responsible-filter-select" style="min-width: 144px; min-height: 36px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 0 12px; font-size: 0.82rem;">
@@ -487,6 +528,12 @@
                 <p class="calendar-week-label" data-calendar-week-label></p>
               </div>
               <div class="calendar-toolbar-actions">
+                <label id="calendar-team-filter-container" class="calendar-responsible-filter" style="display: none;">
+                  <span>Equipe</span>
+                  <select id="calendar-team-filter-select">
+                    <option value="">Todas as equipes</option>
+                  </select>
+                </label>
                 <label id="calendar-responsible-filter-container" class="calendar-responsible-filter" style="display: none;">
                   <span>Responsável</span>
                   <select id="calendar-responsible-filter-select">
@@ -569,6 +616,50 @@
             <h2>Minha equipe</h2>
             <p>Em breve.</p>
           </div>
+        </section>
+
+        <section class="tab-content" data-tab="equipes-desempenho" style="display:none;">
+          <div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+            <header style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+              <div>
+                <h1 style="font-size: clamp(1.6rem, 2.5vw, 2.25rem); font-weight: 800; margin: 0; color: #101233;">Desempenho por Equipe</h1>
+                <p style="color: #667085; font-size: 0.88rem; margin: 4px 0 0;">Compare o desempenho das equipes comerciais.</p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <label id="team-perf-period-container" style="display: none; flex-direction: column; gap: 4px;">
+                  <span style="color: var(--muted); font-size: 0.72rem; font-weight: 700;">Periodo</span>
+                  <select id="team-perf-period-select" style="min-width: 160px; min-height: 36px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 0 12px; font-size: 0.82rem;">
+                    <option value="this_month" selected>Este mes</option>
+                    <option value="last_month">Mes anterior</option>
+                    <option value="all">Todos</option>
+                  </select>
+                </label>
+              </div>
+            </header>
+            <div id="team-perf-loading" style="text-align: center; padding: 48px; color: var(--muted);">Carregando desempenho das equipes...</div>
+            <div id="team-perf-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px;"></div>
+            <div id="team-perf-empty" style="display: none; text-align: center; padding: 48px; color: var(--muted);">Nenhuma equipe encontrada.</div>
+          </div>
+
+          <dialog id="team-detail-modal" style="border: none; border-radius: 16px; padding: 0; max-width: 680px; width: 92vw; max-height: 85vh; box-shadow: 0 24px 48px rgba(0,0,0,0.18);">
+            <div style="padding: 28px 32px; overflow-y: auto; max-height: 85vh;">
+              <header style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                  <div id="team-detail-avatar" style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #d4a017, #9b59b6); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.3rem;"></div>
+                  <div>
+                    <h2 id="team-detail-name" style="margin: 0; font-size: 1.3rem; font-weight: 800; color: #101233;"></h2>
+                    <p id="team-detail-coordinator" style="margin: 2px 0 0; color: #667085; font-size: 0.85rem;"></p>
+                  </div>
+                </div>
+                <button id="team-detail-close" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: #9ca3af; padding: 4px 8px; border-radius: 8px;">&times;</button>
+              </header>
+
+              <div id="team-detail-metrics" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;"></div>
+
+              <h3 style="font-size: 1rem; font-weight: 700; color: #101233; margin: 0 0 12px;">Ranking dos Vendedores</h3>
+              <div id="team-detail-ranking"></div>
+            </div>
+          </dialog>
         </section>
       </main>
     </div>

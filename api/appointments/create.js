@@ -40,12 +40,13 @@ module.exports = async (req, res) => {
       // Buscar informações do responsável do lead
       const { data: lead } = await supabase
         .from('leads')
-        .select('assigned_to_email, assigned_to_name')
+        .select('assigned_to_email, assigned_to_name, team_id')
         .eq('id', lead_id)
         .maybeSingle();
 
       const assigned_to_email = lead?.assigned_to_email || payload.assigned_to_email || null;
       const assigned_to_name = lead?.assigned_to_name || payload.assigned_to_name || null;
+      const team_id = lead?.team_id || null;
 
       // Inserir no Supabase usando service role (bypassa RLS)
       const { data, error } = await supabase
@@ -60,7 +61,8 @@ module.exports = async (req, res) => {
           observacao: observacao || null,
           status: 'agendado',
           assigned_to_email,
-          assigned_to_name
+          assigned_to_name,
+          team_id,
         })
         .select('*')
         .single();

@@ -170,16 +170,34 @@ async function updateOwnProfile(crmUser, profile) {
 async function manageCommercialTeams(action, data, crmUser) {
   const role = normalizeRole(crmUser.cargo);
   const isAdmin = ADMIN_ROLES.has(role) || role === 'coordenador-rh';
-  if (!TEAM_MANAGER_ROLES.has(role)) {
-    return { status: 403, error: 'Usuário sem permissão para gerenciar equipes.' };
-  }
 
   if (action === 'list') {
+    const isCoordinator = TEAM_MANAGER_ROLES.has(role) && !isAdmin;
+    const requestedMonth = /^\d{4}-\d{2}$/.test(String(data?.month || ''))
+      ? String(data.month)
+      : new Date().toISOString().slice(0, 7);
+    const rangeStart = `${requestedMonth}-01T03:00:00.000Z`;
+    const [rangeYear, rangeMonth] = requestedMonth.split('-').map(Number);
+    const rangeEnd = new Date(Date.UTC(rangeYear, rangeMonth, 1, 3)).toISOString();
+
     let teamsQuery = supabase
       .from('crm_teams')
-      .select('id,name,coordinator_user_id,created_at,updated_at')
+      .select('id,name,coordinator_user_id,photo_url,active,created_at,updated_at')
       .order('name');
-    if (!isAdmin) teamsQuery = teamsQuery.eq('coordinator_user_id', crmUser.id);
+    if (isCoordinator) {
+      teamsQuery = teamsQuery.eq('coordinator_user_id', crmUser.id);
+    } else if (!isAdmin) {
+      const { data: ownMemberships, error: ownMembershipsError } = await supabase
+        .from('crm_team_members')
+        .select('team_id')
+        .eq('user_id', crmUser.id);
+      if (ownMembershipsError) return { status: 500, error: ownMembershipsError.message };
+      const ownTeamIds = (ownMemberships || []).map((item) => item.team_id);
+      if (!ownTeamIds.length) {
+        return { status: 200, teams: [], members: [], leadCounts: {}, appointmentCounts: {}, sellerMetrics: {} };
+      }
+      teamsQuery = teamsQuery.in('id', ownTeamIds);
+    }
     const { data: teams, error: teamsError } = await teamsQuery;
     if (teamsError) return { status: 500, error: teamsError.message };
 
@@ -192,8 +210,110 @@ async function manageCommercialTeams(action, data, crmUser) {
         .in('team_id', teamIds);
       if (membersError) return { status: 500, error: membersError.message };
       members = memberRows || [];
+      if (!isAdmin && !isCoordinator) {
+        members = members.filter((item) => String(item.user_id) === String(crmUser.id));
+      }
     }
-    return { status: 200, teams: teams || [], members };
+
+    let leadCounts = {};
+    let appointmentCounts = {};
+    const sellerMetrics = {};
+    const visibleUserIds = [...new Set(members.map((item) => item.user_id))];
+    if (teamIds.length && visibleUserIds.length) {
+      const { data: visibleUsers, error: visibleUsersError } = await supabase
+        .from('crm_users')
+        .select('id,email,nome,cargo,ativo')
+        .in('id', visibleUserIds)
+        .eq('ativo', true);
+      if (visibleUsersError) return { status: 500, error: visibleUsersError.message };
+
+      const normalizedEmails = (visibleUsers || [])
+        .map((user) => String(user.email || '').trim().toLowerCase())
+        .filter(Boolean);
+      if (!normalizedEmails.length) {
+        return { status: 200, teams: teams || [], members, leadCounts, appointmentCounts, sellerMetrics, month: requestedMonth };
+      }
+      const userByEmail = new Map((visibleUsers || []).map((user) => [String(user.email || '').trim().toLowerCase(), user]));
+      const teamByUserId = new Map(members.map((item) => [String(item.user_id), item.team_id]));
+
+      (visibleUsers || []).forEach((user) => {
+        sellerMetrics[user.id] = {
+          user_id: user.id,
+          user_name: user.nome || '',
+          user_email: String(user.email || '').trim().toLowerCase(),
+          cargo: user.cargo || '',
+          team_id: teamByUserId.get(String(user.id)) || null,
+          target_leads: 0,
+          target_appointments: 0,
+          target_sales: 0,
+          leads_actual: 0,
+          appointments_actual: 0,
+          closings_actual: 0,
+          conversion_rate: 0,
+        };
+      });
+
+      const { data: goals, error: goalsError } = await supabase
+        .from('crm_sales_goals')
+        .select('user_email,user_name,target_leads,target_appointments,target_sales')
+        .eq('month', requestedMonth)
+        .in('user_email', normalizedEmails);
+      if (goalsError) return { status: 500, error: goalsError.message };
+      (goals || []).forEach((goal) => {
+        const user = userByEmail.get(String(goal.user_email || '').trim().toLowerCase());
+        const metric = user ? sellerMetrics[user.id] : null;
+        if (!metric) return;
+        metric.target_leads = Number(goal.target_leads) || 0;
+        metric.target_appointments = Number(goal.target_appointments) || 0;
+        metric.target_sales = Number(goal.target_sales) || 0;
+      });
+
+      const { data: leadRows, error: leadsError } = await supabase
+        .from('leads')
+        .select('team_id,assigned_to_email,status,created_at')
+        .in('assigned_to_email', normalizedEmails)
+        .gte('created_at', rangeStart)
+        .lt('created_at', rangeEnd);
+      if (leadsError) return { status: 500, error: leadsError.message };
+      (leadRows || []).forEach((lead) => {
+        const user = userByEmail.get(String(lead.assigned_to_email || '').trim().toLowerCase());
+        const metric = user ? sellerMetrics[user.id] : null;
+        if (!metric) return;
+        metric.leads_actual += 1;
+        if (lead.status === 'venda_fechada') metric.closings_actual += 1;
+        const teamId = lead.team_id || metric.team_id;
+        if (teamId) leadCounts[teamId] = (leadCounts[teamId] || 0) + 1;
+      });
+
+      const { data: apptRows, error: appointmentsError } = await supabase
+        .from('appointments')
+        .select('team_id,assigned_to_email,status,data_agendamento')
+        .in('assigned_to_email', normalizedEmails)
+        .gte('data_agendamento', `${requestedMonth}-01`)
+        .lt('data_agendamento', rangeEnd.slice(0, 10));
+      if (appointmentsError) return { status: 500, error: appointmentsError.message };
+      (apptRows || []).forEach((appointment) => {
+        if (appointment.status === 'cancelado') return;
+        const user = userByEmail.get(String(appointment.assigned_to_email || '').trim().toLowerCase());
+        const metric = user ? sellerMetrics[user.id] : null;
+        if (!metric) return;
+        metric.appointments_actual += 1;
+        const teamId = appointment.team_id || metric.team_id;
+        if (teamId) appointmentCounts[teamId] = (appointmentCounts[teamId] || 0) + 1;
+      });
+
+      Object.values(sellerMetrics).forEach((metric) => {
+        metric.conversion_rate = metric.leads_actual > 0
+          ? Number(((metric.closings_actual / metric.leads_actual) * 100).toFixed(1))
+          : 0;
+      });
+    }
+
+    return { status: 200, teams: teams || [], members, leadCounts, appointmentCounts, sellerMetrics, month: requestedMonth };
+  }
+
+  if (!TEAM_MANAGER_ROLES.has(role)) {
+    return { status: 403, error: 'Usuário sem permissão para gerenciar equipes.' };
   }
 
   if (action === 'create') {
@@ -204,10 +324,18 @@ async function manageCommercialTeams(action, data, crmUser) {
       return { status: 403, error: 'Você só pode criar uma equipe sob sua responsabilidade.' };
     }
 
+    const insertData = {
+      name,
+      coordinator_user_id: coordinatorUserId,
+      updated_at: new Date().toISOString(),
+    };
+    if (data?.photo_url) insertData.photo_url = String(data.photo_url).trim();
+    if (typeof data?.active === 'boolean') insertData.active = data.active;
+
     const { data: team, error } = await supabase
       .from('crm_teams')
-      .insert({ name, coordinator_user_id: coordinatorUserId, updated_at: new Date().toISOString() })
-      .select('id,name,coordinator_user_id,created_at,updated_at')
+      .insert(insertData)
+      .select('id,name,coordinator_user_id,photo_url,active,created_at,updated_at')
       .single();
     if (error?.code === '23505') return { status: 409, error: 'Já existe uma equipe com esse nome.' };
     if (error) return { status: 500, error: error.message };
@@ -254,9 +382,13 @@ async function manageCommercialTeams(action, data, crmUser) {
       }
     }
 
+    const teamUpdateData = { coordinator_user_id: coordinatorUserId, updated_at: new Date().toISOString() };
+    if (data?.photo_url !== undefined) teamUpdateData.photo_url = String(data.photo_url).trim() || null;
+    if (typeof data?.active === 'boolean') teamUpdateData.active = data.active;
+
     const { error: teamError } = await supabase
       .from('crm_teams')
-      .update({ coordinator_user_id: coordinatorUserId, updated_at: new Date().toISOString() })
+      .update(teamUpdateData)
       .eq('id', teamId);
     if (teamError) return { status: 500, error: teamError.message };
 
@@ -275,6 +407,131 @@ async function manageCommercialTeams(action, data, crmUser) {
   }
 
   return { status: 400, error: 'Ação de equipe inválida.' };
+}
+
+const TEAM_GOAL_MANAGER_ROLES = new Set([
+  'administrador', 'dono', 'diretor-ceo',
+  'coordenador-comercial', 'supervisor-comercial',
+  'coordenador', 'supervisor', 'coordenador-rh',
+]);
+
+async function manageTeamGoals(action, data, crmUser) {
+  const role = normalizeRole(crmUser.cargo);
+  const isAdmin = ADMIN_ROLES.has(role) || role === 'coordenador-rh';
+  if (!TEAM_GOAL_MANAGER_ROLES.has(role)) {
+    return { status: 403, error: 'Usuário sem permissão para gerenciar metas.' };
+  }
+
+  if (action === 'list') {
+    const teamId = String(data?.team_id || '').trim();
+    const month = parseInt(data?.month, 10);
+    const year = parseInt(data?.year, 10);
+
+    let query = supabase.from('team_goals').select('*').order('year', { ascending: false }).order('month', { ascending: false });
+
+    if (teamId) {
+      query = query.eq('team_id', teamId);
+    } else if (!isAdmin) {
+      const { data: myTeam } = await supabase
+        .from('crm_teams')
+        .select('id')
+        .eq('coordinator_user_id', crmUser.id)
+        .maybeSingle();
+      if (myTeam) query = query.eq('team_id', myTeam.id);
+      else return { status: 200, goals: [] };
+    }
+
+    if (month) query = query.eq('month', month);
+    if (year) query = query.eq('year', year);
+
+    const { data: goals, error } = await query;
+    if (error) return { status: 500, error: error.message };
+    return { status: 200, goals: goals || [] };
+  }
+
+  if (action === 'save') {
+    const teamId = String(data?.team_id || '').trim();
+    const month = parseInt(data?.month, 10);
+    const year = parseInt(data?.year, 10);
+    if (!teamId || !month || !year) return { status: 400, error: 'Equipe, mês e ano são obrigatórios.' };
+
+    if (!isAdmin) {
+      const { data: team } = await supabase
+        .from('crm_teams')
+        .select('id')
+        .eq('id', teamId)
+        .eq('coordinator_user_id', crmUser.id)
+        .maybeSingle();
+      if (!team) return { status: 403, error: 'Você não pode definir metas para esta equipe.' };
+    }
+
+    const goalData = {
+      team_id: teamId,
+      month,
+      year,
+      leads_goal: parseInt(data?.leads_goal, 10) || 0,
+      appointments_goal: parseInt(data?.appointments_goal, 10) || 0,
+      closings_goal: parseInt(data?.closings_goal, 10) || 0,
+      conversion_goal: parseFloat(data?.conversion_goal) || 0,
+      updated_at: new Date().toISOString(),
+      created_by: crmUser.email,
+    };
+
+    const { data: existing } = await supabase
+      .from('team_goals')
+      .select('id')
+      .eq('team_id', teamId)
+      .eq('month', month)
+      .eq('year', year)
+      .maybeSingle();
+
+    if (existing) {
+      const { error } = await supabase.from('team_goals').update(goalData).eq('id', existing.id);
+      if (error) return { status: 500, error: error.message };
+      return { status: 200, saved: true, goal_id: existing.id };
+    }
+
+    const { data: newGoal, error } = await supabase.from('team_goals').insert(goalData).select('id').single();
+    if (error?.code === '23505') {
+      const { data: existingRetry } = await supabase
+        .from('team_goals')
+        .select('id')
+        .eq('team_id', teamId)
+        .eq('month', month)
+        .eq('year', year)
+        .maybeSingle();
+      if (existingRetry) {
+        const { error: updateError } = await supabase.from('team_goals').update(goalData).eq('id', existingRetry.id);
+        if (updateError) return { status: 500, error: updateError.message };
+        return { status: 200, saved: true, goal_id: existingRetry.id };
+      }
+    }
+    if (error) return { status: 500, error: error.message };
+    return { status: 200, saved: true, goal_id: newGoal.id };
+  }
+
+  if (action === 'delete') {
+    const goalId = String(data?.goal_id || '').trim();
+    if (!goalId) return { status: 400, error: 'Meta não informada.' };
+
+    if (!isAdmin) {
+      const { data: goal } = await supabase.from('team_goals').select('team_id').eq('id', goalId).maybeSingle();
+      if (!goal) return { status: 404, error: 'Meta não encontrada.' };
+      const { data: team } = await supabase
+        .from('crm_teams')
+        .select('id')
+        .eq('id', goal.team_id)
+        .eq('coordinator_user_id', crmUser.id)
+        .maybeSingle();
+      if (!team) return { status: 403, error: 'Você não pode excluir esta meta.' };
+    }
+
+    const { error } = await supabase.from('team_goals').delete().eq('id', goalId);
+    if (error) return { status: 500, error: error.message };
+    return { status: 200, deleted: true };
+  }
+
+  return { status: 400, error: 'Ação de meta inválida.' };
 }
 
 module.exports = async (req, res) => {
@@ -316,6 +573,11 @@ module.exports = async (req, res) => {
     }
     if (payload.team_action) {
       const result = await manageCommercialTeams(payload.team_action, payload.team_data, crmUser);
+      if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });
+      return sendJson(res, 200, { ok: true, ...result });
+    }
+    if (payload.team_goal_action) {
+      const result = await manageTeamGoals(payload.team_goal_action, payload.team_goal_data, crmUser);
       if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });
       return sendJson(res, 200, { ok: true, ...result });
     }

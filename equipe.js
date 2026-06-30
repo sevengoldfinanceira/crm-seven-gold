@@ -425,6 +425,10 @@
     commercialTeams: [],
     commercialTeamMembers: [],
     commercialTeamsLoaded: false,
+    leadCounts: {},
+    appointmentCounts: {},
+    sellerMetrics: {},
+    teamPeriod: "",
     functions: new Map(), // role_key -> array of string
     selectedItem: null, // { type: 'sector'|'role', id: string, sectorId: string }
     activeTab: 'hierarquia',
@@ -602,7 +606,7 @@
     setTeamStatus("Carregando equipes...");
     let result;
     try {
-      result = await callCommercialTeamsApi("list");
+      result = await callCommercialTeamsApi("list", { month: state.teamPeriod });
     } catch (error) {
       console.error("Erro ao carregar equipes comerciais:", error);
       setTeamStatus(error.message, "error");
@@ -612,10 +616,94 @@
 
     state.commercialTeams = result.teams || [];
     state.commercialTeamMembers = result.members || [];
+    state.leadCounts = result.leadCounts || {};
+    state.appointmentCounts = result.appointmentCounts || {};
+    state.sellerMetrics = result.sellerMetrics || {};
     state.commercialTeamsLoaded = true;
     setTeamStatus("");
     renderCommercialTeams();
     return true;
+  };
+
+  const formatTeamPeriod = (period) => {
+    if (!/^\d{4}-\d{2}$/.test(period || "")) return "Mês atual";
+    const [year, month] = period.split("-").map(Number);
+    return new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" })
+      .format(new Date(year, month - 1, 1));
+  };
+
+  const getMetricStatus = (actual, target) => {
+    const safeTarget = Number(target) || 0;
+    const safeActual = Number(actual) || 0;
+    if (safeTarget > 0 && safeActual >= safeTarget) {
+      return { key: "hit", label: "Meta batida" };
+    }
+    if (safeTarget > 0 && safeActual >= safeTarget * 0.8) {
+      return { key: "near", label: "Próximo da meta" };
+    }
+    return { key: "below", label: "Abaixo da meta" };
+  };
+
+  const createSellerPerformanceCard = (metric) => {
+    const item = document.createElement("article");
+    item.className = "eq-seller-performance";
+
+    const statusCandidates = [
+      getMetricStatus(metric.leads_actual, metric.target_leads),
+      getMetricStatus(metric.appointments_actual, metric.target_appointments),
+      getMetricStatus(metric.closings_actual, metric.target_sales),
+    ];
+    const overallStatus = statusCandidates.find((status) => status.key === "below")
+      || statusCandidates.find((status) => status.key === "near")
+      || statusCandidates[0];
+
+    const values = [
+      ["Leads", metric.leads_actual, metric.target_leads],
+      ["Agendamentos", metric.appointments_actual, metric.target_appointments],
+      ["Fechamentos", metric.closings_actual, metric.target_sales],
+    ];
+
+    const header = document.createElement("header");
+    header.className = "eq-seller-performance-head";
+    const identity = document.createElement("div");
+    const name = document.createElement("strong");
+    name.textContent = metric.user_name || metric.user_email || "Vendedor";
+    const email = document.createElement("small");
+    email.textContent = metric.user_email || "";
+    identity.append(name, email);
+    const status = document.createElement("span");
+    status.className = `eq-performance-status is-${overallStatus.key}`;
+    status.textContent = overallStatus.label;
+    header.append(identity, status);
+    item.appendChild(header);
+
+    const grid = document.createElement("div");
+    grid.className = "eq-seller-metrics-grid";
+    values.forEach(([label, actual, target]) => {
+      const metricStatus = getMetricStatus(actual, target);
+      const cell = document.createElement("div");
+      cell.className = "eq-seller-metric";
+      const metricLabel = document.createElement("span");
+      metricLabel.textContent = label;
+      const metricValue = document.createElement("strong");
+      metricValue.textContent = `${Number(actual) || 0} / ${Number(target) || 0}`;
+      const metricHint = document.createElement("small");
+      metricHint.className = `is-${metricStatus.key}`;
+      metricHint.textContent = metricStatus.label;
+      cell.append(metricLabel, metricValue, metricHint);
+      grid.appendChild(cell);
+    });
+
+    const conversion = document.createElement("div");
+    conversion.className = "eq-seller-metric eq-seller-conversion";
+    const conversionLabel = document.createElement("span");
+    conversionLabel.textContent = "Taxa de conversão";
+    const conversionValue = document.createElement("strong");
+    conversionValue.textContent = `${Number(metric.conversion_rate || 0).toFixed(1)}%`;
+    conversion.append(conversionLabel, conversionValue);
+    grid.appendChild(conversion);
+    item.appendChild(grid);
+    return item;
   };
 
   const renderCommercialTeams = () => {
@@ -640,24 +728,55 @@
       const teamMemberIds = new Set(
         state.commercialTeamMembers.filter((item) => item.team_id === team.id).map((item) => item.user_id)
       );
+      const memberCount = teamMemberIds.size;
+      const leadCount = state.leadCounts?.[team.id] || 0;
+      const apptCount = state.appointmentCounts?.[team.id] || 0;
+      const isActive = team.active !== false;
 
       const card = document.createElement("article");
-      card.className = "eq-team-card";
+      card.className = "eq-team-card" + (isActive ? "" : " eq-team-card-inactive");
 
       const head = document.createElement("div");
       head.className = "eq-team-card-head";
       const titleBox = document.createElement("div");
+      titleBox.className = "eq-team-card-title-box";
+
+      const avatarBox = document.createElement("div");
+      avatarBox.className = "eq-team-card-avatar";
+      if (team.photo_url) {
+        const img = document.createElement("img");
+        img.src = team.photo_url;
+        img.alt = team.name;
+        img.onerror = () => { avatarBox.classList.add("eq-team-avatar-fallback"); avatarBox.innerHTML = `<span>${team.name.charAt(0).toUpperCase()}</span>`; };
+        avatarBox.appendChild(img);
+      } else {
+        avatarBox.classList.add("eq-team-avatar-fallback");
+        avatarBox.innerHTML = `<span>${team.name.charAt(0).toUpperCase()}</span>`;
+      }
+
+      const textBox = document.createElement("div");
+      textBox.className = "eq-team-card-text";
       const title = document.createElement("h3");
       title.textContent = team.name;
       const subtitle = document.createElement("p");
       subtitle.textContent = `Gestor: ${coordinator?.full_name || "Não definido"}`;
-      titleBox.append(title, subtitle);
+      textBox.append(title, subtitle);
+      titleBox.append(avatarBox, textBox);
+
+      const badges = document.createElement("div");
+      badges.className = "eq-team-badges";
+      badges.innerHTML = `
+        <span class="eq-team-badge eq-badge-members" title="Membros"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> ${memberCount}</span>
+        <span class="eq-team-badge eq-badge-leads" title="Leads"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 12h-6l-2 3"/><path d="M22 8l-2-3"/></svg> ${leadCount}</span>
+        <span class="eq-team-badge ${isActive ? "eq-badge-active" : "eq-badge-inactive"}" title="Status">${isActive ? "Ativa" : "Inativa"}</span>
+      `;
+
       const removeButton = document.createElement("button");
       removeButton.type = "button";
       removeButton.className = "eq-team-delete";
       removeButton.textContent = "Excluir";
       removeButton.addEventListener("click", () => deleteCommercialTeam(team));
-      head.append(titleBox, removeButton);
+      head.append(titleBox, badges, removeButton);
       card.appendChild(head);
 
       const coordinatorLabel = document.createElement("label");
@@ -673,6 +792,28 @@
       });
       coordinatorLabel.appendChild(coordinatorSelect);
       card.appendChild(coordinatorLabel);
+
+      const photoLabel = document.createElement("label");
+      photoLabel.className = "eq-team-card-field";
+      photoLabel.append("Foto da equipe (URL)");
+      const photoInput = document.createElement("input");
+      photoInput.type = "url";
+      photoInput.className = "eq-team-photo-input";
+      photoInput.value = team.photo_url || "";
+      photoInput.placeholder = "URL da imagem (opcional)";
+      photoLabel.appendChild(photoInput);
+      card.appendChild(photoLabel);
+
+      const activeLabel = document.createElement("label");
+      activeLabel.className = "eq-team-card-field eq-team-active-toggle";
+      const activeCheckbox = document.createElement("input");
+      activeCheckbox.type = "checkbox";
+      activeCheckbox.checked = isActive;
+      activeCheckbox.className = "eq-team-active-checkbox";
+      const activeText = document.createElement("span");
+      activeText.textContent = "Equipe ativa";
+      activeLabel.append(activeCheckbox, activeText);
+      card.appendChild(activeLabel);
 
       const membersLabel = document.createElement("div");
       membersLabel.className = "eq-team-card-field";
@@ -703,13 +844,33 @@
       membersLabel.appendChild(membersBox);
       card.appendChild(membersLabel);
 
+      const performanceBox = document.createElement("section");
+      performanceBox.className = "eq-team-performance";
+      const performanceTitle = document.createElement("div");
+      performanceTitle.className = "eq-team-performance-title";
+      performanceTitle.innerHTML = `<strong>Meta x realizado</strong><span>${formatTeamPeriod(state.teamPeriod)}</span>`;
+      performanceBox.appendChild(performanceTitle);
+
+      const visibleMemberIds = [...teamMemberIds].filter((userId) => state.sellerMetrics?.[userId]);
+      if (!visibleMemberIds.length) {
+        const emptyMetrics = document.createElement("p");
+        emptyMetrics.className = "eq-team-performance-empty";
+        emptyMetrics.textContent = "Nenhum vendedor com dados disponível nesta equipe.";
+        performanceBox.appendChild(emptyMetrics);
+      } else {
+        visibleMemberIds.forEach((userId) => {
+          performanceBox.appendChild(createSellerPerformanceCard(state.sellerMetrics[userId]));
+        });
+      }
+      card.appendChild(performanceBox);
+
       const actions = document.createElement("div");
       actions.className = "eq-team-card-actions";
       const saveButton = document.createElement("button");
       saveButton.type = "button";
       saveButton.className = "eq-btn-gold";
       saveButton.textContent = "Salvar equipe";
-      saveButton.addEventListener("click", () => saveCommercialTeam(team, coordinatorSelect, membersBox, saveButton));
+      saveButton.addEventListener("click", () => saveCommercialTeam(team, coordinatorSelect, membersBox, saveButton, photoInput, activeCheckbox));
       actions.appendChild(saveButton);
       card.appendChild(actions);
       container.appendChild(card);
@@ -721,8 +882,10 @@
     const client = getClient();
     const nameInput = document.getElementById("eq-team-name");
     const coordinatorSelect = document.getElementById("eq-team-coordinator");
+    const photoInput = document.getElementById("eq-team-photo");
     const name = nameInput?.value.trim();
     const coordinatorUserId = coordinatorSelect?.value;
+    const photoUrl = photoInput?.value.trim() || null;
     if (!client || !name || !coordinatorUserId) {
       setTeamStatus("Informe o nome e o coordenador da equipe.", "error");
       return;
@@ -730,7 +893,7 @@
 
     setTeamStatus("Criando equipe...");
     try {
-      await callCommercialTeamsApi("create", { name, coordinator_user_id: coordinatorUserId });
+      await callCommercialTeamsApi("create", { name, coordinator_user_id: coordinatorUserId, photo_url: photoUrl });
     } catch (error) {
       await loadCommercialTeams();
       setTeamStatus(error.message, "error");
@@ -742,7 +905,7 @@
     await loadCommercialTeams();
   };
 
-  const saveCommercialTeam = async (team, coordinatorSelect, membersBox, saveButton) => {
+  const saveCommercialTeam = async (team, coordinatorSelect, membersBox, saveButton, photoInput, activeCheckbox) => {
     const client = getClient();
     if (!client || !coordinatorSelect.value) return;
     const selectedMemberIds = [...membersBox.querySelectorAll('input[type="checkbox"]:checked')].map((item) => item.value);
@@ -754,6 +917,8 @@
         team_id: team.id,
         coordinator_user_id: coordinatorSelect.value,
         member_ids: selectedMemberIds,
+        photo_url: photoInput?.value.trim() || null,
+        active: activeCheckbox?.checked !== false,
       });
 
       setTeamStatus("Equipe atualizada com sucesso.", "success");
@@ -3044,6 +3209,18 @@
 
   // Bind initial page load
   const init = async () => {
+    const now = new Date();
+    state.teamPeriod = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const teamPeriodInput = document.getElementById("eq-team-period");
+    if (teamPeriodInput) {
+      teamPeriodInput.value = state.teamPeriod;
+      teamPeriodInput.addEventListener("change", async () => {
+        if (!/^\d{4}-\d{2}$/.test(teamPeriodInput.value)) return;
+        state.teamPeriod = teamPeriodInput.value;
+        if (state.activeTab === "equipes") await loadCommercialTeams();
+      });
+    }
+
     // 1. Setup Tab switching click listeners
     document.querySelectorAll(".eq-tab-btn").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -3056,6 +3233,8 @@
     document.querySelector(".btn-new-role")?.addEventListener("click", () => openNewRoleModal("comercial"));
     document.getElementById("btn-new-colab-header")?.addEventListener("click", () => openColabModal());
     document.getElementById("eq-team-create-form")?.addEventListener("submit", createCommercialTeam);
+    setupTeamGoalsListeners();
+    showTeamGoalsButton();
 
     // 3. Setup Bottom quick actions strip
     document.querySelector(".btn-action-add-member")?.addEventListener("click", () => openAddColabModal());
@@ -3197,6 +3376,178 @@
     if (state.activeTab === "equipes") renderCommercialTeams();
     renderSidebarDetails();
   });
+
+  const callTeamGoalsApi = async (action, data) => {
+    const { data: { session } } = await window.supabaseClient?.auth.getSession() || {};
+    const token = session?.access_token;
+    if (!token) throw new Error("Sessao expirada.");
+    const resp = await fetch("/api/permissions/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ team_goal_action: action, team_goal_data: data }),
+    });
+    const json = await resp.json();
+    if (!json.ok) throw new Error(json.error || "Erro ao salvar meta.");
+    return json;
+  };
+
+  const openTeamGoalsModal = async () => {
+    const modal = document.getElementById("team-goals-modal");
+    if (!modal) return;
+
+    const teamSelect = document.getElementById("tg-team-select");
+    const yearSelect = document.getElementById("tg-year");
+    const monthSelect = document.getElementById("tg-month");
+
+    teamSelect.innerHTML = '<option value="">Carregando equipes...</option>';
+    state.commercialTeams.forEach((t) => {
+      const opt = document.createElement("option");
+      opt.value = t.id;
+      opt.textContent = t.name;
+      teamSelect.appendChild(opt);
+    });
+
+    yearSelect.innerHTML = "";
+    const currentYear = new Date().getFullYear();
+    for (let y = currentYear - 1; y <= currentYear + 1; y++) {
+      const opt = document.createElement("option");
+      opt.value = y;
+      opt.textContent = y;
+      if (y === currentYear) opt.selected = true;
+      yearSelect.appendChild(opt);
+    }
+    monthSelect.value = new Date().getMonth() + 1;
+
+    document.getElementById("tg-goal-id").value = "";
+    document.getElementById("tg-team-id").value = "";
+    document.getElementById("tg-leads-goal").value = "0";
+    document.getElementById("tg-appointments-goal").value = "0";
+    document.getElementById("tg-closings-goal").value = "0";
+    document.getElementById("tg-conversion-goal").value = "0";
+    document.getElementById("tg-status").innerHTML = "";
+    document.getElementById("tg-delete-btn").style.display = "none";
+
+    const isAdmin = window.isAdminRole?.(window.currentCrmUser?.cargo);
+    if (!isAdmin && state.commercialTeams.length === 1) {
+      teamSelect.value = state.commercialTeams[0].id;
+      teamSelect.disabled = true;
+    } else {
+      teamSelect.disabled = false;
+    }
+
+    modal.style.display = "flex";
+    if (typeof lucide !== "undefined") lucide.createIcons();
+  };
+
+  const loadGoalForTeamAndMonth = async () => {
+    const teamId = document.getElementById("tg-team-select").value;
+    const month = parseInt(document.getElementById("tg-month").value, 10);
+    const year = parseInt(document.getElementById("tg-year").value, 10);
+    if (!teamId || !month || !year) return;
+
+    try {
+      const result = await callTeamGoalsApi("list", { team_id: teamId, month, year });
+      const goals = result.goals || [];
+      if (goals.length) {
+        const g = goals[0];
+        document.getElementById("tg-goal-id").value = g.id;
+        document.getElementById("tg-leads-goal").value = g.leads_goal || 0;
+        document.getElementById("tg-appointments-goal").value = g.appointments_goal || 0;
+        document.getElementById("tg-closings-goal").value = g.closings_goal || 0;
+        document.getElementById("tg-conversion-goal").value = g.conversion_goal || 0;
+        document.getElementById("tg-status").innerHTML = '<span style="color: #6b7280;">Meta encontrada e carregada.</span>';
+        document.getElementById("tg-delete-btn").style.display = "";
+      } else {
+        document.getElementById("tg-goal-id").value = "";
+        document.getElementById("tg-leads-goal").value = "0";
+        document.getElementById("tg-appointments-goal").value = "0";
+        document.getElementById("tg-closings-goal").value = "0";
+        document.getElementById("tg-conversion-goal").value = "0";
+        document.getElementById("tg-status").innerHTML = '<span style="color: #6b7280;">Nenhuma meta definida para este mes.</span>';
+        document.getElementById("tg-delete-btn").style.display = "none";
+      }
+    } catch (err) {
+      document.getElementById("tg-status").innerHTML = `<span style="color: #dc2626;">${err.message}</span>`;
+    }
+  };
+
+  const saveTeamGoal = async (event) => {
+    event.preventDefault();
+    const statusEl = document.getElementById("tg-status");
+    const teamId = document.getElementById("tg-team-select").value;
+    const month = parseInt(document.getElementById("tg-month").value, 10);
+    const year = parseInt(document.getElementById("tg-year").value, 10);
+    if (!teamId || !month || !year) {
+      statusEl.innerHTML = '<span style="color: #dc2626;">Selecione equipe, mes e ano.</span>';
+      return;
+    }
+
+    try {
+      statusEl.innerHTML = '<span style="color: #6b7280;">Salvando...</span>';
+      await callTeamGoalsApi("save", {
+        team_id: teamId,
+        month,
+        year,
+        leads_goal: parseInt(document.getElementById("tg-leads-goal").value, 10) || 0,
+        appointments_goal: parseInt(document.getElementById("tg-appointments-goal").value, 10) || 0,
+        closings_goal: parseInt(document.getElementById("tg-closings-goal").value, 10) || 0,
+        conversion_goal: parseFloat(document.getElementById("tg-conversion-goal").value) || 0,
+      });
+      statusEl.innerHTML = '<span style="color: #16a34a;">Meta salva com sucesso!</span>';
+      setTimeout(() => { statusEl.innerHTML = ""; }, 2000);
+    } catch (err) {
+      statusEl.innerHTML = `<span style="color: #dc2626;">${err.message}</span>`;
+    }
+  };
+
+  const deleteTeamGoal = async () => {
+    const goalId = document.getElementById("tg-goal-id").value;
+    if (!goalId) return;
+    if (!confirm("Tem certeza que deseja excluir esta meta?")) return;
+
+    const statusEl = document.getElementById("tg-status");
+    try {
+      statusEl.innerHTML = '<span style="color: #6b7280;">Excluindo...</span>';
+      await callTeamGoalsApi("delete", { goal_id: goalId });
+      statusEl.innerHTML = '<span style="color: #16a34a;">Meta excluida!</span>';
+      document.getElementById("tg-goal-id").value = "";
+      document.getElementById("tg-leads-goal").value = "0";
+      document.getElementById("tg-appointments-goal").value = "0";
+      document.getElementById("tg-closings-goal").value = "0";
+      document.getElementById("tg-conversion-goal").value = "0";
+      document.getElementById("tg-delete-btn").style.display = "none";
+    } catch (err) {
+      statusEl.innerHTML = `<span style="color: #dc2626;">${err.message}</span>`;
+    }
+  };
+
+  const setupTeamGoalsListeners = () => {
+    document.getElementById("eq-team-goals-btn")?.addEventListener("click", openTeamGoalsModal);
+    document.getElementById("team-goals-form")?.addEventListener("submit", saveTeamGoal);
+    document.getElementById("btn-close-team-goals-modal")?.addEventListener("click", () => {
+      document.getElementById("team-goals-modal").style.display = "none";
+    });
+    document.getElementById("btn-cancel-team-goals")?.addEventListener("click", () => {
+      document.getElementById("team-goals-modal").style.display = "none";
+    });
+    document.getElementById("tg-delete-btn")?.addEventListener("click", deleteTeamGoal);
+    document.getElementById("tg-team-select")?.addEventListener("change", loadGoalForTeamAndMonth);
+    document.getElementById("tg-month")?.addEventListener("change", loadGoalForTeamAndMonth);
+    document.getElementById("tg-year")?.addEventListener("change", loadGoalForTeamAndMonth);
+  };
+
+  const showTeamGoalsButton = () => {
+    const btn = document.getElementById("eq-team-goals-btn");
+    if (!btn) return;
+    const user = window.currentCrmUser;
+    if (!user) return;
+    const role = window.normalizeRole?.(user.cargo) || "";
+    const isAdmin = window.isAdminRole?.(user.cargo);
+    const teamManagerRoles = ["coordenador-comercial", "supervisor-comercial", "coordenador", "supervisor", "coordenador-rh"];
+    if (isAdmin || teamManagerRoles.includes(role)) {
+      btn.style.display = "";
+    }
+  };
 
   document.addEventListener("DOMContentLoaded", init);
 })();

@@ -12,7 +12,7 @@
       rel="stylesheet"
     />
     <script>document.documentElement.dataset.adminSidebar = localStorage.getItem("seven-gold-admin-sidebar-collapsed") === "true" ? "collapsed" : "expanded";</script>
-    <link rel="stylesheet" href="home.css?v=collaborator-avatars-v1" />
+    <link rel="stylesheet" href="home.css?v=seller-team-metrics-v1" />
     <link rel="stylesheet" href="searchable-select.css?v=mr00opji" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
@@ -316,6 +316,15 @@
                 <h2>Equipes comerciais</h2>
                 <p>Defina qual coordenador ou supervisor é responsável por cada vendedor, assistente de vendas e home office.</p>
               </div>
+              <div class="eq-team-header-actions">
+                <label class="eq-team-period-field">
+                  <span>Mês de referência</span>
+                  <input id="eq-team-period" type="month" />
+                </label>
+                <button id="eq-team-goals-btn" class="eq-btn-gold" style="display: none; white-space: nowrap;">
+                  <i data-lucide="target"></i> Definir metas
+                </button>
+              </div>
             </div>
 
             <form id="eq-team-create-form" class="eq-team-create-form">
@@ -328,6 +337,10 @@
                 <select id="eq-team-coordinator" required>
                   <option value="">Selecione coordenador ou supervisor</option>
                 </select>
+              </label>
+              <label>
+                <span>Foto da equipe</span>
+                <input id="eq-team-photo" type="url" placeholder="URL da imagem (opcional)" />
               </label>
               <button type="submit" class="eq-btn-gold"><i data-lucide="plus"></i> Criar equipe</button>
             </form>
@@ -440,13 +453,89 @@
         </form>
       </div>
     </div>
+
+    <!-- Modal: Metas da Equipe -->
+    <div id="team-goals-modal" class="eq-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1200; align-items: center; justify-content: center;">
+      <div style="background: #fff; border-radius: 16px; padding: 28px 32px; max-width: 520px; width: 92vw; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 24px 48px rgba(0,0,0,0.18);">
+        <button type="button" id="btn-close-team-goals-modal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #94a3b8;"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin: 0 0 20px 0; display: flex; align-items: center; gap: 8px;"><i data-lucide="target" style="color: #d4af37;"></i> Metas da Equipe</h2>
+
+        <form id="team-goals-form">
+          <input type="hidden" id="tg-goal-id" value="" />
+          <input type="hidden" id="tg-team-id" value="" />
+
+          <label style="display: block; margin-bottom: 14px;">
+            <span style="display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px;">Equipe</span>
+            <select id="tg-team-select" required style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.85rem; background: #fff;">
+              <option value="">Selecione a equipe</option>
+            </select>
+          </label>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <label>
+              <span style="display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px;">Mes</span>
+              <select id="tg-month" required style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.85rem; background: #fff;">
+                <option value="1">Janeiro</option>
+                <option value="2">Fevereiro</option>
+                <option value="3">Marco</option>
+                <option value="4">Abril</option>
+                <option value="5">Maio</option>
+                <option value="6">Junho</option>
+                <option value="7">Julho</option>
+                <option value="8">Agosto</option>
+                <option value="9">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+              </select>
+            </label>
+            <label>
+              <span style="display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px;">Ano</span>
+              <select id="tg-year" required style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.85rem; background: #fff;"></select>
+            </label>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <label>
+              <span style="display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px;">Meta de Leads</span>
+              <input id="tg-leads-goal" type="number" min="0" value="0" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.85rem;" />
+            </label>
+            <label>
+              <span style="display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px;">Meta de Agendamentos</span>
+              <input id="tg-appointments-goal" type="number" min="0" value="0" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.85rem;" />
+            </label>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+            <label>
+              <span style="display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px;">Meta de Fechamentos</span>
+              <input id="tg-closings-goal" type="number" min="0" value="0" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.85rem;" />
+            </label>
+            <label>
+              <span style="display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px;">Meta de Conversao (%)</span>
+              <input id="tg-conversion-goal" type="number" min="0" max="100" step="0.1" value="0" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.85rem;" />
+            </label>
+          </div>
+
+          <div id="tg-status" style="margin-bottom: 12px; font-size: 0.82rem;"></div>
+
+          <div style="display: flex; justify-content: space-between; gap: 10px;">
+            <button type="button" id="tg-delete-btn" style="padding: 10px 16px; border: 1px solid #fecaca; border-radius: 8px; font-size: 0.85rem; font-weight: 600; background: #fff; color: #dc2626; cursor: pointer; display: none;">Excluir meta</button>
+            <div style="display: flex; gap: 10px; margin-left: auto;">
+              <button type="button" id="btn-cancel-team-goals" style="padding: 10px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; font-weight: 600; background: #fff; color: #475569; cursor: pointer;">Cancelar</button>
+              <button type="submit" style="padding: 10px 20px; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 700; background: linear-gradient(135deg, #d4a017, #9b59b6); color: #fff; cursor: pointer;">Salvar meta</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
     
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=role-visibility-admin-v1"></script>
-    <script src="equipe.js?v=collaborator-avatars-v1"></script>
+    <script src="equipe.js?v=seller-team-metrics-v1"></script>
     <script src="/admin-shell.js?v=mqreizkw"></script>
     <script src="/searchable-select.js?v=mr00opji"></script>
     <script src="/pwa.js"></script>

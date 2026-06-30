@@ -644,14 +644,355 @@ function shouldSeeAllLeads(crmUser) {
   return isAdminRole(crmUser.cargo) || isManagerRole(crmUser.cargo);
 }
 
+function isTeamCoordinatorRole(crmUser) {
+  if (!crmUser) return false;
+  const normalized = normalizeRole(crmUser.cargo);
+  return ["coordenador-comercial", "supervisor-comercial"].includes(normalized);
+}
+
+function getCoordinatedTeamId(currentCrmUser) {
+  if (!currentCrmUser || !isTeamCoordinatorRole(currentCrmUser)) return null;
+  const myTeam = allTeams.find((t) => t.coordinator_user_id === currentCrmUser.id);
+  return myTeam?.id || null;
+}
+
+let cachedTeamMemberEmails = null;
+let cachedTeamCoordinatorEmail = null;
+
+const loadTeamMemberEmails = async (coordinatorEmail) => {
+  if (cachedTeamMemberEmails && cachedTeamCoordinatorEmail === coordinatorEmail) {
+    return cachedTeamMemberEmails;
+  }
+  const client = getClient();
+  if (!client) return [coordinatorEmail];
+  try {
+    const { data: teamData } = await client.rpc("get_coordinated_team_id", { user_email: coordinatorEmail });
+    if (!teamData) return [coordinatorEmail];
+    const { data: members } = await client
+      .from("crm_team_members")
+      .select("user_id")
+      .eq("team_id", teamData);
+    if (!members?.length) return [coordinatorEmail];
+    const { data: users } = await client
+      .from("crm_users")
+      .select("email")
+      .in("id", members.map((m) => m.user_id))
+      .eq("ativo", true);
+    const emails = (users || []).map((u) => u.email).filter(Boolean);
+    if (!emails.includes(coordinatorEmail)) emails.push(coordinatorEmail);
+    cachedTeamMemberEmails = emails;
+    cachedTeamCoordinatorEmail = coordinatorEmail;
+    return emails;
+  } catch (_) {
+    return [coordinatorEmail];
+  }
+};
+
 let responsibleFilterInitialized = false;
 let selectedResponsibleEmail = "";
+
+let allTeams = [];
+let allTeamMembers = [];
+let selectedTeamId = "";
+let dashTeamFilterInitialized = false;
+let pipelineTeamFilterInitialized = false;
+let calendarTeamFilterInitialized = false;
+let tasksTeamFilterInitialized = false;
+
+const loadAllTeams = async (client) => {
+  if (allTeams.length) return allTeams;
+  try {
+    const { data: teams } = await client
+      .from("crm_teams")
+      .select("id, name, coordinator_user_id, active, photo_url")
+      .eq("active", true)
+      .order("name");
+    allTeams = teams || [];
+
+    const teamIds = allTeams.map((t) => t.id);
+    if (teamIds.length) {
+      const { data: members } = await client
+        .from("crm_team_members")
+        .select("team_id, user_id")
+        .in("team_id", teamIds);
+      allTeamMembers = members || [];
+    }
+  } catch (_) {
+    allTeams = [];
+    allTeamMembers = [];
+  }
+  return allTeams;
+};
+
+const getTeamMemberEmailsById = async (client, teamId) => {
+  if (!teamId) return null;
+  const memberUserIds = allTeamMembers
+    .filter((m) => m.team_id === teamId)
+    .map((m) => m.user_id);
+  if (!memberUserIds.length) return [];
+  const { data: users } = await client
+    .from("crm_users")
+    .select("email")
+    .in("id", memberUserIds)
+    .eq("ativo", true);
+  return (users || []).map((u) => u.email).filter(Boolean);
+};
+
+const getTeamMemberIdsById = async (client, teamId) => {
+  if (!teamId) return null;
+  const memberUserIds = allTeamMembers
+    .filter((m) => m.team_id === teamId)
+    .map((m) => m.user_id);
+  if (!memberUserIds.length) return [];
+  const { data: users } = await client
+    .from("crm_users")
+    .select("id")
+    .in("id", memberUserIds)
+    .eq("ativo", true);
+  return (users || []).map((u) => u.id).filter(Boolean);
+};
+
+const populateTeamFilter = (selectEl, currentCrmUser) => {
+  if (!selectEl) return;
+  const isCoordinator = isTeamCoordinatorRole(currentCrmUser);
+  selectEl.innerHTML = "";
+
+  if (isCoordinator) {
+    const myTeam = allTeams.find((t) => t.coordinator_user_id === currentCrmUser?.id);
+    selectEl.innerHTML = `<option value="${myTeam?.id || ""}" selected>${myTeam?.name || "Minha equipe"}</option>`;
+    selectEl.disabled = true;
+  } else {
+    selectEl.innerHTML = '<option value="">Todas as equipes</option>';
+    allTeams.forEach((team) => {
+      const option = document.createElement("option");
+      option.value = team.id;
+      option.textContent = team.name;
+      selectEl.appendChild(option);
+    });
+    selectEl.disabled = false;
+  }
+};
+
+const refreshResponsibleFilterForTeam = async (selectEl, client, currentCrmUser) => {
+  if (!selectEl) return;
+  const teamId = selectEl.closest("[data-team-filter]")?.querySelector("select")?.value || selectedTeamId;
+
+  const allUsers = await client
+    .from("crm_users")
+    .select("id, nome, email, cargo, ativo")
+    .eq("ativo", true)
+    .order("nome", { ascending: true });
+
+  const users = allUsers.data || [];
+  selectEl.innerHTML = '<option value="">Todos os vendedores</option>';
+
+  if (teamId) {
+    const teamEmails = await getTeamMemberEmailsById(client, teamId);
+    if (teamEmails?.length) {
+      const filtered = users.filter((u) => teamEmails.includes(u.email));
+      filtered.forEach((u) => addResponsibleOption(selectEl, u));
+    }
+    return;
+  }
+
+  users.forEach((u) => addResponsibleOption(selectEl, u));
+};
+
+const addResponsibleOption = (selectEl, user) => {
+  const cargoLabel = user.cargo ? user.cargo.toUpperCase() : "";
+  const option = document.createElement("option");
+  option.value = user.email || user.id || "";
+  option.textContent = cargoLabel ? `${user.nome} — ${cargoLabel}` : user.nome;
+  selectEl.appendChild(option);
+};
+
+const initPipelineTeamFilter = async (currentCrmUser) => {
+  if (pipelineTeamFilterInitialized) return;
+  if (!shouldSeeAllLeads(currentCrmUser)) return;
+
+  const selectEl = document.getElementById("pipeline-team-filter-select");
+  const containerEl = document.getElementById("pipeline-team-filter-container");
+  if (!selectEl || !containerEl) return;
+
+  const client = getClient();
+  if (!client) return;
+
+  await loadAllTeams(client);
+  pipelineTeamFilterInitialized = true;
+  containerEl.style.display = "";
+  populateTeamFilter(selectEl, currentCrmUser);
+
+  if (isTeamCoordinatorRole(currentCrmUser)) {
+    const myTeam = allTeams.find((t) => t.coordinator_user_id === currentCrmUser?.id);
+    if (myTeam) {
+      selectedTeamId = myTeam.id;
+      selectEl.value = myTeam.id;
+    }
+  }
+
+  selectEl.addEventListener("change", async (e) => {
+    selectedTeamId = e.target.value;
+    const respSelect = document.getElementById("responsible-filter-select");
+    if (respSelect) {
+      selectedResponsibleEmail = "";
+      respSelect.value = "";
+      await refreshResponsibleFilterForTeam(respSelect, client, currentCrmUser);
+    }
+    loadLeads();
+  });
+};
+
+const initDashTeamFilter = async (currentCrmUser) => {
+  if (dashTeamFilterInitialized) return;
+  if (!shouldSeeAllLeads(currentCrmUser)) return;
+
+  const selectEl = document.getElementById("dash-team-filter-select");
+  const containerEl = document.getElementById("dash-responsible-filter-container");
+  if (!selectEl || !containerEl) return;
+
+  const client = getClient();
+  if (!client) return;
+
+  await loadAllTeams(client);
+  dashTeamFilterInitialized = true;
+  populateTeamFilter(selectEl, currentCrmUser);
+
+  if (isTeamCoordinatorRole(currentCrmUser)) {
+    const myTeam = allTeams.find((t) => t.coordinator_user_id === currentCrmUser?.id);
+    if (myTeam) {
+      selectedTeamId = myTeam.id;
+      selectEl.value = myTeam.id;
+    }
+  }
+
+  selectEl.addEventListener("change", async (e) => {
+    selectedTeamId = e.target.value;
+    const respSelect = document.getElementById("dash-responsible-filter-select");
+    if (respSelect) {
+      selectedDashResponsibleEmail = "";
+      respSelect.value = "";
+      await refreshResponsibleFilterForTeam(respSelect, client, currentCrmUser);
+    }
+    loadDashboardMetrics();
+  });
+};
+
+const initCalendarTeamFilter = async (currentCrmUser) => {
+  if (calendarTeamFilterInitialized) return;
+  if (!shouldSeeAllLeads(currentCrmUser)) return;
+
+  const selectEl = document.getElementById("calendar-team-filter-select");
+  const containerEl = document.getElementById("calendar-team-filter-container");
+  if (!selectEl || !containerEl) return;
+
+  const client = getClient();
+  if (!client) return;
+
+  await loadAllTeams(client);
+  calendarTeamFilterInitialized = true;
+  containerEl.style.display = "flex";
+  populateTeamFilter(selectEl, currentCrmUser);
+
+  if (isTeamCoordinatorRole(currentCrmUser)) {
+    const myTeam = allTeams.find((t) => t.coordinator_user_id === currentCrmUser?.id);
+    if (myTeam) {
+      selectedTeamId = myTeam.id;
+      selectEl.value = myTeam.id;
+    }
+  }
+
+  selectEl.addEventListener("change", async (e) => {
+    selectedTeamId = e.target.value;
+    const respSelect = document.getElementById("calendar-responsible-filter-select");
+    if (respSelect) {
+      selectedCalendarResponsibleId = "";
+      respSelect.value = "";
+      await refreshCalendarResponsibleFilterForTeam(respSelect, client, currentCrmUser);
+    }
+    loadAppointments();
+  });
+};
+
+const refreshCalendarResponsibleFilterForTeam = async (selectEl, client, currentCrmUser) => {
+  if (!selectEl) return;
+  const teamId = selectedTeamId;
+
+  const allUsers = await client
+    .from("crm_users")
+    .select("id, nome, email, cargo, ativo")
+    .eq("ativo", true)
+    .order("nome", { ascending: true });
+
+  const users = allUsers.data || [];
+  selectEl.innerHTML = '<option value="">Todos os vendedores</option>';
+
+  if (teamId) {
+    const memberUserIds = allTeamMembers
+      .filter((m) => m.team_id === teamId)
+      .map((m) => m.user_id);
+    if (memberUserIds.length) {
+      const filtered = users.filter((u) => memberUserIds.includes(u.id));
+      filtered.forEach((u) => {
+        const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
+        const option = document.createElement("option");
+        option.value = u.id;
+        option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
+        selectEl.appendChild(option);
+      });
+    }
+    return;
+  }
+
+  users.forEach((u) => {
+    const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
+    const option = document.createElement("option");
+    option.value = u.id;
+    option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
+    selectEl.appendChild(option);
+  });
+};
+
+const initTasksTeamFilter = async (currentCrmUser) => {
+  if (tasksTeamFilterInitialized) return;
+  if (!shouldSeeAllLeads(currentCrmUser)) return;
+
+  const selectEl = document.getElementById("tasks-team-filter-select");
+  const containerEl = document.getElementById("tasks-team-filter-container");
+  if (!selectEl || !containerEl) return;
+
+  const client = getClient();
+  if (!client) return;
+
+  await loadAllTeams(client);
+  tasksTeamFilterInitialized = true;
+  containerEl.style.display = "flex";
+  populateTeamFilter(selectEl, currentCrmUser);
+
+  if (isTeamCoordinatorRole(currentCrmUser)) {
+    const myTeam = allTeams.find((t) => t.coordinator_user_id === currentCrmUser?.id);
+    if (myTeam) {
+      selectedTeamId = myTeam.id;
+      selectEl.value = myTeam.id;
+    }
+  }
+
+  selectEl.addEventListener("change", async (e) => {
+    selectedTeamId = e.target.value;
+    const respSelect = document.getElementById("tasks-responsible-filter-select");
+    if (respSelect) {
+      selectedTasksResponsibleEmail = "";
+      respSelect.value = "";
+      await refreshResponsibleFilterForTeam(respSelect, client, currentCrmUser);
+    }
+    loadTasks();
+  });
+};
 
 const initResponsibleFilter = async (currentCrmUser) => {
   if (responsibleFilterInitialized) return;
 
   if (!shouldSeeAllLeads(currentCrmUser)) {
-    return; // Vendedor não vê o filtro
+    return;
   }
 
   const selectEl = document.getElementById("responsible-filter-select");
@@ -661,28 +1002,12 @@ const initResponsibleFilter = async (currentCrmUser) => {
   const client = getClient();
   if (!client) return;
 
+  await initPipelineTeamFilter(currentCrmUser);
+
   responsibleFilterInitialized = true;
   containerEl.style.display = "grid";
 
-  const { data: users, error } = await client
-    .from("crm_users")
-    .select("nome, email, cargo, ativo")
-    .eq("ativo", true)
-    .order("nome", { ascending: true });
-
-  if (error || !users) {
-    console.error("Erro ao carregar vendedores para filtro:", error);
-    return;
-  }
-
-  selectEl.innerHTML = '<option value="">Todos os vendedores</option>';
-  users.forEach((u) => {
-    const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
-    const option = document.createElement("option");
-    option.value = u.email;
-    option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
-    selectEl.appendChild(option);
-  });
+  await refreshResponsibleFilterForTeam(selectEl, client, currentCrmUser);
 
   selectEl.addEventListener("change", (e) => {
     selectedResponsibleEmail = e.target.value;
@@ -692,6 +1017,9 @@ const initResponsibleFilter = async (currentCrmUser) => {
   document.querySelector(".clear-button")?.addEventListener("click", () => {
     selectEl.value = "";
     selectedResponsibleEmail = "";
+    selectedTeamId = "";
+    const teamSelect = document.getElementById("pipeline-team-filter-select");
+    if (teamSelect) teamSelect.value = "";
     loadLeads();
   });
 };
@@ -703,7 +1031,7 @@ const initCalendarResponsibleFilter = async (currentCrmUser) => {
   if (calendarResponsibleFilterInitialized) return;
 
   if (!shouldSeeAllLeads(currentCrmUser)) {
-    return; // Vendedor não vê o filtro
+    return;
   }
 
   const selectEl = document.getElementById("calendar-responsible-filter-select");
@@ -713,28 +1041,12 @@ const initCalendarResponsibleFilter = async (currentCrmUser) => {
   const client = getClient();
   if (!client) return;
 
+  await initCalendarTeamFilter(currentCrmUser);
+
   calendarResponsibleFilterInitialized = true;
   containerEl.style.display = "flex";
 
-  const { data: users, error } = await client
-    .from("crm_users")
-    .select("id, nome, email, cargo, ativo")
-    .eq("ativo", true)
-    .order("nome", { ascending: true });
-
-  if (error || !users) {
-    console.error("Erro ao carregar vendedores para filtro do calendário:", error);
-    return;
-  }
-
-  selectEl.innerHTML = '<option value="">Todos os vendedores</option>';
-  users.forEach((u) => {
-    const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
-    const option = document.createElement("option");
-    option.value = u.id;
-    option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
-    selectEl.appendChild(option);
-  });
+  await refreshCalendarResponsibleFilterForTeam(selectEl, client, currentCrmUser);
 
   selectEl.addEventListener("change", (e) => {
     selectedCalendarResponsibleId = e.target.value;
@@ -749,7 +1061,7 @@ const initTasksResponsibleFilter = async (currentCrmUser) => {
   if (tasksResponsibleFilterInitialized) return;
 
   if (!shouldSeeAllLeads(currentCrmUser)) {
-    return; // Vendedor não vê o filtro
+    return;
   }
 
   const selectEl = document.getElementById("tasks-responsible-filter-select");
@@ -759,28 +1071,12 @@ const initTasksResponsibleFilter = async (currentCrmUser) => {
   const client = getClient();
   if (!client) return;
 
+  await initTasksTeamFilter(currentCrmUser);
+
   tasksResponsibleFilterInitialized = true;
   containerEl.style.display = "flex";
 
-  const { data: users, error } = await client
-    .from("crm_users")
-    .select("nome, email, cargo, ativo")
-    .eq("ativo", true)
-    .order("nome", { ascending: true });
-
-  if (error || !users) {
-    console.error("Erro ao carregar vendedores para filtro de tarefas:", error);
-    return;
-  }
-
-  selectEl.innerHTML = '<option value="">Todos os vendedores</option>';
-  users.forEach((u) => {
-    const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
-    const option = document.createElement("option");
-    option.value = u.email;
-    option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
-    selectEl.appendChild(option);
-  });
+  await refreshResponsibleFilterForTeam(selectEl, client, currentCrmUser);
 
   selectEl.addEventListener("change", (e) => {
     selectedTasksResponsibleEmail = e.target.value;
@@ -812,11 +1108,36 @@ const loadTasks = async () => {
     .order("scheduled_at", { ascending: true });
 
   // 1. Filtragem por Responsável (RLS já restringe vendedores)
+  let activeTeamId = selectedTeamId;
+  let activeTasksResponsibleEmail = selectedTasksResponsibleEmail;
+
+  if (isTeamCoordinatorRole(currentCrmUser)) {
+    const coordTeamId = getCoordinatedTeamId(currentCrmUser);
+    activeTeamId = coordTeamId;
+    if (activeTasksResponsibleEmail) {
+      const myTeamEmails = await loadTeamMemberEmails(currentCrmUser.email);
+      if (!myTeamEmails.includes(activeTasksResponsibleEmail)) {
+        activeTasksResponsibleEmail = "";
+      }
+    }
+  }
+
   if (!shouldSeeAllLeads(currentCrmUser)) {
     query = query.eq("assigned_to_email", currentCrmUser.email);
-  } else {
-    if (selectedTasksResponsibleEmail) {
-      query = query.eq("assigned_to_email", selectedTasksResponsibleEmail);
+  } else if (activeTasksResponsibleEmail) {
+    query = query.eq("assigned_to_email", activeTasksResponsibleEmail);
+  } else if (activeTeamId) {
+    const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
+    if (teamEmails?.length) {
+      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
+      query = query.or(`team_id.eq.${activeTeamId},assigned_to_email.in.(${emailInList})`);
+    }
+  } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
+    const coordTeamId = getCoordinatedTeamId(currentCrmUser);
+    const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
+    if (coordTeamId && teamEmails?.length) {
+      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
+      query = query.or(`team_id.eq.${coordTeamId},assigned_to_email.in.(${emailInList})`);
     }
   }
 
@@ -1165,10 +1486,38 @@ const loadDashboardMetrics = async () => {
 
   // 1. Leads
   let leadsQuery = client.from("leads").select("status, assigned_to_email, created_at");
+
+  let activeTeamId = selectedTeamId;
+  let activeDashResponsibleEmail = selectedDashResponsibleEmail;
+
+  if (isTeamCoordinatorRole(currentCrmUser)) {
+    const coordTeamId = getCoordinatedTeamId(currentCrmUser);
+    activeTeamId = coordTeamId;
+    if (activeDashResponsibleEmail) {
+      const myTeamEmails = await loadTeamMemberEmails(currentCrmUser.email);
+      if (!myTeamEmails.includes(activeDashResponsibleEmail)) {
+        activeDashResponsibleEmail = "";
+      }
+    }
+  }
+
   if (!shouldSeeAllLeads(currentCrmUser)) {
     leadsQuery = leadsQuery.eq("assigned_to_email", currentCrmUser.email);
-  } else if (selectedDashResponsibleEmail) {
-    leadsQuery = leadsQuery.eq("assigned_to_email", selectedDashResponsibleEmail);
+  } else if (activeDashResponsibleEmail) {
+    leadsQuery = leadsQuery.eq("assigned_to_email", activeDashResponsibleEmail);
+  } else if (activeTeamId) {
+    const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
+    if (teamEmails?.length) {
+      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
+      leadsQuery = leadsQuery.or(`team_id.eq.${activeTeamId},assigned_to_email.in.(${emailInList})`);
+    }
+  } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
+    const coordTeamId = getCoordinatedTeamId(currentCrmUser);
+    const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
+    if (coordTeamId && teamEmails?.length) {
+      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
+      leadsQuery = leadsQuery.or(`team_id.eq.${coordTeamId},assigned_to_email.in.(${emailInList})`);
+    }
   }
   const { data: leadsData } = await leadsQuery;
   const leads = leadsData || [];
@@ -1183,8 +1532,21 @@ const loadDashboardMetrics = async () => {
   let apptsQuery = client.from("appointments").select("status, data_agendamento, assigned_to_email").neq("status", "cancelado");
   if (!shouldSeeAllLeads(currentCrmUser)) {
     apptsQuery = apptsQuery.eq("assigned_to_email", currentCrmUser.email);
-  } else if (selectedDashResponsibleEmail) {
-    apptsQuery = apptsQuery.eq("assigned_to_email", selectedDashResponsibleEmail);
+  } else if (activeDashResponsibleEmail) {
+    apptsQuery = apptsQuery.eq("assigned_to_email", activeDashResponsibleEmail);
+  } else if (activeTeamId) {
+    const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
+    if (teamEmails?.length) {
+      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
+      apptsQuery = apptsQuery.or(`team_id.eq.${activeTeamId},assigned_to_email.in.(${emailInList})`);
+    }
+  } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
+    const coordTeamId = getCoordinatedTeamId(currentCrmUser);
+    const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
+    if (coordTeamId && teamEmails?.length) {
+      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
+      apptsQuery = apptsQuery.or(`team_id.eq.${coordTeamId},assigned_to_email.in.(${emailInList})`);
+    }
   }
   const { data: apptsData } = await apptsQuery;
   const totalAppointments = (apptsData || []).length;
@@ -1193,8 +1555,21 @@ const loadDashboardMetrics = async () => {
   let tasksQuery = client.from("tasks").select("id, lead_id, lead_nome, type, scheduled_at, assigned_to_name, assigned_to_email, status").eq("status", "pending");
   if (!shouldSeeAllLeads(currentCrmUser)) {
     tasksQuery = tasksQuery.eq("assigned_to_email", currentCrmUser.email);
-  } else if (selectedDashResponsibleEmail) {
-    tasksQuery = tasksQuery.eq("assigned_to_email", selectedDashResponsibleEmail);
+  } else if (activeDashResponsibleEmail) {
+    tasksQuery = tasksQuery.eq("assigned_to_email", activeDashResponsibleEmail);
+  } else if (activeTeamId) {
+    const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
+    if (teamEmails?.length) {
+      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
+      tasksQuery = tasksQuery.or(`team_id.eq.${activeTeamId},assigned_to_email.in.(${emailInList})`);
+    }
+  } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
+    const coordTeamId = getCoordinatedTeamId(currentCrmUser);
+    const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
+    if (coordTeamId && teamEmails?.length) {
+      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
+      tasksQuery = tasksQuery.or(`team_id.eq.${coordTeamId},assigned_to_email.in.(${emailInList})`);
+    }
   }
   const { data: tasksData } = await tasksQuery;
   const totalTasks = (tasksData || []).length;
@@ -1752,8 +2127,45 @@ const loadAppointments = async () => {
     .order("data_agendamento")
     .order("hora_agendamento");
 
-  if (selectedCalendarResponsibleId) {
-    query = query.eq("usuario_id", selectedCalendarResponsibleId);
+  let activeTeamId = selectedTeamId;
+  let activeResponsibleId = selectedCalendarResponsibleId;
+
+  if (isTeamCoordinatorRole(currentCrmUser)) {
+    const coordTeamId = getCoordinatedTeamId(currentCrmUser);
+    activeTeamId = coordTeamId;
+    if (activeResponsibleId) {
+      const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
+      const { data: teamUsers } = await client.from("crm_users").select("id").in("email", teamEmails);
+      const userIds = (teamUsers || []).map((u) => u.id);
+      if (!userIds.includes(activeResponsibleId)) {
+        activeResponsibleId = "";
+      }
+    }
+  }
+
+  if (!shouldSeeAllLeads(currentCrmUser) && currentCrmUser?.id) {
+    query = query.eq("usuario_id", currentCrmUser.id);
+  } else if (activeResponsibleId) {
+    query = query.eq("usuario_id", activeResponsibleId);
+  } else if (activeTeamId) {
+    const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
+    if (teamEmails?.length) {
+      const { data: teamUsers } = await client.from("crm_users").select("id").in("email", teamEmails);
+      const userIds = (teamUsers || []).map((u) => u.id);
+      if (userIds.length) {
+        query = query.or(`team_id.eq.${activeTeamId},usuario_id.in.(${userIds.join(',')})`);
+      }
+    }
+  } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
+    const coordTeamId = getCoordinatedTeamId(currentCrmUser);
+    const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
+    if (coordTeamId && teamEmails?.length) {
+      const { data: teamUsers } = await client.from("crm_users").select("id").in("email", teamEmails);
+      const userIds = (teamUsers || []).map((u) => u.id);
+      if (userIds.length) {
+        query = query.or(`team_id.eq.${coordTeamId},usuario_id.in.(${userIds.join(',')})`);
+      }
+    }
   }
 
   const { data, error } = await query;
@@ -2337,11 +2749,36 @@ const loadLeads = async () => {
     .select("id, name, origin, note, status, created_at, telefone, property_region, credit_value, down_payment_value, installment_value, tags, assigned_to_email, assigned_to_name, created_by_email, created_by_name, updated_by_email, updated_by_name")
     .order("created_at", { ascending: false });
 
+  let activeTeamId = selectedTeamId;
+  let activeResponsibleEmail = selectedResponsibleEmail;
+
+  if (isTeamCoordinatorRole(currentCrmUser)) {
+    const coordTeamId = getCoordinatedTeamId(currentCrmUser);
+    activeTeamId = coordTeamId;
+    if (activeResponsibleEmail) {
+      const myTeamEmails = await loadTeamMemberEmails(currentCrmUser.email);
+      if (!myTeamEmails.includes(activeResponsibleEmail)) {
+        activeResponsibleEmail = "";
+      }
+    }
+  }
+
   if (!shouldSeeAllLeads(currentCrmUser)) {
     query = query.eq("assigned_to_email", currentCrmUser.email);
-  } else {
-    if (selectedResponsibleEmail) {
-      query = query.eq("assigned_to_email", selectedResponsibleEmail);
+  } else if (activeResponsibleEmail) {
+    query = query.eq("assigned_to_email", activeResponsibleEmail);
+  } else if (activeTeamId) {
+    const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
+    if (teamEmails?.length) {
+      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
+      query = query.or(`team_id.eq.${activeTeamId},assigned_to_email.in.(${emailInList})`);
+    }
+  } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
+    const coordTeamId = getCoordinatedTeamId(currentCrmUser);
+    const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
+    if (coordTeamId && teamEmails?.length) {
+      const emailInList = teamEmails.map(e => `"${e}"`).join(',');
+      query = query.or(`team_id.eq.${coordTeamId},assigned_to_email.in.(${emailInList})`);
     }
   }
 

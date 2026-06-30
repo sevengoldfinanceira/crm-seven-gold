@@ -13606,27 +13606,74 @@ body[data-unified-admin] .unified-admin-shell {
 /* Equipes comerciais */
 .eq-commercial-teams-header h2 { margin: 0; color: var(--company-text, #0f172a); font-size: 1.25rem; }
 .eq-commercial-teams-header p { margin: 6px 0 0; color: #64748b; font-size: .86rem; }
-.eq-team-create-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end; margin: 20px 0 12px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: var(--company-main-bg, #fff); }
+.eq-commercial-teams-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.eq-team-header-actions { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
+.eq-team-period-field { display: flex; flex-direction: column; gap: 5px; color: #64748b; font-size: .72rem; font-weight: 700; }
+.eq-team-period-field input { min-height: 40px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: var(--company-main-bg, #fff); color: var(--company-text, #0f172a); }
+.eq-team-create-form { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; align-items: end; margin: 20px 0 12px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: var(--company-main-bg, #fff); }
 .eq-team-create-form label { display: flex; flex-direction: column; gap: 6px; color: #475569; font-size: .78rem; font-weight: 700; }
 .eq-team-create-form input, .eq-team-create-form select, .eq-team-card select { min-height: 40px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: var(--company-main-bg, #fff); color: var(--company-text, #0f172a); }
 .eq-team-status { min-height: 20px; margin-bottom: 8px; color: #64748b; font-size: .8rem; }
-.eq-commercial-teams-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.eq-commercial-teams-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
 .eq-team-card { padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: var(--company-main-bg, #fff); box-shadow: 0 4px 14px rgba(15, 23, 42, .05); }
-.eq-team-card-head { display: flex; justify-content: space-between; gap: 10px; align-items: start; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; }
+.eq-team-card-inactive { opacity: 0.6; }
+.eq-team-card-head { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; }
 .eq-team-card-head h3 { margin: 0; color: var(--company-text, #0f172a); font-size: 1rem; }
 .eq-team-card-head p { margin: 4px 0 0; color: #64748b; font-size: .76rem; }
+.eq-team-card-title-box { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.eq-team-card-avatar { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 2px solid rgba(212, 175, 55, 0.4); }
+.eq-team-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.eq-team-avatar-fallback { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #d4af37 0%, #b8960f 100%); color: #fff; font-weight: 800; font-size: 1.1rem; }
+.eq-team-card-text { flex: 1; min-width: 0; }
+.eq-team-badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.eq-team-badge { display: inline-flex; align-items: center; gap: 3px; font-size: .7rem; font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
+.eq-badge-members { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.eq-badge-leads { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.eq-badge-active { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.eq-badge-inactive { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 .eq-team-card-field { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; color: #475569; font-size: .76rem; font-weight: 700; }
+.eq-team-photo-input { width: 100%; box-sizing: border-box; }
+.eq-team-active-toggle { flex-direction: row; align-items: center; gap: 8px; cursor: pointer; }
+.eq-team-active-checkbox { width: 16px; height: 16px; accent-color: #d4af37; cursor: pointer; }
 .eq-team-members { display: flex; flex-direction: column; gap: 6px; max-height: 210px; overflow: auto; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px; }
 .eq-team-member-option { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; color: var(--company-text, #334155); font-size: .78rem; font-weight: 500; }
 .eq-team-member-option small { display: block; color: #94a3b8; }
 .eq-team-card-actions { display: flex; gap: 8px; margin-top: 14px; }
 .eq-team-card-actions button { flex: 1; }
+.eq-team-performance { display: grid; gap: 9px; margin-top: 14px; padding-top: 14px; border-top: 1px solid #e2e8f0; }
+.eq-team-performance-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--company-text, #0f172a); font-size: .82rem; }
+.eq-team-performance-title span { color: #64748b; font-size: .72rem; text-transform: capitalize; }
+.eq-team-performance-empty { margin: 0; padding: 12px; border: 1px dashed #cbd5e1; border-radius: 10px; color: #64748b; font-size: .76rem; text-align: center; }
+.eq-seller-performance { padding: 12px; border: 1px solid #e2e8f0; border-radius: 11px; background: rgba(248, 250, 252, .8); }
+.eq-seller-performance-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.eq-seller-performance-head > div { min-width: 0; }
+.eq-seller-performance-head strong, .eq-seller-performance-head small { display: block; }
+.eq-seller-performance-head strong { color: var(--company-text, #0f172a); font-size: .82rem; }
+.eq-seller-performance-head small { margin-top: 2px; overflow: hidden; color: #64748b; font-size: .68rem; text-overflow: ellipsis; white-space: nowrap; }
+.eq-performance-status { flex: 0 0 auto; padding: 4px 7px; border-radius: 999px; font-size: .65rem; font-weight: 800; }
+.eq-performance-status.is-below { background: #fee2e2; color: #b91c1c; }
+.eq-performance-status.is-near { background: #fef3c7; color: #a16207; }
+.eq-performance-status.is-hit { background: #dcfce7; color: #15803d; }
+.eq-seller-metrics-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+.eq-seller-metric { min-width: 0; padding: 8px; border-radius: 8px; background: var(--company-main-bg, #fff); }
+.eq-seller-metric span, .eq-seller-metric strong, .eq-seller-metric small { display: block; }
+.eq-seller-metric span { color: #64748b; font-size: .63rem; }
+.eq-seller-metric strong { margin-top: 3px; color: var(--company-text, #0f172a); font-size: .88rem; }
+.eq-seller-metric small { margin-top: 2px; font-size: .6rem; font-weight: 700; }
+.eq-seller-metric small.is-below { color: #dc2626; }
+.eq-seller-metric small.is-near { color: #d97706; }
+.eq-seller-metric small.is-hit { color: #16a34a; }
+.eq-seller-conversion { background: #eff6ff; }
 .eq-team-empty { padding: 24px; border: 1px dashed #cbd5e1; border-radius: 12px; color: #64748b; text-align: center; }
 .eq-team-delete { border: 1px solid #ef4444; border-radius: 8px; background: transparent; color: #ef4444; padding: 8px 10px; cursor: pointer; }
 body.theme-dark .eq-team-create-form, body.theme-dark .eq-team-card { border-color: #3b3150; background: #211530; }
 body.theme-dark .eq-team-create-form label, body.theme-dark .eq-team-card-field { color: #cbd5e1; }
 body.theme-dark .eq-team-members, body.theme-dark .eq-team-card-head { border-color: #3b3150; }
-@media (max-width: 860px) { .eq-team-create-form { grid-template-columns: 1fr; } }
+body.theme-dark .eq-team-avatar-fallback { background: linear-gradient(135deg, #d4af37 0%, #8b6914 100%); }
+body.theme-dark .eq-team-performance { border-color: #3b3150; }
+body.theme-dark .eq-seller-performance { border-color: #3b3150; background: rgba(15, 23, 42, .28); }
+body.theme-dark .eq-seller-conversion { background: rgba(37, 99, 235, .12); }
+@media (max-width: 860px) { .eq-team-create-form { grid-template-columns: 1fr; } .eq-seller-metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* Header */
 .eq-header {
@@ -17988,6 +18035,35 @@ body[data-unified-admin] .unified-admin-sidebar:not(.sidebar-editing) .menu-item
     word-break: break-word !important;
     overflow-wrap: break-word !important;
   }
+}
+
+.team-perf-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.team-perf-card button[data-team-detail-btn]:hover {
+  background: linear-gradient(135deg, #d4a017, #9b59b6);
+  color: #fff;
+  border-color: transparent;
+}
+
+body.theme-dark .team-perf-card {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.theme-dark .team-perf-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+body.theme-dark #team-detail-modal > div {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+
+body.theme-dark #team-detail-modal {
+  background: #0f172a;
 }
 
 

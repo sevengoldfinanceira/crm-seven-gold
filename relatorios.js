@@ -46,15 +46,52 @@
   };
 
   const normalizeRole = (role) =>
-    String(role || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    String(role || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[\s_]+/g, "-");
 
   const canSeeAllCommercialRecords = (user) => {
     const role = normalizeRole(user?.cargo);
-    return ["dono", "admin", "administrador", "coordenador", "supervisor"].includes(role);
+    return ["dono", "admin", "administrador", "coordenador", "supervisor", "coordenador-comercial", "supervisor-comercial", "diretor-ceo"].includes(role);
+  };
+
+  const isTeamCoordinator = (user) => {
+    const role = normalizeRole(user?.cargo);
+    return ["coordenador-comercial", "supervisor-comercial"].includes(role);
+  };
+
+  let cachedRelatTeamEmails = null;
+  let cachedRelatTeamEmail = null;
+
+  const getTeamMemberEmailsForReport = async (coordinatorEmail) => {
+    if (cachedRelatTeamEmails && cachedRelatTeamEmail === coordinatorEmail) return cachedRelatTeamEmails;
+    const client = getClient();
+    if (!client) return null;
+    try {
+      const { data: teamId } = await client.rpc("get_coordinated_team_id", { user_email: coordinatorEmail });
+      if (!teamId) return [coordinatorEmail];
+      const { data: members } = await client.from("crm_team_members").select("user_id").eq("team_id", teamId);
+      if (!members?.length) return [coordinatorEmail];
+      const { data: users } = await client.from("crm_users").select("email").in("id", members.map((m) => m.user_id)).eq("ativo", true);
+      const emails = (users || []).map((u) => u.email).filter(Boolean);
+      if (!emails.includes(coordinatorEmail)) emails.push(coordinatorEmail);
+      cachedRelatTeamEmails = emails;
+      cachedRelatTeamEmail = coordinatorEmail;
+      return emails;
+    } catch (_) { return [coordinatorEmail]; }
   };
 
   const getCurrentCrmUser = () =>
     window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+
+  const validateAndEnforceScope = async () => {
+    const crmUser = getCurrentCrmUser();
+    if (isTeamCoordinator(crmUser) && crmUser?.email) {
+      const teamEmails = await getTeamMemberEmailsForReport(crmUser.email);
+      if (state.person !== "todos" && (!teamEmails || !teamEmails.includes(state.person))) {
+        state.person = "todos";
+        if (personFilter) personFilter.value = "todos";
+      }
+    }
+  };
 
   const money = (value) =>
     new Intl.NumberFormat("pt-BR", {
@@ -129,18 +166,24 @@
       .eq("ativo", true)
       .order("nome", { ascending: true });
 
+    let filteredUsers = users || [];
+    if (isTeamCoordinator(crmUser) && crmUser?.email) {
+      const teamEmails = await getTeamMemberEmailsForReport(crmUser.email);
+      if (teamEmails) {
+        filteredUsers = filteredUsers.filter((u) => teamEmails.includes(u.email));
+      }
+    }
+
     const current = personFilter.value;
     personFilter.innerHTML = '<option value="todos">Todos os vendedores</option>';
-    if (users) {
-      users.forEach((u) => {
-        const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
-        const option = document.createElement("option");
-        option.value = u.email;
-        option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
-        option.selected = u.email === current;
-        personFilter.append(option);
-      });
-    }
+    filteredUsers.forEach((u) => {
+      const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
+      const option = document.createElement("option");
+      option.value = u.email;
+      option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
+      option.selected = u.email === current;
+      personFilter.append(option);
+    });
   };
 
   const renderSummary = (sales) => {
@@ -275,6 +318,8 @@
     const client = getClient();
     if (!client) return;
 
+    await validateAndEnforceScope();
+
     const crmUser = getCurrentCrmUser();
     const seeAll = canSeeAllCommercialRecords(crmUser);
 
@@ -288,6 +333,9 @@
       query = query.eq("assigned_to_email", crmUser.email);
     } else if (state.person !== "todos") {
       query = query.eq("assigned_to_email", state.person);
+    } else if (isTeamCoordinator(crmUser) && crmUser?.email) {
+      const teamEmails = await getTeamMemberEmailsForReport(crmUser.email);
+      if (teamEmails?.length) query = query.in("assigned_to_email", teamEmails);
     }
 
     const { data, error } = await query;
@@ -394,6 +442,8 @@
     const client = getClient();
     if (!client) return;
 
+    await validateAndEnforceScope();
+
     const crmUser = getCurrentCrmUser();
     const seeAll = canSeeAllCommercialRecords(crmUser);
 
@@ -402,6 +452,9 @@
       query = query.eq("assigned_to_email", crmUser.email);
     } else if (state.person !== "todos") {
       query = query.eq("assigned_to_email", state.person);
+    } else if (isTeamCoordinator(crmUser) && crmUser?.email) {
+      const teamEmails = await getTeamMemberEmailsForReport(crmUser.email);
+      if (teamEmails?.length) query = query.in("assigned_to_email", teamEmails);
     }
 
     const { data, error } = await query;
@@ -418,6 +471,8 @@
     const client = getClient();
     if (!client) return;
 
+    await validateAndEnforceScope();
+
     const crmUser = getCurrentCrmUser();
     const seeAll = canSeeAllCommercialRecords(crmUser);
 
@@ -426,6 +481,9 @@
       query = query.eq("assigned_to_email", crmUser.email);
     } else if (state.person !== "todos") {
       query = query.eq("assigned_to_email", state.person);
+    } else if (isTeamCoordinator(crmUser) && crmUser?.email) {
+      const teamEmails = await getTeamMemberEmailsForReport(crmUser.email);
+      if (teamEmails?.length) query = query.in("assigned_to_email", teamEmails);
     }
 
     const { data, error } = await query;
@@ -439,6 +497,8 @@
     const client = getClient();
     if (!client) return;
 
+    await validateAndEnforceScope();
+
     const crmUser = getCurrentCrmUser();
     const seeAll = canSeeAllCommercialRecords(crmUser);
 
@@ -447,6 +507,9 @@
       query = query.eq("assigned_to_email", crmUser.email);
     } else if (state.person !== "todos") {
       query = query.eq("assigned_to_email", state.person);
+    } else if (isTeamCoordinator(crmUser) && crmUser?.email) {
+      const teamEmails = await getTeamMemberEmailsForReport(crmUser.email);
+      if (teamEmails?.length) query = query.in("assigned_to_email", teamEmails);
     }
 
     const { data, error } = await query;
@@ -491,12 +554,20 @@
     if (!client) return;
 
     const crmUser = getCurrentCrmUser();
+    if (!crmUser) return;
     const role = normalizeRole(crmUser?.cargo);
-    const isLeadOrAdmin = ["dono", "admin", "administrador", "coordenador", "supervisor"].includes(role);
+    const isLeadOrAdmin = ["dono", "admin", "administrador", "coordenador", "supervisor", "coordenador-comercial", "supervisor-comercial", "diretor-ceo"].includes(role);
 
     let query = client.from("crm_sales_goals").select("*");
     if (!isLeadOrAdmin && crmUser?.email) {
       query = query.eq("user_email", crmUser.email);
+    } else if (isTeamCoordinator(crmUser) && crmUser?.email) {
+      const teamEmails = await getTeamMemberEmailsForReport(crmUser.email);
+      if (teamEmails?.length) {
+        query = query.in("user_email", teamEmails);
+      } else {
+        query = query.eq("user_email", crmUser.email);
+      }
     }
 
     const { data, error } = await query;
@@ -517,7 +588,7 @@
 
     const crmUser = getCurrentCrmUser();
     const role = normalizeRole(crmUser?.cargo);
-    const isLeadOrAdmin = ["dono", "admin", "administrador", "coordenador", "supervisor"].includes(role);
+    const isLeadOrAdmin = ["dono", "admin", "administrador", "coordenador", "supervisor", "coordenador-comercial", "supervisor-comercial", "diretor-ceo"].includes(role);
     const isAdmin = ["dono", "admin", "administrador"].includes(role);
 
     if (!isLeadOrAdmin) {
@@ -644,6 +715,14 @@
     e.preventDefault();
     const formEl = document.getElementById("goal-form");
     if (!formEl) return;
+
+    const crmUser = getCurrentCrmUser();
+    const role = normalizeRole(crmUser?.cargo);
+    const isAdmin = ["dono", "admin", "administrador"].includes(role);
+    if (!isAdmin) {
+      alert("Apenas administradores podem gerenciar metas.");
+      return;
+    }
 
     const client = getClient();
     if (!client) return;
@@ -793,7 +872,7 @@
     if (!containerEl) return;
 
     const role = normalizeRole(crmUser?.cargo);
-    const isLeadOrAdmin = ["dono", "admin", "administrador", "coordenador", "supervisor"].includes(role);
+    const isLeadOrAdmin = ["dono", "admin", "administrador", "coordenador", "supervisor", "coordenador-comercial", "supervisor-comercial", "diretor-ceo"].includes(role);
 
     if (isLeadOrAdmin) {
       containerEl.style.display = "none";
@@ -1167,13 +1246,21 @@
     await loadCrmUsersForGoalSelect();
 
     const urlParams = new URLSearchParams(window.location.search);
-    const urlSellerEmail = urlParams.get("seller_email");
+    let urlSellerEmail = urlParams.get("seller_email");
     const urlSellerName = urlParams.get("seller_name");
 
     if (urlSellerEmail) {
       state.person = urlSellerEmail;
       if (personFilter) {
         personFilter.value = urlSellerEmail;
+      }
+      await validateAndEnforceScope();
+      if (state.person === "todos") {
+        urlSellerEmail = null;
+        const url = new URL(window.location);
+        url.searchParams.delete("seller_email");
+        url.searchParams.delete("seller_name");
+        window.history.replaceState({}, "", url);
       }
     }
 
