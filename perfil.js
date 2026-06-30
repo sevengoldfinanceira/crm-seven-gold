@@ -74,10 +74,29 @@
     button.textContent = "Salvando...";
     setStatus("");
 
-    const { error: profileError } = await client
-      .from("crm_users")
-      .update({ nome: name, updated_at: new Date().toISOString() })
-      .eq("email", String(user.email || "").trim().toLowerCase());
+    const { data: sessionData } = await client.auth.getSession();
+    const token = sessionData?.session?.access_token;
+    let profileError = null;
+    if (!token) {
+      profileError = new Error("Sessão expirada. Entre novamente no CRM.");
+    } else {
+      try {
+        const response = await fetch("/api/permissions/save", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ profile: { nome: name } }),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || result.ok !== true) {
+          profileError = new Error(result.error || "Não foi possível atualizar o nome.");
+        }
+      } catch (error) {
+        profileError = error;
+      }
+    }
 
     let avatarError = null;
     if (file) {
@@ -94,7 +113,7 @@
     button.textContent = "Salvar perfil";
 
     if (profileError || avatarError) {
-      setStatus("Não foi possível salvar. Confira as permissões do perfil e do Storage.", "error");
+      setStatus(`Não foi possível salvar: ${profileError?.message || avatarError?.message || "verifique as permissões do perfil e do Storage."}`, "error");
       return;
     }
 

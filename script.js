@@ -697,7 +697,7 @@ const initResponsibleFilter = async (currentCrmUser) => {
 };
 
 let calendarResponsibleFilterInitialized = false;
-let selectedCalendarResponsibleEmail = "";
+let selectedCalendarResponsibleId = "";
 
 const initCalendarResponsibleFilter = async (currentCrmUser) => {
   if (calendarResponsibleFilterInitialized) return;
@@ -718,7 +718,7 @@ const initCalendarResponsibleFilter = async (currentCrmUser) => {
 
   const { data: users, error } = await client
     .from("crm_users")
-    .select("nome, email, cargo, ativo")
+    .select("id, nome, email, cargo, ativo")
     .eq("ativo", true)
     .order("nome", { ascending: true });
 
@@ -731,13 +731,13 @@ const initCalendarResponsibleFilter = async (currentCrmUser) => {
   users.forEach((u) => {
     const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
     const option = document.createElement("option");
-    option.value = u.email;
+    option.value = u.id;
     option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
     selectEl.appendChild(option);
   });
 
   selectEl.addEventListener("change", (e) => {
-    selectedCalendarResponsibleEmail = e.target.value;
+    selectedCalendarResponsibleId = e.target.value;
     loadAppointments();
   });
 };
@@ -1752,8 +1752,8 @@ const loadAppointments = async () => {
     .order("data_agendamento")
     .order("hora_agendamento");
 
-  if (selectedCalendarResponsibleEmail) {
-    query = query.eq("assigned_to_email", selectedCalendarResponsibleEmail);
+  if (selectedCalendarResponsibleId) {
+    query = query.eq("usuario_id", selectedCalendarResponsibleId);
   }
 
   const { data, error } = await query;
@@ -1794,10 +1794,6 @@ appointmentForm?.addEventListener("submit", async (event) => {
   const submitButton = appointmentForm.querySelector("button[type='submit']");
   submitButton.disabled = true;
   submitButton.textContent = "Salvando...";
-  const crmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
-  const responsibleEmail = crmUser?.email || user.email || null;
-  const responsibleName = crmUser?.nome || crmUser?.email || user.email || null;
-
   const payload = {
     lead_id: String(formData.get("lead_id") || "").trim() || null,
     nome_cliente: String(formData.get("nome_cliente") || "").trim(),
@@ -1808,8 +1804,6 @@ appointmentForm?.addEventListener("submit", async (event) => {
     hora_agendamento: `${time}:00`,
     observacao: String(formData.get("observacao") || "").trim() || null,
     status: "agendado",
-    assigned_to_email: responsibleEmail,
-    assigned_to_name: responsibleName,
   };
 
   const appointmentId = String(formData.get("id") || "").trim();

@@ -153,6 +153,20 @@ async function listCrmUserAvatars() {
   };
 }
 
+async function updateOwnProfile(crmUser, profile) {
+  const nome = String(profile?.nome || '').trim();
+  if (!nome) return { status: 400, error: 'Informe o nome do perfil.' };
+
+  const { data, error } = await supabase
+    .from('crm_users')
+    .update({ nome, updated_at: new Date().toISOString() })
+    .eq('id', crmUser.id)
+    .select('id,email,nome,cargo,ativo,updated_at')
+    .single();
+  if (error) return { status: 500, error: error.message };
+  return { status: 200, user: data };
+}
+
 async function manageCommercialTeams(action, data, crmUser) {
   const role = normalizeRole(crmUser.cargo);
   const isAdmin = ADMIN_ROLES.has(role) || role === 'coordenador-rh';
@@ -309,6 +323,11 @@ module.exports = async (req, res) => {
       const result = await listCrmUserAvatars();
       if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });
       return sendJson(res, 200, { ok: true, avatars: result.avatars });
+    }
+    if (payload.profile) {
+      const result = await updateOwnProfile(crmUser, payload.profile);
+      if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });
+      return sendJson(res, 200, { ok: true, user: result.user });
     }
     if (!ADMIN_ROLES.has(normalizeRole(crmUser.cargo))) {
       return sendJson(res, 403, { ok: false, error: 'Usuario sem permissao para salvar permissoes.' });

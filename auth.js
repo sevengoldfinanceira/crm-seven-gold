@@ -179,6 +179,12 @@
     }
 
     const role = normalizeRole(userRole);
+    const normalizedArea = String(areaKey).trim().toLowerCase();
+
+    // Todo usuário autenticado pode visualizar e editar apenas o próprio perfil.
+    if (["perfil", "profile", "meu-perfil"].includes(normalizedArea)) {
+      return true;
+    }
 
     if (isAdminRole(role)) {
       return true;
