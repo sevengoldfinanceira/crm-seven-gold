@@ -18242,17 +18242,17 @@ body[data-is-admin="true"] .commission-admin-link[data-admin-only]{display:inlin
 
 /* === LEVEL CARDS ENHANCED === */
 .commission-level-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
-.commission-level-card{position:relative;display:flex;flex-direction:column;min-width:0;padding:20px 17px;border-radius:16px;border:1px solid rgba(220,224,234,.9);background:rgba(255,255,255,.96);box-shadow:0 4px 16px rgba(42,48,82,.05);transition:all .25s ease;overflow:hidden}
+.commission-level-card{position:relative;display:flex;flex-direction:column;justify-content:center;min-width:0;padding:24px 20px;border-radius:16px;border:1px solid rgba(220,224,234,.9);background:rgba(255,255,255,.96);box-shadow:0 4px 16px rgba(42,48,82,.05);transition:all .25s ease;overflow:hidden;min-height:160px}
 .commission-level-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#d4a843,#f0d58a);opacity:0;transition:opacity .25s}
 .commission-level-card:hover{transform:translateY(-4px);border-color:rgba(216,160,24,.4);box-shadow:0 12px 32px rgba(42,48,82,.1)}
 .commission-level-card:hover::before{opacity:1}
-.commission-level-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#7d3db4;background:#f4eaff;border:1px solid #e4cff9}
-.commission-level-icon svg{width:20px}
-.commission-level-number{position:absolute;right:14px;top:16px;color:#b17c08;font-size:.6rem;font-weight:850;text-transform:uppercase;letter-spacing:.04em}
-.commission-level-card h2{margin:12px 0 4px;color:#15162f;font-size:.88rem;font-weight:700}
-.commission-level-range{margin:0;color:#16815b;font-size:.8rem;line-height:1.4}
+.commission-level-icon{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;color:#7d3db4;background:#f4eaff;border:1px solid #e4cff9}
+.commission-level-icon svg{width:22px}
+.commission-level-number{position:absolute;right:16px;top:18px;color:#b17c08;font-size:.62rem;font-weight:850;text-transform:uppercase;letter-spacing:.04em}
+.commission-level-card h2{margin:16px 0 6px;color:#15162f;font-size:.92rem;font-weight:700}
+.commission-level-range{margin:0;color:#16815b;font-size:.84rem;line-height:1.5}
 .commission-level-range strong{font-weight:800}
-.commission-level-sub{margin:2px 0 0;color:#9ca3af;font-size:.65rem}
+.commission-level-sub{margin:4px 0 0;color:#9ca3af;font-size:.68rem}
 
 /* === STATS ROW === */
 .commission-stats-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
