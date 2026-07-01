@@ -2535,7 +2535,7 @@
 
   // Perform search / filtering on the active view
   const performSearch = () => {
-    state.searchQuery = searchInput.value || '';
+    state.searchQuery = searchInput?.value || '';
     if (state.activeTab === 'lista') {
       renderListView();
     } else if (state.activeTab === 'hierarquia') {
