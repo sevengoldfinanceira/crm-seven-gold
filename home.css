@@ -18217,6 +18217,134 @@ body.theme-dark .commission-premium-shell{background:linear-gradient(135deg,#0d0
 @media(max-width:720px){.commission-premium-shell{padding:12px!important}.commission-premium-header,.commission-table-section{padding:16px;border-radius:17px}.commission-title-block{align-items:flex-start}.commission-level-grid{grid-template-columns:1fr}.commission-level-card p{min-height:0}.commission-strategic-callout{grid-template-columns:auto 1fr}.commission-strategic-callout button{grid-column:1/-1;justify-content:center}.commission-section-heading{align-items:flex-start}.commission-about-card dl{grid-template-columns:1fr}.commission-subarea-heading{align-items:flex-start;flex-direction:column}.commission-category-tabs{margin:0 -2px}.commission-data-table th,.commission-data-table td{padding:11px 12px}}
 .commission-export-button[aria-disabled="true"]{cursor:not-allowed;opacity:.72}
 
+/* === HEADER DECORATION === */
+.commission-header-decoration{position:absolute;right:30px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:12px;pointer-events:none;opacity:.55}
+.commission-deco-line{width:60px;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,#d4a843)}
+.commission-deco-circle{width:18px;height:18px;border-radius:50%;border:2px solid #d4a843;background:rgba(212,168,67,.12)}
+.commission-deco-percent{font-size:2.8rem;font-weight:800;color:rgba(212,168,67,.18);font-family:'Inter',sans-serif;line-height:1}
+
+/* === HEADER ENHANCED === */
+.commission-premium-header{position:relative;overflow:hidden}
+.commission-premium-header::after{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,67,.08) 0%,transparent 70%);pointer-events:none}
+.commission-eyebrow{letter-spacing:.14em!important;font-size:.62rem!important}
+
+/* === CATEGORY TABS ENHANCED === */
+.commission-category-tabs button{display:inline-flex;align-items:center;gap:6px}
+.commission-category-tabs button svg{width:14px;height:14px;opacity:.7}
+.commission-category-tabs button.active svg{opacity:1}
+.commission-category-tabs button:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(216,160,24,.15)}
+
+/* === LEVEL CARDS ENHANCED === */
+.commission-level-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.commission-level-card{position:relative;display:flex;flex-direction:column;min-width:0;padding:20px 17px;border-radius:16px;border:1px solid rgba(220,224,234,.9);background:rgba(255,255,255,.96);box-shadow:0 4px 16px rgba(42,48,82,.05);transition:all .25s ease;overflow:hidden}
+.commission-level-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#d4a843,#f0d58a);opacity:0;transition:opacity .25s}
+.commission-level-card:hover{transform:translateY(-4px);border-color:rgba(216,160,24,.4);box-shadow:0 12px 32px rgba(42,48,82,.1)}
+.commission-level-card:hover::before{opacity:1}
+.commission-level-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#7d3db4;background:#f4eaff;border:1px solid #e4cff9}
+.commission-level-icon svg{width:20px}
+.commission-level-number{position:absolute;right:14px;top:16px;color:#b17c08;font-size:.6rem;font-weight:850;text-transform:uppercase;letter-spacing:.04em}
+.commission-level-card h2{margin:12px 0 4px;color:#15162f;font-size:.88rem;font-weight:700}
+.commission-level-range{margin:0;color:#16815b;font-size:.8rem;line-height:1.4}
+.commission-level-range strong{font-weight:800}
+.commission-level-sub{margin:2px 0 0;color:#9ca3af;font-size:.65rem}
+
+/* === STATS ROW === */
+.commission-stats-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.commission-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;flex:1;min-width:0}
+.commission-stat-card{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;border:1px solid rgba(220,224,234,.9);background:rgba(255,255,255,.96);box-shadow:0 2px 8px rgba(42,48,82,.04);transition:all .2s}
+.commission-stat-card:hover{box-shadow:0 6px 20px rgba(42,48,82,.08)}
+.commission-stat-icon{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto}
+.commission-stat-icon svg{width:18px}
+.stat-icon-table{color:#7d3db4;background:#f4eaff;border:1px solid #e4cff9}
+.stat-icon-levels{color:#b45d3d;background:#fff0e8;border:1px solid #f5dcc8}
+.stat-icon-payment{color:#16815b;background:#e8f9ef;border:1px solid #c6edd6}
+.commission-stat-content strong{display:block;margin:0;color:#15162f;font-size:.82rem;font-weight:700}
+.commission-stat-content p{margin:2px 0 0;color:#788196;font-size:.7rem}
+
+/* === EXPORT BUTTON PREMIUM === */
+.commission-export-button{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 20px;border:none;border-radius:12px;background:linear-gradient(135deg,#1a1035,#2d1b69);color:#f0d58a;font-size:.78rem;font-weight:800;text-decoration:none;box-shadow:0 4px 16px rgba(26,16,53,.25);transition:all .25s;white-space:nowrap;flex:0 0 auto}
+.commission-export-button svg{width:16px}
+.commission-export-button:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(26,16,53,.35);background:linear-gradient(135deg,#241545,#3d2580)}
+.commission-export-button[aria-disabled="true"]{cursor:not-allowed;opacity:.72}
+
+/* === TABLE ENHANCED === */
+.commission-table-card{border:1px solid #e7e9ef;border-radius:18px;background:#fff;overflow:hidden;box-shadow:0 4px 20px rgba(42,48,82,.06)}
+.commission-data-table{width:100%;min-width:700px;border-collapse:collapse}
+.commission-data-table th{padding:14px 16px;background:linear-gradient(135deg,#f3f0ff,#ede8fc);color:#5b3d8f;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;font-weight:750;border-bottom:2px solid #e4cff9;text-align:left}
+.commission-data-table th:first-child{color:#15162f;font-weight:800}
+.commission-data-table th i{width:13px;height:13px;vertical-align:middle;margin-right:4px;opacity:.7}
+.commission-data-table td{padding:13px 16px;border-bottom:1px solid #f0f1f5;font-size:.78rem;color:#4c5569;transition:background .15s}
+.commission-data-table tr:hover td{background:#fafbff}
+.commission-data-table tr:last-child td{border-bottom:0}
+.commission-data-table .featured-row td{background:#fffaf0;border-bottom-color:#f5e6c0}
+.commission-data-table td:first-child{font-weight:700;color:#15162f}
+.commission-value-pill{display:inline-flex;padding:5px 12px;border-radius:999px;background:#e8f9f2;color:#16815b;font-weight:800;font-size:.76rem;letter-spacing:.01em}
+.commission-table-note{display:flex;align-items:center;gap:8px;margin:0;padding:14px 18px;border-top:1px solid #f0f1f5;background:linear-gradient(90deg,#fafbff,#f8f7fc);color:#727b8e;font-size:.72rem;line-height:1.5;border-radius:0 0 18px 18px}
+.commission-table-note svg{width:15px;height:15px;flex:0 0 auto;color:#9ca3af}
+
+/* === STRATEGIC CALLOUT PREMIUM === */
+.commission-strategic-callout{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:18px;padding:24px 28px;border-radius:20px;border:1px solid rgba(127,61,180,.18);background:linear-gradient(135deg,#faf7ff 0%,#f0e8ff 40%,#ede2ff 100%);box-shadow:0 8px 32px rgba(127,61,180,.08);transition:all .25s}
+.commission-strategic-callout:hover{box-shadow:0 12px 40px rgba(127,61,180,.12);transform:translateY(-2px)}
+.commission-strategic-icon{width:50px;height:50px;border-radius:15px;background:linear-gradient(135deg,#7d3db4,#9b5fd4);border:none;color:#fff;display:grid;place-items:center;box-shadow:0 4px 16px rgba(125,61,180,.3)}
+.commission-strategic-icon svg{width:22px}
+.commission-strategic-callout>div>p{margin:0 0 4px;color:#7d3db4;font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.commission-strategic-callout h2{margin:0 0 6px;color:#1a1035;font-size:1.15rem;font-weight:800}
+.commission-strategic-callout>div>span{color:#6b7280;font-size:.78rem;line-height:1.5}
+.commission-strategic-callout button{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 22px;border:none;border-radius:12px;background:linear-gradient(135deg,#1a1035,#2d1b69);color:#f0d58a;font-size:.78rem;font-weight:800;box-shadow:0 4px 16px rgba(26,16,53,.25);transition:all .25s}
+.commission-strategic-callout button svg{width:16px}
+.commission-strategic-callout button:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(26,16,53,.35);background:linear-gradient(135deg,#241545,#3d2580)}
+
+/* === RESPONSIVE === */
+@media(max-width:1180px){
+  .commission-level-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .commission-stats-grid{grid-template-columns:repeat(3,1fr)}
+  .commission-header-decoration{display:none}
+}
+@media(max-width:720px){
+  .commission-premium-shell{padding:12px!important}
+  .commission-premium-header,.commission-table-section{padding:16px;border-radius:17px}
+  .commission-title-block{align-items:flex-start}
+  .commission-level-grid{grid-template-columns:1fr 1fr}
+  .commission-level-card p{min-height:0}
+  .commission-stats-row{flex-direction:column;align-items:stretch}
+  .commission-stats-grid{grid-template-columns:1fr}
+  .commission-export-button{align-self:flex-end}
+  .commission-strategic-callout{grid-template-columns:1fr;text-align:center;gap:14px;padding:20px}
+  .commission-strategic-icon{margin:0 auto}
+  .commission-strategic-callout button{justify-content:center}
+  .commission-category-tabs{margin:0 -2px;flex-wrap:nowrap}
+  .commission-data-table th,.commission-data-table td{padding:11px 12px;font-size:.72rem}
+  .commission-header-decoration{display:none}
+}
+@media(max-width:480px){
+  .commission-level-grid{grid-template-columns:1fr}
+  .commission-category-tabs button{font-size:.7rem;padding:0 12px;min-height:36px}
+}
+
+/* === DARK MODE ENHANCED === */
+body.theme-dark .commission-stat-card{border-color:rgba(255,255,255,.09);background:#18131e;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+body.theme-dark .commission-stat-content strong{color:#f8f5fb}
+body.theme-dark .commission-stat-content p{color:#9ca3af}
+body.theme-dark .commission-level-card{background:#18131e;border-color:rgba(255,255,255,.09)}
+body.theme-dark .commission-level-card h2{color:#f8f5fb}
+body.theme-dark .commission-level-range{color:#6ee7b7}
+body.theme-dark .commission-level-sub{color:#6b7280}
+body.theme-dark .commission-table-card{border-color:rgba(255,255,255,.09);background:#18131e}
+body.theme-dark .commission-data-table th{background:linear-gradient(135deg,#211a29,#2a1f38);color:#c4b5d4;border-bottom-color:rgba(255,255,255,.07)}
+body.theme-dark .commission-data-table th:first-child{color:#f8f5fb}
+body.theme-dark .commission-data-table td{color:#d9d4df;border-bottom-color:rgba(255,255,255,.05)}
+body.theme-dark .commission-data-table tr:hover td{background:rgba(255,255,255,.02)}
+body.theme-dark .commission-data-table .featured-row td{background:#2a2116}
+body.theme-dark .commission-table-note{background:linear-gradient(90deg,#151019,#1a1424);border-top-color:rgba(255,255,255,.05);color:#9ca3af}
+body.theme-dark .commission-strategic-callout{background:linear-gradient(135deg,#18131e,#25172e);border-color:rgba(127,61,180,.2)}
+body.theme-dark .commission-strategic-callout>div>p{color:#c4a0f0}
+body.theme-dark .commission-strategic-callout h2{color:#f8f5fb}
+body.theme-dark .commission-strategic-callout>div>span{color:#9ca3af}
+body.theme-dark .commission-header-decoration{opacity:.3}
+body.theme-dark .commission-deco-line{background:linear-gradient(90deg,transparent,rgba(212,168,67,.4))}
+body.theme-dark .commission-deco-circle{border-color:rgba(212,168,67,.4);background:rgba(212,168,67,.06)}
+body.theme-dark .commission-deco-percent{color:rgba(212,168,67,.1)}
+
 /* Organograma: centralização dos textos dos setores e cargos */
 .eq-sector-card { text-align: center; }
 .eq-sector-header {

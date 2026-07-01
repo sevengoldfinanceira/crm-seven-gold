@@ -23,35 +23,119 @@
         <div class="commission-title-block">
           <span class="commission-title-icon"><i data-lucide="percent"></i></span>
           <div>
-            <p class="commission-eyebrow">Estrutura comercial</p>
+            <p class="commission-eyebrow">ESTRUTURA COMERCIAL</p>
             <h1>Comissões</h1>
-            <p>Estruturas de comissão por nível e categoria. Consulte os percentuais de cada tabela.</p>
+            <p>Estruturas de comissão por nível e categoria.<br>Consulte os percentuais de cada tabela.</p>
           </div>
         </div>
+        <div class="commission-header-decoration" aria-hidden="true">
+          <span class="commission-deco-line"></span>
+          <span class="commission-deco-circle"></span>
+          <span class="commission-deco-percent">%</span>
+        </div>
         <nav class="commission-category-tabs" aria-label="Categorias de comissão">
-          <button type="button" class="active" data-commission-area="commercial">Comercial</button>
-          <button type="button" data-commission-area="strategic">Expansão / Estratégico</button>
-          <button type="button" data-commission-area="other">Outros departamentos</button>
-          <button type="button" data-commission-area="strategic">Tabelas estratégicas</button>
+          <button type="button" class="active" data-commission-area="commercial"><i data-lucide="briefcase"></i> Comercial</button>
+          <button type="button" data-commission-area="strategic"><i data-lucide="trophy"></i> Expansão / Estratégico</button>
+          <button type="button" data-commission-area="other"><i data-lucide="layout-grid"></i> Outros departamentos</button>
+          <button type="button" data-commission-area="strategic"><i data-lucide="shield"></i> Tabelas estratégicas</button>
         </nav>
       </header>
 
       <section class="commission-area active" data-commission-panel="commercial">
+        <div class="commission-level-grid">
+          <article class="commission-level-card">
+            <span class="commission-level-icon"><i data-lucide="headphones"></i></span>
+            <span class="commission-level-number">Nível 01</span>
+            <h2>Home Office</h2>
+            <p class="commission-level-range"><strong>0,15%</strong> até <strong>0,75%</strong></p>
+            <p class="commission-level-sub">Mín. até Máx.</p>
+          </article>
+          <article class="commission-level-card">
+            <span class="commission-level-icon"><i data-lucide="clipboard-check"></i></span>
+            <span class="commission-level-number">Nível 02</span>
+            <h2>Assistente de Vendas</h2>
+            <p class="commission-level-range"><strong>0,10%</strong> até <strong>0,25%</strong></p>
+            <p class="commission-level-sub">Mín. até Máx.</p>
+          </article>
+          <article class="commission-level-card">
+            <span class="commission-level-icon"><i data-lucide="briefcase-business"></i></span>
+            <span class="commission-level-number">Nível 03</span>
+            <h2>Consultor de Vendas</h2>
+            <p class="commission-level-range"><strong>0,55%</strong> até <strong>2,55%</strong></p>
+            <p class="commission-level-sub">Mín. até Máx.</p>
+          </article>
+          <article class="commission-level-card">
+            <span class="commission-level-icon"><i data-lucide="users-round"></i></span>
+            <span class="commission-level-number">Nível 04</span>
+            <h2>Coordenador</h2>
+            <p class="commission-level-range"><strong>0,15%</strong> até <strong>0,75%</strong></p>
+            <p class="commission-level-sub">Mín. até Máx.</p>
+          </article>
+          <article class="commission-level-card">
+            <span class="commission-level-icon"><i data-lucide="shield-check"></i></span>
+            <span class="commission-level-number">Nível 05</span>
+            <h2>Supervisor</h2>
+            <p class="commission-level-range"><strong>0,20%</strong> até <strong>0,85%</strong></p>
+            <p class="commission-level-sub">Mín. até Máx.</p>
+          </article>
+        </div>
+
+        <div class="commission-stats-row">
+          <div class="commission-stats-grid">
+            <div class="commission-stat-card">
+              <span class="commission-stat-icon stat-icon-table"><i data-lucide="file-text"></i></span>
+              <div class="commission-stat-content">
+                <strong>7 tabelas</strong>
+                <p>Tab 01 até Tab 07</p>
+              </div>
+            </div>
+            <div class="commission-stat-card">
+              <span class="commission-stat-icon stat-icon-levels"><i data-lucide="users"></i></span>
+              <div class="commission-stat-content">
+                <strong>5 níveis comerciais</strong>
+                <p>Home Office até Supervisor</p>
+              </div>
+            </div>
+            <div class="commission-stat-card">
+              <span class="commission-stat-icon stat-icon-payment"><i data-lucide="circle-dollar-sign"></i></span>
+              <div class="commission-stat-content">
+                <strong>Pagamento</strong>
+                <p>Sobre vendas confirmadas</p>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="commission-export-button" data-commission-file title="Arquivo para exportação será adicionado posteriormente"><i data-lucide="file-down"></i> Exportar PDF</button>
+        </div>
+
         <section class="commission-table-section">
-          <header class="commission-section-heading">
-            <div><span>Consulta comercial</span><h2>Tabelas de Comissões por Nível</h2></div>
-            <button type="button" class="commission-export-button" data-commission-file title="Arquivo para exportação será adicionado posteriormente"><i data-lucide="file-down"></i> PDF</button>
-          </header>
           <div class="commission-table-card">
-            <div class="commission-table-scroll"><table class="commission-data-table"><thead><tr><th>Tabela</th><th>Home Office</th><th>Assist. de Vendas</th><th>Consultor de Vendas</th><th>Coordenador</th><th>Supervisor</th></tr></thead><tbody data-commission-table-body></tbody></table></div>
-            <p class="commission-table-note">Pagamento sobre vendas efetuadas, confirmadas e checadas. Valores referentes à comissão / repasse de cada nível.</p>
+            <div class="commission-table-scroll">
+              <table class="commission-data-table">
+                <thead>
+                  <tr>
+                    <th>TABELA</th>
+                    <th><i data-lucide="headphones"></i> HOME OFFICE</th>
+                    <th><i data-lucide="clipboard-check"></i> ASSIST. DE VENDAS</th>
+                    <th><i data-lucide="briefcase-business"></i> CONSULTOR DE VENDAS</th>
+                    <th><i data-lucide="users-round"></i> COORDENADOR</th>
+                    <th><i data-lucide="shield-check"></i> SUPERVISOR</th>
+                  </tr>
+                </thead>
+                <tbody data-commission-table-body></tbody>
+              </table>
+            </div>
+            <p class="commission-table-note"><i data-lucide="info"></i> Pagamento sobre vendas efetuadas, confirmadas e checadas. Valores referentes à comissão / repasse de cada nível.</p>
           </div>
         </section>
 
         <article class="commission-strategic-callout">
           <span class="commission-strategic-icon"><i data-lucide="crown"></i></span>
-          <div><p>Expansão Seven Gold</p><h2>Níveis Estratégicos e Expansão</h2><span>Acesse as tabelas de Representante Junior, Representante Pleno, Submaster e outras estruturas estratégicas da empresa.</span></div>
-          <button type="button" data-open-strategic>Acessar Tabelas Estratégicas <i data-lucide="arrow-right"></i></button>
+          <div>
+            <p>Expansão Seven Gold</p>
+            <h2>Níveis Estratégicos e Expansão</h2>
+            <span>Acesse as tabelas de Representante Junior, Representante Pleno, Submaster e outras estruturas estratégicas da empresa.</span>
+          </div>
+          <button type="button" data-open-strategic>Acessar tabelas estratégicas <i data-lucide="arrow-right"></i></button>
         </article>
       </section>
 
