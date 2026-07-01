@@ -17,12 +17,28 @@
 
   let levels = JSON.parse(JSON.stringify(defaultLevels));
   let strategic = JSON.parse(JSON.stringify(defaultStrategic));
+  let allRules = [];
+  let isAdmin = false;
 
   const tableBody = document.querySelector('[data-commission-table-body]');
 
+  const isUserAdmin = () => {
+    const role = window.userRole || '';
+    const normalized = window.normalizeRole ? window.normalizeRole(role) : role.toLowerCase().replace(/\s+/g, '-');
+    return ['dono', 'administrador', 'diretor-ceo', 'admin'].includes(normalized);
+  };
+
   const renderCommercialTable = () => {
     tableBody.innerHTML = tabs.map((tab, index) => {
-      const cells = levels.map(level => `<td><span class="commission-value-pill">${level.commission[index]}</span></td>`).join('');
+      const cells = levels.map((level, li) => {
+        const val = level.commission[index];
+        const rule = allRules.find(r => r.level_id === level.id && r.table_index === index);
+        const ruleId = rule ? ` data-rule-id="${rule.id}"` : '';
+        if (isAdmin && rule) {
+          return `<td><span class="commission-value-pill editable-cell"${ruleId}>${val}<button type="button" class="edit-pencil" data-edit-cell title="Editar"><i data-lucide="pencil"></i></button></span></td>`;
+        }
+        return `<td><span class="commission-value-pill">${val}</span></td>`;
+      }).join('');
       return `<tr${index===0?' class="featured-row"':''}><td><strong>${tab}</strong></td>${cells}</tr>`;
     }).join('');
     window.lucide?.createIcons();
@@ -47,6 +63,63 @@
     if(area==='strategic') selectStrategic(strategic[0].id);
   };
 
+  const saveField = async (ruleId, value) => {
+    const client = window.sevenGoldAuth;
+    if (!client || !ruleId) return false;
+    const { error } = await client.from('commission_rules').update({ commission_value: value }).eq('id', ruleId);
+    if (error) { console.error('Erro ao salvar:', error); return false; }
+    const rule = allRules.find(r => r.id === ruleId);
+    if (rule) rule.commission_value = value;
+    return true;
+  };
+
+  const startEdit = (cell) => {
+    if (cell.classList.contains('editing')) return;
+    const ruleId = cell.dataset.ruleId;
+    if (!ruleId) return;
+
+    const currentVal = cell.childNodes[0].textContent.trim();
+    cell.classList.add('editing');
+    const pencil = cell.querySelector('.edit-pencil');
+    if (pencil) pencil.style.display = 'none';
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentVal;
+    input.className = 'edit-input';
+    cell.textContent = '';
+    cell.appendChild(input);
+    input.focus();
+    input.select();
+
+    const finishEdit = async (save) => {
+      cell.classList.remove('editing');
+      const newVal = input.value.trim();
+      if (save && newVal && newVal !== currentVal) {
+        cell.innerHTML = `<span class="edit-loading"></span>`;
+        const ok = await saveField(ruleId, newVal);
+        if (ok) {
+          const rule = allRules.find(r => r.id === ruleId);
+          if (rule) {
+            const level = levels.find(l => l.id === rule.level_id);
+            if (level) level.commission[rule.table_index] = newVal;
+          }
+          renderCommercialTable();
+        } else {
+          renderCommercialTable();
+        }
+      } else {
+        renderCommercialTable();
+      }
+    };
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); finishEdit(true); }
+      if (e.key === 'Escape') { finishEdit(false); }
+    });
+    input.addEventListener('blur', () => finishEdit(true));
+  };
+
   const loadFromSupabase = async () => {
     const client = window.sevenGoldAuth;
     if (!client) return false;
@@ -57,6 +130,8 @@
         .order('level_sort', { ascending: true })
         .order('table_index', { ascending: true });
       if (error || !data || !data.length) return false;
+
+      allRules = data;
 
       const commercialRules = data.filter(r => r.category === 'commercial');
       if (commercialRules.length > 0) {
@@ -103,14 +178,7 @@
             return row;
           });
 
-          return {
-            id: levelId,
-            name: rules[0]?.level_name || def?.name || levelId,
-            file: def?.file || '',
-            headers,
-            rows,
-            note: def?.note || ''
-          };
+          return { id: levelId, name: rules[0]?.level_name || def?.name || levelId, file: def?.file || '', headers, rows, note: def?.note || '' };
         });
       }
       return true;
@@ -120,24 +188,40 @@
     }
   };
 
-  document.addEventListener('click',event=>{
-    const strategy=event.target.closest('[data-select-strategic]'); if(strategy){selectStrategic(strategy.dataset.selectStrategic); return;}
-    const area=event.target.closest('[data-commission-area]'); if(area){showArea(area.dataset.commissionArea,area); return;}
-    if(event.target.closest('[data-open-strategic]')) showArea('strategic');
-    if(event.target.closest('[data-back-commercial]')) showArea('commercial');
+  document.addEventListener('click', event => {
+    const editBtn = event.target.closest('[data-edit-cell]');
+    if (editBtn) {
+      const cell = editBtn.closest('.editable-cell');
+      if (cell) startEdit(cell);
+      return;
+    }
+    const editable = event.target.closest('.editable-cell');
+    if (editable && isAdmin) {
+      startEdit(editable);
+      return;
+    }
+
+    const strategy = event.target.closest('[data-select-strategic]');
+    if (strategy) { selectStrategic(strategy.dataset.selectStrategic); return; }
+    const area = event.target.closest('[data-commission-area]');
+    if (area) { showArea(area.dataset.commissionArea, area); return; }
+    if (event.target.closest('[data-open-strategic]')) showArea('strategic');
+    if (event.target.closest('[data-back-commercial]')) showArea('commercial');
   });
 
-  loadFromSupabase().then(() => {
-    renderCommercialTable();
-    if (strategicTabs) selectStrategic(strategic[0].id);
+  const init = async () => {
+    isAdmin = isUserAdmin();
     const checkAdmin = () => {
-      const role = window.userRole || '';
-      const normalized = window.normalizeRole ? window.normalizeRole(role) : role.toLowerCase().replace(/\s+/g, '-');
-      if (['dono', 'administrador', 'diretor-ceo', 'admin'].includes(normalized)) {
-        document.body.setAttribute('data-is-admin', 'true');
-      }
+      if (!isAdmin) isAdmin = isUserAdmin();
+      if (isAdmin) document.body.setAttribute('data-is-admin', 'true');
     };
     checkAdmin();
     setTimeout(checkAdmin, 500);
-  });
+
+    await loadFromSupabase();
+    renderCommercialTable();
+    if (strategicTabs) selectStrategic(strategic[0].id);
+  };
+
+  init();
 })();

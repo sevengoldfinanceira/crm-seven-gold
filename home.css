@@ -18285,6 +18285,22 @@ body[data-is-admin="true"] .commission-admin-link[data-admin-only]{display:inlin
 .commission-data-table .featured-row td{background:#fffaf0;border-bottom-color:#f5e6c0}
 .commission-data-table td:first-child{font-weight:700;color:#15162f}
 .commission-value-pill{display:inline-flex;padding:5px 12px;border-radius:999px;background:#e8f9f2;color:#16815b;font-weight:800;font-size:.76rem;letter-spacing:.01em}
+.commission-value-pill.editable-cell{position:relative;cursor:pointer;gap:4px;transition:all .15s}
+.commission-value-pill.editable-cell:hover{border:1px solid rgba(22,129,91,.3);background:#d1f5e3}
+.commission-value-pill.editable-cell .edit-pencil{display:none;align-items:center;justify-content:center;width:20px;height:20px;border:none;border-radius:50%;background:rgba(22,129,91,.15);color:#16815b;cursor:pointer;padding:0;transition:all .15s;flex:0 0 auto}
+.commission-value-pill.editable-cell:hover .edit-pencil{display:inline-flex}
+.commission-value-pill.editable-cell .edit-pencil:hover{background:rgba(22,129,91,.3);transform:scale(1.1)}
+.commission-value-pill.editable-cell .edit-pencil svg{width:11px;height:11px}
+.commission-value-pill.editable-cell.editing{background:#fff;border:1px solid #7d3db4;padding:2px;box-shadow:0 0 0 3px rgba(125,61,180,.15)}
+.edit-input{width:80px;padding:4px 8px;border:none;border-radius:999px;background:transparent;font-size:.76rem;font-weight:800;color:#15162f;outline:none;font-family:inherit;text-align:center}
+.edit-loading{display:inline-block;width:14px;height:14px;border:2px solid #e8f9f2;border-top-color:#16815b;border-radius:50%;animation:edit-spin .6s linear infinite}
+@keyframes edit-spin{to{transform:rotate(360deg)}}
+
+body.theme-dark .commission-value-pill.editable-cell:hover{border-color:rgba(110,231,183,.4);background:#1a3328}
+body.theme-dark .commission-value-pill.editable-cell .edit-pencil{background:rgba(110,231,183,.15);color:#6ee7b7}
+body.theme-dark .commission-value-pill.editable-cell .edit-pencil:hover{background:rgba(110,231,183,.3)}
+body.theme-dark .commission-value-pill.editable-cell.editing{background:#211929;border-color:#7d3db4}
+body.theme-dark .edit-input{color:#d9d4df}
 .commission-table-note{display:flex;align-items:center;gap:8px;margin:0;padding:14px 18px;border-top:1px solid #f0f1f5;background:linear-gradient(90deg,#fafbff,#f8f7fc);color:#727b8e;font-size:.72rem;line-height:1.5;border-radius:0 0 18px 18px}
 .commission-table-note svg{width:15px;height:15px;flex:0 0 auto;color:#9ca3af}
 
