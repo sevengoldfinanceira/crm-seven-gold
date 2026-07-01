@@ -2461,12 +2461,7 @@
         <td style="text-align: right; position: relative;">
           <div style="display: inline-flex; align-items: center; gap: 8px;">
             <button class="eq-btn-outline btn-edit-colab" data-id="${p.id}" style="padding: 6px 12px; font-size: 0.75rem; border: 1.5px solid #d4af37; color: #d4af37; border-radius: 6px; background: #fff; font-weight: 600; cursor: pointer;" type="button">Editar</button>
-            <button class="eq-folder-menu-btn colab-row-menu-btn" data-id="${p.id}" type="button">
-              <i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i>
-            </button>
-            <div class="eq-context-menu" style="display: none; min-width: 140px; right: 0; top: 32px;">
-              <button type="button" class="delete btn-delete-colab" data-id="${p.id}"><i data-lucide="trash-2"></i> Excluir</button>
-            </div>
+            <button class="btn-delete-colab" data-id="${p.id}" type="button" style="padding: 6px 12px; font-size: 0.75rem; border: 1.5px solid #ef4444; color: #ef4444; border-radius: 6px; background: #fff; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
           </div>
         </td>
       `;
@@ -2483,21 +2478,9 @@
         openEditColabModal(p.id);
       });
 
-      // Three vertical dots menu
-      const menuBtn = tr.querySelector(".colab-row-menu-btn");
-      const ctxMenu = tr.querySelector(".eq-context-menu");
-      menuBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        document.querySelectorAll(".eq-context-menu").forEach(el => {
-          if (el !== ctxMenu) el.style.display = "none";
-        });
-        ctxMenu.style.display = ctxMenu.style.display === "flex" ? "none" : "flex";
-      });
-
-      // Delete action inside context menu
+      // Delete action
       tr.querySelector(".btn-delete-colab").addEventListener("click", async (e) => {
         e.stopPropagation();
-        ctxMenu.style.display = "none";
         if (confirm(`Tem certeza de que deseja excluir o colaborador "${p.full_name}"?`)) {
           try {
             await callCrmUserApi({ delete_user_id: p.id });
