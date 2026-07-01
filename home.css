@@ -14237,11 +14237,6 @@ body.theme-dark .eq-seller-conversion { background: rgba(37, 99, 235, .12); }
   overflow-x: auto;
   scroll-behavior: smooth;
   padding: 10px 0;
-  text-align: center;
-}
-.eq-sectors-wrapper > * {
-  margin-left: auto;
-  margin-right: auto;
 }
 /* Scroll indicators hide */
 .eq-sectors-wrapper::-webkit-scrollbar {
@@ -14252,12 +14247,14 @@ body.theme-dark .eq-seller-conversion { background: rgba(37, 99, 235, .12); }
   border-radius: 10px;
 }
 .eq-sectors-row {
-  display: inline-flex;
+  display: flex;
   gap: 15px;
   position: relative;
   padding: 10px 0;
   justify-content: center;
   flex-wrap: nowrap;
+  width: fit-content;
+  margin: 0 auto;
 }
 .eq-sectors-row::before {
   content: "";
