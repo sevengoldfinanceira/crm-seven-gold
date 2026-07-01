@@ -14237,6 +14237,8 @@ body.theme-dark .eq-seller-conversion { background: rgba(37, 99, 235, .12); }
   overflow-x: auto;
   scroll-behavior: smooth;
   padding: 10px 0;
+  display: flex;
+  justify-content: center;
 }
 /* Scroll indicators hide */
 .eq-sectors-wrapper::-webkit-scrollbar {
@@ -14252,7 +14254,8 @@ body.theme-dark .eq-seller-conversion { background: rgba(37, 99, 235, .12); }
   position: relative;
   padding: 10px 0;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  margin: 0 auto;
 }
 .eq-sectors-row::before {
   content: "";
