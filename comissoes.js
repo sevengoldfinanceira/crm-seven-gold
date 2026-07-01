@@ -1,5 +1,6 @@
 (function () {
   const tabs = ['Tab 01','Tab 02','Tab 03','Tab 04','Tab 05','Tab 06','Tab 07'];
+  const parcelHeaders = ['COD','1°','2°','3°','4°','5°','6°','7°','8°','9°','10°','11°','12°','13°','14°','15°','16°','17°','TOTAL'];
 
   const defaultLevels = [
     { id:'home-office', name:'Home Office', commission:['0,15%','0,25%','0,35%','0,45%','0,55%','0,65%','0,75%'], file:'assets/comissoes/home-office.png' },
@@ -10,9 +11,12 @@
   ];
 
   const defaultStrategic = [
-    { id:'representante-junior', name:'Representante Junior', file:'assets/comissoes/representante-junior.pdf', headers:['Tabela','Adesão','Parcelas','Total Pleno','Total Junior'], rows:[['Tab 01','0,40%','4,50%','5,30%','2,65%'],['Tab 02','0,70%','3,60%','5,00%','2,50%'],['Tab 03','1,25%','2,50%','5,00%','2,50%'],['Tab 04','1,35%','2,20%','4,90%','2,45%'],['Tab 05','1,50%','1,80%','4,80%','2,40%'],['Tab 06','1,75%','1,20%','4,70%','2,35%'],['Tab 07','2,00%','0,50%','4,50%','2,25%']], note:'Representante Junior recebe 50% das comissões, com MEI e pagamento direto pela administradora.' },
-    { id:'representante-pleno', name:'Representante Pleno', file:'assets/comissoes/representante-pleno.pdf', headers:['Tabela','Adesão','Parcelas','Total Pleno'], rows:[['Tab 01','0,80%','4,50%','5,30%'],['Tab 02','1,40%','3,60%','5,00%'],['Tab 03','2,50%','2,50%','5,00%'],['Tab 04','2,70%','2,20%','4,90%'],['Tab 05','3,00%','1,80%','4,80%'],['Tab 06','3,50%','1,20%','4,70%'],['Tab 07','4,00%','0,50%','4,50%']], note:'Representante Pleno recebe 100% das comissões, com CNPJ próprio e parceria direta.' },
-    { id:'submaster', name:'Submaster', file:'assets/comissoes/comissao-submaster.jpeg', headers:['Tabela','Quando a venda fechar','Comissão','Observação'], rows:tabs.map((tab,index)=>[tab,`Venda fechada na tabela ${index+1}`,['0,50%','1,00%','1,50%','1,85%','2,00%','2,25%','2,50%'][index],'Imposto 10% sobre comissão']), note:'O material também registra observação de pós-venda ABC Bank.' }
+    { id:'representante-junior', name:'Representante Junior', file:'assets/comissoes/representante-junior.pdf', note:'Representante Junior recebe 50% das comissões, com MEI e pagamento direto pela administradora.',
+      parcels:[[0.60,0.20,0.20,0.15,0.20,0.20,0.25,0.20,0.25,0.35,0.35,0.35,0.40,0.40,0.40,0.30,0.30],[1.00,0.20,0.20,0.20,0.30,0.30,0.30,0.35,0.35,0.30,0.40,0.40,0.40,0.30,null,null,null],[1.90,0.25,0.30,0.30,0.35,0.35,0.35,0.38,0.42,0.40,null,null,null,null,null,null,null],[2.50,0.25,0.35,0.35,0.30,0.35,0.35,0.45,0.15,null,null,null,null,null,null,null,null],[3.00,0.30,0.35,0.35,0.35,0.35,0.30,null,null,null,null,null,null,null,null,null,null],[3.70,0.25,0.30,0.30,0.35,0.10,null,null,null,null,null,null,null,null,null,null,null],[4.50,0.10,0.20,0.15,0.05,null,null,null,null,null,null,null,null,null,null,null,null]] },
+    { id:'representante-pleno', name:'Representante Pleno', file:'assets/comissoes/representante-pleno.pdf', note:'Representante Pleno recebe 100% das comissões, com CNPJ próprio e parceria direta.',
+      parcels:[[0.60,0.20,0.20,0.15,0.20,0.20,0.25,0.20,0.25,0.35,0.35,0.35,0.40,0.40,0.40,0.30,0.30],[1.00,0.20,0.20,0.20,0.30,0.30,0.30,0.35,0.35,0.30,0.40,0.40,0.40,0.30,null,null,null],[1.90,0.25,0.30,0.30,0.35,0.35,0.35,0.38,0.42,0.40,null,null,null,null,null,null,null],[2.50,0.25,0.35,0.35,0.30,0.35,0.35,0.45,0.15,null,null,null,null,null,null,null,null],[3.00,0.30,0.35,0.35,0.35,0.35,0.30,null,null,null,null,null,null,null,null,null,null],[3.70,0.25,0.30,0.30,0.35,0.10,null,null,null,null,null,null,null,null,null,null,null],[4.50,0.10,0.20,0.15,0.05,null,null,null,null,null,null,null,null,null,null,null,null]] },
+    { id:'submaster', name:'Submaster', file:'assets/comissoes/comissao-submaster.jpeg', note:'O material também registra observação de pós-venda ABC Bank.',
+      parcels:[[0.60,0.20,0.20,0.15,0.20,0.20,0.25,0.20,0.25,0.35,0.35,0.35,0.40,0.40,0.40,0.30,0.30],[1.00,0.20,0.20,0.20,0.30,0.30,0.30,0.35,0.35,0.30,0.40,0.40,0.40,0.30,null,null,null],[1.90,0.25,0.30,0.30,0.35,0.35,0.35,0.38,0.42,0.40,null,null,null,null,null,null,null],[2.50,0.25,0.35,0.35,0.30,0.35,0.35,0.45,0.15,null,null,null,null,null,null,null,null],[3.00,0.30,0.35,0.35,0.35,0.35,0.30,null,null,null,null,null,null,null,null,null,null],[3.70,0.25,0.30,0.30,0.35,0.10,null,null,null,null,null,null,null,null,null,null,null],[4.50,0.10,0.20,0.15,0.05,null,null,null,null,null,null,null,null,null,null,null,null]] }
   ];
 
   let levels = JSON.parse(JSON.stringify(defaultLevels));
@@ -47,14 +51,28 @@
     window.lucide?.createIcons();
   };
 
+  const formatParcel = (val) => {
+    if (val === null || val === undefined) return '';
+    return val.toFixed(2).replace('.', ',');
+  };
+
   const strategicTabs = document.querySelector('[data-strategic-tabs]');
   const selectStrategic = (id) => {
     const item = strategic.find(entry => entry.id === id) || strategic[0];
     strategicTabs.innerHTML = strategic.map(entry => `<button type="button" class="${entry.id===item.id?'active':''}" data-select-strategic="${entry.id}">${entry.name}</button>`).join('');
     document.querySelector('[data-strategic-title]').textContent = item.name;
     const strategicFile = document.querySelector('[data-strategic-file]'); strategicFile.dataset.intendedFile = item.file; strategicFile.setAttribute('aria-disabled', 'true');
-    document.querySelector('[data-strategic-head]').innerHTML = `<tr>${item.headers.map(header => `<th>${header}</th>`).join('')}</tr>`;
-    document.querySelector('[data-strategic-body]').innerHTML = item.rows.map((row, index) => `<tr class="${index===0?'featured-row':''}">${row.map((cell, column) => `<td>${column===0?`<strong>${cell}</strong>`:cell}</td>`).join('')}</tr>`).join('');
+
+    const head = document.querySelector('[data-strategic-head]');
+    head.innerHTML = `<tr>${parcelHeaders.map(h => `<th>${h}</th>`).join('')}</tr>`;
+
+    const body = document.querySelector('[data-strategic-body]');
+    body.innerHTML = item.parcels.map((row, index) => {
+      const total = row.reduce((sum, v) => sum + (v || 0), 0);
+      const cells = row.map(v => `<td>${v !== null && v !== undefined ? `<span class="commission-value-pill">${formatParcel(v)}</span>` : ''}</td>`).join('');
+      return `<tr class="${index===0?'featured-row':''}"><td><strong>${tabs[index]}</strong></td>${cells}<td><strong>${total.toFixed(2).replace('.', ',')}%</strong></td></tr>`;
+    }).join('');
+
     document.querySelector('[data-strategic-note]').textContent = item.note;
   };
 
@@ -134,28 +152,11 @@
         strategic = strategicIds.map(levelId => {
           const rules = strategicRules.filter(r => r.level_id === levelId).sort((a, b) => a.table_index - b.table_index);
           const def = defaultStrategic.find(d => d.id === levelId);
-          const extra = rules[0]?.extra || {};
-          const hasAdhesion = rules.some(r => r.adhesion);
-          const hasInstallments = rules.some(r => r.installments);
-          const hasTotal = rules.some(r => r.total);
-          let headers = ['Tabela'];
-          if (hasAdhesion) headers.push('Adesão');
-          if (hasInstallments) headers.push('Parcelas');
-          if (hasTotal) headers.push('Total');
-          if (levelId === 'representante-junior') headers.push('Total Junior');
-          if (levelId === 'submaster') headers.push('Observação');
-          if (def && headers.length <= 2) headers = def.headers;
-          const rows = rules.map(r => {
-            const rowExtra = r.extra || {};
-            let row = [r.table_label];
-            if (hasAdhesion) row.push(r.adhesion || '—');
-            if (hasInstallments) row.push(r.installments || '—');
-            if (hasTotal) row.push(r.total || '—');
-            if (levelId === 'representante-junior') row.push(extra.total_junior || rowExtra.total_junior || '—');
-            if (levelId === 'submaster') row.push(rowExtra.observation || '—');
-            return row;
+          const parcels = rules.map(r => {
+            const extra = typeof r.extra === 'string' ? JSON.parse(r.extra) : (r.extra || {});
+            return extra.parcels || [];
           });
-          return { id: levelId, name: rules[0]?.level_name || def?.name || levelId, file: def?.file || '', headers, rows, note: def?.note || '' };
+          return { id: levelId, name: rules[0]?.level_name || def?.name || levelId, file: def?.file || '', note: def?.note || '', parcels };
         });
       }
       return true;
