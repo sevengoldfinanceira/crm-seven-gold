@@ -66,6 +66,20 @@ const statusLabels = {
   venda_fechada: "Venda fechada",
 };
 
+const pipelineStatusOrder = [
+  "lead_recebido",
+  "primeiro_contato",
+  "agendamento",
+  "cliente_em_loja",
+  "proposta_enviada",
+  "venda_fechada",
+];
+
+const getNextPipelineStatus = (status) => {
+  const currentIndex = pipelineStatusOrder.indexOf(status);
+  return currentIndex >= 0 ? pipelineStatusOrder[currentIndex + 1] || null : null;
+};
+
 menuButton?.addEventListener("click", () => {
   document.body.classList.toggle("menu-open");
 });
@@ -2583,7 +2597,7 @@ const updateLeadCount = () => {
   leadCount.textContent = `${total} ${total === 1 ? "lead ativo" : "leads ativos"}`;
 };
 
-const updateLeadStageThroughApi = async (client, leadId, status) => {
+const updateLeadThroughApi = async (client, leadId, payload) => {
   const { data: sessionData } = await client.auth.getSession();
   const token = sessionData?.session?.access_token;
   if (!token) throw new Error("Sessão expirada. Entre novamente.");
@@ -2594,7 +2608,7 @@ const updateLeadStageThroughApi = async (client, leadId, status) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ lead_id: leadId, status }),
+    body: JSON.stringify({ lead_id: leadId, ...payload }),
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok || result.ok !== true) {
@@ -2602,6 +2616,9 @@ const updateLeadStageThroughApi = async (client, leadId, status) => {
   }
   return result.lead;
 };
+
+const updateLeadStageThroughApi = (client, leadId, status) =>
+  updateLeadThroughApi(client, leadId, { status });
 
 const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppointment = false } = {}) => {
   const client = getClient();
@@ -2611,6 +2628,16 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
   }
 
   const existingCard = document.querySelector(`[data-lead-id="${leadId}"]`);
+  const currentStatus = existingCard?.closest?.(".kanban-column")?.dataset.status || null;
+  if (currentStatus === status) return true;
+  if (currentStatus) {
+    const nextStatus = getNextPipelineStatus(currentStatus);
+    if (status !== nextStatus) {
+      const nextLabel = nextStatus ? statusLabels[nextStatus] : "nenhuma etapa";
+      alert(`Este lead só pode avançar para a próxima etapa: ${nextLabel}.`);
+      return false;
+    }
+  }
   let createdAppointment = null;
   if (status === "agendamento" && !skipAppointment) {
     createdAppointment = await requestAppointmentForLead(leadId);
@@ -3128,8 +3155,17 @@ leadForm?.addEventListener("submit", async (event) => {
 
   if (mode === "edit" && leadId) {
     const targetStatus = String(formData.get("status") || "lead_recebido").trim();
+    const originalStatus = String(leadForm.dataset.originalStatus || "").trim();
+    if (targetStatus !== originalStatus && targetStatus !== getNextPipelineStatus(originalStatus)) {
+      const nextStatus = getNextPipelineStatus(originalStatus);
+      const nextLabel = nextStatus ? statusLabels[nextStatus] : "nenhuma etapa";
+      submitButton.disabled = false;
+      submitButton.textContent = "Salvar Alteracoes";
+      setFormStatus(`Este lead só pode avançar para a próxima etapa: ${nextLabel}.`);
+      return;
+    }
     let appointment = null;
-    if (targetStatus === "agendamento" && leadForm.dataset.originalStatus !== "agendamento") {
+    if (targetStatus === "agendamento" && originalStatus !== "agendamento") {
       modal?.close();
       appointment = await requestAppointmentForLead(leadId, {
         name,
@@ -3143,31 +3179,32 @@ leadForm?.addEventListener("submit", async (event) => {
       }
     }
 
-    const crmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
-    const { error } = await client.from("leads").update({
-      name,
-      telefone: String(formData.get("telefone") || "").replace(/\D/g, ""),
-      status: targetStatus,
-      origin: String(formData.get("origin") || "").trim(),
-      note: String(formData.get("note") || "").trim(),
-      tags: tagsArray,
-      property_region: String(formData.get("property_region") || "").trim() || null,
-      credit_value: parseOptionalMoney(formData.get("credit_value")),
-      down_payment_value: parseOptionalMoney(formData.get("down_payment_value")),
-      installment_value: parseOptionalMoney(formData.get("installment_value")),
-      updated_by_email: crmUser?.email || user.email || null,
-      updated_by_name: crmUser?.nome || null,
-      updated_at: new Date().toISOString(),
-    }).eq("id", leadId);
+    let updateError = null;
+    try {
+      await updateLeadThroughApi(client, leadId, {
+        name,
+        telefone: String(formData.get("telefone") || "").replace(/\D/g, ""),
+        status: targetStatus,
+        origin: String(formData.get("origin") || "").trim(),
+        note: String(formData.get("note") || "").trim(),
+        tags: tagsArray,
+        property_region: String(formData.get("property_region") || "").trim() || null,
+        credit_value: parseOptionalMoney(formData.get("credit_value")),
+        down_payment_value: parseOptionalMoney(formData.get("down_payment_value")),
+        installment_value: parseOptionalMoney(formData.get("installment_value")),
+      });
+    } catch (error) {
+      updateError = error;
+    }
 
     submitButton.disabled = false;
     submitButton.textContent = "Salvar Alteracoes";
 
-    if (error) {
+    if (updateError) {
       if (appointment?.id) {
         await client.from("appointments").delete().eq("id", appointment.id);
       }
-      setFormStatus("Nao consegui atualizar o lead: " + error.message);
+      setFormStatus("Nao consegui atualizar o lead: " + updateError.message);
       modal?.showModal();
       return;
     }
@@ -3244,9 +3281,23 @@ const setupBulkActions = () => {
     if (!targetStatus) return;
 
     const checkboxes = document.querySelectorAll(".lead-select-checkbox:checked");
-    const leadIds = Array.from(checkboxes).map(cb => cb.closest(".lead-card")?.dataset.leadId).filter(Boolean);
+    const selectedCards = Array.from(checkboxes).map((checkbox) => checkbox.closest(".lead-card")).filter(Boolean);
+    const leadIds = selectedCards.map((card) => card.dataset.leadId).filter(Boolean);
 
     if (leadIds.length === 0) return;
+
+    const invalidCard = selectedCards.find((card) => {
+      const currentStatus = card.closest(".kanban-column")?.dataset.status;
+      return getNextPipelineStatus(currentStatus) !== targetStatus;
+    });
+    if (invalidCard) {
+      const currentStatus = invalidCard.closest(".kanban-column")?.dataset.status;
+      const nextStatus = getNextPipelineStatus(currentStatus);
+      const nextLabel = nextStatus ? statusLabels[nextStatus] : "nenhuma etapa";
+      alert(`Todos os leads selecionados devem estar na etapa anterior. Próxima etapa permitida: ${nextLabel}.`);
+      moveSelect.value = "";
+      return;
+    }
 
     if (targetStatus === "agendamento") {
       if (!confirm(`Agendar ${leadIds.length} cliente${leadIds.length === 1 ? "" : "s"}? A data e o horario serao solicitados individualmente.`)) {
@@ -3269,28 +3320,22 @@ const setupBulkActions = () => {
     }
 
     if (confirm(`Deseja mover os ${leadIds.length} leads selecionados para "${statusLabels[targetStatus]}"?`)) {
-      const client = getClient();
-      if (!client) return;
-
-      // Optimistic update
-      checkboxes.forEach(cb => {
-        const card = cb.closest(".lead-card");
-        if (card) {
-          card.classList.remove("selected");
-          cb.checked = false;
+      let allMoved = true;
+      for (const leadId of leadIds) {
+        const moved = await updateLeadStatus(leadId, targetStatus, { optimistic: true });
+        if (!moved) {
+          allMoved = false;
+          break;
         }
-      });
-      updateBulkActionsBar();
-
-      const { error } = await client
-        .from("leads")
-        .update({ status: targetStatus })
-        .in("id", leadIds);
-
-      if (error) {
-        alert("Erro ao mover alguns leads. Detalhes: " + error.message);
       }
-
+      if (allMoved) {
+        checkboxes.forEach((checkbox) => {
+          checkbox.checked = false;
+          checkbox.closest(".lead-card")?.classList.remove("selected");
+        });
+        updateBulkActionsBar();
+      }
+      moveSelect.value = "";
       await loadLeads();
     } else {
       moveSelect.value = "";

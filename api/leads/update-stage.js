@@ -11,6 +11,11 @@ const ALLOWED_STATUSES = [
   "venda_fechada"
 ];
 
+const getNextPipelineStatus = (status) => {
+  const currentIndex = ALLOWED_STATUSES.indexOf(status);
+  return currentIndex >= 0 ? ALLOWED_STATUSES[currentIndex + 1] || null : null;
+};
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'PATCH, OPTIONS');
@@ -88,6 +93,11 @@ module.exports = async (req, res) => {
       ...basicInfo,
       ...normalizeLeadClientInfo(payload, { onlyPresent: true }),
     };
+    if (Object.prototype.hasOwnProperty.call(payload, 'tags')) {
+      updateData.tags = Array.isArray(payload.tags)
+        ? payload.tags.map((tag) => String(tag || '').trim()).filter(Boolean)
+        : [];
+    }
     if (status) {
       updateData.status = status;
       updateData.ultima_interacao = updateTime;
@@ -99,6 +109,17 @@ module.exports = async (req, res) => {
     if (!canAccessLead(authorization.user, fetchLead[0])) {
       res.writeHead(403, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ ok: false, error: 'Você não pode alterar leads atribuídos a outro responsável.' }));
+    }
+
+    const previousStatus = fetchLead[0].status;
+    if (status && status !== previousStatus && status !== getNextPipelineStatus(previousStatus)) {
+      const nextStatus = getNextPipelineStatus(previousStatus);
+      const nextLabel = nextStatus ? nextStatus.replace(/_/g, ' ') : 'nenhuma etapa';
+      res.writeHead(409, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({
+        ok: false,
+        error: `Este lead só pode avançar para a próxima etapa: ${nextLabel}.`,
+      }));
     }
 
     const { data: updatedLead, error: updateError } = await supabase
@@ -113,7 +134,6 @@ module.exports = async (req, res) => {
       return res.end(JSON.stringify({ ok: false, error: 'Erro ao atualizar etapa do lead.' }));
     }
 
-    const previousStatus = fetchLead[0].status;
     if (status && previousStatus !== status) {
       const { error: historyError } = await supabase.from('lead_activity_logs').insert({
         lead_id: leadId,
