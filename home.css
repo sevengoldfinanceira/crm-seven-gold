@@ -18276,10 +18276,11 @@ body[data-is-admin="true"] .commission-admin-link[data-admin-only]{display:inlin
 /* === TABLE ENHANCED === */
 .commission-table-card{border:1px solid #e7e9ef;border-radius:18px;background:#fff;overflow:hidden;box-shadow:0 4px 20px rgba(42,48,82,.06)}
 .commission-data-table{width:100%;min-width:700px;border-collapse:collapse}
-.commission-data-table th{padding:14px 16px;background:linear-gradient(135deg,#f3f0ff,#ede8fc);color:#5b3d8f;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;font-weight:750;border-bottom:2px solid #e4cff9;text-align:left}
-.commission-data-table th:first-child{color:#15162f;font-weight:800}
+.commission-data-table th{padding:14px 16px;background:linear-gradient(135deg,#f3f0ff,#ede8fc);color:#5b3d8f;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;font-weight:750;border-bottom:2px solid #e4cff9;text-align:center}
+.commission-data-table th:first-child{text-align:left;color:#15162f;font-weight:800}
 .commission-data-table th i{width:13px;height:13px;vertical-align:middle;margin-right:4px;opacity:.7}
-.commission-data-table td{padding:13px 16px;border-bottom:1px solid #f0f1f5;font-size:.78rem;color:#4c5569;transition:background .15s}
+.commission-data-table td{padding:13px 16px;border-bottom:1px solid #f0f1f5;font-size:.78rem;color:#4c5569;transition:background .15s;text-align:center}
+.commission-data-table td:first-child{text-align:left}
 .commission-data-table tr:hover td{background:#fafbff}
 .commission-data-table tr:last-child td{border-bottom:0}
 .commission-data-table .featured-row td{background:#fffaf0;border-bottom-color:#f5e6c0}
@@ -18304,7 +18305,7 @@ body[data-is-admin="true"] .commission-table-toolbar[data-admin-only]{display:fl
 .commission-edit-status.editing{animation:edit-pulse 1.5s ease infinite}
 @keyframes edit-pulse{0%,100%{opacity:1}50%{opacity:.5}}
 
-.inline-edit-input{width:100%;padding:6px 10px;border:2px solid #7d3db4;border-radius:8px;background:#fff;color:#15162f;font-size:.76rem;font-weight:700;text-align:center;font-family:inherit;outline:none;transition:all .15s}
+.inline-edit-input{width:100%;max-width:100px;padding:6px 10px;border:2px solid #7d3db4;border-radius:8px;background:#fff;color:#15162f;font-size:.76rem;font-weight:700;text-align:center;font-family:inherit;outline:none;transition:all .15s;margin:0 auto}
 .inline-edit-input:focus{border-color:#5b3d8f;box-shadow:0 0 0 3px rgba(125,61,180,.15)}
 .commission-data-table.editing-mode td{padding:8px 10px}
 .commission-data-table.editing-mode .featured-row td{background:#fff8e8}
