@@ -1699,7 +1699,6 @@ const loadDashboardMetrics = async () => {
   const storeLeadIds = new Set();
   const approvalLeadIds = new Set();
   const closedLeadIds = new Set();
-  const explicitNoLeadIds = new Set();
   const historicalLeadIds = new Set(history.stageEvents.map((event) => String(event.lead_id)));
 
   periodEvents.forEach((event) => {
@@ -1708,7 +1707,6 @@ const loadDashboardMetrics = async () => {
     if (status === "cliente_em_loja") storeLeadIds.add(leadId);
     if (["em_aprovacao", "proposta_enviada"].includes(status)) approvalLeadIds.add(leadId);
     if (status === "venda_fechada") closedLeadIds.add(leadId);
-    if (["nao_quer", "não_quer", "nao_tem_interesse", "perdido"].includes(status)) explicitNoLeadIds.add(leadId);
   });
 
   // Registros antigos podem não ter histórico. Neles, usa o estado atual apenas
@@ -1724,16 +1722,13 @@ const loadDashboardMetrics = async () => {
     }
     if (["em_aprovacao", "proposta_enviada"].includes(status)) approvalLeadIds.add(leadId);
     if (status === "venda_fechada") closedLeadIds.add(leadId);
-    if (["nao_quer", "não_quer", "nao_tem_interesse", "perdido"].includes(status)) explicitNoLeadIds.add(leadId);
   });
 
   const scheduledLeadKeys = new Set(periodAppointments.map((appointment) => String(appointment.lead_id || appointment.id)).filter(Boolean));
   const clientsInStore = storeLeadIds.size;
   const inApproval = approvalLeadIds.size;
   const closedLeads = closedLeadIds.size;
-  const notInterestedLeadIds = new Set([...storeLeadIds].filter((leadId) => !closedLeadIds.has(leadId)));
-  explicitNoLeadIds.forEach((leadId) => notInterestedLeadIds.add(leadId));
-  const notInterested = notInterestedLeadIds.size;
+  const notInterested = leads.filter((lead) => String(lead.status || "").trim().toLowerCase() === "cliente_em_loja").length;
   const closingConversion = clientsInStore > 0 ? ((closedLeads / clientsInStore) * 100).toFixed(1) : "0.0";
   const totalAppointments = scheduledLeadKeys.size;
   const appointmentConversion = receivedLeads > 0 ? ((totalAppointments / receivedLeads) * 100).toFixed(1) : "0.0";

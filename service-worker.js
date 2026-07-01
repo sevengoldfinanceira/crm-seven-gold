@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-calendar-period-filters-v3";
+const CACHE_VERSION = "seven-gold-not-interested-current-store-v4";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
