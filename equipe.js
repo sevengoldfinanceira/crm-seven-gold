@@ -92,6 +92,7 @@
   let draggedSectorId = null;
   let draggedRoleKey = null;
   let draggedRoleOriginSectorId = null;
+  let organogramEditMode = false;
   const removedRolesKey = "seven-gold-removed-roles";
   const sharedRolesKey = "seven-gold-team-roles-snapshot";
 
@@ -1728,6 +1729,24 @@
   };
 
   // Render Organograma View (Aba 1)
+  const applyOrganogramEditMode = () => {
+    document.querySelectorAll(".eq-sector-card").forEach(card => {
+      const handle = card.querySelector(".eq-drag-handle");
+      const pencil = card.querySelector(".eq-sector-edit-toggle");
+      if (handle) handle.style.display = organogramEditMode ? "" : "none";
+      if (pencil) {
+        pencil.style.color = organogramEditMode ? "#d4af37" : "#9ca3af";
+        pencil.title = organogramEditMode ? "Sair do modo edição" : "Ativar modo edição para arrastar cargos";
+      }
+      card.setAttribute("draggable", organogramEditMode ? "true" : "false");
+    });
+    document.querySelectorAll(".eq-role-pill").forEach(pill => {
+      const grip = pill.querySelector(".eq-role-pill-grip");
+      if (grip) grip.style.display = organogramEditMode ? "" : "none";
+      pill.setAttribute("draggable", organogramEditMode ? "true" : "false");
+    });
+  };
+
   const renderOrganograma = () => {
     if (!sectorsRow) return;
     sectorsRow.innerHTML = "";
@@ -1774,7 +1793,7 @@
 
       sectorCard.innerHTML = `
         <header class="eq-sector-header">
-          <i data-lucide="grip-vertical" class="eq-drag-handle" title="Arraste para mover setor"></i>
+          <i data-lucide="grip-vertical" class="eq-drag-handle" title="Arraste para mover setor" style="display:none"></i>
           <div class="eq-sec-icon eq-sec-bg-${sector.id.replace("-", "")}">
             <i data-lucide="${sector.icon || 'folder'}"></i>
           </div>
@@ -1782,14 +1801,17 @@
             <h4>${sector.title}</h4>
           </div>
           <span class="eq-sector-count">${sectorMembersCount}</span>
+          <button type="button" class="eq-sector-edit-toggle" title="Ativar modo edição para arrastar cargos" style="background:none;border:none;cursor:pointer;padding:4px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#9ca3af;transition:color .15s">
+            <i data-lucide="pencil" style="width:16px;height:16px"></i>
+          </button>
         </header>
         <div class="eq-sector-roles">
           ${sector.roles.map(role => {
             const roleMembers = getProfilesForRole(role.key);
             const isRoleSelected = state.selectedItem && state.selectedItem.type === 'role' && state.selectedItem.id === role.key;
             return `
-              <button class="eq-role-pill ${isRoleSelected ? 'selected' : ''}" data-role-key="${role.key}" draggable="true" type="button">
-                <div class="eq-role-pill-grip" title="Arraste para mover cargo">
+              <button class="eq-role-pill ${isRoleSelected ? 'selected' : ''}" data-role-key="${role.key}" draggable="false" type="button">
+                <div class="eq-role-pill-grip" title="Arraste para mover cargo" style="display:none">
                   <i data-lucide="grip-vertical"></i>
                 </div>
                 <div class="eq-role-pill-info">
@@ -1826,9 +1848,17 @@
       });
 
       // --- Sector Drag and Drop Events (to reorder sectors) ---
-      sectorCard.setAttribute("draggable", "true");
+      sectorCard.setAttribute("draggable", "false");
+
+      // Pencil toggle to enter edit mode
+      sectorCard.querySelector(".eq-sector-edit-toggle")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        organogramEditMode = !organogramEditMode;
+        applyOrganogramEditMode();
+      });
       
       sectorCard.addEventListener("dragstart", (e) => {
+        if (!organogramEditMode) { e.preventDefault(); return; }
         if (e.target.closest(".eq-role-pill")) {
           // If we drag from a role pill, prevent the sector card from initiating drag
           return;
@@ -1913,6 +1943,7 @@
         const rKey = pill.getAttribute("data-role-key");
         
         pill.addEventListener("dragstart", (e) => {
+          if (!organogramEditMode) { e.preventDefault(); return; }
           draggedRoleKey = rKey;
           draggedRoleOriginSectorId = sector.id;
           draggedSectorId = null;
