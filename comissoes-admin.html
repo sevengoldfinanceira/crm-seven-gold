@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR" style="background-color:#150126">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Administração de Comissões</title>
+    <link rel="icon" href="assets/icons/LOGO COPA.png?v=mqreizkw" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.dataset.adminSidebar=localStorage.getItem("seven-gold-admin-sidebar-collapsed")==="true"?"collapsed":"expanded";</script>
+    <link rel="stylesheet" href="home.css?v=commissions-admin-v1" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#150126" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-icon" href="/assets/icons/LOGO COPA.png?v=mqreizkw" />
+  </head>
+  <body class="commission-body" data-require-auth data-permission-area="comissoes" data-login-page="index.html" data-allowed-roles="dono,administrador" data-denied-redirect="comissoes.html" data-unified-admin>
+    <script>(function(){if((localStorage.getItem("seven-gold-theme")||"light")==="dark")document.body.classList.add("theme-dark");})();</script>
+
+    <main class="commission-shell commission-premium-shell">
+      <header class="commission-premium-header">
+        <div class="commission-title-block">
+          <span class="commission-title-icon"><i data-lucide="settings"></i></span>
+          <div>
+            <p class="commission-eyebrow">ADMINISTRAÇÃO</p>
+            <h1>Gerenciar Comissões</h1>
+            <p>Edite os valores de comissão de cada nível. As alterações afetam a página de consulta.</p>
+          </div>
+        </div>
+        <nav class="commission-category-tabs" aria-label="Categorias">
+          <button type="button" class="active" data-admin-tab="commercial"><i data-lucide="briefcase"></i> Comercial</button>
+          <button type="button" data-admin-tab="strategic"><i data-lucide="trophy"></i> Estratégico</button>
+        </nav>
+      </header>
+
+      <!-- Status bar -->
+      <div class="admin-status-bar">
+        <div class="admin-status-info">
+          <i data-lucide="info"></i>
+          <span>Clique em qualquer célula de percentual para editar. Pressione <kbd>Enter</kbd> para salvar ou <kbd>Esc</kbd> para cancelar.</span>
+        </div>
+        <div class="admin-status-actions">
+          <span class="admin-save-indicator" data-save-indicator>Salvo</span>
+          <button type="button" class="admin-btn-reset" data-reset-all title="Restaurar valores padrão"><i data-lucide="rotate-ccw"></i> Restaurar padrão</button>
+        </div>
+      </div>
+
+      <!-- Loading state -->
+      <div class="admin-loading" data-loading>
+        <div class="admin-spinner"></div>
+        <p>Carregando regras de comissão...</p>
+      </div>
+
+      <!-- Error state -->
+      <div class="admin-error" data-error hidden>
+        <i data-lucide="alert-triangle"></i>
+        <p data-error-message>Erro ao carregar dados.</p>
+        <button type="button" data-retry>Tentar novamente</button>
+      </div>
+
+      <!-- Content -->
+      <div class="admin-content" data-content hidden>
+        <!-- Commercial panel -->
+        <section class="admin-panel active" data-admin-panel="commercial">
+          <div class="admin-table-card">
+            <div class="admin-table-scroll">
+              <table class="admin-data-table" id="commercial-table">
+                <thead>
+                  <tr>
+                    <th class="admin-th-level">Nível</th>
+                    <th>Tab 01</th>
+                    <th>Tab 02</th>
+                    <th>Tab 03</th>
+                    <th>Tab 04</th>
+                    <th>Tab 05</th>
+                    <th>Tab 06</th>
+                    <th>Tab 07</th>
+                    <th class="admin-th-actions">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="commercial-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Strategic panel -->
+        <section class="admin-panel" data-admin-panel="strategic" hidden>
+          <div class="admin-level-selector">
+            <label>Nível estratégico:</label>
+            <select id="strategic-level-select">
+              <option value="representante-junior">Representante Junior</option>
+              <option value="representante-pleno">Representante Pleno</option>
+              <option value="submaster">Submaster</option>
+            </select>
+          </div>
+          <div class="admin-table-card">
+            <div class="admin-table-scroll">
+              <table class="admin-data-table" id="strategic-table">
+                <thead id="strategic-head"></thead>
+                <tbody id="strategic-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js?v=profile-access-v1"></script>
+    <script src="comissoes-admin.js?v=commissions-admin-v1"></script>
+    <script src="/admin-shell.js?v=panels-link-v1"></script>
+    <script src="/pwa.js"></script>
+  </body>
+</html>

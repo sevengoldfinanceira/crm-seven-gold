@@ -26,6 +26,7 @@
       items: [
         ["financeiro.html", "badge-dollar-sign", "Financeiro", "financeiro", "dono,administrador,financeiro"],
         ["comissoes.html", "percent", "Comissões", "comissoes", "dono,administrador,financeiro"],
+        ["comissoes-admin.html", "settings", "Gerenciar Comissões", "comissoes", "dono,administrador"],
         ["relatorios.html", "chart-column", "Relatórios", "relatorios", "dono,administrador,financeiro,marketing,rh"],
       ],
     },
