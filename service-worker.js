@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-dashboard-without-alerts-v1";
+const CACHE_VERSION = "seven-gold-commercial-metrics-v1";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",

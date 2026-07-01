@@ -1488,6 +1488,26 @@ const initDashResponsibleFilter = async (currentCrmUser) => {
   });
 };
 
+const fetchAuthorizedLeads = async (client) => {
+  const { data: sessionData } = await client.auth.getSession();
+  const token = sessionData?.session?.access_token;
+  if (!token) throw new Error("Sessão expirada. Entre novamente.");
+
+  const response = await fetch("/api/permissions/save", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ pipeline_action: "list_leads" }),
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || result.ok !== true) {
+    throw new Error(result.error || "Não foi possível carregar os leads.");
+  }
+  return Array.isArray(result.leads) ? result.leads : [];
+};
+
 const loadDashboardMetrics = async () => {
   const client = getClient();
   if (!client) return;
@@ -1497,18 +1517,16 @@ const loadDashboardMetrics = async () => {
     await initDashResponsibleFilter(currentCrmUser);
   }
 
-  const elTotal = document.getElementById("dash-total-leads");
   const elReceived = document.getElementById("dash-received-leads");
-  const elActive = document.getElementById("dash-active-leads");
   const elAppointments = document.getElementById("dash-appointments");
-  const elTasks = document.getElementById("dash-pending-tasks");
+  const elClientsInStore = document.getElementById("dash-clients-in-store");
+  const elInApproval = document.getElementById("dash-in-approval");
+  const elNotInterested = document.getElementById("dash-not-interested");
   const elClosed = document.getElementById("dash-closed-leads");
-  const elConversion = document.getElementById("dash-conversion-rate");
+  const elClosingConversion = document.getElementById("dash-closing-conversion");
+  const elAppointmentConversion = document.getElementById("dash-appointment-conversion");
 
-  if (!elTotal) return;
-
-  // 1. Leads
-  let leadsQuery = client.from("leads").select("status, assigned_to_email, created_at");
+  if (!elReceived) return;
 
   let activeTeamId = selectedDashTeamId;
   let activeDashResponsibleEmail = selectedDashResponsibleEmail;
@@ -1524,30 +1542,38 @@ const loadDashboardMetrics = async () => {
     }
   }
 
-  if (!shouldSeeAllLeads(currentCrmUser)) {
-    leadsQuery = leadsQuery.eq("assigned_to_email", currentCrmUser.email);
-  } else if (activeDashResponsibleEmail) {
-    leadsQuery = leadsQuery.eq("assigned_to_email", activeDashResponsibleEmail);
-  } else if (activeTeamId) {
-    const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
-    if (teamEmails?.length) {
-      leadsQuery = leadsQuery.in("assigned_to_email", teamEmails);
-    }
+  let dashboardTeamEmails = null;
+  if (activeTeamId) {
+    dashboardTeamEmails = await getTeamMemberEmailsById(client, activeTeamId);
   } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
     const coordTeamId = getCoordinatedTeamId(currentCrmUser);
-    const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
-    if (coordTeamId && teamEmails?.length) {
-      leadsQuery = leadsQuery.in("assigned_to_email", teamEmails);
-    }
+    if (coordTeamId) dashboardTeamEmails = await loadTeamMemberEmails(currentCrmUser.email);
   }
-  const { data: leadsData } = await leadsQuery;
-  const leads = leadsData || [];
 
-  const totalLeads = leads.length;
-  const receivedLeads = leads.filter(l => l.status === "lead_recebido").length;
+  let leads;
+  try {
+    leads = await fetchAuthorizedLeads(client);
+  } catch (error) {
+    console.error("Erro ao carregar métricas comerciais:", error);
+    return;
+  }
+
+  const normalizeMetricEmail = (value) => String(value || "").trim().toLowerCase();
+  if (activeDashResponsibleEmail) {
+    const responsibleEmail = normalizeMetricEmail(activeDashResponsibleEmail);
+    leads = leads.filter((lead) => normalizeMetricEmail(lead.assigned_to_email) === responsibleEmail);
+  } else if (dashboardTeamEmails?.length) {
+    const allowedEmails = new Set(dashboardTeamEmails.map(normalizeMetricEmail));
+    leads = leads.filter((lead) => allowedEmails.has(normalizeMetricEmail(lead.assigned_to_email)));
+  }
+
+  const receivedLeads = leads.length;
+  const clientsInStore = leads.filter(l => l.status === "cliente_em_loja").length;
+  const inApproval = leads.filter(l => ["em_aprovacao", "proposta_enviada"].includes(l.status)).length;
+  const notInterested = leads.filter(l => ["nao_quer", "não_quer", "nao_tem_interesse", "perdido"].includes(l.status)).length;
   const closedLeads = leads.filter(l => l.status === "venda_fechada").length;
-  const activeLeads = leads.filter(l => ["primeiro_contato", "agendamento", "cliente_em_loja", "proposta_enviada"].includes(l.status)).length;
-  const conversionRate = totalLeads > 0 ? ((closedLeads / totalLeads) * 100).toFixed(1) : "0.0";
+  const storeReachedLeads = clientsInStore + inApproval + closedLeads;
+  const closingConversion = storeReachedLeads > 0 ? ((closedLeads / storeReachedLeads) * 100).toFixed(1) : "0.0";
 
   // 2. Agendamentos
   let appointmentVisibleEmails = null;
@@ -1570,7 +1596,7 @@ const loadDashboardMetrics = async () => {
   const appointmentUsers = appointmentUsersData || [];
   const appointmentUserIds = appointmentUsers.map((user) => user.id);
   const appointmentEmailById = new Map(appointmentUsers.map((user) => [String(user.id), user.email]));
-  let apptsQuery = client.from("appointments").select("status,data_agendamento,usuario_id").neq("status", "cancelado");
+  let apptsQuery = client.from("appointments").select("id,lead_id,status,data_agendamento,usuario_id").neq("status", "cancelado");
   if (appointmentVisibleEmails) {
     apptsQuery = appointmentUserIds.length
       ? apptsQuery.in("usuario_id", appointmentUserIds)
@@ -1581,37 +1607,20 @@ const loadDashboardMetrics = async () => {
     ...appointment,
     assigned_to_email: appointmentEmailById.get(String(appointment.usuario_id)) || "",
   }));
-  const totalAppointments = (apptsData || []).length;
-
-  // 3. Tarefas
-  let tasksQuery = client.from("tasks").select("id, lead_id, lead_nome, type, scheduled_at, assigned_to_name, assigned_to_email, status").eq("status", "pending");
-  if (!shouldSeeAllLeads(currentCrmUser)) {
-    tasksQuery = tasksQuery.eq("assigned_to_email", currentCrmUser.email);
-  } else if (activeDashResponsibleEmail) {
-    tasksQuery = tasksQuery.eq("assigned_to_email", activeDashResponsibleEmail);
-  } else if (activeTeamId) {
-    const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
-    if (teamEmails?.length) {
-      tasksQuery = tasksQuery.in("assigned_to_email", teamEmails);
-    }
-  } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
-    const coordTeamId = getCoordinatedTeamId(currentCrmUser);
-    const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
-    if (coordTeamId && teamEmails?.length) {
-      tasksQuery = tasksQuery.in("assigned_to_email", teamEmails);
-    }
-  }
-  const { data: tasksData } = await tasksQuery;
-  const totalTasks = (tasksData || []).length;
+  const scheduledLeadKeys = new Set(apptsData.map((appointment) => appointment.lead_id || appointment.id).filter(Boolean));
+  const totalAppointments = scheduledLeadKeys.size;
+  const appointmentConversion = receivedLeads > 0 ? ((totalAppointments / receivedLeads) * 100).toFixed(1) : "0.0";
+  const tasksData = [];
 
   // Renderizar no HTML
-  elTotal.textContent = totalLeads;
   elReceived.textContent = receivedLeads;
-  elActive.textContent = activeLeads;
   elAppointments.textContent = totalAppointments;
-  elTasks.textContent = totalTasks;
+  elClientsInStore.textContent = clientsInStore;
+  elInApproval.textContent = inApproval;
+  elNotInterested.textContent = notInterested;
   elClosed.textContent = closedLeads;
-  elConversion.textContent = `${conversionRate}%`;
+  elClosingConversion.textContent = `${closingConversion}%`;
+  elAppointmentConversion.textContent = `${appointmentConversion}%`;
 
   // 4. Alertas de Metas
   const elAlertsList = document.getElementById("dash-goals-alerts-list");
@@ -2796,27 +2805,9 @@ const loadLeads = async () => {
     if (coordTeamId) teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
   }
 
-  const { data: sessionData } = await client.auth.getSession();
-  const token = sessionData?.session?.access_token;
-  if (!token) {
-    if (leadCount) leadCount.textContent = "Sessão expirada. Entre novamente.";
-    return;
-  }
-
-  let result;
+  let visibleLeads;
   try {
-    const response = await fetch("/api/permissions/save", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ pipeline_action: "list_leads" }),
-    });
-    result = await response.json().catch(() => ({}));
-    if (!response.ok || result.ok !== true) {
-      throw new Error(result.error || "Não foi possível carregar os leads.");
-    }
+    visibleLeads = await fetchAuthorizedLeads(client);
   } catch (error) {
     console.error("Erro ao carregar pipeline pelo servidor:", error);
     if (leadCount) leadCount.textContent = error.message || "Não foi possível carregar os leads.";
@@ -2824,7 +2815,6 @@ const loadLeads = async () => {
   }
 
   const normalizeLeadEmail = (value) => String(value || "").trim().toLowerCase();
-  let visibleLeads = Array.isArray(result.leads) ? result.leads : [];
 
   if (activeResponsibleEmail) {
     const responsibleEmail = normalizeLeadEmail(activeResponsibleEmail);

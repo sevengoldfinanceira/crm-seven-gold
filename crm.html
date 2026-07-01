@@ -162,90 +162,102 @@
             </div>
 
             <!-- Grid de Métricas -->
-            <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 36px;">
+            <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 36px;">
               
-              <!-- Card 1: Total de Leads -->
+              <!-- Card 1: Leads Recebidos -->
               <article class="dash-metric-card" style="--card-border-color: #1e293b;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #f1f5f9; color: #475569;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                   </div>
                 </div>
-                <span class="dash-metric-title">Total de Leads</span>
-                <strong class="dash-metric-number" id="dash-total-leads">0</strong>
-                <span class="dash-metric-subtext">Total geral</span>
+                <span class="dash-metric-title">Leads Recebidos</span>
+                <strong class="dash-metric-number" id="dash-received-leads">0</strong>
+                <span class="dash-metric-subtext">Total filtrado</span>
               </article>
 
-              <!-- Card 2: Leads Recebidos -->
+              <!-- Card 2: Agendamentos -->
               <article class="dash-metric-card" style="--card-border-color: #2563eb;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #dbeafe; color: #2563eb;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
                   </div>
                 </div>
-                <span class="dash-metric-title">Leads Recebidos</span>
-                <strong class="dash-metric-number" id="dash-received-leads" style="color: #2563eb;">0</strong>
-                <span class="dash-metric-subtext">Este mês</span>
+                <span class="dash-metric-title">Agendamentos</span>
+                <strong class="dash-metric-number" id="dash-appointments" style="color: #2563eb;">0</strong>
+                <span class="dash-metric-subtext">Leads agendados</span>
               </article>
 
-              <!-- Card 3: Em Atendimento -->
+              <!-- Card 3: Clientes em Loja -->
               <article class="dash-metric-card" style="--card-border-color: #d8a018;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #fef9c3; color: #ca8a04;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
                   </div>
                 </div>
-                <span class="dash-metric-title">Em Atendimento</span>
-                <strong class="dash-metric-number" id="dash-active-leads" style="color: #ca8a04;">0</strong>
-                <span class="dash-metric-subtext">Em andamento</span>
+                <span class="dash-metric-title">Clientes em Loja</span>
+                <strong class="dash-metric-number" id="dash-clients-in-store" style="color: #ca8a04;">0</strong>
+                <span class="dash-metric-subtext">Etapa atual</span>
               </article>
 
-              <!-- Card 4: Agendamentos -->
+              <!-- Card 4: Em Aprovação -->
               <article class="dash-metric-card" style="--card-border-color: #7c3aed;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #f3e8ff; color: #7c3aed;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                   </div>
                 </div>
-                <span class="dash-metric-title">Agendamentos</span>
-                <strong class="dash-metric-number" id="dash-appointments" style="color: #7c3aed;">0</strong>
-                <span class="dash-metric-subtext">Este mês</span>
+                <span class="dash-metric-title">Em Aprovação</span>
+                <strong class="dash-metric-number" id="dash-in-approval" style="color: #7c3aed;">0</strong>
+                <span class="dash-metric-subtext">Propostas em análise</span>
               </article>
 
-              <!-- Card 5: Tarefas Pendentes -->
+              <!-- Card 5: Não Quer -->
               <article class="dash-metric-card" style="--card-border-color: #ef4444;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #fee2e2; color: #ef4444;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                   </div>
                 </div>
-                <span class="dash-metric-title">Tarefas Pendentes</span>
-                <strong class="dash-metric-number" id="dash-pending-tasks" style="color: #ef4444;">0</strong>
-                <span class="dash-metric-subtext">A fazer</span>
+                <span class="dash-metric-title">Não Quer</span>
+                <strong class="dash-metric-number" id="dash-not-interested" style="color: #ef4444;">0</strong>
+                <span class="dash-metric-subtext">Sem interesse</span>
               </article>
 
-              <!-- Card 6: Fechamentos -->
+              <!-- Card 6: Venda Fechada -->
               <article class="dash-metric-card" style="--card-border-color: #10b981;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #d1fae5; color: #10b981;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                   </div>
                 </div>
-                <span class="dash-metric-title">Fechamentos</span>
+                <span class="dash-metric-title">Venda Fechada</span>
                 <strong class="dash-metric-number" id="dash-closed-leads" style="color: #10b981;">0</strong>
-                <span class="dash-metric-subtext">Este mês</span>
+                <span class="dash-metric-subtext">Clientes fechados</span>
               </article>
 
-              <!-- Card 7: Conversão -->
+              <!-- Card 7: Conversão de Fechamento -->
               <article class="dash-metric-card" style="--card-border-color: #f2b705;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #fef3c7; color: #ca8a04;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
                   </div>
                 </div>
-                <span class="dash-metric-title">Conversão</span>
-                <strong class="dash-metric-number" id="dash-conversion-rate" style="color: #ca8a04;">0.0%</strong>
-                <span class="dash-metric-subtext">Taxa de conversão</span>
+                <span class="dash-metric-title">Conversão de Fechamento</span>
+                <strong class="dash-metric-number" id="dash-closing-conversion" style="color: #ca8a04;">0.0%</strong>
+                <span class="dash-metric-subtext">Loja para fechamento</span>
+              </article>
+
+              <!-- Card 8: Conversão de Agendamentos -->
+              <article class="dash-metric-card" style="--card-border-color: #0891b2;">
+                <div class="dash-metric-icon-row">
+                  <div class="dash-metric-icon-box" style="background: #cffafe; color: #0891b2;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                  </div>
+                </div>
+                <span class="dash-metric-title">Conversão de Agendamentos</span>
+                <strong class="dash-metric-number" id="dash-appointment-conversion" style="color: #0891b2;">0.0%</strong>
+                <span class="dash-metric-subtext">Recebidos para agendados</span>
               </article>
 
             </div>
@@ -855,7 +867,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=profile-access-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=dashboard-without-alerts-v1"></script>
+    <script src="script.js?v=commercial-metrics-v1"></script>
     <script src="/searchable-select.js?v=mr00opji"></script>
     <script src="/pwa.js"></script>
   </body>
