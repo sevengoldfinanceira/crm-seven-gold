@@ -26,7 +26,7 @@ async function listAuthorizedPipelineLeads(crmUser) {
   const role = normalizeRole(crmUser.cargo);
   let query = supabase
     .from('leads')
-    .select('id,name,origin,note,status,created_at,telefone,property_region,credit_value,down_payment_value,installment_value,tags,assigned_to_email,assigned_to_name,created_by_email,created_by_name,updated_by_email,updated_by_name')
+    .select('id,name,origin,note,status,created_at,updated_at,ultima_interacao,telefone,property_region,credit_value,down_payment_value,installment_value,tags,assigned_to_email,assigned_to_name,created_by_email,created_by_name,updated_by_email,updated_by_name')
     .order('created_at', { ascending: false });
 
   if (PIPELINE_TEAM_ROLES.has(role)) {
@@ -63,6 +63,36 @@ async function listAuthorizedPipelineLeads(crmUser) {
   const { data, error } = await query;
   if (error) return { status: 500, error: error.message };
   return { status: 200, leads: data || [] };
+}
+
+async function getAuthorizedPipelineHistory(crmUser) {
+  const leadResult = await listAuthorizedPipelineLeads(crmUser);
+  if (leadResult.error) return leadResult;
+
+  const leads = leadResult.leads || [];
+  const leadIds = leads.map((lead) => lead.id).filter(Boolean);
+  if (!leadIds.length) return { status: 200, leads, stageEvents: [], appointments: [] };
+
+  const [eventsResult, appointmentsResult] = await Promise.all([
+    supabase
+      .from('lead_activity_logs')
+      .select('lead_id,action_type,old_value,new_value,created_at')
+      .in('lead_id', leadIds)
+      .in('action_type', ['status_changed', 'stage_changed'])
+      .order('created_at', { ascending: true }),
+    supabase
+      .from('appointments')
+      .select('id,lead_id,data_agendamento,hora_agendamento,status,created_at')
+      .in('lead_id', leadIds)
+      .neq('status', 'cancelado'),
+  ]);
+
+  return {
+    status: 200,
+    leads,
+    stageEvents: eventsResult.error ? [] : (eventsResult.data || []),
+    appointments: appointmentsResult.error ? [] : (appointmentsResult.data || []),
+  };
 }
 
 const getPreviousMonthKeys = (period, count = 6) => {
@@ -1137,6 +1167,16 @@ module.exports = async (req, res) => {
       const result = await listAuthorizedPipelineLeads(crmUser);
       if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });
       return sendJson(res, 200, { ok: true, leads: result.leads });
+    }
+    if (payload.pipeline_action === 'dashboard_history') {
+      const result = await getAuthorizedPipelineHistory(crmUser);
+      if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });
+      return sendJson(res, 200, {
+        ok: true,
+        leads: result.leads,
+        stageEvents: result.stageEvents,
+        appointments: result.appointments,
+      });
     }
     if (!ADMIN_ROLES.has(normalizeRole(crmUser.cargo))) {
       return sendJson(res, 403, { ok: false, error: 'Usuario sem permissao para salvar permissoes.' });

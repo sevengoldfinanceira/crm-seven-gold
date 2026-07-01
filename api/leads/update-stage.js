@@ -65,7 +65,7 @@ module.exports = async (req, res) => {
 
     const { data: fetchLead, error: fetchError } = await supabase
       .from('leads')
-      .select('id, name, telefone, assigned_to_email')
+      .select('id, name, telefone, status, assigned_to_email')
       .eq('telefone', normalizedPhone)
       .limit(1);
 
@@ -106,6 +106,23 @@ module.exports = async (req, res) => {
       console.error('Error executing stage update on lead');
       res.writeHead(500, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ ok: false, error: 'Erro ao atualizar etapa do lead.' }));
+    }
+
+    const previousStatus = fetchLead[0].status;
+    if (status && previousStatus !== status) {
+      const { error: historyError } = await supabase.from('lead_activity_logs').insert({
+        lead_id: leadId,
+        action_type: 'status_changed',
+        action_label: 'Etapa alterada',
+        description: `Etapa alterada de ${previousStatus || 'sem etapa'} para ${status}.`,
+        old_value: previousStatus || null,
+        new_value: status,
+        created_by_email: authorization.user.email || null,
+        created_by_name: authorization.user.nome || authorization.user.email || null,
+        created_by_role: authorization.user.cargo || null,
+        created_at: updateTime,
+      });
+      if (historyError) console.error('Error logging lead stage update');
     }
 
     const result = updatedLead[0];

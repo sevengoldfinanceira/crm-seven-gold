@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-commercial-metrics-v1";
+const CACHE_VERSION = "seven-gold-historical-commercial-metrics-v2";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",

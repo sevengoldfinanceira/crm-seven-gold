@@ -712,7 +712,9 @@ let selectedPipelineTeamId = "";
 let selectedDashTeamId = "";
 let selectedCalendarTeamId = "";
 let selectedTasksTeamId = "";
+let selectedDashPeriod = "this_month";
 let dashTeamFilterInitialized = false;
+let dashPeriodFilterInitialized = false;
 let pipelineTeamFilterInitialized = false;
 let calendarTeamFilterInitialized = false;
 let tasksTeamFilterInitialized = false;
@@ -1508,6 +1510,58 @@ const fetchAuthorizedLeads = async (client) => {
   return Array.isArray(result.leads) ? result.leads : [];
 };
 
+const fetchDashboardHistory = async (client) => {
+  const { data: sessionData } = await client.auth.getSession();
+  const token = sessionData?.session?.access_token;
+  if (!token) throw new Error("Sessão expirada. Entre novamente.");
+
+  const response = await fetch("/api/permissions/save", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ pipeline_action: "dashboard_history" }),
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || result.ok !== true) {
+    throw new Error(result.error || "Não foi possível carregar o histórico comercial.");
+  }
+  return {
+    leads: Array.isArray(result.leads) ? result.leads : [],
+    stageEvents: Array.isArray(result.stageEvents) ? result.stageEvents : [],
+    appointments: Array.isArray(result.appointments) ? result.appointments : [],
+  };
+};
+
+const getDashboardPeriodRange = (periodKey) => {
+  const now = new Date();
+  const end = new Date(now.getTime() + 1);
+  let start;
+
+  if (periodKey === "today") {
+    start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  } else if (periodKey === "last_7_days") {
+    start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    start.setDate(start.getDate() - 6);
+  } else if (periodKey === "this_year") {
+    start = new Date(now.getFullYear(), 0, 1);
+  } else if (periodKey === "all") {
+    return { start: null, end: null };
+  } else {
+    start = new Date(now.getFullYear(), now.getMonth(), 1);
+  }
+
+  return { start, end };
+};
+
+const isWithinDashboardPeriod = (value, range, dateOnly = false) => {
+  if (!value) return false;
+  const date = dateOnly ? new Date(`${value}T12:00:00`) : new Date(value);
+  if (Number.isNaN(date.getTime())) return false;
+  return (!range.start || date >= range.start) && (!range.end || date < range.end);
+};
+
 const loadDashboardMetrics = async () => {
   const client = getClient();
   if (!client) return;
@@ -1527,6 +1581,16 @@ const loadDashboardMetrics = async () => {
   const elAppointmentConversion = document.getElementById("dash-appointment-conversion");
 
   if (!elReceived) return;
+
+  const periodSelect = document.getElementById("dash-period-filter-select");
+  if (periodSelect && !dashPeriodFilterInitialized) {
+    dashPeriodFilterInitialized = true;
+    periodSelect.value = selectedDashPeriod;
+    periodSelect.addEventListener("change", () => {
+      selectedDashPeriod = periodSelect.value || "this_month";
+      loadDashboardMetrics();
+    });
+  }
 
   let activeTeamId = selectedDashTeamId;
   let activeDashResponsibleEmail = selectedDashResponsibleEmail;
@@ -1550,13 +1614,15 @@ const loadDashboardMetrics = async () => {
     if (coordTeamId) dashboardTeamEmails = await loadTeamMemberEmails(currentCrmUser.email);
   }
 
-  let leads;
+  let history;
   try {
-    leads = await fetchAuthorizedLeads(client);
+    history = await fetchDashboardHistory(client);
   } catch (error) {
     console.error("Erro ao carregar métricas comerciais:", error);
     return;
   }
+
+  let leads = history.leads;
 
   const normalizeMetricEmail = (value) => String(value || "").trim().toLowerCase();
   if (activeDashResponsibleEmail) {
@@ -1567,47 +1633,56 @@ const loadDashboardMetrics = async () => {
     leads = leads.filter((lead) => allowedEmails.has(normalizeMetricEmail(lead.assigned_to_email)));
   }
 
-  const receivedLeads = leads.length;
-  const clientsInStore = leads.filter(l => l.status === "cliente_em_loja").length;
-  const inApproval = leads.filter(l => ["em_aprovacao", "proposta_enviada"].includes(l.status)).length;
-  const notInterested = leads.filter(l => ["nao_quer", "não_quer", "nao_tem_interesse", "perdido"].includes(l.status)).length;
-  const closedLeads = leads.filter(l => l.status === "venda_fechada").length;
-  const storeReachedLeads = clientsInStore + inApproval + closedLeads;
-  const closingConversion = storeReachedLeads > 0 ? ((closedLeads / storeReachedLeads) * 100).toFixed(1) : "0.0";
+  const periodRange = getDashboardPeriodRange(selectedDashPeriod);
+  const visibleLeadIds = new Set(leads.map((lead) => String(lead.id)));
+  const receivedLeads = leads.filter((lead) => isWithinDashboardPeriod(lead.created_at, periodRange)).length;
+  const periodEvents = history.stageEvents.filter((event) =>
+    visibleLeadIds.has(String(event.lead_id)) && isWithinDashboardPeriod(event.created_at, periodRange)
+  );
+  const periodAppointments = history.appointments.filter((appointment) =>
+    visibleLeadIds.has(String(appointment.lead_id)) &&
+    isWithinDashboardPeriod(appointment.data_agendamento || appointment.created_at, periodRange, Boolean(appointment.data_agendamento))
+  );
 
-  // 2. Agendamentos
-  let appointmentVisibleEmails = null;
-  if (!shouldSeeAllLeads(currentCrmUser)) {
-    appointmentVisibleEmails = [currentCrmUser.email];
-  } else if (activeDashResponsibleEmail) {
-    appointmentVisibleEmails = [activeDashResponsibleEmail];
-  } else if (activeTeamId) {
-    const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
-    if (teamEmails?.length) appointmentVisibleEmails = teamEmails;
-  } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
-    const coordTeamId = getCoordinatedTeamId(currentCrmUser);
-    const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
-    if (coordTeamId && teamEmails?.length) appointmentVisibleEmails = teamEmails;
-  }
+  const storeLeadIds = new Set();
+  const approvalLeadIds = new Set();
+  const closedLeadIds = new Set();
+  const explicitNoLeadIds = new Set();
+  const historicalLeadIds = new Set(history.stageEvents.map((event) => String(event.lead_id)));
 
-  let appointmentUsersQuery = client.from("crm_users").select("id,email").eq("ativo", true);
-  if (appointmentVisibleEmails?.length) appointmentUsersQuery = appointmentUsersQuery.in("email", appointmentVisibleEmails);
-  const { data: appointmentUsersData } = await appointmentUsersQuery;
-  const appointmentUsers = appointmentUsersData || [];
-  const appointmentUserIds = appointmentUsers.map((user) => user.id);
-  const appointmentEmailById = new Map(appointmentUsers.map((user) => [String(user.id), user.email]));
-  let apptsQuery = client.from("appointments").select("id,lead_id,status,data_agendamento,usuario_id").neq("status", "cancelado");
-  if (appointmentVisibleEmails) {
-    apptsQuery = appointmentUserIds.length
-      ? apptsQuery.in("usuario_id", appointmentUserIds)
-      : apptsQuery.in("usuario_id", ["00000000-0000-0000-0000-000000000000"]);
-  }
-  const { data: rawApptsData } = await apptsQuery;
-  const apptsData = (rawApptsData || []).map((appointment) => ({
-    ...appointment,
-    assigned_to_email: appointmentEmailById.get(String(appointment.usuario_id)) || "",
-  }));
-  const scheduledLeadKeys = new Set(apptsData.map((appointment) => appointment.lead_id || appointment.id).filter(Boolean));
+  periodEvents.forEach((event) => {
+    const leadId = String(event.lead_id);
+    const status = String(event.new_value || "").trim().toLowerCase();
+    if (status === "cliente_em_loja") storeLeadIds.add(leadId);
+    if (["em_aprovacao", "proposta_enviada"].includes(status)) approvalLeadIds.add(leadId);
+    if (status === "venda_fechada") closedLeadIds.add(leadId);
+    if (["nao_quer", "não_quer", "nao_tem_interesse", "perdido"].includes(status)) explicitNoLeadIds.add(leadId);
+  });
+
+  // Registros antigos podem não ter histórico. Neles, usa o estado atual apenas
+  // quando a última movimentação pertence ao período selecionado.
+  leads.forEach((lead) => {
+    const leadId = String(lead.id);
+    if (historicalLeadIds.has(leadId)) return;
+    const movementDate = lead.updated_at || lead.ultima_interacao || lead.created_at;
+    if (!isWithinDashboardPeriod(movementDate, periodRange)) return;
+    const status = String(lead.status || "").trim().toLowerCase();
+    if (["cliente_em_loja", "em_aprovacao", "proposta_enviada", "venda_fechada", "nao_quer", "não_quer", "nao_tem_interesse", "perdido"].includes(status)) {
+      storeLeadIds.add(leadId);
+    }
+    if (["em_aprovacao", "proposta_enviada"].includes(status)) approvalLeadIds.add(leadId);
+    if (status === "venda_fechada") closedLeadIds.add(leadId);
+    if (["nao_quer", "não_quer", "nao_tem_interesse", "perdido"].includes(status)) explicitNoLeadIds.add(leadId);
+  });
+
+  const scheduledLeadKeys = new Set(periodAppointments.map((appointment) => String(appointment.lead_id || appointment.id)).filter(Boolean));
+  const clientsInStore = storeLeadIds.size;
+  const inApproval = approvalLeadIds.size;
+  const closedLeads = closedLeadIds.size;
+  const notInterestedLeadIds = new Set([...storeLeadIds].filter((leadId) => !closedLeadIds.has(leadId)));
+  explicitNoLeadIds.forEach((leadId) => notInterestedLeadIds.add(leadId));
+  const notInterested = notInterestedLeadIds.size;
+  const closingConversion = clientsInStore > 0 ? ((closedLeads / clientsInStore) * 100).toFixed(1) : "0.0";
   const totalAppointments = scheduledLeadKeys.size;
   const appointmentConversion = receivedLeads > 0 ? ((totalAppointments / receivedLeads) * 100).toFixed(1) : "0.0";
   const tasksData = [];
@@ -2468,6 +2543,8 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
     return false;
   }
 
+  const existingCard = document.querySelector(`[data-lead-id="${leadId}"]`);
+  const previousStatus = existingCard?.closest?.(".kanban-column")?.dataset.status || null;
   let createdAppointment = null;
   if (status === "agendamento" && !skipAppointment) {
     createdAppointment = await requestAppointmentForLead(leadId);
@@ -2478,7 +2555,7 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
 
   if (optimistic) {
     const targetColumn = columns.find((col) => col.dataset.status === status);
-    const sourceCard = document.querySelector(`[data-lead-id="${leadId}"]`);
+    const sourceCard = existingCard;
 
     if (sourceCard && targetColumn) {
       const sourceColumn = sourceCard.closest?.(".kanban-column");
@@ -2524,6 +2601,17 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
       alert("Nao consegui mover o lead. Tente novamente.");
     }
     return false;
+  }
+
+  if (previousStatus && previousStatus !== status) {
+    await createLeadActivityLog({
+      leadId,
+      actionType: "status_changed",
+      actionLabel: "Etapa alterada",
+      description: `Etapa alterada de ${statusLabels[previousStatus] || previousStatus} para ${statusLabels[status] || status}.`,
+      oldValue: previousStatus,
+      newValue: status,
+    });
   }
 
   if (!optimistic) {
