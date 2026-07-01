@@ -14251,14 +14251,15 @@ body.theme-dark .eq-seller-conversion { background: rgba(37, 99, 235, .12); }
   gap: 15px;
   position: relative;
   padding: 10px 0;
-  width: max-content;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 .eq-sectors-row::before {
   content: "";
   position: absolute;
   top: 0;
-  left: 87px; /* middle of 175px card */
-  right: 87px;
+  left: 0;
+  right: 0;
   height: 2px;
   background: #d4af37;
   opacity: 0.5;
