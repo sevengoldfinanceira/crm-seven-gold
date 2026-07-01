@@ -377,6 +377,25 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
   font-weight: 700;
 }
 
+#pipeline-team-filter-container,
+#responsible-filter-container {
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-auto-flow: row !important;
+  justify-items: center;
+  align-items: center;
+}
+
+#pipeline-team-filter-container > span,
+#responsible-filter-container > span {
+  width: 100%;
+  text-align: center;
+}
+
+#pipeline-team-filter-container > .sg-search-select,
+#responsible-filter-container > .sg-search-select {
+  justify-self: center;
+}
+
 .filter-row select,
 .clear-button {
   min-width: 144px;

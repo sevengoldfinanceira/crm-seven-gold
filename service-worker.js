@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-server-authorized-leads-v2";
+const CACHE_VERSION = "seven-gold-centered-pipeline-filters-v1";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
