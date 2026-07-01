@@ -712,7 +712,8 @@ let selectedPipelineTeamId = "";
 let selectedDashTeamId = "";
 let selectedCalendarTeamId = "";
 let selectedTasksTeamId = "";
-let selectedDashPeriod = "this_month";
+let selectedDashPeriod = "month";
+let selectedDashPeriodValue = "";
 let dashTeamFilterInitialized = false;
 let dashPeriodFilterInitialized = false;
 let pipelineTeamFilterInitialized = false;
@@ -1534,22 +1535,46 @@ const fetchDashboardHistory = async (client) => {
   };
 };
 
-const getDashboardPeriodRange = (periodKey) => {
-  const now = new Date();
-  const end = new Date(now.getTime() + 1);
-  let start;
+const padDashboardDatePart = (value) => String(value).padStart(2, "0");
 
-  if (periodKey === "today") {
-    start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  } else if (periodKey === "last_7_days") {
-    start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    start.setDate(start.getDate() - 6);
-  } else if (periodKey === "this_year") {
-    start = new Date(now.getFullYear(), 0, 1);
-  } else if (periodKey === "all") {
-    return { start: null, end: null };
+const getCurrentDashboardPeriodValue = (periodType) => {
+  const now = new Date();
+  if (periodType === "day") {
+    return `${now.getFullYear()}-${padDashboardDatePart(now.getMonth() + 1)}-${padDashboardDatePart(now.getDate())}`;
+  }
+  if (periodType === "week") {
+    const utcDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+    const dayNumber = utcDate.getUTCDay() || 7;
+    utcDate.setUTCDate(utcDate.getUTCDate() + 4 - dayNumber);
+    const yearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+    const weekNumber = Math.ceil((((utcDate - yearStart) / 86400000) + 1) / 7);
+    return `${utcDate.getUTCFullYear()}-W${padDashboardDatePart(weekNumber)}`;
+  }
+  return `${now.getFullYear()}-${padDashboardDatePart(now.getMonth() + 1)}`;
+};
+
+const getDashboardPeriodRange = (periodType, periodValue) => {
+  const value = periodValue || getCurrentDashboardPeriodValue(periodType);
+  let start;
+  let end;
+
+  if (periodType === "day") {
+    const [year, month, day] = value.split("-").map(Number);
+    start = new Date(year, month - 1, day);
+    end = new Date(year, month - 1, day + 1);
+  } else if (periodType === "week") {
+    const match = /^(\d{4})-W(\d{2})$/.exec(value);
+    const weekYear = Number(match?.[1]);
+    const weekNumber = Number(match?.[2]);
+    const januaryFourth = new Date(weekYear, 0, 4);
+    const januaryFourthDay = januaryFourth.getDay() || 7;
+    start = new Date(weekYear, 0, 4 - januaryFourthDay + 1 + ((weekNumber - 1) * 7));
+    end = new Date(start);
+    end.setDate(end.getDate() + 7);
   } else {
-    start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const [year, month] = value.split("-").map(Number);
+    start = new Date(year, month - 1, 1);
+    end = new Date(year, month, 1);
   }
 
   return { start, end };
@@ -1583,13 +1608,40 @@ const loadDashboardMetrics = async () => {
   if (!elReceived) return;
 
   const periodSelect = document.getElementById("dash-period-filter-select");
+  const periodLabel = document.getElementById("dash-period-calendar-label");
+  const periodInputs = {
+    day: document.getElementById("dash-period-day-input"),
+    week: document.getElementById("dash-period-week-input"),
+    month: document.getElementById("dash-period-month-input"),
+  };
   if (periodSelect && !dashPeriodFilterInitialized) {
     dashPeriodFilterInitialized = true;
     periodSelect.value = selectedDashPeriod;
+    Object.entries(periodInputs).forEach(([type, input]) => {
+      if (!input) return;
+      input.value = getCurrentDashboardPeriodValue(type);
+      input.addEventListener("change", () => {
+        if (selectedDashPeriod !== type) return;
+        selectedDashPeriodValue = input.value || getCurrentDashboardPeriodValue(type);
+        loadDashboardMetrics();
+      });
+    });
     periodSelect.addEventListener("change", () => {
-      selectedDashPeriod = periodSelect.value || "this_month";
+      selectedDashPeriod = periodSelect.value || "month";
+      selectedDashPeriodValue = periodInputs[selectedDashPeriod]?.value || getCurrentDashboardPeriodValue(selectedDashPeriod);
       loadDashboardMetrics();
     });
+  }
+  Object.entries(periodInputs).forEach(([type, input]) => {
+    if (input) input.hidden = type !== selectedDashPeriod;
+  });
+  if (periodLabel) {
+    periodLabel.textContent = selectedDashPeriod === "day"
+      ? "Selecionar dia"
+      : selectedDashPeriod === "week" ? "Selecionar semana" : "Selecionar mês";
+  }
+  if (!selectedDashPeriodValue) {
+    selectedDashPeriodValue = periodInputs[selectedDashPeriod]?.value || getCurrentDashboardPeriodValue(selectedDashPeriod);
   }
 
   let activeTeamId = selectedDashTeamId;
@@ -1633,7 +1685,7 @@ const loadDashboardMetrics = async () => {
     leads = leads.filter((lead) => allowedEmails.has(normalizeMetricEmail(lead.assigned_to_email)));
   }
 
-  const periodRange = getDashboardPeriodRange(selectedDashPeriod);
+  const periodRange = getDashboardPeriodRange(selectedDashPeriod, selectedDashPeriodValue);
   const visibleLeadIds = new Set(leads.map((lead) => String(lead.id)));
   const receivedLeads = leads.filter((lead) => isWithinDashboardPeriod(lead.created_at, periodRange)).length;
   const periodEvents = history.stageEvents.filter((event) =>
