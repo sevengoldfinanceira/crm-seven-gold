@@ -109,6 +109,12 @@
 
         <section class="commission-table-section">
           <div class="commission-table-card">
+            <div class="commission-table-toolbar" data-admin-only>
+              <button type="button" class="commission-edit-toggle" data-toggle-edit><i data-lucide="pencil"></i> Editar valores</button>
+              <button type="button" class="commission-save-btn" data-save-commissions hidden><i data-lucide="check"></i> Salvar alterações</button>
+              <button type="button" class="commission-cancel-btn" data-cancel-edit hidden><i data-lucide="x"></i> Cancelar</button>
+              <span class="commission-edit-status" data-edit-status></span>
+            </div>
             <div class="commission-table-scroll">
               <table class="commission-data-table">
                 <thead>

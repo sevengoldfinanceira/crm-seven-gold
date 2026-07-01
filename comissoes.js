@@ -18,24 +18,27 @@
   let levels = JSON.parse(JSON.stringify(defaultLevels));
   let strategic = JSON.parse(JSON.stringify(defaultStrategic));
   let allRules = [];
-  let isAdmin = false;
+  let isEditing = false;
 
   const tableBody = document.querySelector('[data-commission-table-body]');
+  const toggleBtn = document.querySelector('[data-toggle-edit]');
+  const saveBtn = document.querySelector('[data-save-commissions]');
+  const cancelBtn = document.querySelector('[data-cancel-edit]');
+  const editStatus = document.querySelector('[data-edit-status]');
 
-  const isUserAdmin = () => {
+  const isAdmin = () => {
     const role = window.userRole || '';
-    const normalized = window.normalizeRole ? window.normalizeRole(role) : role.toLowerCase().replace(/\s+/g, '-');
-    return ['dono', 'administrador', 'diretor-ceo', 'admin'].includes(normalized);
+    const n = window.normalizeRole ? window.normalizeRole(role) : role.toLowerCase().replace(/\s+/g, '-');
+    return ['dono', 'administrador', 'diretor-ceo', 'admin'].includes(n);
   };
 
   const renderCommercialTable = () => {
     tableBody.innerHTML = tabs.map((tab, index) => {
-      const cells = levels.map((level, li) => {
+      const cells = levels.map(level => {
         const val = level.commission[index];
         const rule = allRules.find(r => r.level_id === level.id && r.table_index === index);
-        const ruleId = rule ? ` data-rule-id="${rule.id}"` : '';
-        if (isAdmin && rule) {
-          return `<td><span class="commission-value-pill editable-cell"${ruleId}>${val}<button type="button" class="edit-pencil" data-edit-cell title="Editar"><i data-lucide="pencil"></i></button></span></td>`;
+        if (isEditing && rule) {
+          return `<td><input type="text" class="inline-edit-input" data-rule-id="${rule.id}" value="${val}"></td>`;
         }
         return `<td><span class="commission-value-pill">${val}</span></td>`;
       }).join('');
@@ -44,93 +47,75 @@
     window.lucide?.createIcons();
   };
 
-  const strategicTabs=document.querySelector('[data-strategic-tabs]');
-  const selectStrategic=(id)=>{
-    const item=strategic.find(entry=>entry.id===id)||strategic[0];
-    strategicTabs.innerHTML=strategic.map(entry=>`<button type="button" class="${entry.id===item.id?'active':''}" data-select-strategic="${entry.id}">${entry.name}</button>`).join('');
-    document.querySelector('[data-strategic-title]').textContent=item.name;
-    const strategicFile=document.querySelector('[data-strategic-file]'); strategicFile.dataset.intendedFile=item.file; strategicFile.setAttribute('aria-disabled','true');
-    document.querySelector('[data-strategic-head]').innerHTML=`<tr>${item.headers.map(header=>`<th>${header}</th>`).join('')}</tr>`;
-    document.querySelector('[data-strategic-body]').innerHTML=item.rows.map((row,index)=>`<tr class="${index===0?'featured-row':''}">${row.map((cell,column)=>`<td>${column===0?`<strong>${cell}</strong>`:cell}</td>`).join('')}</tr>`).join('');
-    document.querySelector('[data-strategic-note]').textContent=item.note;
+  const strategicTabs = document.querySelector('[data-strategic-tabs]');
+  const selectStrategic = (id) => {
+    const item = strategic.find(entry => entry.id === id) || strategic[0];
+    strategicTabs.innerHTML = strategic.map(entry => `<button type="button" class="${entry.id===item.id?'active':''}" data-select-strategic="${entry.id}">${entry.name}</button>`).join('');
+    document.querySelector('[data-strategic-title]').textContent = item.name;
+    const strategicFile = document.querySelector('[data-strategic-file]'); strategicFile.dataset.intendedFile = item.file; strategicFile.setAttribute('aria-disabled', 'true');
+    document.querySelector('[data-strategic-head]').innerHTML = `<tr>${item.headers.map(header => `<th>${header}</th>`).join('')}</tr>`;
+    document.querySelector('[data-strategic-body]').innerHTML = item.rows.map((row, index) => `<tr class="${index===0?'featured-row':''}">${row.map((cell, column) => `<td>${column===0?`<strong>${cell}</strong>`:cell}</td>`).join('')}</tr>`).join('');
+    document.querySelector('[data-strategic-note]').textContent = item.note;
   };
 
-  const showArea=(area, trigger=null)=>{
-    document.querySelectorAll('[data-commission-panel]').forEach(panel=>{const active=panel.dataset.commissionPanel===area; panel.hidden=!active; panel.classList.toggle('active',active);});
-    const areaButtons=[...document.querySelectorAll('[data-commission-area]')];
-    areaButtons.forEach(button=>button.classList.remove('active'));
-    (trigger||areaButtons.find(button=>button.dataset.commissionArea===area))?.classList.add('active');
-    if(area==='strategic') selectStrategic(strategic[0].id);
+  const showArea = (area, trigger = null) => {
+    document.querySelectorAll('[data-commission-panel]').forEach(panel => { const active = panel.dataset.commissionPanel === area; panel.hidden = !active; panel.classList.toggle('active', active); });
+    const areaButtons = [...document.querySelectorAll('[data-commission-area]')];
+    areaButtons.forEach(button => button.classList.remove('active'));
+    (trigger || areaButtons.find(button => button.dataset.commissionArea === area))?.classList.add('active');
+    if (area === 'strategic') selectStrategic(strategic[0].id);
   };
 
-  const saveField = async (ruleId, value) => {
+  const toggleEditMode = (on) => {
+    isEditing = on;
+    toggleBtn.hidden = on;
+    saveBtn.hidden = !on;
+    cancelBtn.hidden = !on;
+    editStatus.hidden = !on;
+    editStatus.textContent = on ? 'Editando valores...' : '';
+    editStatus.classList.toggle('editing', on);
+    const tableCard = document.querySelector('.commission-table-card');
+    const dataTable = document.querySelector('.commission-data-table');
+    if (tableCard) tableCard.classList.toggle('editing', on);
+    if (dataTable) dataTable.classList.toggle('editing-mode', on);
+    renderCommercialTable();
+  };
+
+  const saveAll = async () => {
     const client = window.sevenGoldAuth;
-    if (!client || !ruleId) return false;
-    const { error } = await client.from('commission_rules').update({ commission_value: value }).eq('id', ruleId);
-    if (error) { console.error('Erro ao salvar:', error); return false; }
-    const rule = allRules.find(r => r.id === ruleId);
-    if (rule) rule.commission_value = value;
-    return true;
-  };
-
-  const startEdit = (cell) => {
-    if (cell.classList.contains('editing')) return;
-    const ruleId = cell.dataset.ruleId;
-    if (!ruleId) return;
-
-    const currentVal = cell.childNodes[0].textContent.trim();
-    cell.classList.add('editing');
-    const pencil = cell.querySelector('.edit-pencil');
-    if (pencil) pencil.style.display = 'none';
-
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.value = currentVal;
-    input.className = 'edit-input';
-    cell.textContent = '';
-    cell.appendChild(input);
-    input.focus();
-    input.select();
-
-    const finishEdit = async (save) => {
-      cell.classList.remove('editing');
+    if (!client) return;
+    const inputs = tableBody.querySelectorAll('.inline-edit-input');
+    const changes = [];
+    inputs.forEach(input => {
+      const ruleId = input.dataset.ruleId;
       const newVal = input.value.trim();
-      if (save && newVal && newVal !== currentVal) {
-        cell.innerHTML = `<span class="edit-loading"></span>`;
-        const ok = await saveField(ruleId, newVal);
-        if (ok) {
-          const rule = allRules.find(r => r.id === ruleId);
-          if (rule) {
-            const level = levels.find(l => l.id === rule.level_id);
-            if (level) level.commission[rule.table_index] = newVal;
-          }
-          renderCommercialTable();
-        } else {
-          renderCommercialTable();
-        }
-      } else {
-        renderCommercialTable();
-      }
-    };
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); finishEdit(true); }
-      if (e.key === 'Escape') { finishEdit(false); }
+      if (ruleId && newVal) changes.push({ ruleId, newVal });
     });
-    input.addEventListener('blur', () => finishEdit(true));
+    if (!changes.length) { toggleEditMode(false); return; }
+
+    editStatus.textContent = `Salvando ${changes.length} alterações...`;
+    saveBtn.disabled = true;
+
+    for (const { ruleId, newVal } of changes) {
+      const { error } = await client.from('commission_rules').update({ commission_value: newVal }).eq('id', ruleId);
+      if (!error) {
+        const rule = allRules.find(r => r.id === ruleId);
+        if (rule) rule.commission_value = newVal;
+        const level = levels.find(l => l.id === rule.level_id);
+        if (level) level.commission[rule.table_index] = newVal;
+      }
+    }
+
+    saveBtn.disabled = false;
+    toggleEditMode(false);
   };
 
   const loadFromSupabase = async () => {
     const client = window.sevenGoldAuth;
     if (!client) return false;
     try {
-      const { data, error } = await client
-        .from('commission_rules')
-        .select('*')
-        .order('level_sort', { ascending: true })
-        .order('table_index', { ascending: true });
+      const { data, error } = await client.from('commission_rules').select('*').order('level_sort', { ascending: true }).order('table_index', { ascending: true });
       if (error || !data || !data.length) return false;
-
       allRules = data;
 
       const commercialRules = data.filter(r => r.category === 'commercial');
@@ -139,12 +124,7 @@
         levels = levelIds.map(levelId => {
           const rules = commercialRules.filter(r => r.level_id === levelId).sort((a, b) => a.table_index - b.table_index);
           const def = defaultLevels.find(d => d.id === levelId);
-          return {
-            id: levelId,
-            name: rules[0]?.level_name || def?.name || levelId,
-            commission: rules.map(r => r.commission_value),
-            file: def?.file || ''
-          };
+          return { id: levelId, name: rules[0]?.level_name || def?.name || levelId, commission: rules.map(r => r.commission_value), file: def?.file || '' };
         });
       }
 
@@ -158,7 +138,6 @@
           const hasAdhesion = rules.some(r => r.adhesion);
           const hasInstallments = rules.some(r => r.installments);
           const hasTotal = rules.some(r => r.total);
-
           let headers = ['Tabela'];
           if (hasAdhesion) headers.push('Adesão');
           if (hasInstallments) headers.push('Parcelas');
@@ -166,7 +145,6 @@
           if (levelId === 'representante-junior') headers.push('Total Junior');
           if (levelId === 'submaster') headers.push('Observação');
           if (def && headers.length <= 2) headers = def.headers;
-
           const rows = rules.map(r => {
             const rowExtra = r.extra || {};
             let row = [r.table_label];
@@ -177,47 +155,32 @@
             if (levelId === 'submaster') row.push(rowExtra.observation || '—');
             return row;
           });
-
           return { id: levelId, name: rules[0]?.level_name || def?.name || levelId, file: def?.file || '', headers, rows, note: def?.note || '' };
         });
       }
       return true;
     } catch (e) {
-      console.warn('Supabase unavailable, using defaults:', e);
+      console.warn('Supabase unavailable:', e);
       return false;
     }
   };
 
   document.addEventListener('click', event => {
-    const editBtn = event.target.closest('[data-edit-cell]');
-    if (editBtn) {
-      const cell = editBtn.closest('.editable-cell');
-      if (cell) startEdit(cell);
-      return;
-    }
-    const editable = event.target.closest('.editable-cell');
-    if (editable && isAdmin) {
-      startEdit(editable);
-      return;
-    }
-
-    const strategy = event.target.closest('[data-select-strategic]');
-    if (strategy) { selectStrategic(strategy.dataset.selectStrategic); return; }
-    const area = event.target.closest('[data-commission-area]');
-    if (area) { showArea(area.dataset.commissionArea, area); return; }
+    if (event.target.closest('[data-toggle-edit]')) { toggleEditMode(true); return; }
+    if (event.target.closest('[data-save-commissions]')) { saveAll(); return; }
+    if (event.target.closest('[data-cancel-edit]')) { toggleEditMode(false); return; }
+    const strategy = event.target.closest('[data-select-strategic]'); if (strategy) { selectStrategic(strategy.dataset.selectStrategic); return; }
+    const area = event.target.closest('[data-commission-area]'); if (area) { showArea(area.dataset.commissionArea, area); return; }
     if (event.target.closest('[data-open-strategic]')) showArea('strategic');
     if (event.target.closest('[data-back-commercial]')) showArea('commercial');
   });
 
   const init = async () => {
-    isAdmin = isUserAdmin();
     const checkAdmin = () => {
-      if (!isAdmin) isAdmin = isUserAdmin();
-      if (isAdmin) document.body.setAttribute('data-is-admin', 'true');
+      if (isAdmin()) document.body.setAttribute('data-is-admin', 'true');
     };
     checkAdmin();
     setTimeout(checkAdmin, 500);
-
     await loadFromSupabase();
     renderCommercialTable();
     if (strategicTabs) selectStrategic(strategic[0].id);

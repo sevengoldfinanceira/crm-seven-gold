@@ -18285,22 +18285,37 @@ body[data-is-admin="true"] .commission-admin-link[data-admin-only]{display:inlin
 .commission-data-table .featured-row td{background:#fffaf0;border-bottom-color:#f5e6c0}
 .commission-data-table td:first-child{font-weight:700;color:#15162f}
 .commission-value-pill{display:inline-flex;padding:5px 12px;border-radius:999px;background:#e8f9f2;color:#16815b;font-weight:800;font-size:.76rem;letter-spacing:.01em}
-.commission-value-pill.editable-cell{position:relative;cursor:pointer;gap:4px;transition:all .15s}
-.commission-value-pill.editable-cell:hover{border:1px solid rgba(22,129,91,.3);background:#d1f5e3}
-.commission-value-pill.editable-cell .edit-pencil{display:none;align-items:center;justify-content:center;width:20px;height:20px;border:none;border-radius:50%;background:rgba(22,129,91,.15);color:#16815b;cursor:pointer;padding:0;transition:all .15s;flex:0 0 auto}
-.commission-value-pill.editable-cell:hover .edit-pencil{display:inline-flex}
-.commission-value-pill.editable-cell .edit-pencil:hover{background:rgba(22,129,91,.3);transform:scale(1.1)}
-.commission-value-pill.editable-cell .edit-pencil svg{width:11px;height:11px}
-.commission-value-pill.editable-cell.editing{background:#fff;border:1px solid #7d3db4;padding:2px;box-shadow:0 0 0 3px rgba(125,61,180,.15)}
-.edit-input{width:80px;padding:4px 8px;border:none;border-radius:999px;background:transparent;font-size:.76rem;font-weight:800;color:#15162f;outline:none;font-family:inherit;text-align:center}
-.edit-loading{display:inline-block;width:14px;height:14px;border:2px solid #e8f9f2;border-top-color:#16815b;border-radius:50%;animation:edit-spin .6s linear infinite}
-@keyframes edit-spin{to{transform:rotate(360deg)}}
 
-body.theme-dark .commission-value-pill.editable-cell:hover{border-color:rgba(110,231,183,.4);background:#1a3328}
-body.theme-dark .commission-value-pill.editable-cell .edit-pencil{background:rgba(110,231,183,.15);color:#6ee7b7}
-body.theme-dark .commission-value-pill.editable-cell .edit-pencil:hover{background:rgba(110,231,183,.3)}
-body.theme-dark .commission-value-pill.editable-cell.editing{background:#211929;border-color:#7d3db4}
-body.theme-dark .edit-input{color:#d9d4df}
+/* === EDIT MODE === */
+.commission-table-toolbar{display:none;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid #f0f1f5;background:#fafbff}
+.commission-table-toolbar[data-admin-only]{display:none}
+body[data-is-admin="true"] .commission-table-toolbar[data-admin-only]{display:flex}
+.commission-edit-toggle{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid #e3e6ed;border-radius:10px;background:#fff;color:#667085;font-size:.74rem;font-weight:700;cursor:pointer;transition:all .2s}
+.commission-edit-toggle svg{width:14px}
+.commission-edit-toggle:hover{border-color:#7d3db4;color:#7d3db4;background:#f4eaff}
+.commission-save-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border:none;border-radius:10px;background:linear-gradient(135deg,#16815b,#0d6b48);color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(22,129,91,.25)}
+.commission-save-btn svg{width:14px}
+.commission-save-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(22,129,91,.35)}
+.commission-save-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.commission-cancel-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid #e3e6ed;border-radius:10px;background:#fff;color:#667085;font-size:.74rem;font-weight:700;cursor:pointer;transition:all .2s}
+.commission-cancel-btn svg{width:14px}
+.commission-cancel-btn:hover{border-color:#dc2626;color:#dc2626;background:#fef2f2}
+.commission-edit-status{font-size:.72rem;font-weight:600;color:#7d3db4}
+.commission-edit-status.editing{animation:edit-pulse 1.5s ease infinite}
+@keyframes edit-pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+.inline-edit-input{width:100%;padding:6px 10px;border:2px solid #7d3db4;border-radius:8px;background:#fff;color:#15162f;font-size:.76rem;font-weight:700;text-align:center;font-family:inherit;outline:none;transition:all .15s}
+.inline-edit-input:focus{border-color:#5b3d8f;box-shadow:0 0 0 3px rgba(125,61,180,.15)}
+.commission-data-table.editing-mode td{padding:8px 10px}
+.commission-data-table.editing-mode .featured-row td{background:#fff8e8}
+.commission-table-card.editing{border-color:rgba(125,61,180,.3);box-shadow:0 0 0 2px rgba(125,61,180,.1)}
+
+body.theme-dark .commission-table-toolbar{border-bottom-color:rgba(255,255,255,.05);background:#18131e}
+body.theme-dark .commission-edit-toggle{border-color:rgba(255,255,255,.1);background:#211929;color:#aaa2b3}
+body.theme-dark .commission-edit-toggle:hover{border-color:#c4a0f0;color:#c4a0f0;background:#2a1f38}
+body.theme-dark .commission-cancel-btn{border-color:rgba(255,255,255,.1);background:#211929;color:#aaa2b3}
+body.theme-dark .inline-edit-input{border-color:#7d3db4;background:#211929;color:#d9d4df}
+body.theme-dark .inline-edit-input:focus{border-color:#c4a0f0;box-shadow:0 0 0 3px rgba(196,160,240,.15)}
 .commission-table-note{display:flex;align-items:center;gap:8px;margin:0;padding:14px 18px;border-top:1px solid #f0f1f5;background:linear-gradient(90deg,#fafbff,#f8f7fc);color:#727b8e;font-size:.72rem;line-height:1.5;border-radius:0 0 18px 18px}
 .commission-table-note svg{width:15px;height:15px;flex:0 0 auto;color:#9ca3af}
 
