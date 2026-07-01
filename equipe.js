@@ -3655,7 +3655,7 @@
   };
 
   const openEditColabModal = (profileId) => {
-    renderListView();
+    openColabModal(profileId);
   };
 
   const openEditSectorModal = (sectorId) => {
