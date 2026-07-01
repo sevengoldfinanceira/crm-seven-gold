@@ -14943,16 +14943,6 @@ body.theme-dark .eq-table tbody tr:hover { background: #0f172a; }
   color: #d4af37;
 }
 
-.eq-sector-edit-toggle:hover {
-  color: #d4af37 !important;
-  background: rgba(212,175,55,.08);
-}
-
-.eq-sector-edit-toggle[title*="Sair"] {
-  color: #d4af37;
-  background: rgba(212,175,55,.1);
-}
-
 .eq-role-pill {
   cursor: grab !important;
   position: relative;

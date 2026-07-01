@@ -127,7 +127,12 @@
             <div class="eq-org-tree">
               <header class="eq-tree-header">
                 <h2>Organograma da empresa</h2>
-                <i data-lucide="info" title="Arraste horizontalmente para visualizar todos os setores"></i>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <i data-lucide="info" title="Arraste horizontalmente para visualizar todos os setores"></i>
+                  <button type="button" id="eq-organogram-edit-toggle" class="eq-organogram-edit-btn" title="Ativar modo edição para arrastar cargos" style="background:none;border:1.5px solid #cbd5e1;border-radius:8px;cursor:pointer;padding:6px 10px;display:flex;align-items:center;gap:5px;font-size:.75rem;font-weight:600;color:#64748b;transition:all .15s">
+                    <i data-lucide="pencil" style="width:15px;height:15px"></i> Editar
+                  </button>
+                </div>
               </header>
               
               <!-- Diretoria (Topo) -->

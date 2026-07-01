@@ -1730,14 +1730,16 @@
 
   // Render Organograma View (Aba 1)
   const applyOrganogramEditMode = () => {
+    const toggleBtn = document.getElementById("eq-organogram-edit-toggle");
+    if (toggleBtn) {
+      toggleBtn.style.borderColor = organogramEditMode ? "#d4af37" : "#cbd5e1";
+      toggleBtn.style.color = organogramEditMode ? "#d4af37" : "#64748b";
+      toggleBtn.style.background = organogramEditMode ? "rgba(212,175,55,.08)" : "none";
+      toggleBtn.title = organogramEditMode ? "Sair do modo edição" : "Ativar modo edição para arrastar cargos";
+    }
     document.querySelectorAll(".eq-sector-card").forEach(card => {
       const handle = card.querySelector(".eq-drag-handle");
-      const pencil = card.querySelector(".eq-sector-edit-toggle");
       if (handle) handle.style.display = organogramEditMode ? "" : "none";
-      if (pencil) {
-        pencil.style.color = organogramEditMode ? "#d4af37" : "#9ca3af";
-        pencil.title = organogramEditMode ? "Sair do modo edição" : "Ativar modo edição para arrastar cargos";
-      }
       card.setAttribute("draggable", organogramEditMode ? "true" : "false");
     });
     document.querySelectorAll(".eq-role-pill").forEach(pill => {
@@ -1801,9 +1803,6 @@
             <h4>${sector.title}</h4>
           </div>
           <span class="eq-sector-count">${sectorMembersCount}</span>
-          <button type="button" class="eq-sector-edit-toggle" title="Ativar modo edição para arrastar cargos" style="background:none;border:none;cursor:pointer;padding:4px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#9ca3af;transition:color .15s">
-            <i data-lucide="pencil" style="width:16px;height:16px"></i>
-          </button>
         </header>
         <div class="eq-sector-roles">
           ${sector.roles.map(role => {
@@ -1849,13 +1848,6 @@
 
       // --- Sector Drag and Drop Events (to reorder sectors) ---
       sectorCard.setAttribute("draggable", "false");
-
-      // Pencil toggle to enter edit mode
-      sectorCard.querySelector(".eq-sector-edit-toggle")?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        organogramEditMode = !organogramEditMode;
-        applyOrganogramEditMode();
-      });
       
       sectorCard.addEventListener("dragstart", (e) => {
         if (!organogramEditMode) { e.preventDefault(); return; }
@@ -3705,6 +3697,12 @@
 
   // Bind initial page load
   const init = async () => {
+    // Organogram edit mode toggle
+    document.getElementById("eq-organogram-edit-toggle")?.addEventListener("click", () => {
+      organogramEditMode = !organogramEditMode;
+      applyOrganogramEditMode();
+    });
+
     const now = new Date();
     state.teamPeriod = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
     const teamMonthSelect = document.getElementById("eq-team-filter-month");
