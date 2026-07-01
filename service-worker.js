@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-not-interested-current-store-v4";
+const CACHE_VERSION = "seven-gold-secure-pipeline-drag-v5";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",

@@ -2583,6 +2583,26 @@ const updateLeadCount = () => {
   leadCount.textContent = `${total} ${total === 1 ? "lead ativo" : "leads ativos"}`;
 };
 
+const updateLeadStageThroughApi = async (client, leadId, status) => {
+  const { data: sessionData } = await client.auth.getSession();
+  const token = sessionData?.session?.access_token;
+  if (!token) throw new Error("Sessão expirada. Entre novamente.");
+
+  const response = await fetch("/api/leads/update-stage", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ lead_id: leadId, status }),
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || result.ok !== true) {
+    throw new Error(result.error || "Não foi possível mover o lead.");
+  }
+  return result.lead;
+};
+
 const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppointment = false } = {}) => {
   const client = getClient();
 
@@ -2591,7 +2611,6 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
   }
 
   const existingCard = document.querySelector(`[data-lead-id="${leadId}"]`);
-  const previousStatus = existingCard?.closest?.(".kanban-column")?.dataset.status || null;
   let createdAppointment = null;
   if (status === "agendamento" && !skipAppointment) {
     createdAppointment = await requestAppointmentForLead(leadId);
@@ -2631,34 +2650,17 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
     }
   }
 
-  const { error } = await client.from("leads").update({
-    status,
-    updated_by_email: (window.currentCrmUser || window.crmUser)?.email || null,
-    updated_by_name: (window.currentCrmUser || window.crmUser)?.nome || null,
-    updated_at: new Date().toISOString(),
-  }).eq("id", leadId);
-
-  if (error) {
+  try {
+    await updateLeadStageThroughApi(client, leadId, status);
+  } catch (error) {
     if (createdAppointment?.id) {
       await client.from("appointments").delete().eq("id", createdAppointment.id);
     }
     if (optimistic) {
       await loadLeads();
-    } else {
-      alert("Nao consegui mover o lead. Tente novamente.");
     }
+    alert(error.message || "Não consegui mover o lead. Tente novamente.");
     return false;
-  }
-
-  if (previousStatus && previousStatus !== status) {
-    await createLeadActivityLog({
-      leadId,
-      actionType: "status_changed",
-      actionLabel: "Etapa alterada",
-      description: `Etapa alterada de ${statusLabels[previousStatus] || previousStatus} para ${statusLabels[status] || status}.`,
-      oldValue: previousStatus,
-      newValue: status,
-    });
   }
 
   if (!optimistic) {

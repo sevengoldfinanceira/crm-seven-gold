@@ -35,10 +35,11 @@ module.exports = async (req, res) => {
 
     const payload = req.body || {};
     const { phone, status } = payload;
+    const leadIdFromPayload = String(payload.lead_id || payload.leadId || '').trim();
 
-    if (!phone) {
+    if (!phone && !leadIdFromPayload) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ ok: false, error: 'O campo phone é obrigatório' }));
+      return res.end(JSON.stringify({ ok: false, error: 'Informe o ID ou telefone do lead.' }));
     }
 
     if (!status && !hasLeadClientInfo(payload) && !hasBasicLeadInfo(payload)) {
@@ -61,13 +62,14 @@ module.exports = async (req, res) => {
       return res.end(JSON.stringify({ ok: false, error: 'Telefone inválido.' }));
     }
 
-    const normalizedPhone = String(phone).replace(/\D/g, '');
-
-    const { data: fetchLead, error: fetchError } = await supabase
+    const normalizedPhone = String(phone || '').replace(/\D/g, '');
+    let fetchLeadQuery = supabase
       .from('leads')
-      .select('id, name, telefone, status, assigned_to_email')
-      .eq('telefone', normalizedPhone)
-      .limit(1);
+      .select('id, name, telefone, status, assigned_to_email');
+    fetchLeadQuery = leadIdFromPayload
+      ? fetchLeadQuery.eq('id', leadIdFromPayload)
+      : fetchLeadQuery.eq('telefone', normalizedPhone);
+    const { data: fetchLead, error: fetchError } = await fetchLeadQuery.limit(1);
 
     if (fetchError) {
       console.error('Error searching lead for stage update');
@@ -89,6 +91,9 @@ module.exports = async (req, res) => {
     if (status) {
       updateData.status = status;
       updateData.ultima_interacao = updateTime;
+      updateData.updated_at = updateTime;
+      updateData.updated_by_email = authorization.user.email || null;
+      updateData.updated_by_name = authorization.user.nome || authorization.user.email || null;
     }
 
     if (!canAccessLead(authorization.user, fetchLead[0])) {
