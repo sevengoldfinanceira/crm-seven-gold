@@ -62,7 +62,7 @@ const statusLabels = {
   primeiro_contato: "Primeiro contato",
   agendamento: "Agendamento",
   cliente_em_loja: "Cliente em loja",
-  proposta_enviada: "Proposta enviada",
+  proposta_enviada: "Em aprovação",
   venda_fechada: "Venda fechada",
   cancelado: "Lixeira",
 };
@@ -112,6 +112,22 @@ navItems.forEach((item) => {
     document.body.classList.remove("menu-open");
   });
 });
+
+// ─── Sidebar Collapse Toggle ───
+const sidebarCollapseBtn = document.querySelector(".sidebar-collapse-btn");
+if (sidebarCollapseBtn) {
+  if (localStorage.getItem("sidebar-collapsed") === "true") {
+    document.body.classList.add("sidebar-collapsed");
+  }
+  sidebarCollapseBtn.addEventListener("click", () => {
+    document.body.classList.toggle("sidebar-collapsed");
+    localStorage.setItem("sidebar-collapsed", document.body.classList.contains("sidebar-collapsed"));
+  });
+  document.querySelectorAll(".nav-item .nav-label").forEach((label) => {
+    const navItem = label.closest(".nav-item");
+    if (navItem) navItem.setAttribute("data-tooltip", label.textContent.trim());
+  });
+}
 
 openModalButton?.addEventListener("click", () => {
   if (typeof modal?.showModal === "function") {
@@ -2802,30 +2818,6 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
   return true;
 };
 
-const goBackOneStage = async (leadId) => {
-  const existingCard = document.querySelector(`[data-lead-id="${leadId}"]`);
-  const currentStatus = existingCard?.closest?.(".kanban-column")?.dataset.status;
-  if (!currentStatus) return;
-
-  if (!canGoBackPipelineStatus(currentStatus)) {
-    alert("Este lead não pode voltar uma etapa.");
-    return;
-  }
-
-  const prevStatus = getPreviousPipelineStatus(currentStatus);
-  const prevLabel = statusLabels[prevStatus] || prevStatus;
-  const currentLabel = statusLabels[currentStatus] || currentStatus;
-
-  let message = `Deseja voltar este lead de "${currentLabel}" para "${prevLabel}"?`;
-  if (currentStatus === "agendamento") {
-    message += "\n\nO agendamento vinculado sera cancelado.";
-  }
-
-  if (!confirm(message)) return;
-
-  await updateLeadStatus(leadId, prevStatus, { optimistic: true, goBack: true });
-};
-
 const getTagColors = (tag) => {
   const colors = [
     { bg: "#eff6ff", text: "#1d4ed8", border: "#dbeafe" }, // blue
@@ -2977,18 +2969,6 @@ const createLeadCard = (lead) => {
   });
 
   actionsRow.append(waBtn, callBtn, editBtn);
-
-  if (canGoBackPipelineStatus(lead.status)) {
-    const goBackBtn = document.createElement("button");
-    goBackBtn.type = "button";
-    goBackBtn.className = "lead-action-btn go-back-btn";
-    goBackBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Voltar`;
-    goBackBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      goBackOneStage(lead.id);
-    });
-    actionsRow.append(goBackBtn);
-  }
 
   // Tags Container
   const tagsContainer = document.createElement("div");
@@ -3159,7 +3139,11 @@ const setupDragAndDrop = () => {
       column.classList.remove("drag-over");
 
       if (draggedLeadId) {
-        await updateLeadStatus(draggedLeadId, column.dataset.status, { optimistic: true });
+        const sourceCard = document.querySelector(`[data-lead-id="${draggedLeadId}"]`);
+        const currentStatus = sourceCard?.closest?.(".kanban-column")?.dataset.status;
+        const targetStatus = column.dataset.status;
+        const goBack = targetStatus === getPreviousPipelineStatus(currentStatus);
+        await updateLeadStatus(draggedLeadId, targetStatus, { optimistic: true, goBack });
       }
 
       draggedLeadId = null;
@@ -3255,7 +3239,10 @@ const setupTouchMove = () => {
       ?.closest("[data-status]");
 
     if (targetColumn) {
-      await updateLeadStatus(drag.id, targetColumn.dataset.status, { optimistic: true });
+      const currentStatus = drag.card.closest?.(".kanban-column")?.dataset.status;
+      const targetStatus = targetColumn.dataset.status;
+      const goBack = targetStatus === getPreviousPipelineStatus(currentStatus);
+      await updateLeadStatus(drag.id, targetStatus, { optimistic: true, goBack });
     }
   });
 };
@@ -3533,47 +3520,6 @@ const setupBulkActions = () => {
         await loadLeads();
       }
     }
-  });
-
-  const goBackBtn = document.getElementById("bulk-go-back-btn");
-  goBackBtn?.addEventListener("click", async () => {
-    const checkboxes = document.querySelectorAll(".lead-select-checkbox:checked");
-    const selectedCards = Array.from(checkboxes).map((checkbox) => checkbox.closest(".lead-card")).filter(Boolean);
-    const leadIds = selectedCards.map((card) => card.dataset.leadId).filter(Boolean);
-
-    if (leadIds.length === 0) return;
-
-    const invalidCard = selectedCards.find((card) => {
-      const currentStatus = card.closest(".kanban-column")?.dataset.status;
-      return !canGoBackPipelineStatus(currentStatus);
-    });
-    if (invalidCard) {
-      alert("Um ou mais leads selecionados nao podem voltar etapa (ja estao na primeira etapa ou cancelados).");
-      return;
-    }
-
-    const hasAgendamento = selectedCards.some((card) => card.closest(".kanban-column")?.dataset.status === "agendamento");
-    let message = `Deseja voltar ${leadIds.length} lead${leadIds.length === 1 ? "" : "s"} uma etapa?`;
-    if (hasAgendamento) {
-      message += "\n\nAgendamentos vinculados serao cancelados.";
-    }
-
-    if (!confirm(message)) return;
-
-    for (const leadId of leadIds) {
-      const card = document.querySelector(`[data-lead-id="${leadId}"]`);
-      const currentStatus = card?.closest(".kanban-column")?.dataset.status;
-      const prevStatus = getPreviousPipelineStatus(currentStatus);
-      if (!prevStatus) continue;
-      await updateLeadStatus(leadId, prevStatus, { optimistic: true, goBack: true });
-    }
-
-    checkboxes.forEach((cb) => {
-      cb.checked = false;
-      cb.closest(".lead-card")?.classList.remove("selected");
-    });
-    updateBulkActionsBar();
-    await loadLeads();
   });
 
   cancelBtn?.addEventListener("click", () => {

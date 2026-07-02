@@ -172,14 +172,40 @@ module.exports = async (req, res) => {
       return res.end(JSON.stringify({ ok: false, error: 'Erro ao atualizar etapa do lead.' }));
     }
 
-    if (status && previousStatus !== status) {
+    if (status && previousStatus !== status && goBack) {
+      const { data: forwardEvents, error: historyLookupError } = await supabase
+        .from('lead_activity_logs')
+        .select('id')
+        .eq('lead_id', leadId)
+        .in('action_type', ['status_changed', 'stage_changed'])
+        .eq('old_value', status)
+        .eq('new_value', previousStatus)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      let undoHistoryError = historyLookupError;
+      if (!undoHistoryError && forwardEvents?.[0]?.id) {
+        const { error: deleteHistoryError } = await supabase
+          .from('lead_activity_logs')
+          .delete()
+          .eq('id', forwardEvents[0].id);
+        undoHistoryError = deleteHistoryError;
+      }
+
+      if (undoHistoryError) {
+        await supabase
+          .from('leads')
+          .update({ status: previousStatus, ultima_interacao: updateTime, updated_at: updateTime })
+          .eq('id', leadId);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ ok: false, error: 'Não foi possível desfazer a etapa com segurança.' }));
+      }
+    } else if (status && previousStatus !== status) {
       const { error: historyError } = await supabase.from('lead_activity_logs').insert({
         lead_id: leadId,
         action_type: 'status_changed',
-        action_label: goBack ? 'Etapa revertida' : 'Etapa alterada',
-        description: goBack
-          ? `Etapa revertida de ${previousStatus || 'sem etapa'} para ${status}.`
-          : `Etapa alterada de ${previousStatus || 'sem etapa'} para ${status}.`,
+        action_label: 'Etapa alterada',
+        description: `Etapa alterada de ${previousStatus || 'sem etapa'} para ${status}.`,
         old_value: previousStatus || null,
         new_value: status,
         created_by_email: authorization.user.email || null,
