@@ -64,7 +64,7 @@ const statusLabels = {
   cliente_em_loja: "Cliente em loja",
   proposta_enviada: "Proposta enviada",
   venda_fechada: "Venda fechada",
-  cancelado: "Cancelados",
+  cancelado: "Lixeira",
 };
 
 const pipelineStatusOrder = [
@@ -3339,7 +3339,7 @@ const setupBulkActions = () => {
       }
       const nextStatus = getNextPipelineStatus(currentStatus);
       const nextLabel = nextStatus ? statusLabels[nextStatus] : "nenhuma etapa";
-      alert(`Todos os leads selecionados devem estar na etapa anterior. Próxima etapa permitida: ${nextLabel}, ou Cancelados.`);
+      alert(`Todos os leads selecionados devem estar na etapa anterior. Próxima etapa permitida: ${nextLabel}, ou Lixeira.`);
       moveSelect.value = "";
       return;
     }
