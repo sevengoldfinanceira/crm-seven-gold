@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-lead-owner-appointments-v20";
+const CACHE_VERSION = "seven-gold-compact-lead-actions-v21";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
