@@ -1786,7 +1786,7 @@ const loadDashboardMetrics = async () => {
     if (elServiceConversion) elServiceConversion.textContent = `${((inService / receivedLeads) * 100).toFixed(1)}%`;
     if (elNotServedConversion) elNotServedConversion.textContent = `${((notServed / receivedLeads) * 100).toFixed(1)}%`;
     if (elStoreConversion) elStoreConversion.textContent = `${((clientsInStore / receivedLeads) * 100).toFixed(1)}%`;
-    if (elApprovalConversion) elApprovalConversion.textContent = `${((inApproval / receivedLeads) * 100).toFixed(1)}%`;
+    if (elApprovalConversion) elApprovalConversion.textContent = `${clientsInStore > 0 ? ((inApproval / clientsInStore) * 100).toFixed(1) : "0.0"}%`;
     if (elNotInterestedConversion) elNotInterestedConversion.textContent = `${clientsInStore > 0 ? ((notInterested / clientsInStore) * 100).toFixed(1) : "0.0"}%`;
   }
 
