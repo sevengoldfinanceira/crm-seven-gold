@@ -52,23 +52,41 @@ module.exports = async (req, res) => {
       assignedName = lead.assigned_to_name || assignedName;
     }
 
-    const { data, error } = await supabase
+    const basePayload = {
+      lead_id: leadId,
+      nome_cliente: clientName,
+      telefone_cliente: clientPhone,
+      usuario_id: authorization.user.auth_user_id,
+      nome_usuario: assignedName,
+      data_agendamento: appointmentDate,
+      hora_agendamento: appointmentTime,
+      observacao: String(payload.observacao || '').trim() || null,
+      status: 'agendado',
+    };
+
+    const extendedPayload = {
+      ...basePayload,
+      assigned_to_email: assignedEmail,
+      assigned_to_name: assignedName,
+    };
+
+    let result = await supabase
       .from('appointments')
-      .insert({
-        lead_id: leadId,
-        nome_cliente: clientName,
-        telefone_cliente: clientPhone,
-        usuario_id: authorization.user.auth_user_id,
-        nome_usuario: assignedName,
-        assigned_to_email: assignedEmail,
-        assigned_to_name: assignedName,
-        data_agendamento: appointmentDate,
-        hora_agendamento: appointmentTime,
-        observacao: String(payload.observacao || '').trim() || null,
-        status: 'agendado',
-      })
+      .insert(extendedPayload)
       .select('*')
       .single();
+
+    if (result.error && /assigned_to_(email|name)/i.test(result.error.message || '') && result.error.code === 'PGRST204') {
+      console.warn('[Appointments API] Colunas assigned_to_* ausentes na tabela appointments; inserindo sem elas.');
+      result = await supabase
+        .from('appointments')
+        .insert(basePayload)
+        .select('*')
+        .single();
+    }
+
+    const data = result.data;
+    const error = result.error;
 
     if (error) {
       console.error('[Appointments API] Error inserting appointment:', error);
