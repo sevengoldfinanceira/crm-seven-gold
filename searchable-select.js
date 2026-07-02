@@ -243,6 +243,12 @@
       if (this.select.disabled || this.destroyed) return;
       if (openInstance && openInstance !== this) openInstance.close();
       openInstance = this;
+      const ownerDialog = this.select.closest("dialog[open]");
+      if (ownerDialog && this.dropdown.parentElement !== ownerDialog) {
+        ownerDialog.append(this.dropdown);
+      } else if (!ownerDialog && this.dropdown.parentElement !== document.body) {
+        document.body.append(this.dropdown);
+      }
       this.root.classList.add("is-open");
       this.dropdown.classList.add("is-open");
       if (this.supportsPopover && !this.dropdown.matches(":popover-open")) {
@@ -251,8 +257,7 @@
         } catch (error) {
           this.supportsPopover = false;
           this.dropdown.removeAttribute("popover");
-          const dialog = this.select.closest("dialog[open]");
-          if (dialog) dialog.append(this.dropdown);
+          if (ownerDialog) ownerDialog.append(this.dropdown);
         }
       }
       this.trigger.setAttribute("aria-expanded", "true");

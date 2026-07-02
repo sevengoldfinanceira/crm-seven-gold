@@ -161,10 +161,17 @@ closeModalButton?.addEventListener("click", () => {
 document.getElementById("modal-lead-responsible-select")?.addEventListener("change", async (event) => {
   const newEmail = event.target.value;
   if (!currentEditingLead || !newEmail) return;
+  const previousEmail = currentEditingLead.assigned_to_email || "";
+  if (newEmail === previousEmail) return;
 
   if (confirm(`Deseja alterar o responsavel deste lead para "${newEmail}"?`)) {
-    await changeLeadResponsible(currentEditingLead.id, newEmail, currentEditingLead);
-    const updatedLead = { ...currentEditingLead, assigned_to_email: newEmail, assigned_to_name: event.target.options[event.target.selectedIndex].text.split(" (")[0] };
+    const savedLead = await changeLeadResponsible(currentEditingLead.id, newEmail);
+    if (!savedLead) {
+      event.target.value = previousEmail;
+      event.target.dispatchEvent(new Event("input", { bubbles: true }));
+      return;
+    }
+    const updatedLead = { ...currentEditingLead, ...savedLead };
     currentEditingLead = updatedLead;
     const responsibleName = modal.querySelector("#modal-lead-responsible-name");
     const responsibleEmail = modal.querySelector("#modal-lead-responsible-email");
@@ -174,7 +181,8 @@ document.getElementById("modal-lead-responsible-select")?.addEventListener("chan
       responsibleEmail.style.display = "inline";
     }
   } else {
-    event.target.value = currentEditingLead.assigned_to_email || "";
+    event.target.value = previousEmail;
+    event.target.dispatchEvent(new Event("input", { bubbles: true }));
   }
 });
 
@@ -1645,6 +1653,8 @@ const loadDashboardMetrics = async () => {
   const elNotServed = document.getElementById("dash-not-served");
   const elAppointments = document.getElementById("dash-appointments");
   const elClientsInStore = document.getElementById("dash-clients-in-store");
+  const elNoShows = document.getElementById("dash-no-shows");
+  const elNoShowsConversion = document.getElementById("dash-no-shows-conversion");
   const elInApproval = document.getElementById("dash-in-approval");
   const elNotInterested = document.getElementById("dash-not-interested");
   const elClosed = document.getElementById("dash-closed-leads");
@@ -1794,6 +1804,8 @@ const loadDashboardMetrics = async () => {
   const notInterested = leads.filter((lead) => String(lead.status || "").trim().toLowerCase() === "cliente_em_loja").length;
   const closingConversion = clientsInStore > 0 ? ((closedLeads / clientsInStore) * 100).toFixed(1) : "0.0";
   const totalAppointments = scheduledLeadKeys.size;
+  const noShows = Math.max(totalAppointments - clientsInStore, 0);
+  const noShowsConversion = totalAppointments > 0 ? ((noShows / totalAppointments) * 100).toFixed(1) : "0.0";
   const appointmentConversion = inService > 0 ? ((totalAppointments / inService) * 100).toFixed(1) : "0.0";
   const tasksData = [];
 
@@ -1803,6 +1815,8 @@ const loadDashboardMetrics = async () => {
   elNotServed.textContent = notServed;
   elAppointments.textContent = totalAppointments;
   elClientsInStore.textContent = clientsInStore;
+  if (elNoShows) elNoShows.textContent = noShows;
+  if (elNoShowsConversion) elNoShowsConversion.textContent = `${noShowsConversion}%`;
   elInApproval.textContent = inApproval;
   elNotInterested.textContent = notInterested;
   elClosed.textContent = closedLeads;
@@ -2084,53 +2098,17 @@ const loadCrmUsersForSelect = async (selectElement, currentAssignedEmail) => {
   });
 };
 
-const changeLeadResponsible = async (leadId, newEmail, lead) => {
+const changeLeadResponsible = async (leadId, newEmail) => {
   const client = getClient();
-  if (!client || !leadId) return;
-
-  const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
-
-  const { data: newAssignee, error: fetchError } = await client
-    .from("crm_users")
-    .select("nome, email")
-    .eq("email", newEmail)
-    .maybeSingle();
-
-  if (fetchError || !newAssignee) {
-    alert("Erro ao buscar dados do novo responsavel.");
-    return;
+  if (!client || !leadId) return null;
+  try {
+    const updatedLead = await updateLeadThroughApi(client, leadId, { assigned_to_email: newEmail });
+    await loadLeads();
+    return updatedLead;
+  } catch (error) {
+    alert("Erro ao alterar responsável: " + (error.message || "Tente novamente."));
+    return null;
   }
-
-  const oldName = lead.assigned_to_name || "Sem responsavel";
-  const newName = newAssignee.nome || newEmail;
-
-  const { error } = await client.from("leads").update({
-    assigned_to_email: newEmail || null,
-    assigned_to_name: newAssignee.nome || null,
-    updated_by_email: currentCrmUser?.email || null,
-    updated_by_name: currentCrmUser?.nome || null,
-    updated_at: new Date().toISOString(),
-  }).eq("id", leadId);
-
-  if (error) {
-    alert("Erro ao alterar responsavel: " + error.message);
-    return;
-  }
-
-  const { error: historyError } = await client.from("lead_history").insert({
-    lead_id: leadId,
-    action_type: "owner_changed",
-    action_label: "Responsavel alterado",
-    description: `Responsavel alterado de ${oldName} para ${newName}`,
-    performed_by_email: currentCrmUser?.email || null,
-    performed_by_name: currentCrmUser?.nome || null,
-  });
-
-  if (historyError) {
-    console.warn("Erro ao registrar historico de alteracao de responsavel:", historyError);
-  }
-
-  await loadLeads();
 };
 
 const closeAppointmentModal = (result = null) => {
@@ -2842,6 +2820,7 @@ const createLeadCard = (lead) => {
   card.className = lead.status === "venda_fechada" ? "lead-card done" : "lead-card";
   card.draggable = true;
   card.dataset.leadId = lead.id;
+  card.dataset.status = lead.status || "lead_recebido";
 
   const top = document.createElement("div");
   top.className = "lead-card-top";
@@ -2897,6 +2876,14 @@ const createLeadCard = (lead) => {
     warningBadge.textContent = `⚠️ ${diffDays} ${diffDays === 1 ? 'dia' : 'dias'} sem contato`;
   }
 
+  const statusBadge = document.createElement("div");
+  statusBadge.className = "lead-status-badge";
+  statusBadge.textContent = statusLabels[lead.status] || "Etapa desconhecida";
+
+  const badgeRow = document.createElement("div");
+  badgeRow.className = "lead-card-badge-row";
+  badgeRow.append(statusBadge, warningBadge);
+
   let trashBadgeRow = null;
   if (lead.status === "cancelado") {
     trashBadgeRow = document.createElement("div");
@@ -2914,28 +2901,43 @@ const createLeadCard = (lead) => {
   // Phone Line
   const phoneLine = document.createElement("div");
   phoneLine.className = "lead-phone-line";
-  const phoneIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #9ca3af; margin-right: 6px; vertical-align: middle;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+  const phoneIcon = `<span class="lead-info-icon lead-info-icon--phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 1 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>`;
+  const phoneCopy = document.createElement("span");
+  phoneCopy.className = "lead-info-copy";
   const phoneText = document.createElement("span");
+  phoneText.className = "lead-info-value";
   phoneText.textContent = lead.telefone ? formatDisplayPhone(lead.telefone) : "Sem telefone";
+  const phoneLabel = document.createElement("small");
+  phoneLabel.textContent = "Celular";
   phoneLine.innerHTML = phoneIcon;
-  phoneLine.append(phoneText);
+  phoneCopy.append(phoneText, phoneLabel);
+  phoneLine.append(phoneCopy);
 
   // Responsible Badge
   const responsibleBadge = document.createElement("div");
   responsibleBadge.className = "lead-responsible-badge";
+  const responsibleCopy = document.createElement("span");
+  responsibleCopy.className = "lead-info-copy";
   if (lead.assigned_to_name) {
-    const respIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-right: 4px; vertical-align: middle;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+    const respIcon = `<span class="lead-info-icon lead-info-icon--responsible"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>`;
     responsibleBadge.innerHTML = respIcon;
     const respText = document.createElement("span");
+    respText.className = "lead-info-value";
     respText.textContent = lead.assigned_to_name;
-    responsibleBadge.append(respText);
+    const respLabel = document.createElement("small");
+    respLabel.textContent = "Responsável";
+    responsibleCopy.append(respText, respLabel);
+    responsibleBadge.append(responsibleCopy);
   } else {
-    const respIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #9ca3af; margin-right: 4px; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+    const respIcon = `<span class="lead-info-icon lead-info-icon--responsible"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>`;
     responsibleBadge.innerHTML = respIcon;
     const respText = document.createElement("span");
+    respText.className = "lead-info-value";
     respText.textContent = "Sem responsavel";
-    respText.style.color = "#9ca3af";
-    responsibleBadge.append(respText);
+    const respLabel = document.createElement("small");
+    respLabel.textContent = "Responsável";
+    responsibleCopy.append(respText, respLabel);
+    responsibleBadge.append(responsibleCopy);
   }
 
   // Optional Note
@@ -2964,7 +2966,7 @@ const createLeadCard = (lead) => {
   waBtn.href = lead.telefone ? `https://wa.me/${waPhone}` : "#";
   waBtn.target = lead.telefone ? "_blank" : "_self";
   waBtn.className = "lead-action-btn wa-btn";
-  waBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>WA`;
+  waBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>WhatsApp`;
   if (!lead.telefone) waBtn.style.opacity = "0.5";
 
   const callBtn = document.createElement("a");
@@ -3008,7 +3010,7 @@ const createLeadCard = (lead) => {
   }
 
   // Append everything
-  card.append(top, trashBadgeRow || warningBadge);
+  card.append(top, trashBadgeRow || badgeRow);
   if (tagsArray.length > 0) {
     card.append(tagsContainer);
   }

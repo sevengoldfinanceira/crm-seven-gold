@@ -1,6 +1,8 @@
 const { supabase } = require('../_shared/supabase');
 const { hasBasicLeadInfo, hasLeadClientInfo, normalizeBasicLeadInfo, normalizeLeadClientInfo } = require('../_shared/lead-client-info');
-const { getAuthorizedCrmUser, canAccessLead } = require('../_shared/crm-authorization');
+const { getAuthorizedCrmUser, canAccessLead, normalizeRole, normalizeEmail } = require('../_shared/crm-authorization');
+
+const REASSIGN_ROLES = new Set(['diretor-ceo', 'dono', 'admin', 'administrador']);
 
 const PIPELINE_SEQUENCE = [
   "lead_recebido",
@@ -58,6 +60,8 @@ module.exports = async (req, res) => {
 
     const payload = req.body || {};
     const { phone, status } = payload;
+    const hasAssigneeChange = Object.prototype.hasOwnProperty.call(payload, 'assigned_to_email');
+    const requestedAssigneeEmail = normalizeEmail(payload.assigned_to_email);
     const goBack = payload.go_back === true || payload.goBack === true;
     const leadIdFromPayload = String(payload.lead_id || payload.leadId || '').trim();
 
@@ -66,7 +70,7 @@ module.exports = async (req, res) => {
       return res.end(JSON.stringify({ ok: false, error: 'Informe o ID ou telefone do lead.' }));
     }
 
-    if (!status && !hasLeadClientInfo(payload) && !hasBasicLeadInfo(payload)) {
+    if (!status && !hasAssigneeChange && !hasLeadClientInfo(payload) && !hasBasicLeadInfo(payload)) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ ok: false, error: 'Informe a etapa ou os dados do lead que serão atualizados.' }));
     }
@@ -89,7 +93,7 @@ module.exports = async (req, res) => {
     const normalizedPhone = String(phone || '').replace(/\D/g, '');
     let fetchLeadQuery = supabase
       .from('leads')
-      .select('id, name, telefone, status, assigned_to_email');
+      .select('id, name, telefone, status, assigned_to_email, assigned_to_name');
     fetchLeadQuery = leadIdFromPayload
       ? fetchLeadQuery.eq('id', leadIdFromPayload)
       : fetchLeadQuery.eq('telefone', normalizedPhone);
@@ -116,6 +120,34 @@ module.exports = async (req, res) => {
       updateData.tags = Array.isArray(payload.tags)
         ? payload.tags.map((tag) => String(tag || '').trim()).filter(Boolean)
         : [];
+    }
+
+    let newAssignee = null;
+    if (hasAssigneeChange) {
+      if (!REASSIGN_ROLES.has(normalizeRole(authorization.user.cargo))) {
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ ok: false, error: 'Seu perfil não pode alterar o responsável do lead.' }));
+      }
+      if (!requestedAssigneeEmail) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ ok: false, error: 'Selecione um responsável válido.' }));
+      }
+      const { data: assignee, error: assigneeError } = await supabase
+        .from('crm_users')
+        .select('email,nome,cargo,ativo')
+        .ilike('email', requestedAssigneeEmail)
+        .eq('ativo', true)
+        .maybeSingle();
+      if (assigneeError || !assignee) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ ok: false, error: 'Responsável não encontrado ou inativo.' }));
+      }
+      newAssignee = assignee;
+      updateData.assigned_to_email = normalizeEmail(assignee.email);
+      updateData.assigned_to_name = assignee.nome || assignee.email;
+      updateData.updated_at = updateTime;
+      updateData.updated_by_email = authorization.user.email || null;
+      updateData.updated_by_name = authorization.user.nome || authorization.user.email || null;
     }
     if (status) {
       updateData.status = status;
@@ -164,7 +196,7 @@ module.exports = async (req, res) => {
       .from('leads')
       .update(updateData)
       .eq('id', leadId)
-      .select('id, name, telefone, status, origin, note, property_region, credit_value, down_payment_value, installment_value, ultima_interacao');
+      .select('id, name, telefone, status, origin, note, property_region, credit_value, down_payment_value, installment_value, ultima_interacao, assigned_to_email, assigned_to_name');
 
     if (updateError) {
       console.error('Error executing stage update on lead');
@@ -216,6 +248,24 @@ module.exports = async (req, res) => {
       if (historyError) console.error('Error logging lead stage update');
     }
 
+    if (hasAssigneeChange && newAssignee && normalizeEmail(fetchLead[0].assigned_to_email) !== normalizeEmail(newAssignee.email)) {
+      const oldAssigneeName = fetchLead[0].assigned_to_name || fetchLead[0].assigned_to_email || 'Sem responsável';
+      const newAssigneeName = newAssignee.nome || newAssignee.email;
+      const { error: assigneeHistoryError } = await supabase.from('lead_activity_logs').insert({
+        lead_id: leadId,
+        action_type: 'owner_changed',
+        action_label: 'Responsável alterado',
+        description: `Responsável alterado de ${oldAssigneeName} para ${newAssigneeName}.`,
+        old_value: fetchLead[0].assigned_to_email || null,
+        new_value: normalizeEmail(newAssignee.email),
+        created_by_email: authorization.user.email || null,
+        created_by_name: authorization.user.nome || authorization.user.email || null,
+        created_by_role: authorization.user.cargo || null,
+        created_at: updateTime,
+      });
+      if (assigneeHistoryError) console.error('Error logging lead assignee update');
+    }
+
     const result = updatedLead[0];
     const responsePayload = {
       ok: true,
@@ -230,6 +280,8 @@ module.exports = async (req, res) => {
         credit_value: result.credit_value,
         down_payment_value: result.down_payment_value,
         installment_value: result.installment_value,
+        assigned_to_email: result.assigned_to_email,
+        assigned_to_name: result.assigned_to_name,
         updated_at: result.ultima_interacao,
       }
     };
