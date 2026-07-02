@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-centered-pipeline-filters-v17";
+const CACHE_VERSION = "seven-gold-pipeline-without-route-label-v18";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
