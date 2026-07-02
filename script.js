@@ -1735,7 +1735,6 @@ const loadDashboardMetrics = async () => {
 
   const serviceLeadIds = new Set();
   const storeLeadIds = new Set();
-  const approvalLeadIds = new Set();
   const closedLeadIds = new Set();
   const cancelledLeadIds = new Set();
   const historicalLeadIds = new Set(history.stageEvents.map((event) => String(event.lead_id)));
@@ -1746,7 +1745,6 @@ const loadDashboardMetrics = async () => {
     const previousStatus = String(event.old_value || "").trim().toLowerCase();
     if (status === "primeiro_contato" || previousStatus === "primeiro_contato") serviceLeadIds.add(leadId);
     if (status === "cliente_em_loja") storeLeadIds.add(leadId);
-    if (["em_aprovacao", "proposta_enviada"].includes(status)) approvalLeadIds.add(leadId);
     if (status === "venda_fechada") closedLeadIds.add(leadId);
     if (status === "cancelado") cancelledLeadIds.add(leadId);
   });
@@ -1764,7 +1762,6 @@ const loadDashboardMetrics = async () => {
     if (["cliente_em_loja", "em_aprovacao", "proposta_enviada", "venda_fechada", "nao_quer", "não_quer", "nao_tem_interesse", "perdido"].includes(status)) {
       storeLeadIds.add(leadId);
     }
-    if (["em_aprovacao", "proposta_enviada"].includes(status)) approvalLeadIds.add(leadId);
     if (status === "venda_fechada") closedLeadIds.add(leadId);
     if (status === "cancelado") cancelledLeadIds.add(leadId);
   });
@@ -1773,7 +1770,9 @@ const loadDashboardMetrics = async () => {
   const inService = serviceLeadIds.size;
   const notServed = Math.max(receivedLeads - inService, 0);
   const clientsInStore = storeLeadIds.size;
-  const inApproval = approvalLeadIds.size;
+  const inApproval = leads.filter((lead) =>
+    ["em_aprovacao", "proposta_enviada"].includes(String(lead.status || "").trim().toLowerCase())
+  ).length;
   const closedLeads = closedLeadIds.size;
   const cancelledLeads = cancelledLeadIds.size;
   const notInterested = leads.filter((lead) => String(lead.status || "").trim().toLowerCase() === "cliente_em_loja").length;
