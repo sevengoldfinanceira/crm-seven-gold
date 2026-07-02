@@ -2500,12 +2500,52 @@ body.theme-dark .crm-workspace {
   color: #2563eb;
 }
 
+.dash-service-conversion {
+  color: #ea580c;
+}
+
+.dash-store-conversion {
+  color: #ca8a04;
+}
+
+.dash-approval-conversion {
+  color: #7c3aed;
+}
+
+.dash-not-interested-conversion {
+  color: #ef4444;
+}
+
+.dash-not-served-conversion {
+  color: #dc2626;
+}
+
 body.theme-dark .dash-sale-conversion {
   color: #34d399;
 }
 
 body.theme-dark .dash-appointment-conversion {
   color: #60a5fa;
+}
+
+body.theme-dark .dash-service-conversion {
+  color: #fb923c;
+}
+
+body.theme-dark .dash-store-conversion {
+  color: #fbbf24;
+}
+
+body.theme-dark .dash-approval-conversion {
+  color: #a78bfa;
+}
+
+body.theme-dark .dash-not-interested-conversion {
+  color: #f87171;
+}
+
+body.theme-dark .dash-not-served-conversion {
+  color: #f87171;
 }
 
 body.theme-dark .dash-metric-card {

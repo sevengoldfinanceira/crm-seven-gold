@@ -195,7 +195,7 @@
               </article>
 
               <!-- Card 2: Clientes Atendidos -->
-              <article class="dash-metric-card" style="--card-border-color: #f97316;">
+              <article class="dash-metric-card dash-card-with-conversion" style="--card-border-color: #f97316;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #ffedd5; color: #ea580c;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z"/></svg>
@@ -204,10 +204,11 @@
                 <span class="dash-metric-title">Clientes Atendidos</span>
                 <strong class="dash-metric-number" id="dash-in-service" style="color: #ea580c;">0</strong>
                 <span class="dash-metric-subtext">Clientes que já foram ou estão sendo atendidos</span>
+                <strong class="dash-inline-conversion dash-service-conversion" id="dash-service-conversion" aria-label="Conversão de atendidos">0.0%</strong>
               </article>
 
               <!-- Card 3: Não Atendidos -->
-              <article class="dash-metric-card" style="--card-border-color: #dc2626;">
+              <article class="dash-metric-card dash-card-with-conversion" style="--card-border-color: #dc2626;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #fee2e2; color: #dc2626;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="8" x2="22" y2="13"/><line x1="22" y1="8" x2="17" y2="13"/></svg>
@@ -216,6 +217,7 @@
                 <span class="dash-metric-title">Não Atendidos</span>
                 <strong class="dash-metric-number" id="dash-not-served" style="color: #dc2626;">0</strong>
                 <span class="dash-metric-subtext">Recebidos ainda sem atendimento</span>
+                <strong class="dash-inline-conversion dash-not-served-conversion" id="dash-not-served-conversion" aria-label="Conversão de não atendidos">0.0%</strong>
               </article>
 
               <!-- Card 4: Agendamentos -->
@@ -232,7 +234,7 @@
               </article>
 
               <!-- Card 5: Clientes em Loja -->
-              <article class="dash-metric-card" style="--card-border-color: #d8a018;">
+              <article class="dash-metric-card dash-card-with-conversion" style="--card-border-color: #d8a018;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #fef9c3; color: #ca8a04;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M5 13v8h14v-8"/><path d="M9 21v-6h6v6"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/></svg>
@@ -241,10 +243,11 @@
                 <span class="dash-metric-title">Clientes em Loja</span>
                 <strong class="dash-metric-number" id="dash-clients-in-store" style="color: #ca8a04;">0</strong>
                 <span class="dash-metric-subtext">Clientes que foram em loja</span>
+                <strong class="dash-inline-conversion dash-store-conversion" id="dash-store-conversion" aria-label="Conversão de loja">0.0%</strong>
               </article>
 
               <!-- Card 6: Em Aprovação -->
-              <article class="dash-metric-card" style="--card-border-color: #7c3aed;">
+              <article class="dash-metric-card dash-card-with-conversion" style="--card-border-color: #7c3aed;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #f3e8ff; color: #7c3aed;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
@@ -253,10 +256,11 @@
                 <span class="dash-metric-title">Em Aprovação</span>
                 <strong class="dash-metric-number" id="dash-in-approval" style="color: #7c3aed;">0</strong>
                 <span class="dash-metric-subtext">Estão para serem aprovados</span>
+                <strong class="dash-inline-conversion dash-approval-conversion" id="dash-approval-conversion" aria-label="Conversão de aprovação">0.0%</strong>
               </article>
 
               <!-- Card 7: Não Quer -->
-              <article class="dash-metric-card" style="--card-border-color: #ef4444;">
+              <article class="dash-metric-card dash-card-with-conversion" style="--card-border-color: #ef4444;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #fee2e2; color: #ef4444;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
@@ -265,6 +269,7 @@
                 <span class="dash-metric-title">Não Quer</span>
                 <strong class="dash-metric-number" id="dash-not-interested" style="color: #ef4444;">0</strong>
                 <span class="dash-metric-subtext">Clientes atenderam mas não querem fechar</span>
+                <strong class="dash-inline-conversion dash-not-interested-conversion" id="dash-not-interested-conversion" aria-label="Conversão de não interessados">0.0%</strong>
               </article>
 
               <!-- Card 8: Venda Fechada -->

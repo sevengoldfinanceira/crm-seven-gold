@@ -1628,6 +1628,11 @@ const loadDashboardMetrics = async () => {
   const elClosed = document.getElementById("dash-closed-leads");
   const elClosingConversion = document.getElementById("dash-closing-conversion");
   const elAppointmentConversion = document.getElementById("dash-appointment-conversion");
+  const elServiceConversion = document.getElementById("dash-service-conversion");
+  const elNotServedConversion = document.getElementById("dash-not-served-conversion");
+  const elStoreConversion = document.getElementById("dash-store-conversion");
+  const elApprovalConversion = document.getElementById("dash-approval-conversion");
+  const elNotInterestedConversion = document.getElementById("dash-not-interested-conversion");
 
   if (!elReceived) return;
 
@@ -1776,6 +1781,14 @@ const loadDashboardMetrics = async () => {
   elClosed.textContent = closedLeads;
   elClosingConversion.textContent = `${closingConversion}%`;
   elAppointmentConversion.textContent = `${appointmentConversion}%`;
+
+  if (receivedLeads > 0) {
+    if (elServiceConversion) elServiceConversion.textContent = `${((inService / receivedLeads) * 100).toFixed(1)}%`;
+    if (elNotServedConversion) elNotServedConversion.textContent = `${((notServed / receivedLeads) * 100).toFixed(1)}%`;
+    if (elStoreConversion) elStoreConversion.textContent = `${((clientsInStore / receivedLeads) * 100).toFixed(1)}%`;
+    if (elApprovalConversion) elApprovalConversion.textContent = `${((inApproval / receivedLeads) * 100).toFixed(1)}%`;
+    if (elNotInterestedConversion) elNotInterestedConversion.textContent = `${((notInterested / receivedLeads) * 100).toFixed(1)}%`;
+  }
 
   // 4. Alertas de Metas
   const elAlertsList = document.getElementById("dash-goals-alerts-list");
