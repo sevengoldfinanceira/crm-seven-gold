@@ -1611,6 +1611,7 @@ const loadDashboardMetrics = async () => {
   }
 
   const elReceived = document.getElementById("dash-received-leads");
+  const elInService = document.getElementById("dash-in-service");
   const elAppointments = document.getElementById("dash-appointments");
   const elClientsInStore = document.getElementById("dash-clients-in-store");
   const elInApproval = document.getElementById("dash-in-approval");
@@ -1710,6 +1711,7 @@ const loadDashboardMetrics = async () => {
     isWithinDashboardPeriod(appointment.data_agendamento || appointment.created_at, periodRange, Boolean(appointment.data_agendamento))
   );
 
+  const serviceLeadIds = new Set();
   const storeLeadIds = new Set();
   const approvalLeadIds = new Set();
   const closedLeadIds = new Set();
@@ -1718,6 +1720,8 @@ const loadDashboardMetrics = async () => {
   periodEvents.forEach((event) => {
     const leadId = String(event.lead_id);
     const status = String(event.new_value || "").trim().toLowerCase();
+    const previousStatus = String(event.old_value || "").trim().toLowerCase();
+    if (status === "primeiro_contato" || previousStatus === "primeiro_contato") serviceLeadIds.add(leadId);
     if (status === "cliente_em_loja") storeLeadIds.add(leadId);
     if (["em_aprovacao", "proposta_enviada"].includes(status)) approvalLeadIds.add(leadId);
     if (status === "venda_fechada") closedLeadIds.add(leadId);
@@ -1731,6 +1735,8 @@ const loadDashboardMetrics = async () => {
     const movementDate = lead.updated_at || lead.ultima_interacao || lead.created_at;
     if (!isWithinDashboardPeriod(movementDate, periodRange)) return;
     const status = String(lead.status || "").trim().toLowerCase();
+    const statusIndex = pipelineStatusOrder.indexOf(status);
+    if (statusIndex >= pipelineStatusOrder.indexOf("primeiro_contato")) serviceLeadIds.add(leadId);
     if (["cliente_em_loja", "em_aprovacao", "proposta_enviada", "venda_fechada", "nao_quer", "não_quer", "nao_tem_interesse", "perdido"].includes(status)) {
       storeLeadIds.add(leadId);
     }
@@ -1739,6 +1745,7 @@ const loadDashboardMetrics = async () => {
   });
 
   const scheduledLeadKeys = new Set(periodAppointments.map((appointment) => String(appointment.lead_id || appointment.id)).filter(Boolean));
+  const inService = serviceLeadIds.size;
   const clientsInStore = storeLeadIds.size;
   const inApproval = approvalLeadIds.size;
   const closedLeads = closedLeadIds.size;
@@ -1750,6 +1757,7 @@ const loadDashboardMetrics = async () => {
 
   // Renderizar no HTML
   elReceived.textContent = receivedLeads;
+  elInService.textContent = inService;
   elAppointments.textContent = totalAppointments;
   elClientsInStore.textContent = clientsInStore;
   elInApproval.textContent = inApproval;
