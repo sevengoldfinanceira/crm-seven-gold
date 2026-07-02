@@ -706,6 +706,21 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
   box-shadow: var(--shadow);
   touch-action: none;
   box-sizing: border-box;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-drag: element;
+}
+
+.lead-card:active,
+.lead-card.is-dragging {
+  cursor: grabbing;
+}
+
+.lead-card .drag-handle,
+.lead-card .drag-icon,
+.lead-card .grip-handle,
+.lead-card [data-drag-handle] {
+  display: none !important;
 }
 
 .lead-card.done {

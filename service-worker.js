@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-appointment-conversion-v10";
+const CACHE_VERSION = "seven-gold-card-drag-without-handle-v11";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
