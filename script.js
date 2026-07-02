@@ -2816,6 +2816,8 @@ const getTagColors = (tag) => {
 };
 
 const createLeadCard = (lead) => {
+  const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+  const showResponsible = Boolean(currentCrmUser) && shouldSeeAllLeads(currentCrmUser);
   const card = document.createElement("article");
   card.className = lead.status === "venda_fechada" ? "lead-card done" : "lead-card";
   card.draggable = true;
@@ -3015,7 +3017,9 @@ const createLeadCard = (lead) => {
     card.append(tagsContainer);
   }
   card.append(phoneLine);
-  card.append(responsibleBadge);
+  if (showResponsible) {
+    card.append(responsibleBadge);
+  }
   if (noteEl) {
     card.append(noteEl);
   }
