@@ -165,7 +165,7 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
 
   if (title) title.textContent = "Editar Lead";
   if (submitButton) submitButton.textContent = "Salvar Alteracoes";
-  if (statusLabel) statusLabel.style.display = "block";
+  if (statusLabel) statusLabel.style.display = "none";
   if (deleteBtn) deleteBtn.style.display = "block";
 
   leadForm.dataset.mode = "edit";
@@ -2112,7 +2112,7 @@ const openAppointmentModal = async ({ appointment = null, lead = null, date = ""
   appointmentForm.elements.telefone_cliente.value = appointment?.telefone_cliente || lead?.telefone || "";
   appointmentForm.elements.data_agendamento.value = appointment?.data_agendamento || date || toDateKey(new Date());
   appointmentForm.elements.hora_agendamento.value = normalizeAppointmentTime(appointment?.hora_agendamento || time || "08:00");
-  appointmentForm.elements.nome_usuario.value = appointment?.nome_usuario || await getCurrentSellerName();
+  appointmentForm.elements.nome_usuario.value = lead?.assigned_to_name || appointment?.nome_usuario || await getCurrentSellerName();
   appointmentForm.elements.observacao.value = appointment?.observacao || "";
 
   const title = appointmentModal.querySelector("#appointment-modal-title");
