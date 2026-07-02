@@ -637,7 +637,6 @@
       });
 
       nav.addEventListener("pointerdown", (e) => {
-        if (!sidebar.classList.contains("sidebar-editing")) return;
         if (e.button !== 0) return;
         const handle = e.target.closest(".menu-drag-handle");
         if (!handle) return;

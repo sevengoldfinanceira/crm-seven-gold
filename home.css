@@ -17882,14 +17882,9 @@ body.login-page-body .password-toggle-btn[type="button"]:hover {
   }
 }
 
-/* Menu: mostrar alcas de arrastar apenas no modo de edicao */
-body[data-unified-admin] .company-sidebar:not(.sidebar-editing) .menu-drag-handle,
-body[data-unified-admin] .unified-admin-sidebar:not(.sidebar-editing) .menu-drag-handle {
-  display: none !important;
-}
-
-body[data-unified-admin] .company-sidebar.sidebar-editing .menu-drag-handle,
-body[data-unified-admin] .unified-admin-sidebar.sidebar-editing .menu-drag-handle {
+/* Menu: alcas de arrastar sempre visiveis */
+body[data-unified-admin] .company-sidebar .menu-drag-handle,
+body[data-unified-admin] .unified-admin-sidebar .menu-drag-handle {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
