@@ -2435,10 +2435,20 @@ body.theme-dark .crm-workspace {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  cursor: default;
+  cursor: grab;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+}
+
+.dash-metric-card:active,
+.dash-metric-card.is-metric-dragging {
+  cursor: grabbing;
+}
+
+.dash-metric-card.is-metric-dragging {
+  opacity: 0.55;
+  transform: scale(0.98);
 }
 
 body.theme-dark .dash-metric-card {

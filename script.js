@@ -3516,12 +3516,95 @@ const initLeadModalTabs = () => {
   });
 };
 
+const dashboardMetricOrderKey = "sevenGoldDashboardMetricOrder";
+
+const saveDashboardMetricOrder = (grid) => {
+  const order = Array.from(grid.querySelectorAll(".dash-metric-card"))
+    .map((card) => card.dataset.metricKey)
+    .filter(Boolean);
+  try {
+    localStorage.setItem(dashboardMetricOrderKey, JSON.stringify(order));
+  } catch (error) {
+    console.warn("Não foi possível salvar a ordem dos cards:", error);
+  }
+};
+
+const setupDashboardMetricDrag = () => {
+  const grid = document.querySelector(".commercial-summary-grid");
+  if (!grid || grid.dataset.dragReady === "true") return;
+  grid.dataset.dragReady = "true";
+
+  const cards = Array.from(grid.querySelectorAll(".dash-metric-card"));
+  cards.forEach((card) => {
+    const numberElement = card.querySelector(".dash-metric-number[id]");
+    card.dataset.metricKey = numberElement?.id || "";
+    card.draggable = true;
+  });
+
+  try {
+    const savedOrder = JSON.parse(localStorage.getItem(dashboardMetricOrderKey) || "[]");
+    if (Array.isArray(savedOrder)) {
+      const cardByKey = new Map(cards.map((card) => [card.dataset.metricKey, card]));
+      savedOrder.forEach((key) => {
+        const card = cardByKey.get(key);
+        if (card) grid.append(card);
+      });
+      cards.forEach((card) => {
+        if (!savedOrder.includes(card.dataset.metricKey)) grid.append(card);
+      });
+    }
+  } catch (error) {
+    console.warn("Não foi possível restaurar a ordem dos cards:", error);
+  }
+
+  let draggedCard = null;
+
+  grid.addEventListener("dragstart", (event) => {
+    const card = event.target.closest?.(".dash-metric-card");
+    if (!card) return;
+    draggedCard = card;
+    card.classList.add("is-metric-dragging");
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", card.dataset.metricKey);
+  });
+
+  grid.addEventListener("dragover", (event) => {
+    if (!draggedCard) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    const targetCard = event.target.closest?.(".dash-metric-card");
+    if (!targetCard || targetCard === draggedCard) return;
+
+    const currentCards = Array.from(grid.querySelectorAll(".dash-metric-card"));
+    const draggedIndex = currentCards.indexOf(draggedCard);
+    const targetIndex = currentCards.indexOf(targetCard);
+    if (draggedIndex < targetIndex) {
+      grid.insertBefore(draggedCard, targetCard.nextSibling);
+    } else {
+      grid.insertBefore(draggedCard, targetCard);
+    }
+  });
+
+  grid.addEventListener("drop", (event) => {
+    if (!draggedCard) return;
+    event.preventDefault();
+    saveDashboardMetricOrder(grid);
+  });
+
+  grid.addEventListener("dragend", () => {
+    draggedCard?.classList.remove("is-metric-dragging");
+    draggedCard = null;
+    saveDashboardMetricOrder(grid);
+  });
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   calendarWeekStart = getWeekStart();
   renderCalendar();
   setupDragAndDrop();
   setupTouchMove();
   setupBulkActions();
+  setupDashboardMetricDrag();
   initLeadModalTabs();
   switchTab();
   loadLeads();
