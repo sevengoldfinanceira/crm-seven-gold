@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-sortable-summary-cards-v12";
+const CACHE_VERSION = "seven-gold-clients-served-label-v13";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
