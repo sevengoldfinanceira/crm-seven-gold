@@ -1754,7 +1754,7 @@ const loadDashboardMetrics = async () => {
   const notInterested = leads.filter((lead) => String(lead.status || "").trim().toLowerCase() === "cliente_em_loja").length;
   const closingConversion = clientsInStore > 0 ? ((closedLeads / clientsInStore) * 100).toFixed(1) : "0.0";
   const totalAppointments = scheduledLeadKeys.size;
-  const appointmentConversion = receivedLeads > 0 ? ((totalAppointments / receivedLeads) * 100).toFixed(1) : "0.0";
+  const appointmentConversion = inService > 0 ? ((totalAppointments / inService) * 100).toFixed(1) : "0.0";
   const tasksData = [];
 
   // Renderizar no HTML
