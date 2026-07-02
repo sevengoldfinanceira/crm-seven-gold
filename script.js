@@ -2897,6 +2897,20 @@ const createLeadCard = (lead) => {
     warningBadge.textContent = `⚠️ ${diffDays} ${diffDays === 1 ? 'dia' : 'dias'} sem contato`;
   }
 
+  let trashBadgeRow = null;
+  if (lead.status === "cancelado") {
+    trashBadgeRow = document.createElement("div");
+    trashBadgeRow.className = "lead-trash-badge-row";
+
+    const originBadge = document.createElement("div");
+    originBadge.className = "lead-trash-origin-badge";
+    const originLabel = statusLabels[lead.trash_origin_status] || "Origem desconhecida";
+    originBadge.textContent = originLabel;
+    originBadge.title = `Enviado para a Lixeira a partir de: ${originLabel}`;
+
+    trashBadgeRow.append(originBadge, warningBadge);
+  }
+
   // Phone Line
   const phoneLine = document.createElement("div");
   phoneLine.className = "lead-phone-line";
@@ -2994,7 +3008,7 @@ const createLeadCard = (lead) => {
   }
 
   // Append everything
-  card.append(top, warningBadge);
+  card.append(top, trashBadgeRow || warningBadge);
   if (tagsArray.length > 0) {
     card.append(tagsContainer);
   }

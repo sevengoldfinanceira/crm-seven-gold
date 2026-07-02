@@ -805,6 +805,45 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
   justify-self: center;
 }
 
+.lead-trash-badge-row {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.lead-trash-badge-row .lead-warning-badge {
+  flex: 0 1 auto;
+  min-width: 0;
+  margin-top: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lead-trash-origin-badge {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 2px 6px;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.65rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.theme-dark .lead-trash-origin-badge {
+  border-color: rgba(248, 113, 113, 0.4);
+  background: rgba(127, 29, 29, 0.28);
+  color: #fca5a5;
+}
+
 .lead-phone-line {
   display: flex;
   align-items: center;
@@ -823,20 +862,20 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
 
 .lead-card-actions-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 3px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
   width: 100%;
   min-width: 0;
   margin-top: 2px;
 }
 
 .lead-action-btn {
-  height: 24px;
+  height: 29px;
   min-width: 0;
   width: 100%;
-  padding: 0 3px;
+  padding: 0 5px;
   border-radius: 6px;
-  font-size: 0.6rem;
+  font-size: 0.68rem;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
@@ -850,10 +889,10 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
 }
 
 .lead-action-btn svg {
-  width: 11px;
-  height: 11px;
-  flex: 0 0 11px;
-  margin-right: 2px !important;
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
+  margin-right: 3px !important;
 }
 
 .wa-btn {
@@ -2031,6 +2070,11 @@ body.theme-dark .kanban-column header {
   color: #1f2937 !important;
   text-transform: none !important; /* Keep original casing */
   flex: 1;
+  text-align: center !important;
+}
+
+.kanban-column header .stage-icon {
+  flex: 0 0 22px !important;
 }
 
 body.theme-dark .kanban-column header strong {
@@ -2048,6 +2092,8 @@ body.theme-dark .kanban-column header strong {
   font-weight: 800 !important;
   font-size: 0.72rem !important;
   padding: 0 4px !important;
+  flex: 0 0 22px !important;
+  box-sizing: border-box !important;
 }
 
 body.theme-dark .kanban-column header small {

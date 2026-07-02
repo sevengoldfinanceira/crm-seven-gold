@@ -62,7 +62,46 @@ async function listAuthorizedPipelineLeads(crmUser) {
 
   const { data, error } = await query;
   if (error) return { status: 500, error: error.message };
-  return { status: 200, leads: data || [] };
+
+  const leads = data || [];
+  const cancelledLeadIds = leads
+    .filter((lead) => lead.status === 'cancelado')
+    .map((lead) => lead.id)
+    .filter(Boolean);
+
+  if (!cancelledLeadIds.length) return { status: 200, leads };
+
+  const { data: cancellationEvents, error: cancellationEventsError } = await supabase
+    .from('lead_activity_logs')
+    .select('lead_id,old_value,created_at')
+    .in('lead_id', cancelledLeadIds)
+    .in('action_type', ['status_changed', 'stage_changed'])
+    .eq('new_value', 'cancelado')
+    .order('created_at', { ascending: false });
+
+  if (cancellationEventsError) {
+    console.error('[Pipeline] Não foi possível identificar a origem dos leads na Lixeira:', cancellationEventsError.message);
+    return {
+      status: 200,
+      leads: leads.map((lead) => ({ ...lead, trash_origin_status: null })),
+    };
+  }
+
+  const originByLeadId = new Map();
+  (cancellationEvents || []).forEach((event) => {
+    const leadId = String(event.lead_id);
+    if (!originByLeadId.has(leadId)) originByLeadId.set(leadId, event.old_value || null);
+  });
+
+  return {
+    status: 200,
+    leads: leads.map((lead) => ({
+      ...lead,
+      trash_origin_status: lead.status === 'cancelado'
+        ? (originByLeadId.get(String(lead.id)) || null)
+        : null,
+    })),
+  };
 }
 
 async function getAuthorizedPipelineHistory(crmUser) {
