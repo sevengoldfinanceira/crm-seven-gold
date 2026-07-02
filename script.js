@@ -6,7 +6,7 @@ const closeModalButton = document.querySelector("[data-close-modal]");
 const leadForm = document.querySelector("[data-lead-form]");
 const leadFormStatus = document.querySelector("[data-lead-form-status]");
 const leadCount = document.querySelector("[data-lead-count]");
-const columns = Array.from(document.querySelectorAll("[data-status]"));
+const columns = Array.from(document.querySelectorAll(".kanban-column[data-status]"));
 const appointmentModal = document.querySelector(".appointment-modal");
 const appointmentForm = document.querySelector("[data-appointment-form]");
 const appointmentStatus = document.querySelector("[data-appointment-status]");
@@ -2775,7 +2775,47 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
       const targetStack = targetColumn.querySelector(".card-stack");
       const emptyMsg = targetStack.querySelector(".empty-column, .empty-column-card");
       if (emptyMsg) emptyMsg.remove();
-      targetStack.append(sourceCard);
+
+      if (status === "cancelado") {
+        const rebuiltLead = {
+          id: leadId,
+          name: sourceCard.querySelector(".lead-card-name")?.textContent?.trim() || "",
+          telefone: sourceCard.querySelector(".lead-info-value")?.textContent?.trim() || "",
+          status,
+          trash_origin_status: currentStatus,
+          assigned_to_email: sourceCard.dataset.assignedEmail || "",
+          assigned_to_name: sourceCard.dataset.assignedName || "",
+          created_at: sourceCard.dataset.createdAt || new Date().toISOString(),
+          tags: [],
+        };
+        const newCard = createLeadCard(rebuiltLead);
+        if (rebuiltLead.assigned_to_email) newCard.dataset.assignedEmail = rebuiltLead.assigned_to_email;
+        if (rebuiltLead.assigned_to_name) newCard.dataset.assignedName = rebuiltLead.assigned_to_name;
+        if (rebuiltLead.created_at) newCard.dataset.createdAt = rebuiltLead.created_at;
+        targetStack.append(newCard);
+        sourceCard.remove();
+      } else if (currentStatus === "cancelado") {
+        const rebuiltLead = {
+          id: leadId,
+          name: sourceCard.querySelector(".lead-card-name")?.textContent?.trim() || "",
+          telefone: sourceCard.querySelector(".lead-info-value")?.textContent?.trim() || "",
+          status,
+          trash_origin_status: null,
+          assigned_to_email: sourceCard.dataset.assignedEmail || "",
+          assigned_to_name: sourceCard.dataset.assignedName || "",
+          created_at: sourceCard.dataset.createdAt || new Date().toISOString(),
+          tags: [],
+        };
+        const newCard = createLeadCard(rebuiltLead);
+        if (rebuiltLead.assigned_to_email) newCard.dataset.assignedEmail = rebuiltLead.assigned_to_email;
+        if (rebuiltLead.assigned_to_name) newCard.dataset.assignedName = rebuiltLead.assigned_to_name;
+        if (rebuiltLead.created_at) newCard.dataset.createdAt = rebuiltLead.created_at;
+        targetStack.append(newCard);
+        sourceCard.remove();
+      } else {
+        targetStack.append(sourceCard);
+        sourceCard.dataset.status = status;
+      }
 
       const counter = targetColumn.querySelector("small");
       if (counter) {
@@ -2849,6 +2889,9 @@ const createLeadCard = (lead) => {
   card.draggable = true;
   card.dataset.leadId = lead.id;
   card.dataset.status = lead.status || "lead_recebido";
+  if (lead.created_at) card.dataset.createdAt = lead.created_at;
+  if (lead.assigned_to_email) card.dataset.assignedEmail = lead.assigned_to_email;
+  if (lead.assigned_to_name) card.dataset.assignedName = lead.assigned_to_name;
 
   const top = document.createElement("div");
   top.className = "lead-card-top";
@@ -2891,11 +2934,12 @@ const createLeadCard = (lead) => {
   top.append(nameWrapper);
 
   // Warning Badge (days without contact)
-  const createdDate = new Date(lead.created_at);
+  const createdDate = lead.created_at ? new Date(lead.created_at) : null;
   const now = new Date();
-  const diffTime = Math.abs(now - createdDate);
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  
+  const diffDays = createdDate && !Number.isNaN(createdDate.getTime())
+    ? Math.floor(Math.abs(now - createdDate) / (1000 * 60 * 60 * 24))
+    : 0;
+
   const warningBadge = document.createElement("div");
   warningBadge.className = "lead-warning-badge";
   if (diffDays === 0) {
