@@ -219,7 +219,7 @@
               </article>
 
               <!-- Card 4: Agendamentos -->
-              <article class="dash-metric-card" style="--card-border-color: #2563eb;">
+              <article class="dash-metric-card dash-card-with-conversion" style="--card-border-color: #2563eb;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #dbeafe; color: #2563eb;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
@@ -228,6 +228,7 @@
                 <span class="dash-metric-title">Agendamentos</span>
                 <strong class="dash-metric-number" id="dash-appointments" style="color: #2563eb;">0</strong>
                 <span class="dash-metric-subtext">Leads agendados</span>
+                <strong class="dash-inline-conversion dash-appointment-conversion" id="dash-appointment-conversion" aria-label="Conversão de agendamentos">0.0%</strong>
               </article>
 
               <!-- Card 5: Clientes em Loja -->
@@ -267,7 +268,7 @@
               </article>
 
               <!-- Card 8: Venda Fechada -->
-              <article class="dash-metric-card dash-closed-card" style="--card-border-color: #10b981;">
+              <article class="dash-metric-card dash-card-with-conversion" style="--card-border-color: #10b981;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #d1fae5; color: #10b981;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -276,19 +277,7 @@
                 <span class="dash-metric-title">Venda Fechada</span>
                 <strong class="dash-metric-number" id="dash-closed-leads" style="color: #10b981;">0</strong>
                 <span class="dash-metric-subtext">Clientes fechados</span>
-                <strong class="dash-sale-conversion" id="dash-closing-conversion" aria-label="Conversão de fechamento">0.0%</strong>
-              </article>
-
-              <!-- Card 9: Conversão de Agendamentos -->
-              <article class="dash-metric-card" style="--card-border-color: #0891b2;">
-                <div class="dash-metric-icon-row">
-                  <div class="dash-metric-icon-box" style="background: #cffafe; color: #0891b2;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                  </div>
-                </div>
-                <span class="dash-metric-title">Conversão de Agendamentos</span>
-                <strong class="dash-metric-number" id="dash-appointment-conversion" style="color: #0891b2;">0.0%</strong>
-                <span class="dash-metric-subtext">Atendidos para agendados</span>
+                <strong class="dash-inline-conversion dash-sale-conversion" id="dash-closing-conversion" aria-label="Conversão de fechamento">0.0%</strong>
               </article>
 
             </div>
@@ -898,7 +887,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=profile-access-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=closing-conversion-inside-card-v14"></script>
+    <script src="script.js?v=appointment-conversion-inside-card-v15"></script>
     <script src="/searchable-select.js?v=mr00opji"></script>
     <script src="/pwa.js"></script>
   </body>

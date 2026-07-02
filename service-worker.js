@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-closing-conversion-inside-card-v14";
+const CACHE_VERSION = "seven-gold-appointment-conversion-inside-card-v15";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",

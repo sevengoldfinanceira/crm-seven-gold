@@ -2451,15 +2451,14 @@ body.theme-dark .crm-workspace {
   transform: scale(0.98);
 }
 
-.dash-closed-card {
+.dash-card-with-conversion {
   padding-right: 116px;
 }
 
-.dash-sale-conversion {
+.dash-inline-conversion {
   position: absolute;
   top: 50%;
   right: 20px;
-  color: #ca8a04;
   font-size: clamp(1.55rem, 2vw, 2.1rem);
   font-weight: 850;
   line-height: 1;
@@ -2467,8 +2466,20 @@ body.theme-dark .crm-workspace {
   white-space: nowrap;
 }
 
+.dash-sale-conversion {
+  color: #ca8a04;
+}
+
+.dash-appointment-conversion {
+  color: #0891b2;
+}
+
 body.theme-dark .dash-sale-conversion {
   color: #f4c542;
+}
+
+body.theme-dark .dash-appointment-conversion {
+  color: #22d3ee;
 }
 
 body.theme-dark .dash-metric-card {
