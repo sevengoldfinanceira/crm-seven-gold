@@ -17,11 +17,21 @@ const getNextPipelineStatus = (status) => {
   return currentIndex >= 0 ? PIPELINE_SEQUENCE[currentIndex + 1] || null : null;
 };
 
+const getPreviousPipelineStatus = (status) => {
+  const currentIndex = PIPELINE_SEQUENCE.indexOf(status);
+  return currentIndex > 0 ? PIPELINE_SEQUENCE[currentIndex - 1] : null;
+};
+
 const canMoveToPipelineStatus = (currentStatus, targetStatus) => {
   if (currentStatus === targetStatus) return true;
   if (currentStatus === 'cancelado') return false;
   if (targetStatus === 'cancelado') return true;
   return targetStatus === getNextPipelineStatus(currentStatus);
+};
+
+const canGoBackPipelineStatus = (currentStatus) => {
+  if (currentStatus === 'cancelado') return false;
+  return getPreviousPipelineStatus(currentStatus) !== null;
 };
 
 module.exports = async (req, res) => {
@@ -48,6 +58,7 @@ module.exports = async (req, res) => {
 
     const payload = req.body || {};
     const { phone, status } = payload;
+    const goBack = payload.go_back === true || payload.goBack === true;
     const leadIdFromPayload = String(payload.lead_id || payload.leadId || '').trim();
 
     if (!phone && !leadIdFromPayload) {
@@ -120,7 +131,24 @@ module.exports = async (req, res) => {
     }
 
     const previousStatus = fetchLead[0].status;
-    if (status && !canMoveToPipelineStatus(previousStatus, status)) {
+    if (status && goBack) {
+      if (!canGoBackPipelineStatus(previousStatus)) {
+        res.writeHead(409, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({
+          ok: false,
+          error: 'Este lead não pode voltar uma etapa.',
+        }));
+      }
+      const prevStatus = getPreviousPipelineStatus(previousStatus);
+      if (status !== prevStatus) {
+        const prevLabel = prevStatus ? prevStatus.replace(/_/g, ' ') : 'nenhuma etapa';
+        res.writeHead(409, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({
+          ok: false,
+          error: `A etapa anterior válida é: ${prevLabel}.`,
+        }));
+      }
+    } else if (status && !canMoveToPipelineStatus(previousStatus, status)) {
       const nextStatus = getNextPipelineStatus(previousStatus);
       const nextLabel = nextStatus ? nextStatus.replace(/_/g, ' ') : 'nenhuma etapa';
       res.writeHead(409, { 'Content-Type': 'application/json' });
@@ -148,8 +176,10 @@ module.exports = async (req, res) => {
       const { error: historyError } = await supabase.from('lead_activity_logs').insert({
         lead_id: leadId,
         action_type: 'status_changed',
-        action_label: 'Etapa alterada',
-        description: `Etapa alterada de ${previousStatus || 'sem etapa'} para ${status}.`,
+        action_label: goBack ? 'Etapa revertida' : 'Etapa alterada',
+        description: goBack
+          ? `Etapa revertida de ${previousStatus || 'sem etapa'} para ${status}.`
+          : `Etapa alterada de ${previousStatus || 'sem etapa'} para ${status}.`,
         old_value: previousStatus || null,
         new_value: status,
         created_by_email: authorization.user.email || null,

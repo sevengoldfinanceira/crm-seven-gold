@@ -11,7 +11,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=cancelled-pipeline-stage-v3" />
+    <link rel="stylesheet" href="styles.css?v=crm-layout-flow-v4" />
     <link rel="stylesheet" href="searchable-select.css?v=mr00opji" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
@@ -843,18 +843,6 @@
             Telefone
             <input name="telefone" type="text" placeholder="Ex: 11999998888" />
           </label>
-          <label id="modal-status-label" style="display: none;">
-            Etapa do Funil
-            <select name="status">
-              <option value="lead_recebido">Lead recebido</option>
-              <option value="primeiro_contato">Primeiro contato</option>
-              <option value="agendamento">Agendamento</option>
-              <option value="cliente_em_loja">Cliente em loja</option>
-              <option value="proposta_enviada">Proposta enviada</option>
-              <option value="venda_fechada">Venda fechada</option>
-              <option value="cancelado">Lixeira</option>
-            </select>
-          </label>
           <label>
             Origem
             <select name="origin">
@@ -941,10 +929,7 @@
             Horario
             <input name="hora_agendamento" type="time" min="08:00" max="20:59" step="60" required />
           </label>
-          <label class="appointment-seller-field">
-            Vendedor
-            <input name="nome_usuario" type="text" readonly />
-          </label>
+          <input name="nome_usuario" type="hidden" />
           <label class="appointment-observation-field">
             Observacao
             <textarea name="observacao" rows="4" placeholder="Informacoes importantes para o atendimento"></textarea>
@@ -979,6 +964,9 @@
             <option value="cancelado">Cancelados</option>
           </select>
         </label>
+        <button type="button" class="bulk-action-btn go-back" id="bulk-go-back-btn">
+          Voltar 1 etapa
+        </button>
         <button type="button" class="bulk-action-btn delete" id="bulk-delete-btn">
           Excluir
         </button>
@@ -992,7 +980,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=profile-access-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=cancelled-pipeline-stage-v19"></script>
+    <script src="script.js?v=lead-owner-appointments-v20"></script>
     <script src="/searchable-select.js?v=mr00opji"></script>
     <script src="/pwa.js"></script>
   </body>

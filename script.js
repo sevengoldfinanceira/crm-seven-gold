@@ -88,6 +88,16 @@ const canMoveToPipelineStatus = (currentStatus, targetStatus) => {
   return targetStatus === getNextPipelineStatus(currentStatus);
 };
 
+const getPreviousPipelineStatus = (status) => {
+  const currentIndex = pipelineStatusOrder.indexOf(status);
+  return currentIndex > 0 ? pipelineStatusOrder[currentIndex - 1] : null;
+};
+
+const canGoBackPipelineStatus = (currentStatus) => {
+  if (currentStatus === "cancelado") return false;
+  return getPreviousPipelineStatus(currentStatus) !== null;
+};
+
 menuButton?.addEventListener("click", () => {
   document.body.classList.toggle("menu-open");
 });
@@ -107,12 +117,10 @@ openModalButton?.addEventListener("click", () => {
   if (typeof modal?.showModal === "function") {
     const title = modal.querySelector("#modal-title");
     const submitButton = modal.querySelector("button[type='submit']");
-    const statusLabel = modal.querySelector("#modal-status-label");
     const deleteBtn = modal.querySelector("#delete-lead-modal-btn");
 
     if (title) title.textContent = "Novo lead";
     if (submitButton) submitButton.textContent = "Salvar lead";
-    if (statusLabel) statusLabel.style.display = "none";
     if (deleteBtn) deleteBtn.style.display = "none";
 
     if (leadForm) {
@@ -160,12 +168,10 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
   const client = getClient();
   const title = modal.querySelector("#modal-title");
   const submitButton = modal.querySelector("button[type='submit']");
-  const statusLabel = modal.querySelector("#modal-status-label");
   const deleteBtn = modal.querySelector("#delete-lead-modal-btn");
 
   if (title) title.textContent = "Editar Lead";
   if (submitButton) submitButton.textContent = "Salvar Alteracoes";
-  if (statusLabel) statusLabel.style.display = "none";
   if (deleteBtn) deleteBtn.style.display = "block";
 
   leadForm.dataset.mode = "edit";
@@ -2127,13 +2133,16 @@ const openAppointmentModal = async ({ appointment = null, lead = null, date = ""
   appointmentForm.reset();
   setAppointmentStatus("");
   appointmentForm.dataset.mode = appointment ? "edit" : "create";
+  const linkedLeadId = appointment?.lead_id || lead?.id || "";
+  const linkedLead = lead || (linkedLeadId ? await fetchLeadForAppointment(linkedLeadId) : null);
+  const leadOwner = await resolveAppointmentLeadOwner(linkedLead);
   appointmentForm.elements.id.value = appointment?.id || "";
-  appointmentForm.elements.lead_id.value = appointment?.lead_id || lead?.id || "";
-  appointmentForm.elements.nome_cliente.value = appointment?.nome_cliente || lead?.name || "";
-  appointmentForm.elements.telefone_cliente.value = appointment?.telefone_cliente || lead?.telefone || "";
+  appointmentForm.elements.lead_id.value = linkedLeadId;
+  appointmentForm.elements.nome_cliente.value = appointment?.nome_cliente || linkedLead?.name || "";
+  appointmentForm.elements.telefone_cliente.value = appointment?.telefone_cliente || linkedLead?.telefone || "";
   appointmentForm.elements.data_agendamento.value = appointment?.data_agendamento || date || toDateKey(new Date());
   appointmentForm.elements.hora_agendamento.value = normalizeAppointmentTime(appointment?.hora_agendamento || time || "08:00");
-  appointmentForm.elements.nome_usuario.value = lead?.assigned_to_name || appointment?.nome_usuario || await getCurrentSellerName();
+  appointmentForm.elements.nome_usuario.value = leadOwner.name || appointment?.nome_usuario || "Vendedor nao informado";
   appointmentForm.elements.observacao.value = appointment?.observacao || "";
 
   const title = appointmentModal.querySelector("#appointment-modal-title");
@@ -2154,15 +2163,33 @@ const openAppointmentModal = async ({ appointment = null, lead = null, date = ""
 const fetchLeadForAppointment = async (leadId, fallback = {}) => {
   const client = getClient();
   if (!client || !leadId) return null;
-  const { data, error } = await client
-    .from("leads")
-    .select("id, name, telefone, status")
-    .eq("id", leadId)
-    .single();
-  if (error) {
-    return fallback?.name ? { id: leadId, ...fallback } : null;
+  try {
+    const leads = await fetchAuthorizedLeads(client);
+    const lead = leads.find((item) => String(item.id) === String(leadId));
+    if (lead) return lead;
+  } catch (error) {
+    console.warn("Não foi possível carregar o responsável do lead:", error);
   }
-  return data;
+  return fallback?.name ? { id: leadId, ...fallback } : null;
+};
+
+const resolveAppointmentLeadOwner = async (lead) => {
+  const client = getClient();
+  const ownerEmail = String(lead?.assigned_to_email || "").trim().toLowerCase();
+  let ownerUser = null;
+  if (client && ownerEmail) {
+    const { data } = await client
+      .from("crm_users")
+      .select("id,nome,email")
+      .ilike("email", ownerEmail)
+      .eq("ativo", true)
+      .maybeSingle();
+    ownerUser = data || null;
+  }
+  return {
+    id: ownerUser?.id || null,
+    name: lead?.assigned_to_name || ownerUser?.nome || ownerEmail || "",
+  };
 };
 
 const requestAppointmentForLead = async (leadId, fallback = {}) => {
@@ -2410,6 +2437,9 @@ appointmentForm?.addEventListener("submit", async (event) => {
   }
 
   const formData = new FormData(appointmentForm);
+  const linkedLeadId = String(formData.get("lead_id") || "").trim();
+  const linkedLead = linkedLeadId ? await fetchLeadForAppointment(linkedLeadId) : null;
+  const leadOwner = await resolveAppointmentLeadOwner(linkedLead);
   const time = normalizeAppointmentTime(formData.get("hora_agendamento"));
   const [hour, minute] = time.split(":").map(Number);
   const totalMinutes = hour * 60 + minute;
@@ -2422,11 +2452,11 @@ appointmentForm?.addEventListener("submit", async (event) => {
   submitButton.disabled = true;
   submitButton.textContent = "Salvando...";
   const payload = {
-    lead_id: String(formData.get("lead_id") || "").trim() || null,
+    lead_id: linkedLeadId || null,
     nome_cliente: String(formData.get("nome_cliente") || "").trim(),
     telefone_cliente: String(formData.get("telefone_cliente") || "").replace(/\D/g, "") || null,
-    usuario_id: user.id,
-    nome_usuario: String(formData.get("nome_usuario") || "").trim() || await getCurrentSellerName(),
+    usuario_id: leadOwner.id || user.id,
+    nome_usuario: leadOwner.name || String(formData.get("nome_usuario") || "").trim() || "Vendedor nao informado",
     data_agendamento: String(formData.get("data_agendamento") || ""),
     hora_agendamento: `${time}:00`,
     observacao: String(formData.get("observacao") || "").trim() || null,
@@ -2657,10 +2687,10 @@ const updateLeadThroughApi = async (client, leadId, payload) => {
   return result.lead;
 };
 
-const updateLeadStageThroughApi = (client, leadId, status) =>
-  updateLeadThroughApi(client, leadId, { status });
+const updateLeadStageThroughApi = (client, leadId, status, goBack = false) =>
+  updateLeadThroughApi(client, leadId, { status, ...(goBack ? { go_back: true } : {}) });
 
-const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppointment = false } = {}) => {
+const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppointment = false, goBack = false } = {}) => {
   const client = getClient();
 
   if (!client || !leadId || !status) {
@@ -2670,18 +2700,47 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
   const existingCard = document.querySelector(`[data-lead-id="${leadId}"]`);
   const currentStatus = existingCard?.closest?.(".kanban-column")?.dataset.status || null;
   if (currentStatus === status) return true;
-  if (currentStatus && !canMoveToPipelineStatus(currentStatus, status)) {
-    if (currentStatus === "cancelado") {
-      alert("Um lead cancelado não pode retornar ao funil.");
+
+  if (goBack) {
+    if (!canGoBackPipelineStatus(currentStatus)) {
+      alert("Este lead não pode voltar uma etapa.");
       return false;
     }
-    const nextStatus = getNextPipelineStatus(currentStatus);
-    const nextLabel = nextStatus ? statusLabels[nextStatus] : "nenhuma etapa";
-    alert(`Este lead só pode avançar para a próxima etapa: ${nextLabel}, ou ser cancelado.`);
-    return false;
+    const prevStatus = getPreviousPipelineStatus(currentStatus);
+    if (status !== prevStatus) {
+      alert(`A etapa anterior válida é: ${statusLabels[prevStatus]}.`);
+      return false;
+    }
+  } else {
+    if (currentStatus && !canMoveToPipelineStatus(currentStatus, status)) {
+      if (currentStatus === "cancelado") {
+        alert("Um lead cancelado não pode retornar ao funil.");
+        return false;
+      }
+      const nextStatus = getNextPipelineStatus(currentStatus);
+      const nextLabel = nextStatus ? statusLabels[nextStatus] : "nenhuma etapa";
+      alert(`Este lead só pode avançar para a próxima etapa: ${nextLabel}, ou ser cancelado.`);
+      return false;
+    }
   }
+
+  let cancelledAppointment = false;
+  if (goBack && currentStatus === "agendamento") {
+    const { data: appointments } = await client
+      .from("appointments")
+      .select("id")
+      .eq("lead_id", leadId)
+      .eq("status", "agendado");
+    if (appointments && appointments.length > 0) {
+      for (const apt of appointments) {
+        await client.from("appointments").update({ status: "cancelado" }).eq("id", apt.id);
+      }
+      cancelledAppointment = true;
+    }
+  }
+
   let createdAppointment = null;
-  if (status === "agendamento" && !skipAppointment) {
+  if (status === "agendamento" && !skipAppointment && !goBack) {
     createdAppointment = await requestAppointmentForLead(leadId);
     if (!createdAppointment || createdAppointment.cancelled) {
       return false;
@@ -2720,10 +2779,13 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
   }
 
   try {
-    await updateLeadStageThroughApi(client, leadId, status);
+    await updateLeadStageThroughApi(client, leadId, status, goBack);
   } catch (error) {
     if (createdAppointment?.id) {
       await client.from("appointments").delete().eq("id", createdAppointment.id);
+    }
+    if (cancelledAppointment) {
+      await client.from("appointments").update({ status: "agendado" }).eq("lead_id", leadId);
     }
     if (optimistic) {
       await loadLeads();
@@ -2735,10 +2797,34 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
   if (!optimistic) {
     await loadLeads();
   }
-  if (status === "agendamento") {
+  if (status === "agendamento" || cancelledAppointment) {
     await loadAppointments();
   }
   return true;
+};
+
+const goBackOneStage = async (leadId) => {
+  const existingCard = document.querySelector(`[data-lead-id="${leadId}"]`);
+  const currentStatus = existingCard?.closest?.(".kanban-column")?.dataset.status;
+  if (!currentStatus) return;
+
+  if (!canGoBackPipelineStatus(currentStatus)) {
+    alert("Este lead não pode voltar uma etapa.");
+    return;
+  }
+
+  const prevStatus = getPreviousPipelineStatus(currentStatus);
+  const prevLabel = statusLabels[prevStatus] || prevStatus;
+  const currentLabel = statusLabels[currentStatus] || currentStatus;
+
+  let message = `Deseja voltar este lead de "${currentLabel}" para "${prevLabel}"?`;
+  if (currentStatus === "agendamento") {
+    message += "\n\nO agendamento vinculado sera cancelado.";
+  }
+
+  if (!confirm(message)) return;
+
+  await updateLeadStatus(leadId, prevStatus, { optimistic: true, goBack: true });
 };
 
 const getTagColors = (tag) => {
@@ -2892,6 +2978,18 @@ const createLeadCard = (lead) => {
   });
 
   actionsRow.append(waBtn, callBtn, editBtn);
+
+  if (canGoBackPipelineStatus(lead.status)) {
+    const goBackBtn = document.createElement("button");
+    goBackBtn.type = "button";
+    goBackBtn.className = "lead-action-btn go-back-btn";
+    goBackBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Voltar`;
+    goBackBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      goBackOneStage(lead.id);
+    });
+    actionsRow.append(goBackBtn);
+  }
 
   // Tags Container
   const tagsContainer = document.createElement("div");
@@ -3196,8 +3294,8 @@ leadForm?.addEventListener("submit", async (event) => {
     : [];
 
   if (mode === "edit" && leadId) {
-    const targetStatus = String(formData.get("status") || "lead_recebido").trim();
     const originalStatus = String(leadForm.dataset.originalStatus || "").trim();
+    const targetStatus = originalStatus || "lead_recebido";
     if (!canMoveToPipelineStatus(originalStatus, targetStatus)) {
       if (originalStatus === "cancelado") {
         submitButton.disabled = false;
@@ -3436,6 +3534,47 @@ const setupBulkActions = () => {
         await loadLeads();
       }
     }
+  });
+
+  const goBackBtn = document.getElementById("bulk-go-back-btn");
+  goBackBtn?.addEventListener("click", async () => {
+    const checkboxes = document.querySelectorAll(".lead-select-checkbox:checked");
+    const selectedCards = Array.from(checkboxes).map((checkbox) => checkbox.closest(".lead-card")).filter(Boolean);
+    const leadIds = selectedCards.map((card) => card.dataset.leadId).filter(Boolean);
+
+    if (leadIds.length === 0) return;
+
+    const invalidCard = selectedCards.find((card) => {
+      const currentStatus = card.closest(".kanban-column")?.dataset.status;
+      return !canGoBackPipelineStatus(currentStatus);
+    });
+    if (invalidCard) {
+      alert("Um ou mais leads selecionados nao podem voltar etapa (ja estao na primeira etapa ou cancelados).");
+      return;
+    }
+
+    const hasAgendamento = selectedCards.some((card) => card.closest(".kanban-column")?.dataset.status === "agendamento");
+    let message = `Deseja voltar ${leadIds.length} lead${leadIds.length === 1 ? "" : "s"} uma etapa?`;
+    if (hasAgendamento) {
+      message += "\n\nAgendamentos vinculados serao cancelados.";
+    }
+
+    if (!confirm(message)) return;
+
+    for (const leadId of leadIds) {
+      const card = document.querySelector(`[data-lead-id="${leadId}"]`);
+      const currentStatus = card?.closest(".kanban-column")?.dataset.status;
+      const prevStatus = getPreviousPipelineStatus(currentStatus);
+      if (!prevStatus) continue;
+      await updateLeadStatus(leadId, prevStatus, { optimistic: true, goBack: true });
+    }
+
+    checkboxes.forEach((cb) => {
+      cb.checked = false;
+      cb.closest(".lead-card")?.classList.remove("selected");
+    });
+    updateBulkActionsBar();
+    await loadLeads();
   });
 
   cancelBtn?.addEventListener("click", () => {
