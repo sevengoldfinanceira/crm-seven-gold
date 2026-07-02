@@ -2555,14 +2555,17 @@ body.theme-dark .crm-workspace {
 .kpi-value-row {
   display: flex;
   align-items: flex-end;
-  gap: 16px;
+  gap: 14px;
   margin-top: 4px;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 .kpi-value-group {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .kpi-number {
@@ -2570,6 +2573,7 @@ body.theme-dark .crm-workspace {
   font-weight: 800;
   color: var(--kpi-color);
   line-height: 1;
+  white-space: nowrap;
 }
 
 .kpi-conversion {
@@ -2577,6 +2581,7 @@ body.theme-dark .crm-workspace {
   font-weight: 800;
   color: var(--kpi-color);
   line-height: 1;
+  white-space: nowrap;
 }
 
 /* Divider between number and conversion */
@@ -2649,7 +2654,8 @@ body.theme-dark .kpi-divider {
     min-height: 170px;
   }
   .kpi-number { font-size: 1.8rem; }
-  .kpi-conversion { font-size: 1.5rem; }
+  .kpi-conversion { font-size: 1.4rem; }
+  .kpi-value-row { gap: 10px; }
   .kpi-icon-box { width: 40px; height: 40px; border-radius: 11px; }
   .kpi-icon-box svg { width: 18px; height: 18px; }
   .kpi-watermark { width: 100px; height: 100px; }
