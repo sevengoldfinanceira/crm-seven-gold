@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-commercial-metric-icons-v16";
+const CACHE_VERSION = "seven-gold-centered-pipeline-filters-v17";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",

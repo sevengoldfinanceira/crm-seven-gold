@@ -413,6 +413,27 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
   color: #d84646;
 }
 
+.tab-content[data-tab="pipeline"] .filter-row {
+  width: 100%;
+  justify-content: center;
+  margin-inline: auto;
+}
+
+.tab-content[data-tab="pipeline"] .filter-row label {
+  justify-items: center;
+  text-align: center;
+}
+
+.tab-content[data-tab="pipeline"] .filter-row label > span {
+  width: 100%;
+  text-align: center;
+}
+
+.tab-content[data-tab="pipeline"] .filter-row select {
+  text-align: center;
+  text-align-last: center;
+}
+
 .kanban-wrap {
   min-width: 0;
   overflow-x: auto;
