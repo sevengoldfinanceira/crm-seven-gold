@@ -137,24 +137,26 @@
                 <p style="color: #667085; font-size: 0.88rem; margin: 4px 0 0;">Acompanhe seus leads, tarefas e fechamentos em tempo real.</p>
               </div>
               
-              <div class="dash-dashboard-filters" style="display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap;">
-              <div id="dash-responsible-filter-container" style="display: none; align-items: center; gap: 12px;">
-                <label style="display: flex; flex-direction: column; gap: 4px;">
+              <div class="dash-dashboard-filters">
+              <div id="dash-responsible-filter-container">
+                <label class="dash-filter-field">
                   <span style="color: var(--muted); font-size: 0.72rem; font-weight: 700;">Equipe</span>
                   <select id="dash-team-filter-select" style="min-width: 180px; min-height: 36px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 0 12px; font-size: 0.82rem;">
                     <option value="">Todas as equipes</option>
                   </select>
                 </label>
-                <span style="font-size: 0.82rem; font-weight: 700; color: #4b5563;">Responsável</span>
-                <div style="position: relative; display: flex; align-items: center;">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" style="position: absolute; left: 12px; pointer-events: none;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                  <select id="dash-responsible-filter-select" style="min-width: 200px; min-height: 40px; border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff; color: #1e293b; padding: 0 32px 0 34px; font-size: 0.85rem; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.02); appearance: none; -webkit-appearance: none; cursor: pointer;">
-                    <option value="">Todos os vendedores</option>
-                  </select>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" style="position: absolute; right: 12px; pointer-events: none;"><polyline points="6 9 12 15 18 9"/></svg>
-                </div>
+                <label class="dash-filter-field">
+                  <span style="color: var(--muted); font-size: 0.72rem; font-weight: 700;">Responsável</span>
+                  <div style="position: relative; display: flex; align-items: center;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" style="position: absolute; left: 12px; pointer-events: none;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <select id="dash-responsible-filter-select" style="min-width: 200px; min-height: 40px; border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff; color: #1e293b; padding: 0 32px 0 34px; font-size: 0.85rem; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.02); appearance: none; -webkit-appearance: none; cursor: pointer;">
+                      <option value="">Todos os vendedores</option>
+                    </select>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" style="position: absolute; right: 12px; pointer-events: none;"><polyline points="6 9 12 15 18 9"/></svg>
+                  </div>
+                </label>
               </div>
-              <label style="display: flex; flex-direction: column; gap: 4px;">
+              <label class="dash-filter-field">
                 <span style="color: var(--muted); font-size: 0.72rem; font-weight: 700;">Período</span>
                 <select id="dash-period-filter-select" style="min-width: 120px; min-height: 40px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); padding: 0 12px; font-size: 0.82rem; font-weight: 600;">
                   <option value="day">Dia</option>
@@ -162,7 +164,7 @@
                   <option value="month" selected>Mês</option>
                 </select>
               </label>
-              <label style="display: flex; flex-direction: column; gap: 4px;">
+              <label class="dash-filter-field">
                 <span id="dash-period-calendar-label" style="color: var(--muted); font-size: 0.72rem; font-weight: 700;">Selecionar mês</span>
                 <input id="dash-period-day-input" type="date" aria-label="Selecionar dia" hidden style="min-width: 160px; min-height: 40px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); padding: 0 12px; font-size: 0.82rem; font-weight: 600;">
                 <input id="dash-period-week-input" type="week" aria-label="Selecionar semana" hidden style="min-width: 180px; min-height: 40px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); padding: 0 12px; font-size: 0.82rem; font-weight: 600;">
@@ -895,7 +897,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=profile-access-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=service-metric-two-rows-v7"></script>
+    <script src="script.js?v=centered-dashboard-filters-v8"></script>
     <script src="/searchable-select.js?v=mr00opji"></script>
     <script src="/pwa.js"></script>
   </body>

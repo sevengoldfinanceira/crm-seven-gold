@@ -2359,6 +2359,36 @@ body.theme-dark .crm-workspace {
 }
 
 /* Metric Cards style override */
+.dash-dashboard-filters {
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+#dash-responsible-filter-container {
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dash-filter-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.dash-filter-field select,
+.dash-filter-field input {
+  text-align: center;
+  text-align-last: center;
+}
+
 .commercial-summary-grid {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
