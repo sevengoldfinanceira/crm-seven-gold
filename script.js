@@ -2878,13 +2878,9 @@ const createLeadCard = (lead) => {
     warningBadge.textContent = `⚠️ ${diffDays} ${diffDays === 1 ? 'dia' : 'dias'} sem contato`;
   }
 
-  const statusBadge = document.createElement("div");
-  statusBadge.className = "lead-status-badge";
-  statusBadge.textContent = statusLabels[lead.status] || "Etapa desconhecida";
-
   const badgeRow = document.createElement("div");
   badgeRow.className = "lead-card-badge-row";
-  badgeRow.append(statusBadge, warningBadge);
+  badgeRow.append(warningBadge);
 
   let trashBadgeRow = null;
   if (lead.status === "cancelado") {
