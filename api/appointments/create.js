@@ -60,24 +60,24 @@ module.exports = async (req, res) => {
         telefone_cliente: clientPhone,
         usuario_id: authorization.user.auth_user_id,
         nome_usuario: assignedName,
+        assigned_to_email: assignedEmail,
+        assigned_to_name: assignedName,
         data_agendamento: appointmentDate,
         hora_agendamento: appointmentTime,
         observacao: String(payload.observacao || '').trim() || null,
         status: 'agendado',
-        assigned_to_email: assignedEmail,
-        assigned_to_name: assignedName,
       })
       .select('*')
       .single();
 
     if (error) {
-      console.error('[Appointments API] Error inserting appointment');
-      return sendJson(res, 500, { ok: false, error: 'Não foi possível salvar o agendamento.' });
+      console.error('[Appointments API] Error inserting appointment:', error);
+      return sendJson(res, 500, { ok: false, error: `Não foi possível salvar o agendamento: ${error.message || error.details || 'erro desconhecido'}` });
     }
 
     return sendJson(res, 200, { ok: true, appointment: data });
   } catch (error) {
-    console.error('[Appointments API] Internal server error');
-    return sendJson(res, 500, { ok: false, error: 'Erro interno ao salvar o agendamento.' });
+    console.error('[Appointments API] Internal server error:', error);
+    return sendJson(res, 500, { ok: false, error: `Erro interno ao salvar o agendamento: ${error.message || 'detalhes indisponíveis'}` });
   }
 };
