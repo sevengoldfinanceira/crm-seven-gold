@@ -1787,7 +1787,7 @@ const loadDashboardMetrics = async () => {
     if (elNotServedConversion) elNotServedConversion.textContent = `${((notServed / receivedLeads) * 100).toFixed(1)}%`;
     if (elStoreConversion) elStoreConversion.textContent = `${((clientsInStore / receivedLeads) * 100).toFixed(1)}%`;
     if (elApprovalConversion) elApprovalConversion.textContent = `${((inApproval / receivedLeads) * 100).toFixed(1)}%`;
-    if (elNotInterestedConversion) elNotInterestedConversion.textContent = `${((notInterested / receivedLeads) * 100).toFixed(1)}%`;
+    if (elNotInterestedConversion) elNotInterestedConversion.textContent = `${clientsInStore > 0 ? ((notInterested / clientsInStore) * 100).toFixed(1) : "0.0"}%`;
   }
 
   // 4. Alertas de Metas
