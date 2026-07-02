@@ -267,7 +267,7 @@
               </article>
 
               <!-- Card 8: Venda Fechada -->
-              <article class="dash-metric-card" style="--card-border-color: #10b981;">
+              <article class="dash-metric-card dash-closed-card" style="--card-border-color: #10b981;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #d1fae5; color: #10b981;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -276,21 +276,10 @@
                 <span class="dash-metric-title">Venda Fechada</span>
                 <strong class="dash-metric-number" id="dash-closed-leads" style="color: #10b981;">0</strong>
                 <span class="dash-metric-subtext">Clientes fechados</span>
+                <strong class="dash-sale-conversion" id="dash-closing-conversion" aria-label="Conversão de fechamento">0.0%</strong>
               </article>
 
-              <!-- Card 9: Conversão de Fechamento -->
-              <article class="dash-metric-card" style="--card-border-color: #f2b705;">
-                <div class="dash-metric-icon-row">
-                  <div class="dash-metric-icon-box" style="background: #fef3c7; color: #ca8a04;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                  </div>
-                </div>
-                <span class="dash-metric-title">Conversão de Fechamento</span>
-                <strong class="dash-metric-number" id="dash-closing-conversion" style="color: #ca8a04;">0.0%</strong>
-                <span class="dash-metric-subtext">Loja para fechamento</span>
-              </article>
-
-              <!-- Card 10: Conversão de Agendamentos -->
+              <!-- Card 9: Conversão de Agendamentos -->
               <article class="dash-metric-card" style="--card-border-color: #0891b2;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #cffafe; color: #0891b2;">
@@ -909,7 +898,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=profile-access-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=sortable-summary-cards-v12"></script>
+    <script src="script.js?v=closing-conversion-inside-card-v14"></script>
     <script src="/searchable-select.js?v=mr00opji"></script>
     <script src="/pwa.js"></script>
   </body>

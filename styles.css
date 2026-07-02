@@ -2451,6 +2451,26 @@ body.theme-dark .crm-workspace {
   transform: scale(0.98);
 }
 
+.dash-closed-card {
+  padding-right: 116px;
+}
+
+.dash-sale-conversion {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  color: #ca8a04;
+  font-size: clamp(1.55rem, 2vw, 2.1rem);
+  font-weight: 850;
+  line-height: 1;
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+
+body.theme-dark .dash-sale-conversion {
+  color: #f4c542;
+}
+
 body.theme-dark .dash-metric-card {
   background: #111827 !important;
   border-color: rgba(255, 255, 255, 0.05) !important;
