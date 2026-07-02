@@ -64,6 +64,7 @@ const statusLabels = {
   cliente_em_loja: "Cliente em loja",
   proposta_enviada: "Proposta enviada",
   venda_fechada: "Venda fechada",
+  cancelado: "Cancelados",
 };
 
 const pipelineStatusOrder = [
@@ -78,6 +79,13 @@ const pipelineStatusOrder = [
 const getNextPipelineStatus = (status) => {
   const currentIndex = pipelineStatusOrder.indexOf(status);
   return currentIndex >= 0 ? pipelineStatusOrder[currentIndex + 1] || null : null;
+};
+
+const canMoveToPipelineStatus = (currentStatus, targetStatus) => {
+  if (currentStatus === targetStatus) return true;
+  if (currentStatus === "cancelado") return false;
+  if (targetStatus === "cancelado") return true;
+  return targetStatus === getNextPipelineStatus(currentStatus);
 };
 
 menuButton?.addEventListener("click", () => {
@@ -2641,13 +2649,15 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
   const existingCard = document.querySelector(`[data-lead-id="${leadId}"]`);
   const currentStatus = existingCard?.closest?.(".kanban-column")?.dataset.status || null;
   if (currentStatus === status) return true;
-  if (currentStatus) {
-    const nextStatus = getNextPipelineStatus(currentStatus);
-    if (status !== nextStatus) {
-      const nextLabel = nextStatus ? statusLabels[nextStatus] : "nenhuma etapa";
-      alert(`Este lead só pode avançar para a próxima etapa: ${nextLabel}.`);
+  if (currentStatus && !canMoveToPipelineStatus(currentStatus, status)) {
+    if (currentStatus === "cancelado") {
+      alert("Um lead cancelado não pode retornar ao funil.");
       return false;
     }
+    const nextStatus = getNextPipelineStatus(currentStatus);
+    const nextLabel = nextStatus ? statusLabels[nextStatus] : "nenhuma etapa";
+    alert(`Este lead só pode avançar para a próxima etapa: ${nextLabel}, ou ser cancelado.`);
+    return false;
   }
   let createdAppointment = null;
   if (status === "agendamento" && !skipAppointment) {
@@ -3167,12 +3177,18 @@ leadForm?.addEventListener("submit", async (event) => {
   if (mode === "edit" && leadId) {
     const targetStatus = String(formData.get("status") || "lead_recebido").trim();
     const originalStatus = String(leadForm.dataset.originalStatus || "").trim();
-    if (targetStatus !== originalStatus && targetStatus !== getNextPipelineStatus(originalStatus)) {
+    if (!canMoveToPipelineStatus(originalStatus, targetStatus)) {
+      if (originalStatus === "cancelado") {
+        submitButton.disabled = false;
+        submitButton.textContent = "Salvar Alteracoes";
+        setFormStatus("Um lead cancelado não pode retornar ao funil.");
+        return;
+      }
       const nextStatus = getNextPipelineStatus(originalStatus);
       const nextLabel = nextStatus ? statusLabels[nextStatus] : "nenhuma etapa";
       submitButton.disabled = false;
       submitButton.textContent = "Salvar Alteracoes";
-      setFormStatus(`Este lead só pode avançar para a próxima etapa: ${nextLabel}.`);
+      setFormStatus(`Este lead só pode avançar para a próxima etapa: ${nextLabel}, ou ser cancelado.`);
       return;
     }
     let appointment = null;
@@ -3299,13 +3315,18 @@ const setupBulkActions = () => {
 
     const invalidCard = selectedCards.find((card) => {
       const currentStatus = card.closest(".kanban-column")?.dataset.status;
-      return getNextPipelineStatus(currentStatus) !== targetStatus;
+      return !canMoveToPipelineStatus(currentStatus, targetStatus);
     });
     if (invalidCard) {
       const currentStatus = invalidCard.closest(".kanban-column")?.dataset.status;
+      if (currentStatus === "cancelado") {
+        alert("Leads cancelados não podem retornar ao funil.");
+        moveSelect.value = "";
+        return;
+      }
       const nextStatus = getNextPipelineStatus(currentStatus);
       const nextLabel = nextStatus ? statusLabels[nextStatus] : "nenhuma etapa";
-      alert(`Todos os leads selecionados devem estar na etapa anterior. Próxima etapa permitida: ${nextLabel}.`);
+      alert(`Todos os leads selecionados devem estar na etapa anterior. Próxima etapa permitida: ${nextLabel}, ou Cancelados.`);
       moveSelect.value = "";
       return;
     }

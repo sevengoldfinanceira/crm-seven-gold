@@ -2,7 +2,7 @@ const { supabase } = require('../_shared/supabase');
 const { hasBasicLeadInfo, hasLeadClientInfo, normalizeBasicLeadInfo, normalizeLeadClientInfo } = require('../_shared/lead-client-info');
 const { getAuthorizedCrmUser, canAccessLead } = require('../_shared/crm-authorization');
 
-const ALLOWED_STATUSES = [
+const PIPELINE_SEQUENCE = [
   "lead_recebido",
   "primeiro_contato",
   "agendamento",
@@ -10,10 +10,18 @@ const ALLOWED_STATUSES = [
   "proposta_enviada",
   "venda_fechada"
 ];
+const ALLOWED_STATUSES = [...PIPELINE_SEQUENCE, "cancelado"];
 
 const getNextPipelineStatus = (status) => {
-  const currentIndex = ALLOWED_STATUSES.indexOf(status);
-  return currentIndex >= 0 ? ALLOWED_STATUSES[currentIndex + 1] || null : null;
+  const currentIndex = PIPELINE_SEQUENCE.indexOf(status);
+  return currentIndex >= 0 ? PIPELINE_SEQUENCE[currentIndex + 1] || null : null;
+};
+
+const canMoveToPipelineStatus = (currentStatus, targetStatus) => {
+  if (currentStatus === targetStatus) return true;
+  if (currentStatus === 'cancelado') return false;
+  if (targetStatus === 'cancelado') return true;
+  return targetStatus === getNextPipelineStatus(currentStatus);
 };
 
 module.exports = async (req, res) => {
@@ -112,13 +120,15 @@ module.exports = async (req, res) => {
     }
 
     const previousStatus = fetchLead[0].status;
-    if (status && status !== previousStatus && status !== getNextPipelineStatus(previousStatus)) {
+    if (status && !canMoveToPipelineStatus(previousStatus, status)) {
       const nextStatus = getNextPipelineStatus(previousStatus);
       const nextLabel = nextStatus ? nextStatus.replace(/_/g, ' ') : 'nenhuma etapa';
       res.writeHead(409, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({
         ok: false,
-        error: `Este lead só pode avançar para a próxima etapa: ${nextLabel}.`,
+        error: previousStatus === 'cancelado'
+          ? 'Um lead cancelado não pode retornar ao funil.'
+          : `Este lead só pode avançar para a próxima etapa: ${nextLabel}, ou ser cancelado.`,
       }));
     }
 

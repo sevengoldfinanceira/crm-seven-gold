@@ -1136,7 +1136,8 @@
         agendamento: "Agendamento",
         cliente_em_loja: "Cliente em Loja",
         proposta_enviada: "Proposta Enviada",
-        venda_fechada: "Venda Fechada"
+        venda_fechada: "Venda Fechada",
+        cancelado: "Cancelado"
       };
       const statusText = statusLabelMap[lead.status] || lead.status || "Sem status";
 

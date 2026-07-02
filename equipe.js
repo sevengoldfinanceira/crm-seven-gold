@@ -741,6 +741,7 @@
     cliente_em_loja: "Cliente em loja",
     proposta_enviada: "Proposta enviada",
     venda_fechada: "Venda fechada",
+    cancelado: "Cancelado",
     perdido: "Perdido",
   };
 

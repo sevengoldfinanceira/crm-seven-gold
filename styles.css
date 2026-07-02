@@ -442,7 +442,7 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
 
 .kanban-board {
   display: grid;
-  grid-template-columns: repeat(6, 256px);
+  grid-template-columns: repeat(7, 256px);
   gap: 12px;
   min-width: max-content;
 }
@@ -634,7 +634,7 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
 
 .kanban-board {
   display: grid;
-  grid-template-columns: repeat(6, 256px);
+  grid-template-columns: repeat(7, 256px);
   gap: 12px;
   min-width: max-content;
 }
@@ -2043,6 +2043,9 @@ body.theme-dark .kanban-column header small {
 .kanban-column[data-status="venda_fechada"] header {
   border-bottom: 2.5px solid #10b981 !important;
 }
+.kanban-column[data-status="cancelado"] header {
+  border-bottom: 2.5px solid #ef4444 !important;
+}
 
 /* Stage Header Icons styling */
 .stage-icon {
@@ -2057,6 +2060,7 @@ body.theme-dark .kanban-column header small {
 .stage-icon.pink { color: #ec4899; }
 .stage-icon.amber { color: #f59e0b; }
 .stage-icon.green { color: #10b981; }
+.stage-icon.red { color: #ef4444; }
 
 .card-stack {
   display: grid !important;

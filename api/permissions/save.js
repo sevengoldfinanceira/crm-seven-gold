@@ -801,6 +801,7 @@ async function manageCommercialTeams(action, data, crmUser) {
 
         const sellerLeads = leadsBySeller.get(metric.user_id) || [];
         const stalledLeads = sellerLeads.filter((lead) => {
+          if (['venda_fechada', 'cancelado'].includes(lead.status)) return false;
           const lastMovement = new Date(lead.ultima_interacao || lead.updated_at || lead.created_at);
           return !Number.isNaN(lastMovement.getTime())
             && Math.floor((alertReferenceDate - lastMovement) / 86400000) >= 7;
@@ -820,7 +821,7 @@ async function manageCommercialTeams(action, data, crmUser) {
         const leadsWithoutNextAction = sellerLeads.filter((lead) => {
           const followupDate = lead.proximo_followup ? new Date(lead.proximo_followup) : null;
           const hasFutureFollowup = followupDate && !Number.isNaN(followupDate.getTime()) && followupDate >= new Date(`${requestedMonth}-01T00:00:00`);
-          return !hasFutureFollowup && !scheduledLeadIds.has(lead.id) && lead.status !== 'venda_fechada';
+          return !hasFutureFollowup && !scheduledLeadIds.has(lead.id) && !['venda_fechada', 'cancelado'].includes(lead.status);
         });
         if (leadsWithoutNextAction.length) {
           appendAlert(metric.team_id, {

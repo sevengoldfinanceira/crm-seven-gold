@@ -11,7 +11,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=centered-pipeline-filters-v2" />
+    <link rel="stylesheet" href="styles.css?v=cancelled-pipeline-stage-v3" />
     <link rel="stylesheet" href="searchable-select.css?v=mr00opji" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
@@ -486,6 +486,14 @@
                 </header>
                 <div class="card-stack"></div>
               </article>
+              <article class="kanban-column" data-status="cancelado">
+                <header>
+                  <svg class="stage-icon red" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="8" y1="8" x2="16" y2="16"/><line x1="16" y1="8" x2="8" y2="16"/></svg>
+                  <strong>Cancelados</strong>
+                  <small>0</small>
+                </header>
+                <div class="card-stack"></div>
+              </article>
             </div>
           </section>
         </section>
@@ -748,6 +756,7 @@
               <option value="cliente_em_loja">Cliente em loja</option>
               <option value="proposta_enviada">Proposta enviada</option>
               <option value="venda_fechada">Venda fechada</option>
+              <option value="cancelado">Cancelados</option>
             </select>
           </label>
           <label>
@@ -871,6 +880,7 @@
             <option value="cliente_em_loja">Cliente em loja</option>
             <option value="proposta_enviada">Proposta enviada</option>
             <option value="venda_fechada">Venda fechada</option>
+            <option value="cancelado">Cancelados</option>
           </select>
         </label>
         <button type="button" class="bulk-action-btn delete" id="bulk-delete-btn">
@@ -886,7 +896,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=profile-access-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=appointment-conversion-inside-card-v15"></script>
+    <script src="script.js?v=cancelled-pipeline-stage-v19"></script>
     <script src="/searchable-select.js?v=mr00opji"></script>
     <script src="/pwa.js"></script>
   </body>
