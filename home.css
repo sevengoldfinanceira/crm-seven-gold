@@ -17882,12 +17882,10 @@ body.login-page-body .password-toggle-btn[type="button"]:hover {
   }
 }
 
-/* Menu: alcas de arrastar sempre visiveis */
+/* Menu: alcas de arrastar escondidas (drag e feito segurando o proprio item) */
 body[data-unified-admin] .company-sidebar .menu-drag-handle,
 body[data-unified-admin] .unified-admin-sidebar .menu-drag-handle {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  display: none !important;
 }
 
 body[data-unified-admin] .company-sidebar:not(.sidebar-editing) .menu-item,

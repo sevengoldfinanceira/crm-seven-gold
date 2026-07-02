@@ -639,8 +639,7 @@
       nav.addEventListener("pointerdown", (e) => {
         if (e.button !== 0) return;
         const handle = e.target.closest(".menu-drag-handle");
-        if (!handle) return;
-        const item = handle.closest(".menu-item");
+        const item = (handle ? handle.closest(".menu-item") : null) || e.target.closest(".menu-item");
         if (!item) return;
         startY = e.clientY;
         isDragging = false;
@@ -650,8 +649,9 @@
         const onPointerMove = (ev) => {
           if (!draggedItem) return;
           const dy = Math.abs(ev.clientY - startY);
-          if (!isDragging && dy > 5) {
+          if (!isDragging && dy > 8) {
             isDragging = true;
+            ev.preventDefault();
             draggedItem.classList.add("dragging");
             dragClone = draggedItem.cloneNode(true);
             dragClone.classList.add("drag-clone");
