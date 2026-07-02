@@ -3553,7 +3553,7 @@ const initLeadModalTabs = () => {
 const dashboardMetricOrderKey = "sevenGoldDashboardMetricOrder";
 
 const saveDashboardMetricOrder = (grid) => {
-  const order = Array.from(grid.querySelectorAll(".dash-metric-card"))
+  const order = Array.from(grid.querySelectorAll(".kpi-card"))
     .map((card) => card.dataset.metricKey)
     .filter(Boolean);
   try {
@@ -3568,9 +3568,9 @@ const setupDashboardMetricDrag = () => {
   if (!grid || grid.dataset.dragReady === "true") return;
   grid.dataset.dragReady = "true";
 
-  const cards = Array.from(grid.querySelectorAll(".dash-metric-card"));
+  const cards = Array.from(grid.querySelectorAll(".kpi-card"));
   cards.forEach((card) => {
-    const numberElement = card.querySelector(".dash-metric-number[id]");
+    const numberElement = card.querySelector(".kpi-number[id]");
     card.dataset.metricKey = numberElement?.id || "";
     card.draggable = true;
   });
@@ -3594,7 +3594,7 @@ const setupDashboardMetricDrag = () => {
   let draggedCard = null;
 
   grid.addEventListener("dragstart", (event) => {
-    const card = event.target.closest?.(".dash-metric-card");
+    const card = event.target.closest?.(".kpi-card");
     if (!card) return;
     draggedCard = card;
     card.classList.add("is-metric-dragging");
@@ -3606,10 +3606,10 @@ const setupDashboardMetricDrag = () => {
     if (!draggedCard) return;
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
-    const targetCard = event.target.closest?.(".dash-metric-card");
+    const targetCard = event.target.closest?.(".kpi-card");
     if (!targetCard || targetCard === draggedCard) return;
 
-    const currentCards = Array.from(grid.querySelectorAll(".dash-metric-card"));
+    const currentCards = Array.from(grid.querySelectorAll(".kpi-card"));
     const draggedIndex = currentCards.indexOf(draggedCard);
     const targetIndex = currentCards.indexOf(targetCard);
     if (draggedIndex < targetIndex) {

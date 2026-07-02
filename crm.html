@@ -180,109 +180,193 @@
             </div>
 
             <!-- Grid de Métricas -->
-            <div class="dashboard-grid commercial-summary-grid" style="display: grid; gap: 16px; margin-bottom: 36px;">
+            <div class="commercial-summary-grid">
               
               <!-- Card 1: Leads Recebidos -->
-              <article class="dash-metric-card" style="--card-border-color: #1e293b;">
-                <div class="dash-metric-icon-row">
-                  <div class="dash-metric-icon-box" style="background: #f1f5f9; color: #475569;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <article class="kpi-card" style="--kpi-color: #4f46e5; --kpi-bg: #eef2ff;">
+                <div class="kpi-watermark">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div class="kpi-content">
+                  <div class="kpi-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  </div>
+                  <span class="kpi-title">Leads Recebidos</span>
+                  <div class="kpi-value-row">
+                    <div class="kpi-value-group">
+                      <strong class="kpi-number" id="dash-received-leads">0</strong>
+                      <span class="kpi-subtext">Total de leads</span>
+                    </div>
                   </div>
                 </div>
-                <span class="dash-metric-title">Leads Recebidos</span>
-                <strong class="dash-metric-number" id="dash-received-leads">0</strong>
-                <span class="dash-metric-subtext">Total de leads</span>
               </article>
 
               <!-- Card 2: Clientes Atendidos -->
-              <article class="dash-metric-card dash-card-with-conversion" style="--card-border-color: #f97316;">
-                <div class="dash-metric-icon-row">
-                  <div class="dash-metric-icon-box" style="background: #ffedd5; color: #ea580c;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z"/></svg>
+              <article class="kpi-card" style="--kpi-color: #ea580c; --kpi-bg: #fff7ed;">
+                <div class="kpi-watermark">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z"/></svg>
+                </div>
+                <div class="kpi-content">
+                  <div class="kpi-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z"/></svg>
+                  </div>
+                  <span class="kpi-title">Clientes Atendidos</span>
+                  <div class="kpi-value-row">
+                    <div class="kpi-value-group">
+                      <strong class="kpi-number" id="dash-in-service">0</strong>
+                      <span class="kpi-subtext">Foram ou estão sendo atendidos</span>
+                    </div>
+                    <div class="kpi-divider"></div>
+                    <div class="kpi-value-group">
+                      <strong class="kpi-conversion" id="dash-service-conversion">0.0%</strong>
+                      <span class="kpi-subtext">Taxa de atendimento</span>
+                    </div>
                   </div>
                 </div>
-                <span class="dash-metric-title">Clientes Atendidos</span>
-                <strong class="dash-metric-number" id="dash-in-service" style="color: #ea580c;">0</strong>
-                <span class="dash-metric-subtext">Clientes que já foram ou estão sendo atendidos</span>
-                <strong class="dash-inline-conversion dash-service-conversion" id="dash-service-conversion" aria-label="Conversão de atendidos">0.0%</strong>
               </article>
 
               <!-- Card 3: Não Atendidos -->
-              <article class="dash-metric-card dash-card-with-conversion" style="--card-border-color: #dc2626;">
-                <div class="dash-metric-icon-row">
-                  <div class="dash-metric-icon-box" style="background: #fee2e2; color: #dc2626;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="8" x2="22" y2="13"/><line x1="22" y1="8" x2="17" y2="13"/></svg>
+              <article class="kpi-card" style="--kpi-color: #dc2626; --kpi-bg: #fef2f2;">
+                <div class="kpi-watermark">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="8" x2="22" y2="13"/><line x1="22" y1="8" x2="17" y2="13"/></svg>
+                </div>
+                <div class="kpi-content">
+                  <div class="kpi-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="8" x2="22" y2="13"/><line x1="22" y1="8" x2="17" y2="13"/></svg>
+                  </div>
+                  <span class="kpi-title">Não Atendidos</span>
+                  <div class="kpi-value-row">
+                    <div class="kpi-value-group">
+                      <strong class="kpi-number" id="dash-not-served">0</strong>
+                      <span class="kpi-subtext">Ainda sem atendimento</span>
+                    </div>
+                    <div class="kpi-divider"></div>
+                    <div class="kpi-value-group">
+                      <strong class="kpi-conversion" id="dash-not-served-conversion">0.0%</strong>
+                      <span class="kpi-subtext">Sem resposta</span>
+                    </div>
                   </div>
                 </div>
-                <span class="dash-metric-title">Não Atendidos</span>
-                <strong class="dash-metric-number" id="dash-not-served" style="color: #dc2626;">0</strong>
-                <span class="dash-metric-subtext">Recebidos ainda sem atendimento</span>
-                <strong class="dash-inline-conversion dash-not-served-conversion" id="dash-not-served-conversion" aria-label="Conversão de não atendidos">0.0%</strong>
               </article>
 
               <!-- Card 4: Agendamentos -->
-              <article class="dash-metric-card dash-card-with-conversion" style="--card-border-color: #2563eb;">
-                <div class="dash-metric-icon-row">
-                  <div class="dash-metric-icon-box" style="background: #dbeafe; color: #2563eb;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <article class="kpi-card" style="--kpi-color: #2563eb; --kpi-bg: #eff6ff;">
+                <div class="kpi-watermark">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div class="kpi-content">
+                  <div class="kpi-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  </div>
+                  <span class="kpi-title">Agendamentos</span>
+                  <div class="kpi-value-row">
+                    <div class="kpi-value-group">
+                      <strong class="kpi-number" id="dash-appointments">0</strong>
+                      <span class="kpi-subtext">Leads agendados</span>
+                    </div>
+                    <div class="kpi-divider"></div>
+                    <div class="kpi-value-group">
+                      <strong class="kpi-conversion" id="dash-appointment-conversion">0.0%</strong>
+                      <span class="kpi-subtext">Taxa de agendamento</span>
+                    </div>
                   </div>
                 </div>
-                <span class="dash-metric-title">Agendamentos</span>
-                <strong class="dash-metric-number" id="dash-appointments" style="color: #2563eb;">0</strong>
-                <span class="dash-metric-subtext">Leads agendados</span>
-                <strong class="dash-inline-conversion dash-appointment-conversion" id="dash-appointment-conversion" aria-label="Conversão de agendamentos">0.0%</strong>
               </article>
 
               <!-- Card 5: Clientes em Loja -->
-              <article class="dash-metric-card dash-card-with-conversion" style="--card-border-color: #d8a018;">
-                <div class="dash-metric-icon-row">
-                  <div class="dash-metric-icon-box" style="background: #fef9c3; color: #ca8a04;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M5 13v8h14v-8"/><path d="M9 21v-6h6v6"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/></svg>
+              <article class="kpi-card" style="--kpi-color: #ca8a04; --kpi-bg: #fefce8;">
+                <div class="kpi-watermark">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M5 13v8h14v-8"/><path d="M9 21v-6h6v6"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/></svg>
+                </div>
+                <div class="kpi-content">
+                  <div class="kpi-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M5 13v8h14v-8"/><path d="M9 21v-6h6v6"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/></svg>
+                  </div>
+                  <span class="kpi-title">Clientes em Loja</span>
+                  <div class="kpi-value-row">
+                    <div class="kpi-value-group">
+                      <strong class="kpi-number" id="dash-clients-in-store">0</strong>
+                      <span class="kpi-subtext">Foram em loja</span>
+                    </div>
+                    <div class="kpi-divider"></div>
+                    <div class="kpi-value-group">
+                      <strong class="kpi-conversion" id="dash-store-conversion">0.0%</strong>
+                      <span class="kpi-subtext">Taxa de ida à loja</span>
+                    </div>
                   </div>
                 </div>
-                <span class="dash-metric-title">Clientes em Loja</span>
-                <strong class="dash-metric-number" id="dash-clients-in-store" style="color: #ca8a04;">0</strong>
-                <span class="dash-metric-subtext">Clientes que foram em loja</span>
-                <strong class="dash-inline-conversion dash-store-conversion" id="dash-store-conversion" aria-label="Conversão de loja">0.0%</strong>
               </article>
 
               <!-- Card 6: Em Aprovação -->
-              <article class="dash-metric-card dash-card-with-conversion" style="--card-border-color: #7c3aed;">
-                <div class="dash-metric-icon-row">
-                  <div class="dash-metric-icon-box" style="background: #f3e8ff; color: #7c3aed;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+              <article class="kpi-card" style="--kpi-color: #7c3aed; --kpi-bg: #f5f3ff;">
+                <div class="kpi-watermark">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+                </div>
+                <div class="kpi-content">
+                  <div class="kpi-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+                  </div>
+                  <span class="kpi-title">Em Aprovação</span>
+                  <div class="kpi-value-row">
+                    <div class="kpi-value-group">
+                      <strong class="kpi-number" id="dash-in-approval">0</strong>
+                      <span class="kpi-subtext">Aguardando aprovação</span>
+                    </div>
+                    <div class="kpi-divider"></div>
+                    <div class="kpi-value-group">
+                      <strong class="kpi-conversion" id="dash-approval-conversion">0.0%</strong>
+                      <span class="kpi-subtext">Taxa de aprovação</span>
+                    </div>
                   </div>
                 </div>
-                <span class="dash-metric-title">Em Aprovação</span>
-                <strong class="dash-metric-number" id="dash-in-approval" style="color: #7c3aed;">0</strong>
-                <span class="dash-metric-subtext">Estão para serem aprovados</span>
-                <strong class="dash-inline-conversion dash-approval-conversion" id="dash-approval-conversion" aria-label="Conversão de aprovação">0.0%</strong>
               </article>
 
               <!-- Card 7: Não Quer -->
-              <article class="dash-metric-card dash-card-with-conversion" style="--card-border-color: #ef4444;">
-                <div class="dash-metric-icon-row">
-                  <div class="dash-metric-icon-box" style="background: #fee2e2; color: #ef4444;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+              <article class="kpi-card" style="--kpi-color: #ef4444; --kpi-bg: #fef2f2;">
+                <div class="kpi-watermark">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                </div>
+                <div class="kpi-content">
+                  <div class="kpi-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                  </div>
+                  <span class="kpi-title">Não Quer</span>
+                  <div class="kpi-value-row">
+                    <div class="kpi-value-group">
+                      <strong class="kpi-number" id="dash-not-interested">0</strong>
+                      <span class="kpi-subtext">Não querem fechar</span>
+                    </div>
+                    <div class="kpi-divider"></div>
+                    <div class="kpi-value-group">
+                      <strong class="kpi-conversion" id="dash-not-interested-conversion">0.0%</strong>
+                      <span class="kpi-subtext">Taxa de rejeição</span>
+                    </div>
                   </div>
                 </div>
-                <span class="dash-metric-title">Não Quer</span>
-                <strong class="dash-metric-number" id="dash-not-interested" style="color: #ef4444;">0</strong>
-                <span class="dash-metric-subtext">Clientes atenderam mas não querem fechar</span>
-                <strong class="dash-inline-conversion dash-not-interested-conversion" id="dash-not-interested-conversion" aria-label="Conversão de não interessados">0.0%</strong>
               </article>
 
               <!-- Card 8: Venda Fechada -->
-              <article class="dash-metric-card dash-card-with-conversion" style="--card-border-color: #10b981;">
-                <div class="dash-metric-icon-row">
-                  <div class="dash-metric-icon-box" style="background: #d1fae5; color: #10b981;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <article class="kpi-card" style="--kpi-color: #10b981; --kpi-bg: #ecfdf5;">
+                <div class="kpi-watermark">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div class="kpi-content">
+                  <div class="kpi-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  </div>
+                  <span class="kpi-title">Venda Fechada</span>
+                  <div class="kpi-value-row">
+                    <div class="kpi-value-group">
+                      <strong class="kpi-number" id="dash-closed-leads">0</strong>
+                      <span class="kpi-subtext">Clientes fechados</span>
+                    </div>
+                    <div class="kpi-divider"></div>
+                    <div class="kpi-value-group">
+                      <strong class="kpi-conversion" id="dash-closing-conversion">0.0%</strong>
+                      <span class="kpi-subtext">Taxa de conversão</span>
+                    </div>
                   </div>
                 </div>
-                <span class="dash-metric-title">Venda Fechada</span>
-                <strong class="dash-metric-number" id="dash-closed-leads" style="color: #10b981;">0</strong>
-                <span class="dash-metric-subtext">Clientes fechados</span>
-                <strong class="dash-inline-conversion dash-sale-conversion" id="dash-closing-conversion" aria-label="Conversão de fechamento">0.0%</strong>
               </article>
 
             </div>
