@@ -1633,6 +1633,8 @@ const loadDashboardMetrics = async () => {
   const elStoreConversion = document.getElementById("dash-store-conversion");
   const elApprovalConversion = document.getElementById("dash-approval-conversion");
   const elNotInterestedConversion = document.getElementById("dash-not-interested-conversion");
+  const elCancelled = document.getElementById("dash-cancelled-leads");
+  const elCancelledConversion = document.getElementById("dash-cancelled-conversion");
 
   if (!elReceived) return;
 
@@ -1729,6 +1731,7 @@ const loadDashboardMetrics = async () => {
   const storeLeadIds = new Set();
   const approvalLeadIds = new Set();
   const closedLeadIds = new Set();
+  const cancelledLeadIds = new Set();
   const historicalLeadIds = new Set(history.stageEvents.map((event) => String(event.lead_id)));
 
   periodEvents.forEach((event) => {
@@ -1739,6 +1742,7 @@ const loadDashboardMetrics = async () => {
     if (status === "cliente_em_loja") storeLeadIds.add(leadId);
     if (["em_aprovacao", "proposta_enviada"].includes(status)) approvalLeadIds.add(leadId);
     if (status === "venda_fechada") closedLeadIds.add(leadId);
+    if (status === "cancelado") cancelledLeadIds.add(leadId);
   });
 
   // Registros antigos podem não ter histórico. Neles, usa o estado atual apenas
@@ -1756,6 +1760,7 @@ const loadDashboardMetrics = async () => {
     }
     if (["em_aprovacao", "proposta_enviada"].includes(status)) approvalLeadIds.add(leadId);
     if (status === "venda_fechada") closedLeadIds.add(leadId);
+    if (status === "cancelado") cancelledLeadIds.add(leadId);
   });
 
   const scheduledLeadKeys = new Set(periodAppointments.map((appointment) => String(appointment.lead_id || appointment.id)).filter(Boolean));
@@ -1764,6 +1769,7 @@ const loadDashboardMetrics = async () => {
   const clientsInStore = storeLeadIds.size;
   const inApproval = approvalLeadIds.size;
   const closedLeads = closedLeadIds.size;
+  const cancelledLeads = cancelledLeadIds.size;
   const notInterested = leads.filter((lead) => String(lead.status || "").trim().toLowerCase() === "cliente_em_loja").length;
   const closingConversion = clientsInStore > 0 ? ((closedLeads / clientsInStore) * 100).toFixed(1) : "0.0";
   const totalAppointments = scheduledLeadKeys.size;
@@ -1781,6 +1787,7 @@ const loadDashboardMetrics = async () => {
   elClosed.textContent = closedLeads;
   elClosingConversion.textContent = `${closingConversion}%`;
   elAppointmentConversion.textContent = `${appointmentConversion}%`;
+  if (elCancelled) elCancelled.textContent = cancelledLeads;
 
   if (receivedLeads > 0) {
     if (elServiceConversion) elServiceConversion.textContent = `${((inService / receivedLeads) * 100).toFixed(1)}%`;
@@ -1788,6 +1795,7 @@ const loadDashboardMetrics = async () => {
     if (elStoreConversion) elStoreConversion.textContent = `${totalAppointments > 0 ? ((clientsInStore / totalAppointments) * 100).toFixed(1) : "0.0"}%`;
     if (elApprovalConversion) elApprovalConversion.textContent = `${clientsInStore > 0 ? ((inApproval / clientsInStore) * 100).toFixed(1) : "0.0"}%`;
     if (elNotInterestedConversion) elNotInterestedConversion.textContent = `${clientsInStore > 0 ? ((notInterested / clientsInStore) * 100).toFixed(1) : "0.0"}%`;
+    if (elCancelledConversion) elCancelledConversion.textContent = `${receivedLeads > 0 ? ((cancelledLeads / receivedLeads) * 100).toFixed(1) : "0.0"}%`;
   }
 
   // 4. Alertas de Metas
