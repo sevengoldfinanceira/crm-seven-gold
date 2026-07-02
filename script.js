@@ -2457,10 +2457,36 @@ appointmentForm?.addEventListener("submit", async (event) => {
   };
 
   const appointmentId = String(formData.get("id") || "").trim();
-  const query = appointmentId
-    ? client.from("appointments").update(payload).eq("id", appointmentId)
-    : client.from("appointments").insert(payload);
-  const { data, error } = await query.select().single();
+  let data = null;
+  let error = null;
+
+  if (appointmentId) {
+    const result = await client.from("appointments").update(payload).eq("id", appointmentId).select().single();
+    data = result.data;
+    error = result.error;
+  } else {
+    try {
+      const { data: sessionData } = await client.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) throw new Error("Sessão expirada. Entre novamente.");
+
+      const response = await fetch("/api/appointments/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result.ok !== true) {
+        throw new Error(result.error || "Não foi possível salvar o agendamento.");
+      }
+      data = result.appointment;
+    } catch (requestError) {
+      error = requestError;
+    }
+  }
 
   submitButton.disabled = false;
   submitButton.textContent = appointmentId ? "Salvar alteracoes" : "Confirmar agendamento";
