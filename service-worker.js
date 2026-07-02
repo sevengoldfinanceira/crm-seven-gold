@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-centered-dashboard-filters-v8";
+const CACHE_VERSION = "seven-gold-not-served-metric-v9";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",

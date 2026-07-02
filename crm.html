@@ -206,7 +206,19 @@
                 <span class="dash-metric-subtext">Passaram por Primeiro contato</span>
               </article>
 
-              <!-- Card 3: Agendamentos -->
+              <!-- Card 3: Não Atendidos -->
+              <article class="dash-metric-card" style="--card-border-color: #dc2626;">
+                <div class="dash-metric-icon-row">
+                  <div class="dash-metric-icon-box" style="background: #fee2e2; color: #dc2626;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="8" x2="22" y2="13"/><line x1="22" y1="8" x2="17" y2="13"/></svg>
+                  </div>
+                </div>
+                <span class="dash-metric-title">Não Atendidos</span>
+                <strong class="dash-metric-number" id="dash-not-served" style="color: #dc2626;">0</strong>
+                <span class="dash-metric-subtext">Recebidos ainda sem atendimento</span>
+              </article>
+
+              <!-- Card 4: Agendamentos -->
               <article class="dash-metric-card" style="--card-border-color: #2563eb;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #dbeafe; color: #2563eb;">
@@ -218,7 +230,7 @@
                 <span class="dash-metric-subtext">Leads agendados</span>
               </article>
 
-              <!-- Card 4: Clientes em Loja -->
+              <!-- Card 5: Clientes em Loja -->
               <article class="dash-metric-card" style="--card-border-color: #d8a018;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #fef9c3; color: #ca8a04;">
@@ -230,7 +242,7 @@
                 <span class="dash-metric-subtext">Passaram por Cliente em loja</span>
               </article>
 
-              <!-- Card 5: Em Aprovação -->
+              <!-- Card 6: Em Aprovação -->
               <article class="dash-metric-card" style="--card-border-color: #7c3aed;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #f3e8ff; color: #7c3aed;">
@@ -242,7 +254,7 @@
                 <span class="dash-metric-subtext">Passaram por Em aprovação</span>
               </article>
 
-              <!-- Card 6: Não Quer -->
+              <!-- Card 7: Não Quer -->
               <article class="dash-metric-card" style="--card-border-color: #ef4444;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #fee2e2; color: #ef4444;">
@@ -254,7 +266,7 @@
                 <span class="dash-metric-subtext">Parados em Cliente em loja</span>
               </article>
 
-              <!-- Card 7: Venda Fechada -->
+              <!-- Card 8: Venda Fechada -->
               <article class="dash-metric-card" style="--card-border-color: #10b981;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #d1fae5; color: #10b981;">
@@ -266,7 +278,7 @@
                 <span class="dash-metric-subtext">Clientes fechados</span>
               </article>
 
-              <!-- Card 8: Conversão de Fechamento -->
+              <!-- Card 9: Conversão de Fechamento -->
               <article class="dash-metric-card" style="--card-border-color: #f2b705;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #fef3c7; color: #ca8a04;">
@@ -278,7 +290,7 @@
                 <span class="dash-metric-subtext">Loja para fechamento</span>
               </article>
 
-              <!-- Card 9: Conversão de Agendamentos -->
+              <!-- Card 10: Conversão de Agendamentos -->
               <article class="dash-metric-card" style="--card-border-color: #0891b2;">
                 <div class="dash-metric-icon-row">
                   <div class="dash-metric-icon-box" style="background: #cffafe; color: #0891b2;">
@@ -897,7 +909,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=profile-access-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=centered-dashboard-filters-v8"></script>
+    <script src="script.js?v=not-served-metric-v9"></script>
     <script src="/searchable-select.js?v=mr00opji"></script>
     <script src="/pwa.js"></script>
   </body>

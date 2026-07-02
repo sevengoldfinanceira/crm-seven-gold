@@ -1612,6 +1612,7 @@ const loadDashboardMetrics = async () => {
 
   const elReceived = document.getElementById("dash-received-leads");
   const elInService = document.getElementById("dash-in-service");
+  const elNotServed = document.getElementById("dash-not-served");
   const elAppointments = document.getElementById("dash-appointments");
   const elClientsInStore = document.getElementById("dash-clients-in-store");
   const elInApproval = document.getElementById("dash-in-approval");
@@ -1746,6 +1747,7 @@ const loadDashboardMetrics = async () => {
 
   const scheduledLeadKeys = new Set(periodAppointments.map((appointment) => String(appointment.lead_id || appointment.id)).filter(Boolean));
   const inService = serviceLeadIds.size;
+  const notServed = Math.max(receivedLeads - inService, 0);
   const clientsInStore = storeLeadIds.size;
   const inApproval = approvalLeadIds.size;
   const closedLeads = closedLeadIds.size;
@@ -1758,6 +1760,7 @@ const loadDashboardMetrics = async () => {
   // Renderizar no HTML
   elReceived.textContent = receivedLeads;
   elInService.textContent = inService;
+  elNotServed.textContent = notServed;
   elAppointments.textContent = totalAppointments;
   elClientsInStore.textContent = clientsInStore;
   elInApproval.textContent = inApproval;
