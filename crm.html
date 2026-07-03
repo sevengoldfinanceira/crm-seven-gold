@@ -415,6 +415,64 @@
 
             </div>
 
+            <!-- Análise de Desempenho -->
+            <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+              <h2 style="font-size: 1.1rem; font-weight: 800; color: #101233; margin: 0;">Análise de Desempenho</h2>
+            </div>
+
+            <div class="dash-charts-grid">
+
+              <!-- Funil Comercial -->
+              <article class="dash-chart-card">
+                <div class="dash-chart-header">
+                  <div class="dash-chart-icon-box" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L2 22"/><path d="M16 2l6 6"/><path d="M12 8l6 6"/><path d="M8 14l6 6"/></svg>
+                  </div>
+                  <div>
+                    <h3 class="dash-chart-title">Funil Comercial</h3>
+                    <span class="dash-chart-subtitle">Conversão por etapa do funil</span>
+                  </div>
+                </div>
+                <div id="dash-funnel-chart" class="dash-chart-body">
+                  <div class="skeleton-shimmer" style="height: 100%; border-radius: 8px;"></div>
+                </div>
+              </article>
+
+              <!-- Distribuição dos Status -->
+              <article class="dash-chart-card">
+                <div class="dash-chart-header">
+                  <div class="dash-chart-icon-box" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                  </div>
+                  <div>
+                    <h3 class="dash-chart-title">Distribuição dos Status</h3>
+                    <span class="dash-chart-subtitle">Leads por etapa atual</span>
+                  </div>
+                </div>
+                <div id="dash-status-chart" class="dash-chart-body">
+                  <div class="skeleton-shimmer" style="height: 100%; border-radius: 8px;"></div>
+                </div>
+              </article>
+
+              <!-- Conversão por Etapa -->
+              <article class="dash-chart-card">
+                <div class="dash-chart-header">
+                  <div class="dash-chart-icon-box" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                  </div>
+                  <div>
+                    <h3 class="dash-chart-title">Conversão por Etapa</h3>
+                    <span class="dash-chart-subtitle">Taxa de progressão entre etapas</span>
+                  </div>
+                </div>
+                <div id="dash-conversion-chart" class="dash-chart-body">
+                  <div class="skeleton-shimmer" style="height: 100%; border-radius: 8px;"></div>
+                </div>
+              </article>
+
+            </div>
+
             <template id="removed-dashboard-alerts">
             <!-- Seção Alertas importantes -->
             <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">

@@ -2074,6 +2074,164 @@ const loadDashboardMetrics = async () => {
       });
     }
   }
+
+  renderDashboardCharts({ receivedLeads, inService, totalAppointments, clientsInStore, closedLeads, leads });
+};
+
+const renderDashboardCharts = ({ receivedLeads, inService, totalAppointments, clientsInStore, closedLeads, leads }) => {
+  const funnelEl = document.getElementById("dash-funnel-chart");
+  const statusEl = document.getElementById("dash-status-chart");
+  const conversionEl = document.getElementById("dash-conversion-chart");
+  if (!funnelEl && !statusEl && !conversionEl) return;
+
+  const statusCounts = {};
+  leads.forEach((lead) => {
+    const s = String(lead.status || "lead_recebido").trim().toLowerCase();
+    statusCounts[s] = (statusCounts[s] || 0) + 1;
+  });
+
+  const statusLabels = {
+    lead_recebido: "Lead Recebido",
+    primeiro_contato: "Primeiro Contato",
+    agendamento: "Agendamento",
+    cliente_em_loja: "Cliente em Loja",
+    proposta_enviada: "Proposta Enviada",
+    venda_fechada: "Venda Fechada",
+    cancelado: "Cancelado",
+    nao_quer: "Não Quer",
+    "não_quer": "Não Quer",
+    nao_tem_interesse: "Sem Interesse",
+    perdido: "Perdido",
+    em_aprovacao: "Em Aprovação",
+  };
+
+  const statusColors = {
+    lead_recebido: "#6366f1",
+    primeiro_contato: "#ea580c",
+    agendamento: "#2563eb",
+    cliente_em_loja: "#ca8a04",
+    proposta_enviada: "#7c3aed",
+    venda_fechada: "#10b981",
+    cancelado: "#ef4444",
+    nao_quer: "#ef4444",
+    "não_quer": "#ef4444",
+    nao_tem_interesse: "#f97316",
+    perdido: "#dc2626",
+    em_aprovacao: "#8b5cf6",
+  };
+
+  if (funnelEl) {
+    const steps = [
+      { label: "Recebidos", value: receivedLeads, color: "#6366f1" },
+      { label: "Atendidos", value: inService, color: "#ea580c" },
+      { label: "Agendamentos", value: totalAppointments, color: "#2563eb" },
+      { label: "Em Loja", value: clientsInStore, color: "#ca8a04" },
+      { label: "Fechados", value: closedLeads, color: "#10b981" },
+    ];
+    const maxVal = Math.max(receivedLeads, 1);
+    let funnelHTML = '<div class="dash-funnel">';
+    steps.forEach((step) => {
+      const pct = ((step.value / maxVal) * 100).toFixed(0);
+      const barWidth = Math.max((step.value / maxVal) * 100, 8);
+      funnelHTML += `
+        <div class="dash-funnel-step">
+          <div class="dash-funnel-bar-wrap">
+            <div class="dash-funnel-bar" style="width: ${barWidth}%; background: ${step.color};">
+              <span class="dash-funnel-bar-label">${step.label}</span>
+            </div>
+          </div>
+          <span class="dash-funnel-value">${step.value}</span>
+          <span class="dash-funnel-pct">${pct}%</span>
+        </div>`;
+    });
+    funnelHTML += "</div>";
+    funnelEl.innerHTML = funnelHTML;
+  }
+
+  if (statusEl) {
+    const excludeStatuses = new Set(["nao_quer", "não_quer", "nao_tem_interesse", "perdido"]);
+    const pieData = [];
+    Object.entries(statusCounts).forEach(([key, val]) => {
+      if (excludeStatuses.has(key)) return;
+      if (val <= 0) return;
+      pieData.push({
+        key,
+        label: statusLabels[key] || key,
+        value: val,
+        color: statusColors[key] || "#94a3b8",
+      });
+    });
+    pieData.sort((a, b) => b.value - a.value);
+
+    const total = pieData.reduce((sum, d) => sum + d.value, 0) || 1;
+    const cx = 80, cy = 80, r = 64, inner = 40;
+    let cumAngle = -Math.PI / 2;
+    let paths = "";
+
+    pieData.forEach((d) => {
+      const angle = (d.value / total) * 2 * Math.PI;
+      const x1 = cx + r * Math.cos(cumAngle);
+      const y1 = cy + r * Math.sin(cumAngle);
+      const x2 = cx + r * Math.cos(cumAngle + angle);
+      const y2 = cy + r * Math.sin(cumAngle + angle);
+      const ix1 = cx + inner * Math.cos(cumAngle);
+      const iy1 = cy + inner * Math.sin(cumAngle);
+      const ix2 = cx + inner * Math.cos(cumAngle + angle);
+      const iy2 = cy + inner * Math.sin(cumAngle + angle);
+      const large = angle > Math.PI ? 1 : 0;
+
+      paths += `<path d="M${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} L${ix2},${iy2} A${inner},${inner} 0 ${large} 0 ${ix1},${iy1} Z" fill="${d.color}" opacity="0.85"/>`;
+      cumAngle += angle;
+    });
+
+    let legendHTML = "";
+    pieData.forEach((d) => {
+      const pct = ((d.value / total) * 100).toFixed(1);
+      legendHTML += `
+        <div class="dash-donut-legend-item">
+          <span class="dash-donut-legend-dot" style="background: ${d.color};"></span>
+          <span class="dash-donut-legend-label">${d.label}</span>
+          <span class="dash-donut-legend-value">${d.value}</span>
+          <span class="dash-donut-legend-pct">${pct}%</span>
+        </div>`;
+    });
+
+    statusEl.innerHTML = `
+      <div class="dash-donut-wrapper">
+        <svg class="dash-donut-svg" viewBox="0 0 160 160">${paths}
+          <text x="${cx}" y="${cy - 4}" text-anchor="middle" font-size="18" font-weight="800" fill="#101233">${total}</text>
+          <text x="${cx}" y="${cy + 12}" text-anchor="middle" font-size="10" font-weight="600" fill="#667085">leads</text>
+        </svg>
+        <div class="dash-donut-legend">${legendHTML}</div>
+      </div>`;
+  }
+
+  if (conversionEl) {
+    const convSteps = [
+      { label: "Atendimento", from: receivedLeads, to: inService },
+      { label: "Agendamento", from: inService, to: totalAppointments },
+      { label: "Em Loja", from: totalAppointments, to: clientsInStore },
+      { label: "Fechamento", from: clientsInStore, to: closedLeads },
+    ];
+    const barColors = ["#ea580c", "#2563eb", "#ca8a04", "#10b981"];
+    let barsHTML = '<div class="dash-hbars">';
+    convSteps.forEach((step, i) => {
+      const pct = step.from > 0 ? ((step.to / step.from) * 100) : 0;
+      const pctText = pct.toFixed(1) + "%";
+      barsHTML += `
+        <div class="dash-hbar-row">
+          <span class="dash-hbar-label">${step.label}</span>
+          <div class="dash-hbar-track">
+            <div class="dash-hbar-fill" style="width: ${Math.min(pct, 100)}%; background: ${barColors[i]};">
+              ${pct > 15 ? `<span class="dash-hbar-count">${step.to}</span>` : ""}
+            </div>
+          </div>
+          <span class="dash-hbar-pct">${pctText}</span>
+        </div>`;
+    });
+    barsHTML += "</div>";
+    conversionEl.innerHTML = barsHTML;
+  }
 };
 
 const loadCrmUsersForSelect = async (selectElement, currentAssignedEmail) => {
