@@ -3441,13 +3441,13 @@ body.theme-dark .dash-calendar-today::before {
 }
 
 .tab-content[data-tab="pipeline"] .pipeline-filter-field--team {
-  flex: 0 0 170px;
-  min-width: 170px;
+  flex: 0 0 210px;
+  min-width: 210px;
 }
 
 .tab-content[data-tab="pipeline"] .pipeline-filter-field--responsible {
-  flex: 0 0 190px;
-  min-width: 190px;
+  flex: 0 0 234px;
+  min-width: 234px;
 }
 
 .tab-content[data-tab="pipeline"] .pipeline-filter-label {
