@@ -2874,9 +2874,23 @@ body.theme-dark .kpi-subtext {
   flex: 0 1 auto;
   width: auto;
   margin: 0;
+  gap: 4px;
   border-color: #fde68a;
   background: #fffbeb;
   color: #b45309;
+}
+
+.lead-warning-spinner {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  animation: lead-warning-spin 1.1s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes lead-warning-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .lead-trash-origin-badge {

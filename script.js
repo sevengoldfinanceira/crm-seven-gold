@@ -2958,10 +2958,11 @@ const createLeadCard = (lead) => {
 
   const warningBadge = document.createElement("div");
   warningBadge.className = "lead-warning-badge";
+  const spinnerIcon = '<svg class="lead-warning-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 3v4"/><path d="M12 3h4"/></svg>';
   if (diffDays === 0) {
-    warningBadge.textContent = "⚠️ Criado hoje";
+    warningBadge.innerHTML = `${spinnerIcon}<span>Criado hoje</span>`;
   } else {
-    warningBadge.textContent = `⚠️ ${diffDays} ${diffDays === 1 ? 'dia' : 'dias'} sem contato`;
+    warningBadge.innerHTML = `${spinnerIcon}<span>${diffDays} ${diffDays === 1 ? 'dia' : 'dias'} sem contato</span>`;
   }
 
   const badgeRow = document.createElement("div");
