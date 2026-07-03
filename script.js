@@ -2199,6 +2199,7 @@ const createAppointmentCard = (appointment) => {
   card.className = "appointment-card";
   card.tabIndex = 0;
   card.dataset.appointmentId = appointment.id;
+  if (appointment.lead_id) card.dataset.leadId = appointment.lead_id;
 
   const header = document.createElement("div");
   header.className = "appointment-card-header";
@@ -2217,13 +2218,20 @@ const createAppointmentCard = (appointment) => {
   phone.textContent = `Telefone - ${customerPhone}`;
   card.append(header, seller, phone);
 
-  const open = (event) => {
+  const openLead = async (event) => {
     event.stopPropagation();
-    openAppointmentModal({ appointment });
+    const leadId = appointment.lead_id || card.dataset.leadId;
+    if (!leadId) return;
+    const lead = await fetchLeadForAppointment(leadId, {
+      name: appointment.nome_cliente,
+      telefone: appointment.telefone_cliente,
+      assigned_to_name: appointment.vendedor_nome || appointment.nome_usuario,
+    });
+    if (lead) await openEditLeadModal(lead);
   };
-  card.addEventListener("click", open);
+  card.addEventListener("click", openLead);
   card.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") open(event);
+    if (event.key === "Enter" || event.key === " ") openLead(event);
   });
   return card;
 };
@@ -2330,7 +2338,15 @@ const renderCalendar = () => {
           seller.textContent = item.nome_usuario || "Vendedor nao informado";
           info.append(name, seller);
           button.append(time, info);
-          button.addEventListener("click", () => openAppointmentModal({ appointment: item }));
+          button.addEventListener("click", async () => {
+            if (!item.lead_id) return;
+            const lead = await fetchLeadForAppointment(item.lead_id, {
+              name: item.nome_cliente,
+              telefone: item.telefone_cliente,
+              assigned_to_name: item.vendedor_nome || item.nome_usuario,
+            });
+            if (lead) await openEditLeadModal(lead);
+          });
           list.append(button);
         });
       }
