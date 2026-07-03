@@ -3271,7 +3271,7 @@ body.theme-dark .dash-filter-control .sg-search-select.is-open .sg-search-select
 /* Pipeline calendar picker */
 .pipeline-calendar-picker {
   display: flex;
-  align-items: flex-end;
+  align-items: stretch;
   justify-content: center;
   gap: 10px;
   flex: 0 1 620px;
@@ -3302,6 +3302,22 @@ body.theme-dark .dash-filter-control .sg-search-select.is-open .sg-search-select
 
 .pipeline-calendar-date-picker .dash-calendar-nav {
   width: 100%;
+}
+
+.tab-content[data-tab="pipeline"] .pipeline-calendar-picker > .pipeline-filter-field,
+.tab-content[data-tab="pipeline"] .pipeline-calendar-date-picker {
+  display: grid !important;
+  grid-template-rows: auto 56px;
+  align-items: stretch;
+  gap: 7px;
+}
+
+.pipeline-calendar-picker .pipeline-filter-control,
+.pipeline-calendar-date-picker .dash-calendar-nav {
+  height: 56px;
+  min-height: 56px;
+  box-sizing: border-box;
+  margin: 0;
 }
 
 @media (max-width: 620px) {
