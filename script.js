@@ -1710,6 +1710,10 @@ const loadDashboardMetrics = async () => {
     el.style.display = selectedDashPeriod === "day" ? "none" : "";
   });
 
+  document.querySelectorAll(".kpi-day-hide-store").forEach((el) => {
+    el.style.display = selectedDashPeriod === "day" ? "none" : "";
+  });
+
   if (!selectedDashPeriodValue) {
     selectedDashPeriodValue = periodInputs[selectedDashPeriod]?.value || getCurrentDashboardPeriodValue(selectedDashPeriod);
   }
