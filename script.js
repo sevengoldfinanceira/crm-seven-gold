@@ -918,28 +918,94 @@ const initPipelineTeamFilter = async (currentCrmUser) => {
 };
 
 const initPipelineCalendarPicker = () => {
-  const input = document.getElementById("pipeline-period-day-input");
+  const periodSelect = document.getElementById("pipeline-period-type-select");
   const todayBtn = document.querySelector("[data-pipeline-calendar-today]");
   const prevBtn = document.querySelector("[data-pipeline-calendar-prev]");
   const nextBtn = document.querySelector("[data-pipeline-calendar-next]");
-  if (!input) return;
+  const inputs = {
+    day: document.getElementById("pipeline-period-day-input"),
+    week: document.getElementById("pipeline-period-week-input"),
+    month: document.getElementById("pipeline-period-month-input"),
+  };
+  if (!periodSelect || !inputs.day) return;
 
-  const now = new Date();
+  let pipelinePeriod = "month";
+
   const pad = (v) => String(v).padStart(2, "0");
-  input.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+  const getCurrentValue = (type) => {
+    const now = new Date();
+    if (type === "day") return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    if (type === "week") {
+      const utcDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+      const dayNumber = utcDate.getUTCDay() || 7;
+      utcDate.setUTCDate(utcDate.getUTCDate() + 4 - dayNumber);
+      const yearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+      const weekNumber = Math.ceil((((utcDate - yearStart) / 86400000) + 1) / 7);
+      return `${utcDate.getUTCFullYear()}-W${pad(weekNumber)}`;
+    }
+    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
+  };
+
+  const getActiveInput = () => inputs[pipelinePeriod];
+
+  const hideAllInputs = () => {
+    Object.values(inputs).forEach((inp) => { if (inp) inp.hidden = true; });
+  };
+
+  const showActiveInput = () => {
+    hideAllInputs();
+    const active = getActiveInput();
+    if (active) active.hidden = false;
+  };
 
   const navigate = (dir) => {
-    const d = new Date(`${input.value}T12:00:00`);
-    d.setDate(d.getDate() + dir);
-    input.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    const input = getActiveInput();
+    if (!input || !input.value) return;
+    if (pipelinePeriod === "day") {
+      const d = new Date(`${input.value}T12:00:00`);
+      d.setDate(d.getDate() + dir);
+      input.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    } else if (pipelinePeriod === "week") {
+      const match = /^(\d{4})-W(\d{2})$/.exec(input.value);
+      if (!match) return;
+      const d = new Date(Number(match[1]), 0, 1 + (Number(match[2]) - 1) * 7);
+      d.setDate(d.getDate() + (7 * dir));
+      const utcDate = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dayNum = utcDate.getUTCDay() || 7;
+      utcDate.setUTCDate(utcDate.getUTCDate() + 4 - dayNum);
+      const ys = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+      const wn = Math.ceil((((utcDate - ys) / 86400000) + 1) / 7);
+      input.value = `${utcDate.getUTCFullYear()}-W${pad(wn)}`;
+    } else {
+      const [year, month] = input.value.split("-").map(Number);
+      const d = new Date(year, month - 1, 1);
+      d.setMonth(d.getMonth() + dir);
+      input.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
+    }
     input.dispatchEvent(new Event("change"));
   };
 
   const goToday = () => {
-    const d = new Date();
-    input.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    const input = getActiveInput();
+    if (!input) return;
+    input.value = getCurrentValue(pipelinePeriod);
     input.dispatchEvent(new Event("change"));
   };
+
+  Object.entries(inputs).forEach(([type, input]) => {
+    if (!input) return;
+    input.value = getCurrentValue(type);
+  });
+
+  showActiveInput();
+
+  periodSelect.addEventListener("change", () => {
+    pipelinePeriod = periodSelect.value || "month";
+    const active = getActiveInput();
+    if (active && !active.value) active.value = getCurrentValue(pipelinePeriod);
+    showActiveInput();
+  });
 
   prevBtn?.addEventListener("click", () => navigate(-1));
   nextBtn?.addEventListener("click", () => navigate(1));

@@ -3269,10 +3269,19 @@ body.theme-dark .dash-filter-control .sg-search-select.is-open .sg-search-select
 /* Pipeline calendar picker */
 .pipeline-calendar-picker {
   display: flex;
-  flex-direction: column;
-  gap: 7px;
-  flex: 0.8;
-  min-width: 280px;
+  align-items: flex-end;
+  gap: 10px;
+  flex: 1.4;
+  min-width: 0;
+}
+
+.pipeline-calendar-picker .pipeline-filter-field {
+  flex: 0 0 130px;
+}
+
+.pipeline-calendar-picker .dash-calendar-nav {
+  flex: 1;
+  min-width: 0;
 }
 
 /* Dark theme — dashboard calendar picker */
