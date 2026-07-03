@@ -2011,38 +2011,36 @@ body.theme-dark .crm-profile-card input[readonly] { background: #151019; color: 
 .calendar-status[data-type="error"] { color: #c93636; }
 .calendar-scroll { max-height: calc(100vh - 205px); overflow: auto; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); }
 .calendar-grid { display: grid; grid-template-columns: 74px repeat(7, minmax(150px, 1fr)); min-width: 1124px; }
-.calendar-corner, .calendar-day-header { position: sticky; top: 0; z-index: 5; min-height: 50px; border-bottom: 1px solid var(--line); background: var(--surface); }
-.calendar-corner { left: 0; z-index: 6; display: grid; place-items: center; color: var(--muted); font-size: .72rem; font-weight: 800; }
-.calendar-day-header { display: flex; align-items: center; justify-content: center; gap: 0; border-left: 1px solid var(--line); padding: 8px; border-radius: 0; background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%); border: 1px solid rgba(15,23,42,0.06); border-radius: 28px; margin: 4px; box-shadow: 0 2px 8px rgba(15,23,42,0.04); position: relative; overflow: hidden; min-height: 90px; }
-.calendar-day-header strong { display: none; }
-.calendar-day-header span { display: none; }
-.day-card-left { display: flex; align-items: center; gap: 12px; flex: 1; z-index: 1; }
-.day-card-icon-box { width: 52px; height: 52px; border-radius: 16px; background: rgba(109,74,255,0.08); display: grid; place-items: center; flex-shrink: 0; }
-.day-card-info { display: flex; flex-direction: column; gap: 1px; }
-.day-card-count { font-size: 2rem; font-weight: 800; color: #6D4AFF; line-height: 1.1; }
-.day-card-weekday { font-size: 0.9rem; font-weight: 800; color: #0F172A; line-height: 1.2; }
-.day-card-label { font-size: 0.58rem; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.3; }
-.day-card-divider { width: 1px; height: 50px; background: rgba(15,23,42,0.1); flex-shrink: 0; margin: 0 14px; z-index: 1; }
+.calendar-corner { position: sticky; top: 0; left: 0; z-index: 6; min-height: 50px; border-bottom: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; color: var(--muted); font-size: .72rem; font-weight: 800; }
+.calendar-day-header { position: sticky; top: 0; z-index: 5; min-height: 100px; border-radius: 28px; margin: 6px; padding: 14px 16px; background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%); border: 1px solid rgba(15,23,42,0.06); box-shadow: 0 18px 45px rgba(15,23,42,0.08); position: relative; overflow: hidden; display: flex; align-items: center; gap: 0; }
+.calendar-day-header strong, .calendar-day-header span { display: none; }
+.day-card-left { display: flex; align-items: center; gap: 14px; flex: 1; z-index: 1; }
+.day-card-icon-box { width: 56px; height: 56px; border-radius: 18px; background: rgba(109,74,255,0.1); display: grid; place-items: center; flex-shrink: 0; }
+.day-card-info { display: flex; flex-direction: column; gap: 2px; }
+.day-card-count { font-size: 2.2rem; font-weight: 800; color: #6D4AFF; line-height: 1; }
+.day-card-weekday { font-size: 1rem; font-weight: 800; color: #0F172A; line-height: 1.2; }
+.day-card-label { font-size: 0.6rem; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.3; }
+.day-card-divider { width: 1.5px; height: 56px; background: rgba(15,23,42,0.1); flex-shrink: 0; margin: 0 16px; z-index: 1; }
 .day-card-right { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; flex-shrink: 0; z-index: 1; }
-.day-card-data-label { display: flex; align-items: center; gap: 4px; }
-.day-card-data-label span { font-size: 0.65rem; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.04em; }
-.day-card-date { font-size: 1.8rem; font-weight: 800; color: #0F172A; line-height: 1; }
-.day-card-watermark { position: absolute; right: -8px; top: 50%; transform: translateY(-50%); opacity: 0.05; color: #6D4AFF; pointer-events: none; z-index: 0; }
-.calendar-day-header.is-today { background: linear-gradient(135deg, #fffdf5 0%, #fff9e9 100%); border-color: rgba(216,160,24,0.2); box-shadow: 0 2px 8px rgba(216,160,24,0.08); }
+.day-card-data-label { display: flex; align-items: center; gap: 5px; }
+.day-card-data-label span { font-size: 0.68rem; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; }
+.day-card-date { font-size: 2rem; font-weight: 800; color: #0F172A; line-height: 1; }
+.day-card-watermark { position: absolute; right: -4px; top: 50%; transform: translateY(-50%); opacity: 0.06; color: #6D4AFF; pointer-events: none; z-index: 0; }
+.calendar-day-header.is-today { background: linear-gradient(135deg, #fffdf5 0%, #fff9e9 100%); border-color: rgba(216,160,24,0.25); box-shadow: 0 18px 45px rgba(216,160,24,0.1); }
 .calendar-day-header.is-today .day-card-count { color: #d8a018; }
-.calendar-day-header.is-today .day-card-icon-box { background: rgba(216,160,24,0.1); }
+.calendar-day-header.is-today .day-card-icon-box { background: rgba(216,160,24,0.12); }
 .calendar-day-header.is-today .day-card-icon-box svg { stroke: #d8a018; }
 .calendar-day-header.is-today .day-card-data-label svg { stroke: #d8a018; }
 .calendar-day-header.is-today .day-card-watermark { color: #d8a018; }
-.calendar-day-header.is-saturday { background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%); border-color: rgba(37,99,235,0.12); }
+.calendar-day-header.is-saturday { background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%); border-color: rgba(37,99,235,0.15); box-shadow: 0 18px 45px rgba(37,99,235,0.08); }
 .calendar-day-header.is-saturday .day-card-count { color: #2563eb; }
-.calendar-day-header.is-saturday .day-card-icon-box { background: rgba(37,99,235,0.08); }
+.calendar-day-header.is-saturday .day-card-icon-box { background: rgba(37,99,235,0.1); }
 .calendar-day-header.is-saturday .day-card-icon-box svg { stroke: #2563eb; }
 .calendar-day-header.is-saturday .day-card-data-label svg { stroke: #2563eb; }
 .calendar-day-header.is-saturday .day-card-watermark { color: #2563eb; }
-.calendar-day-header.is-sunday { background: linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%); border-color: rgba(225,29,72,0.12); }
+.calendar-day-header.is-sunday { background: linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%); border-color: rgba(225,29,72,0.15); box-shadow: 0 18px 45px rgba(225,29,72,0.08); }
 .calendar-day-header.is-sunday .day-card-count { color: #e11d48; }
-.calendar-day-header.is-sunday .day-card-icon-box { background: rgba(225,29,72,0.08); }
+.calendar-day-header.is-sunday .day-card-icon-box { background: rgba(225,29,72,0.1); }
 .calendar-day-header.is-sunday .day-card-icon-box svg { stroke: #e11d48; }
 .calendar-day-header.is-sunday .day-card-data-label svg { stroke: #e11d48; }
 .calendar-day-header.is-sunday .day-card-watermark { color: #e11d48; }
@@ -2079,8 +2077,8 @@ body.theme-dark .crm-profile-card input[readonly] { background: #151019; color: 
 .calendar-mobile-appointment { display: grid; grid-template-columns: 54px minmax(0,1fr); gap: 10px; align-items: center; width: 100%; padding: 10px; border: 0; border-radius: 10px; background: var(--surface-soft); color: var(--ink); text-align: left; }
 .calendar-mobile-appointment time { color: var(--gold-dark); font-weight: 800; }
 .calendar-mobile-appointment strong, .calendar-mobile-appointment span { display: block; }
-body.theme-dark .calendar-scroll, body.theme-dark .calendar-corner, body.theme-dark .calendar-day-header, body.theme-dark .calendar-time-label, body.theme-dark .calendar-slot, body.theme-dark .appointment-modal form, body.theme-dark .calendar-mobile-day, body.theme-dark .calendar-mobile-appointment { background: #17121d; color: #f7f5ed; border-color: rgba(255,255,255,.09); }
-body.theme-dark .calendar-slot:hover, body.theme-dark .calendar-slot:focus-visible, body.theme-dark .calendar-slot.is-today, body.theme-dark .calendar-day-header.is-today { background: #211829; }
+body.theme-dark .calendar-scroll, body.theme-dark .calendar-corner, body.theme-dark .calendar-time-label, body.theme-dark .calendar-slot, body.theme-dark .appointment-modal form, body.theme-dark .calendar-mobile-day, body.theme-dark .calendar-mobile-appointment { background: #17121d; color: #f7f5ed; border-color: rgba(255,255,255,.09); }
+body.theme-dark .calendar-slot:hover, body.theme-dark .calendar-slot:focus-visible, body.theme-dark .calendar-slot.is-today { background: #211829; }
 body.theme-dark .appointment-card { background: #29223e; color: #fff; border-color: rgba(156,91,240,.3); }
 body.theme-dark .appointment-card span, body.theme-dark .calendar-week-label, body.theme-dark .calendar-status { color: #a9a3ae; }
 body.theme-dark .appointment-card .appointment-card-seller { color: #fff; }
@@ -2408,33 +2406,33 @@ body.theme-dark .calendar-today-button {
 }
 body.theme-dark .calendar-responsible-filter select { border-color: rgba(255,255,255,.09); color: #fff; }
 body.theme-dark .calendar-scroll { border-color: rgba(255,255,255,.09); background: #17121d; box-shadow: 0 24px 65px rgba(0,0,0,.3); }
-body.theme-dark .calendar-corner,
-body.theme-dark .calendar-day-header { background: linear-gradient(135deg, #1a1525 0%, #17121d 100%); border-color: rgba(255,255,255,.08); }
+body.theme-dark .calendar-corner { background: #17121d; }
+body.theme-dark .calendar-day-header { background: linear-gradient(135deg, #1a1525 0%, #17121d 100%); border-color: rgba(255,255,255,.08); box-shadow: 0 18px 45px rgba(0,0,0,0.3); }
 body.theme-dark .day-card-count { color: #a78bfa; }
 body.theme-dark .day-card-weekday { color: #f1f5f9; }
 body.theme-dark .day-card-label { color: #94a3b8; }
 body.theme-dark .day-card-date { color: #f1f5f9; }
 body.theme-dark .day-card-data-label span { color: #94a3b8; }
 body.theme-dark .day-card-divider { background: rgba(255,255,255,0.1); }
-body.theme-dark .day-card-icon-box { background: rgba(167,139,250,0.12); }
+body.theme-dark .day-card-icon-box { background: rgba(167,139,250,0.15); }
 body.theme-dark .day-card-icon-box svg { stroke: #a78bfa; }
 body.theme-dark .day-card-data-label svg { stroke: #a78bfa; }
 body.theme-dark .day-card-watermark { color: #a78bfa; }
-body.theme-dark .calendar-day-header.is-today { background: linear-gradient(135deg, #282014 0%, #1f1a10 100%); border-color: rgba(216,160,24,0.2); }
+body.theme-dark .calendar-day-header.is-today { background: linear-gradient(135deg, #282014 0%, #1f1a10 100%); border-color: rgba(216,160,24,0.25); box-shadow: 0 18px 45px rgba(216,160,24,0.1); }
 body.theme-dark .calendar-day-header.is-today .day-card-count { color: #fbbf24; }
-body.theme-dark .calendar-day-header.is-today .day-card-icon-box { background: rgba(251,191,36,0.12); }
+body.theme-dark .calendar-day-header.is-today .day-card-icon-box { background: rgba(251,191,36,0.15); }
 body.theme-dark .calendar-day-header.is-today .day-card-icon-box svg { stroke: #fbbf24; }
 body.theme-dark .calendar-day-header.is-today .day-card-data-label svg { stroke: #fbbf24; }
 body.theme-dark .calendar-day-header.is-today .day-card-watermark { color: #fbbf24; }
-body.theme-dark .calendar-day-header.is-saturday { background: linear-gradient(135deg, #1a2040 0%, #151d35 100%); border-color: rgba(37,99,235,0.2); }
+body.theme-dark .calendar-day-header.is-saturday { background: linear-gradient(135deg, #1a2040 0%, #151d35 100%); border-color: rgba(37,99,235,0.25); box-shadow: 0 18px 45px rgba(37,99,235,0.1); }
 body.theme-dark .calendar-day-header.is-saturday .day-card-count { color: #60a5fa; }
-body.theme-dark .calendar-day-header.is-saturday .day-card-icon-box { background: rgba(96,165,250,0.12); }
+body.theme-dark .calendar-day-header.is-saturday .day-card-icon-box { background: rgba(96,165,250,0.15); }
 body.theme-dark .calendar-day-header.is-saturday .day-card-icon-box svg { stroke: #60a5fa; }
 body.theme-dark .calendar-day-header.is-saturday .day-card-data-label svg { stroke: #60a5fa; }
 body.theme-dark .calendar-day-header.is-saturday .day-card-watermark { color: #60a5fa; }
-body.theme-dark .calendar-day-header.is-sunday { background: linear-gradient(135deg, #2d1520 0%, #251018 100%); border-color: rgba(225,29,72,0.2); }
+body.theme-dark .calendar-day-header.is-sunday { background: linear-gradient(135deg, #2d1520 0%, #251018 100%); border-color: rgba(225,29,72,0.25); box-shadow: 0 18px 45px rgba(225,29,72,0.1); }
 body.theme-dark .calendar-day-header.is-sunday .day-card-count { color: #fb7185; }
-body.theme-dark .calendar-day-header.is-sunday .day-card-icon-box { background: rgba(251,113,133,0.12); }
+body.theme-dark .calendar-day-header.is-sunday .day-card-icon-box { background: rgba(251,113,133,0.15); }
 body.theme-dark .calendar-day-header.is-sunday .day-card-icon-box svg { stroke: #fb7185; }
 body.theme-dark .calendar-day-header.is-sunday .day-card-data-label svg { stroke: #fb7185; }
 body.theme-dark .calendar-day-header.is-sunday .day-card-watermark { color: #fb7185; }
