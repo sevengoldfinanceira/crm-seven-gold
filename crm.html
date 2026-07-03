@@ -644,14 +644,13 @@
                   <svg class="pipeline-filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
                   <select id="pipeline-period-type-select">
                     <option value="day">Dia</option>
-                    <option value="week">Semana</option>
-                    <option value="month" selected>Mês</option>
+                    <option value="week" selected>Semana</option>
                   </select>
                   <svg class="pipeline-filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                 </span>
               </label>
               <div class="pipeline-calendar-date-picker">
-                <span id="pipeline-period-calendar-label" class="pipeline-filter-label">Selecionar mês</span>
+                <span id="pipeline-period-calendar-label" class="pipeline-filter-label">Selecionar semana</span>
                 <div class="dash-calendar-nav" style="flex:1;">
                   <button class="dash-calendar-btn" type="button" data-pipeline-calendar-prev aria-label="Período anterior">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -659,8 +658,7 @@
                   <div class="dash-calendar-field">
                     <svg class="dash-calendar-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
                     <input id="pipeline-period-day-input" type="date" aria-label="Selecionar dia" hidden>
-                    <input id="pipeline-period-week-input" type="week" aria-label="Selecionar semana" hidden>
-                    <input id="pipeline-period-month-input" type="month" aria-label="Selecionar mês">
+                    <input id="pipeline-period-week-input" type="week" aria-label="Selecionar semana">
                   </div>
                   <button class="dash-calendar-today" type="button" data-pipeline-calendar-today aria-label="Ir para hoje">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>
@@ -1120,7 +1118,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=profile-access-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=commercial-productions-v1"></script>
+    <script src="script.js?v=pipeline-period-day-week-v1"></script>
     <script src="/searchable-select.js?v=responsible-select-fix-v1"></script>
     <script src="/pwa.js"></script>
   </body>

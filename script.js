@@ -997,13 +997,12 @@ const initPipelineCalendarPicker = () => {
   const inputs = {
     day: document.getElementById("pipeline-period-day-input"),
     week: document.getElementById("pipeline-period-week-input"),
-    month: document.getElementById("pipeline-period-month-input"),
   };
   if (!periodSelect || !inputs.day) return;
   if (periodSelect.dataset.calendarReady === "true") return;
   periodSelect.dataset.calendarReady = "true";
 
-  let pipelinePeriod = "month";
+  let pipelinePeriod = "week";
 
   const pad = (v) => String(v).padStart(2, "0");
 
@@ -1018,7 +1017,7 @@ const initPipelineCalendarPicker = () => {
       const weekNumber = Math.ceil((((utcDate - yearStart) / 86400000) + 1) / 7);
       return `${utcDate.getUTCFullYear()}-W${pad(weekNumber)}`;
     }
-    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
+    return "";
   };
 
   const getActiveInput = () => inputs[pipelinePeriod];
@@ -1032,9 +1031,7 @@ const initPipelineCalendarPicker = () => {
     const active = getActiveInput();
     if (active) active.hidden = false;
     if (calendarLabel) {
-      calendarLabel.textContent = pipelinePeriod === "day"
-        ? "Selecionar dia"
-        : pipelinePeriod === "week" ? "Selecionar semana" : "Selecionar mês";
+      calendarLabel.textContent = pipelinePeriod === "day" ? "Selecionar dia" : "Selecionar semana";
     }
   };
 
@@ -1056,11 +1053,6 @@ const initPipelineCalendarPicker = () => {
       const ys = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
       const wn = Math.ceil((((utcDate - ys) / 86400000) + 1) / 7);
       input.value = `${utcDate.getUTCFullYear()}-W${pad(wn)}`;
-    } else {
-      const [year, month] = input.value.split("-").map(Number);
-      const d = new Date(year, month - 1, 1);
-      d.setMonth(d.getMonth() + dir);
-      input.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
     }
     input.dispatchEvent(new Event("change"));
   };
@@ -1080,7 +1072,7 @@ const initPipelineCalendarPicker = () => {
   showActiveInput();
 
   periodSelect.addEventListener("change", () => {
-    pipelinePeriod = periodSelect.value || "month";
+    pipelinePeriod = periodSelect.value || "week";
     const active = getActiveInput();
     if (active && !active.value) active.value = getCurrentValue(pipelinePeriod);
     showActiveInput();
