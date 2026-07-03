@@ -3723,24 +3723,24 @@ const initLeadModalTabs = () => {
 
       // Update content visibility
       tabContents.forEach((content) => {
-        content.style.display = "none";
+        content.style.setProperty("display", "none", "important");
       });
 
       // Map tabs to content divs
       if (targetTab === "dados") {
         const dadosContainer = document.getElementById("modal-lead-tab-dados");
-        if (dadosContainer) dadosContainer.style.display = "block";
+        if (dadosContainer) dadosContainer.style.setProperty("display", "grid", "important");
         if (submitButton) submitButton.style.display = "block";
         const mode = leadForm?.dataset.mode;
         if (deleteButton && mode === "edit") deleteButton.style.display = "block";
       } else if (targetTab === "tarefas") {
         const tasksContainer = document.getElementById("modal-lead-tasks-section");
-        if (tasksContainer) tasksContainer.style.display = "block";
+        if (tasksContainer) tasksContainer.style.setProperty("display", "block", "important");
         if (submitButton) submitButton.style.display = "none";
         if (deleteButton) deleteButton.style.display = "none";
       } else if (targetTab === "historico") {
         const historyContainer = document.getElementById("modal-lead-history-section");
-        if (historyContainer) historyContainer.style.display = "block";
+        if (historyContainer) historyContainer.style.setProperty("display", "block", "important");
         if (submitButton) submitButton.style.display = "none";
         if (deleteButton) deleteButton.style.display = "none";
       }
