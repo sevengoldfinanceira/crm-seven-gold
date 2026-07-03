@@ -3420,6 +3420,7 @@ body.theme-dark .dash-calendar-today::before {
   display: flex;
   flex-wrap: nowrap;
   align-items: flex-end;
+  justify-content: center;
   gap: 12px;
   width: min(100%, 1100px);
   margin: 0 auto 20px;
@@ -3440,13 +3441,13 @@ body.theme-dark .dash-calendar-today::before {
 }
 
 .tab-content[data-tab="pipeline"] .pipeline-filter-field--team {
-  flex: 0 0 130px;
-  min-width: 130px;
+  flex: 0 0 170px;
+  min-width: 170px;
 }
 
 .tab-content[data-tab="pipeline"] .pipeline-filter-field--responsible {
-  flex: 0 0 150px;
-  min-width: 150px;
+  flex: 0 0 190px;
+  min-width: 190px;
 }
 
 .tab-content[data-tab="pipeline"] .pipeline-filter-label {
