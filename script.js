@@ -2372,7 +2372,7 @@ const loadAppointments = async () => {
 
   let query = client
     .from("appointments")
-    .select("id, lead_id, nome_cliente, telefone_cliente, usuario_id, nome_usuario, data_agendamento, hora_agendamento, observacao, status, created_at, updated_at")
+    .select("id, lead_id, nome_cliente, telefone_cliente, usuario_id, nome_usuario, assigned_to_email, data_agendamento, hora_agendamento, observacao, status, created_at, updated_at")
     .gte("data_agendamento", start)
     .lte("data_agendamento", end)
     .neq("status", "cancelado")
@@ -2395,28 +2395,22 @@ const loadAppointments = async () => {
     }
   }
 
-  if (!shouldSeeAllLeads(currentCrmUser) && currentCrmUser?.id) {
-    query = query.eq("usuario_id", currentCrmUser.id);
+  if (!shouldSeeAllLeads(currentCrmUser) && currentCrmUser?.email) {
+    query = query.eq("assigned_to_email", currentCrmUser.email);
   } else if (activeResponsibleId) {
-    query = query.eq("usuario_id", activeResponsibleId);
+    const { data: respUser } = await client.from("crm_users").select("email").eq("id", activeResponsibleId).maybeSingle();
+    if (respUser?.email) {
+      query = query.eq("assigned_to_email", respUser.email);
+    }
   } else if (activeTeamId) {
     const teamEmails = await getTeamMemberEmailsById(client, activeTeamId);
     if (teamEmails?.length) {
-      const { data: teamUsers } = await client.from("crm_users").select("id").in("email", teamEmails);
-      const userIds = (teamUsers || []).map((u) => u.id);
-      if (userIds.length) {
-        query = query.in("usuario_id", userIds);
-      }
+      query = query.in("assigned_to_email", teamEmails);
     }
   } else if (isTeamCoordinatorRole(currentCrmUser) && currentCrmUser.email) {
-    const coordTeamId = getCoordinatedTeamId(currentCrmUser);
     const teamEmails = await loadTeamMemberEmails(currentCrmUser.email);
-    if (coordTeamId && teamEmails?.length) {
-      const { data: teamUsers } = await client.from("crm_users").select("id").in("email", teamEmails);
-      const userIds = (teamUsers || []).map((u) => u.id);
-      if (userIds.length) {
-        query = query.in("usuario_id", userIds);
-      }
+    if (teamEmails?.length) {
+      query = query.in("assigned_to_email", teamEmails);
     }
   }
 
