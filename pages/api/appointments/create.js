@@ -31,6 +31,18 @@ module.exports = async (req, res) => {
     const assigned_to_email = lead?.assigned_to_email || req.body.assigned_to_email || null;
     const assigned_to_name = lead?.assigned_to_name || req.body.assigned_to_name || null;
 
+    // Resolver usuario_id a partir do email do responsável
+    let usuario_id = req.body.usuario_id || null;
+    if (!usuario_id && assigned_to_email) {
+      const { data: crmUser } = await supabase
+        .from('crm_users')
+        .select('id')
+        .eq('email', assigned_to_email)
+        .eq('ativo', true)
+        .maybeSingle();
+      usuario_id = crmUser?.id || null;
+    }
+
     // Inserir no Supabase usando service role (bypassa RLS)
     const { data, error } = await supabase
       .from('appointments')
@@ -38,7 +50,8 @@ module.exports = async (req, res) => {
         lead_id,
         nome_cliente,
         telefone_cliente: req.body.telefone_cliente || null,
-        nome_usuario: req.body.nome_usuario || 'Extensão WhatsApp',
+        usuario_id,
+        nome_usuario: assigned_to_name || req.body.nome_usuario || 'Extensão WhatsApp',
         data_agendamento,
         hora_agendamento,
         observacao: observacao || null,
