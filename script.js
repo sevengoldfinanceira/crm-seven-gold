@@ -1715,6 +1715,20 @@ const loadDashboardMetrics = async () => {
     el.style.display = selectedDashPeriod === "day" ? "flex" : "none";
   });
 
+  const grid = document.querySelector(".commercial-summary-grid");
+  if (grid) {
+    const dayOrder = ["received", "inservice", "notserved", "appointments", "today", "store", "approval", "notinterested", "closed", "cancelled"];
+    const weekOrder = ["received", "inservice", "notserved", "appointments", "store", "noshow", "approval", "notinterested", "closed", "cancelled"];
+    const monthOrder = ["received", "inservice", "notserved", "appointments", "store", "noshow", "approval", "notinterested", "closed", "cancelled"];
+    const order = selectedDashPeriod === "day" ? dayOrder : selectedDashPeriod === "week" ? weekOrder : monthOrder;
+    const cards = grid.querySelectorAll("[data-kpi]");
+    const cardMap = {};
+    cards.forEach((card) => { cardMap[card.dataset.kpi] = card; });
+    order.forEach((key) => {
+      if (cardMap[key]) grid.appendChild(cardMap[key]);
+    });
+  }
+
   if (!selectedDashPeriodValue) {
     selectedDashPeriodValue = periodInputs[selectedDashPeriod]?.value || getCurrentDashboardPeriodValue(selectedDashPeriod);
   }
