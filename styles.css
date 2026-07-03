@@ -3281,8 +3281,8 @@ body.theme-dark .dash-filter-control .sg-search-select.is-open .sg-search-select
 }
 
 .pipeline-calendar-picker .pipeline-filter-field {
-  flex: 0 0 125px;
-  width: 125px;
+  flex: 0 0 160px;
+  width: 160px;
 }
 
 .pipeline-calendar-picker .dash-calendar-nav {
@@ -3313,7 +3313,7 @@ body.theme-dark .dash-filter-control .sg-search-select.is-open .sg-search-select
 
   .pipeline-calendar-picker .pipeline-filter-field {
     flex: 0 0 auto;
-    width: 150px;
+    width: 160px;
   }
 
   .pipeline-calendar-picker .dash-calendar-nav {
