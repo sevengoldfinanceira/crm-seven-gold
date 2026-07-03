@@ -196,10 +196,10 @@
 
     const permissions = {
       "diretor-ceo": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios", "financeiro", "marketing"],
-      vendedor: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
-      representante: ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
-      "assistente-vendas": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
-      "home-office": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro"],
+      vendedor: ["dashboard", "pipeline", "calendario"],
+      representante: ["dashboard", "pipeline", "calendario"],
+      "assistente-vendas": ["dashboard", "pipeline", "calendario"],
+      "home-office": ["dashboard", "pipeline", "calendario"],
       "coordenador-comercial": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios"],
       "supervisor-comercial": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios"],
       "coordenador-posvenda": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "relatorios"],

@@ -4179,7 +4179,7 @@ const switchTab = () => {
 
     if (!window.canAccessArea(userRole, activeTab)) {
       alert("Você não tem permissão para acessar esta área.");
-      const allowedTabs = ["pipeline", "dashboard", "calendario", "tarefas", "feed"];
+      const allowedTabs = ["pipeline", "dashboard", "calendario"];
       const fallbackTab = allowedTabs.find(tab => window.canAccessArea(userRole, tab)) || "pipeline";
       window.location.hash = "#" + fallbackTab;
       return;
