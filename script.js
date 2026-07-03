@@ -218,16 +218,17 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
   const responsibleSelect = modal.querySelector("#modal-lead-responsible-select");
 
   const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+  const canViewResponsible = Boolean(currentCrmUser) && shouldSeeAllLeads(currentCrmUser);
 
   if (responsibleSection) {
-    responsibleSection.style.display = "flex";
-    if (lead.assigned_to_name) {
+    responsibleSection.style.display = canViewResponsible ? "flex" : "none";
+    if (canViewResponsible && lead.assigned_to_name) {
       if (responsibleName) responsibleName.textContent = lead.assigned_to_name;
       if (responsibleEmail) {
         responsibleEmail.textContent = lead.assigned_to_email || "";
         responsibleEmail.style.display = lead.assigned_to_email ? "inline" : "none";
       }
-    } else {
+    } else if (canViewResponsible) {
       if (responsibleName) responsibleName.textContent = "Sem responsavel";
       if (responsibleEmail) responsibleEmail.style.display = "none";
     }
