@@ -928,6 +928,8 @@ const initPipelineCalendarPicker = () => {
     month: document.getElementById("pipeline-period-month-input"),
   };
   if (!periodSelect || !inputs.day) return;
+  if (periodSelect.dataset.calendarReady === "true") return;
+  periodSelect.dataset.calendarReady = "true";
 
   let pipelinePeriod = "month";
 
@@ -1180,8 +1182,6 @@ const initResponsibleFilter = async (currentCrmUser) => {
   if (!client) return;
 
   await initPipelineTeamFilter(currentCrmUser);
-  initPipelineCalendarPicker();
-
   responsibleFilterInitialized = true;
   containerEl.style.display = "grid";
 
@@ -4258,6 +4258,7 @@ const setupDashboardMetricDrag = () => {
 document.addEventListener("DOMContentLoaded", () => {
   calendarWeekStart = getWeekStart();
   renderCalendar();
+  initPipelineCalendarPicker();
   setupDragAndDrop();
   setupTouchMove();
   setupBulkActions();

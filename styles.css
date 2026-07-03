@@ -3272,18 +3272,41 @@ body.theme-dark .dash-filter-control .sg-search-select.is-open .sg-search-select
 .pipeline-calendar-picker {
   display: flex;
   align-items: flex-end;
+  justify-content: center;
   gap: 10px;
-  flex: 1.4;
+  flex: 0 1 620px;
+  width: min(100%, 620px);
   min-width: 0;
+  margin-inline: auto;
 }
 
 .pipeline-calendar-picker .pipeline-filter-field {
-  flex: 0 0 130px;
+  flex: 0 0 125px;
+  width: 125px;
 }
 
 .pipeline-calendar-picker .dash-calendar-nav {
-  flex: 1;
+  flex: 0 1 455px;
+  width: min(100%, 455px);
   min-width: 0;
+}
+
+@media (max-width: 620px) {
+  .pipeline-calendar-picker {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .pipeline-calendar-picker .pipeline-filter-field {
+    flex: 0 0 auto;
+    width: 150px;
+  }
+
+  .pipeline-calendar-picker .dash-calendar-nav {
+    flex: 0 0 auto;
+    width: 100%;
+  }
 }
 
 /* Dark theme — dashboard calendar picker */
