@@ -930,6 +930,7 @@ const initDashTeamFilter = async (currentCrmUser) => {
 
   await loadAllTeams(client);
   dashTeamFilterInitialized = true;
+  containerEl.style.display = "flex";
   populateTeamFilter(selectEl, currentCrmUser);
 
   if (isTeamCoordinatorRole(currentCrmUser)) {
@@ -1646,6 +1647,7 @@ const loadDashboardMetrics = async () => {
 
   const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
   if (currentCrmUser) {
+    await initDashTeamFilter(currentCrmUser);
     await initDashResponsibleFilter(currentCrmUser);
   }
 
