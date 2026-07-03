@@ -3071,6 +3071,245 @@ body.theme-dark .dash-filter-control .sg-search-select.is-open .sg-search-select
   box-shadow: none;
 }
 
+.tab-content[data-tab="pipeline"] .filter-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  align-items: end;
+  gap: 16px;
+  width: 100%;
+  margin: 0 auto 20px;
+  padding: 18px;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  border-radius: 24px;
+  background: linear-gradient(180deg, #f8faff 0%, #eef2ff 100%);
+  box-sizing: border-box;
+}
+
+.tab-content[data-tab="pipeline"] .pipeline-filter-field {
+  display: grid;
+  align-items: stretch;
+  justify-items: stretch;
+  gap: 7px;
+  min-width: 0;
+  text-align: left;
+}
+
+#pipeline-team-filter-container.pipeline-filter-field,
+#responsible-filter-container.pipeline-filter-field {
+  justify-items: stretch !important;
+}
+
+.tab-content[data-tab="pipeline"] .pipeline-filter-label {
+  width: 100%;
+  padding-left: 4px;
+  color: #64748b;
+  font-size: 0.76rem;
+  font-weight: 650;
+  line-height: 1.2;
+  text-align: left !important;
+}
+
+.pipeline-filter-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  height: 56px;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+.pipeline-filter-control:hover {
+  border-color: rgba(109, 74, 255, 0.44);
+  box-shadow: 0 12px 28px rgba(91, 63, 255, 0.11);
+  transform: translateY(-1px);
+}
+
+.pipeline-filter-control:focus-within {
+  border-color: #6d4aff;
+  box-shadow: 0 0 0 4px rgba(109, 74, 255, 0.12), 0 12px 28px rgba(91, 63, 255, 0.1);
+}
+
+.pipeline-filter-control select {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: #1e293b;
+  padding: 0 42px 0 46px;
+  font-family: inherit;
+  font-size: 0.86rem;
+  font-weight: 650;
+  text-align: left;
+  text-align-last: left;
+  box-shadow: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.pipeline-filter-icon,
+.pipeline-filter-chevron {
+  position: absolute;
+  z-index: 1;
+  width: 18px;
+  height: 18px;
+  color: #6d4aff;
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.pipeline-filter-icon {
+  left: 17px;
+}
+
+.pipeline-filter-chevron {
+  right: 16px;
+  width: 15px;
+  height: 15px;
+}
+
+.pipeline-filter-control > .sg-search-select {
+  width: 100%;
+  height: 100%;
+}
+
+.pipeline-filter-control .sg-search-select__trigger {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0 42px 0 46px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  box-shadow: none;
+  color: #1e293b;
+  transform: none;
+}
+
+.pipeline-filter-control .sg-search-select__trigger:hover,
+.pipeline-filter-control .sg-search-select__trigger:focus-visible,
+.pipeline-filter-control .sg-search-select.is-open .sg-search-select__trigger {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+.pipeline-filter-control .sg-search-select__value {
+  font-size: 0.86rem;
+  font-weight: 650;
+}
+
+.pipeline-filter-control .sg-search-select__chevron {
+  display: none;
+}
+
+.tab-content[data-tab="pipeline"] .pipeline-clear-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  min-width: 0;
+  height: 56px;
+  padding: 0 16px;
+  border: 1px solid rgba(239, 68, 68, 0.38);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #ef4444;
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.06);
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+.tab-content[data-tab="pipeline"] .pipeline-clear-button svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  stroke-width: 2;
+}
+
+.tab-content[data-tab="pipeline"] .pipeline-clear-button:hover {
+  border-color: #ef4444;
+  background: #fff1f2;
+  box-shadow: 0 12px 28px rgba(239, 68, 68, 0.11);
+  transform: translateY(-1px);
+}
+
+.tab-content[data-tab="pipeline"] .pipeline-clear-button:focus-visible {
+  outline: 0;
+  border-color: #ef4444;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
+}
+
+body.theme-dark .tab-content[data-tab="pipeline"] .filter-row {
+  border-color: rgba(139, 92, 246, 0.18);
+  background: linear-gradient(180deg, rgba(28, 20, 37, 0.96), rgba(36, 25, 53, 0.9));
+}
+
+body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-filter-label {
+  color: #aeb7c7;
+}
+
+body.theme-dark .pipeline-filter-control {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: #17121d;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.24);
+}
+
+body.theme-dark .pipeline-filter-control select,
+body.theme-dark .pipeline-filter-control .sg-search-select__trigger,
+body.theme-dark .pipeline-filter-control .sg-search-select__trigger:hover,
+body.theme-dark .pipeline-filter-control .sg-search-select.is-open .sg-search-select__trigger {
+  border: 0;
+  background: transparent;
+  color: #f1f5f9;
+  box-shadow: none;
+}
+
+body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
+  border-color: rgba(248, 113, 113, 0.42);
+  background: rgba(38, 19, 27, 0.88);
+  color: #f87171;
+}
+
+@media (max-width: 1200px) {
+  .tab-content[data-tab="pipeline"] .filter-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .tab-content[data-tab="pipeline"] .filter-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 14px;
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 520px) {
+  .tab-content[data-tab="pipeline"] .filter-row {
+    grid-template-columns: 1fr;
+  }
+
+  .pipeline-filter-control,
+  .tab-content[data-tab="pipeline"] .pipeline-clear-button {
+    height: 52px;
+    border-radius: 16px;
+  }
+}
+
 @media (max-width: 1100px) {
   #dash-responsible-filter-container {
     width: 100%;
