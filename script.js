@@ -1711,10 +1711,6 @@ const loadDashboardMetrics = async () => {
     el.style.display = selectedDashPeriod === "day" ? "none" : "";
   });
 
-  document.querySelectorAll(".kpi-day-hide-store").forEach((el) => {
-    el.style.display = selectedDashPeriod === "day" ? "none" : "";
-  });
-
   document.querySelectorAll(".kpi-day-only").forEach((el) => {
     el.style.display = selectedDashPeriod === "day" ? "" : "none";
   });
@@ -1855,9 +1851,11 @@ const loadDashboardMetrics = async () => {
   if (receivedLeads > 0) {
     if (elServiceConversion) elServiceConversion.textContent = `${((inService / receivedLeads) * 100).toFixed(1)}%`;
     if (elNotServedConversion) elNotServedConversion.textContent = `${((notServed / receivedLeads) * 100).toFixed(1)}%`;
-    if (elStoreConversion) elStoreConversion.textContent = `${totalAppointments > 0 ? ((clientsInStore / totalAppointments) * 100).toFixed(1) : "0.0"}%`;
-    if (elApprovalConversion) elApprovalConversion.textContent = `${clientsInStore > 0 ? ((inApproval / clientsInStore) * 100).toFixed(1) : "0.0"}%`;
-    if (elNotInterestedConversion) elNotInterestedConversion.textContent = `${clientsInStore > 0 ? ((notInterested / clientsInStore) * 100).toFixed(1) : "0.0"}%`;
+    if (selectedDashPeriod !== "day") {
+      if (elStoreConversion) elStoreConversion.textContent = `${totalAppointments > 0 ? ((clientsInStore / totalAppointments) * 100).toFixed(1) : "0.0"}%`;
+      if (elApprovalConversion) elApprovalConversion.textContent = `${clientsInStore > 0 ? ((inApproval / clientsInStore) * 100).toFixed(1) : "0.0"}%`;
+      if (elNotInterestedConversion) elNotInterestedConversion.textContent = `${clientsInStore > 0 ? ((notInterested / clientsInStore) * 100).toFixed(1) : "0.0"}%`;
+    }
     if (elCancelledConversion) elCancelledConversion.textContent = `${receivedLeads > 0 ? ((cancelledLeads / receivedLeads) * 100).toFixed(1) : "0.0"}%`;
   }
 
