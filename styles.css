@@ -4892,6 +4892,7 @@ body.sidebar-collapsed .user-box .sidebar-user-actions .sidebar-logout-btn:hover
 #production-next::before { left: -9px; }
 .production-nav:disabled { opacity: .35; cursor: default; }
 .production-action { padding: 0 16px; border-radius: 16px; font-size: .82rem; font-weight: 800; white-space: nowrap; }
+.production-control .production-action[hidden] { display: none !important; }
 .production-action--danger { color: #b91c1c; border-color: #fca5a5; background: #fef2f2; }
 .production-action--danger::before { content: ""; display: inline-block; width: 17px; height: 17px; margin-right: 7px; vertical-align: -4px; background: center/contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b91c1c' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='10' width='14' height='11' rx='2'/%3E%3Cpath d='M8 10V7a4 4 0 0 1 8 0v3M12 14v3'/%3E%3C/svg%3E"); }
 .production-action--danger:hover { border-color: #ef4444; background: #fee2e2; box-shadow: 0 10px 24px rgba(220,38,38,.12); transform: translateY(-1px); }

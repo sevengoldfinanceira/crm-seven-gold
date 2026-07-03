@@ -97,6 +97,7 @@ const initProductionControls = () => {
   document.getElementById("production-prev")?.addEventListener("click", () => switchProduction(1));
   document.getElementById("production-next")?.addEventListener("click", () => switchProduction(-1));
   document.getElementById("production-close")?.addEventListener("click", async () => {
+    if (!isProductionDirectorCeo) return;
     if (!confirm("Tem certeza que deseja encerrar esta produção? Após o fechamento, todos os leads deste mês ficarão bloqueados para edição.")) return;
     try { await productionRequest({ action: "close", production_id: selectedProduction.id }); await loadCommercialProductions(); await loadLeads(); } catch (error) { alert(error.message); }
   });
