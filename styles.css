@@ -1406,7 +1406,7 @@ body.theme-dark .lead-trash-origin-badge--unknown {
 
 @media (min-width: 761px) {
   .lead-modal {
-    width: min(1000px, 90vw);
+    width: min(700px, 90vw);
   }
 
   .lead-modal form {
