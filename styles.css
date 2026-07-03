@@ -1257,6 +1257,13 @@ body.theme-dark .lead-trash-origin-badge--unknown {
   border-bottom-color: #D4AF37 !important;
 }
 
+.lead-modal-tab-btn svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  stroke-width: 2;
+}
+
 #modal-lead-tab-dados {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr));
