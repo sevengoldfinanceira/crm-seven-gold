@@ -1174,9 +1174,8 @@ const loadTasks = async () => {
   if (!client) return;
 
   const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
-  if (currentCrmUser) {
-    await initTasksResponsibleFilter(currentCrmUser);
-  }
+  if (!currentCrmUser) return;
+  await initTasksResponsibleFilter(currentCrmUser);
 
   const tasksListEl = document.getElementById("tasks-list");
   const countLabelEl = document.querySelector("[data-tasks-count-label]");
@@ -2364,9 +2363,8 @@ const loadAppointments = async () => {
   if (!client || !calendarWeekStart) return;
 
   const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
-  if (currentCrmUser) {
-    await initCalendarResponsibleFilter(currentCrmUser);
-  }
+  if (!currentCrmUser) return;
+  await initCalendarResponsibleFilter(currentCrmUser);
 
   setCalendarStatus("Carregando agendamentos...");
   const start = toDateKey(calendarWeekStart);
@@ -3170,10 +3168,8 @@ const loadLeads = async () => {
   }
 
   const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
-
-  if (currentCrmUser) {
-    await initResponsibleFilter(currentCrmUser);
-  }
+  if (!currentCrmUser) return;
+  await initResponsibleFilter(currentCrmUser);
 
   let activeTeamId = selectedPipelineTeamId;
   let activeResponsibleEmail = selectedResponsibleEmail;
