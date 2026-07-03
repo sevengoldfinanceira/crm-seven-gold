@@ -3284,7 +3284,6 @@ body.theme-dark .dash-filter-control .sg-search-select.is-open .sg-search-select
   flex: 0 0 420px;
   width: 420px;
   min-width: 0;
-  margin-inline: auto;
 }
 
 .pipeline-calendar-picker .pipeline-filter-field {
