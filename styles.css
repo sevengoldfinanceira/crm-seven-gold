@@ -2894,22 +2894,23 @@ body.theme-dark .crm-workspace {
   gap: 7px;
   min-width: 0;
   text-align: left;
+  flex: 1;
 }
 
 .dash-filter-field--team {
-  width: 230px;
+  min-width: 200px;
 }
 
 .dash-filter-field--responsible {
-  width: 260px;
+  min-width: 200px;
 }
 
 .dash-filter-field--period {
-  width: 165px;
+  min-width: 160px;
 }
 
 .dash-filter-field--calendar {
-  width: 230px;
+  min-width: 300px;
 }
 
 .dash-filter-label {
@@ -3005,14 +3006,14 @@ body.theme-dark .crm-workspace {
 .dash-calendar-picker {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 
 .dash-calendar-label {
   padding-left: 4px;
-  color: #475569;
-  font-size: 0.82rem;
-  font-weight: 600;
+  color: #64748b;
+  font-size: 0.76rem;
+  font-weight: 650;
   line-height: 1.2;
 }
 
@@ -3020,22 +3021,35 @@ body.theme-dark .crm-workspace {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 14px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 20px;
-  background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+  height: 56px;
+  padding: 0 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.dash-calendar-nav:hover {
+  border-color: rgba(109, 74, 255, 0.42);
+  box-shadow: 0 12px 28px rgba(91, 63, 255, 0.11);
+  transform: translateY(-1px);
+}
+
+.dash-calendar-nav:focus-within {
+  border-color: #6d4aff;
+  box-shadow: 0 0 0 4px rgba(109, 74, 255, 0.12), 0 12px 28px rgba(91, 63, 255, 0.1);
 }
 
 .dash-calendar-btn {
   flex-shrink: 0;
-  width: 46px;
-  height: 46px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
   background: #ffffff;
   color: #475569;
   cursor: pointer;
@@ -3064,10 +3078,10 @@ body.theme-dark .crm-workspace {
   align-items: center;
   gap: 10px;
   min-width: 0;
-  height: 48px;
+  height: 40px;
   padding: 0 14px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
   background: #ffffff;
   box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -3113,13 +3127,13 @@ body.theme-dark .crm-workspace {
 
 .dash-calendar-today {
   flex-shrink: 0;
-  width: 46px;
-  height: 46px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid rgba(124, 58, 237, 0.25);
-  border-radius: 14px;
+  border-radius: 12px;
   background: rgba(124, 58, 237, 0.06);
   color: #7c3aed;
   cursor: pointer;
@@ -3252,9 +3266,19 @@ body.theme-dark .dash-filter-control .sg-search-select.is-open .sg-search-select
 
 /* Dark theme — dashboard calendar picker */
 body.theme-dark .dash-calendar-nav {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, #1a1527 0%, #17121d 100%);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.1);
+  background: #17121d;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.24);
+}
+
+body.theme-dark .dash-calendar-nav:hover {
+  border-color: rgba(109, 74, 255, 0.42);
+  box-shadow: 0 12px 28px rgba(91, 63, 255, 0.11);
+}
+
+body.theme-dark .dash-calendar-nav:focus-within {
+  border-color: #6d4aff;
+  box-shadow: 0 0 0 4px rgba(109, 74, 255, 0.12), 0 12px 28px rgba(91, 63, 255, 0.1);
 }
 
 body.theme-dark .dash-calendar-label {
@@ -3549,16 +3573,6 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
   #dash-responsible-filter-container {
     width: 100%;
   }
-
-  .dash-filter-field--team,
-  .dash-filter-field--responsible,
-  .dash-filter-field--period {
-    width: calc(50% - 8px);
-  }
-
-  .dash-filter-field--calendar {
-    width: calc(50% - 8px);
-  }
 }
 
 @media (max-width: 620px) {
@@ -3572,24 +3586,15 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
     gap: 12px;
   }
 
-  .dash-filter-field--team,
-  .dash-filter-field--responsible,
-  .dash-filter-field--period {
-    width: 100%;
-  }
-
-  .dash-filter-field--calendar {
-    width: 100%;
-  }
-
   .dash-filter-control {
     height: 52px;
     border-radius: 16px;
   }
 
   .dash-calendar-nav {
+    height: 52px;
     flex-wrap: wrap;
-    padding: 10px 12px;
+    padding: 0 10px;
   }
 
   .dash-calendar-field {
