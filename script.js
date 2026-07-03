@@ -2974,7 +2974,10 @@ const createLeadCard = (lead) => {
     trashBadgeRow.className = "lead-trash-badge-row";
 
     const originBadge = document.createElement("div");
-    originBadge.className = "lead-trash-origin-badge";
+    const originStatus = lead.trash_origin_status && lead.trash_origin_status !== "cancelado"
+      ? lead.trash_origin_status
+      : "unknown";
+    originBadge.className = `lead-trash-origin-badge lead-trash-origin-badge--${originStatus}`;
     const originLabel = statusLabels[lead.trash_origin_status] || "Origem desconhecida";
     originBadge.textContent = originLabel;
     originBadge.title = `Enviado para a Lixeira a partir de: ${originLabel}`;

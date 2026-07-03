@@ -844,6 +844,48 @@ body.theme-dark .lead-trash-origin-badge {
   color: #fca5a5;
 }
 
+body.theme-dark .lead-trash-origin-badge--lead_recebido {
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(30, 64, 175, 0.32);
+  color: #93c5fd;
+}
+
+body.theme-dark .lead-trash-origin-badge--primeiro_contato {
+  border-color: rgba(251, 146, 60, 0.4);
+  background: rgba(124, 45, 18, 0.32);
+  color: #fdba74;
+}
+
+body.theme-dark .lead-trash-origin-badge--agendamento {
+  border-color: rgba(167, 139, 250, 0.4);
+  background: rgba(76, 29, 149, 0.32);
+  color: #c4b5fd;
+}
+
+body.theme-dark .lead-trash-origin-badge--cliente_em_loja {
+  border-color: rgba(244, 114, 182, 0.4);
+  background: rgba(131, 24, 67, 0.32);
+  color: #f9a8d4;
+}
+
+body.theme-dark .lead-trash-origin-badge--proposta_enviada {
+  border-color: rgba(251, 113, 133, 0.4);
+  background: rgba(136, 19, 55, 0.32);
+  color: #fda4af;
+}
+
+body.theme-dark .lead-trash-origin-badge--venda_fechada {
+  border-color: rgba(74, 222, 128, 0.4);
+  background: rgba(20, 83, 45, 0.32);
+  color: #86efac;
+}
+
+body.theme-dark .lead-trash-origin-badge--unknown {
+  border-color: rgba(248, 113, 113, 0.4);
+  background: rgba(127, 29, 29, 0.28);
+  color: #fca5a5;
+}
+
 .lead-phone-line {
   display: flex;
   align-items: center;
@@ -2839,6 +2881,48 @@ body.theme-dark .kpi-subtext {
 
 .lead-trash-origin-badge {
   flex: 0 1 auto;
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.lead-trash-origin-badge--lead_recebido {
+  border-color: #dbeafe;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.lead-trash-origin-badge--primeiro_contato {
+  border-color: #fed7aa;
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.lead-trash-origin-badge--agendamento {
+  border-color: #ddd6fe;
+  background: #f5f3ff;
+  color: #6d28d9;
+}
+
+.lead-trash-origin-badge--cliente_em_loja {
+  border-color: #fbcfe8;
+  background: #fdf2f8;
+  color: #be185d;
+}
+
+.lead-trash-origin-badge--proposta_enviada {
+  border-color: #fecdd3;
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.lead-trash-origin-badge--venda_fechada {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.lead-trash-origin-badge--unknown {
   border-color: #fecaca;
   background: #fef2f2;
   color: #b91c1c;
