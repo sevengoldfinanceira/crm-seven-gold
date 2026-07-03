@@ -1606,6 +1606,38 @@ const getCurrentDashboardPeriodValue = (periodType) => {
   return `${now.getFullYear()}-${padDashboardDatePart(now.getMonth() + 1)}`;
 };
 
+const navigateDashPeriod = (periodType, input, direction) => {
+  if (!input) return;
+  let date;
+  if (periodType === "day") {
+    date = new Date(`${input.value}T12:00:00`);
+    date.setDate(date.getDate() + direction);
+    input.value = `${date.getFullYear()}-${padDashboardDatePart(date.getMonth() + 1)}-${padDashboardDatePart(date.getDate())}`;
+  } else if (periodType === "week") {
+    const match = /^(\d{4})-W(\d{2})$/.exec(input.value);
+    if (!match) return;
+    const weekYear = Number(match[1]);
+    const weekNumber = Number(match[2]);
+    const januaryFourth = new Date(weekYear, 0, 4);
+    const januaryFourthDay = januaryFourth.getDay() || 7;
+    date = new Date(weekYear, 0, 4 - januaryFourthDay + 1 + ((weekNumber - 1) * 7));
+    date.setDate(date.getDate() + (7 * direction));
+    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = utcDate.getUTCDay() || 7;
+    utcDate.setUTCDate(utcDate.getUTCDate() + 4 - dayNum);
+    const ys = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+    const wn = Math.ceil((((utcDate - ys) / 86400000) + 1) / 7);
+    input.value = `${utcDate.getUTCFullYear()}-W${padDashboardDatePart(wn)}`;
+  } else {
+    const [year, month] = input.value.split("-").map(Number);
+    date = new Date(year, month - 1, 1);
+    date.setMonth(date.getMonth() + direction);
+    input.value = `${date.getFullYear()}-${padDashboardDatePart(date.getMonth() + 1)}`;
+  }
+  selectedDashPeriodValue = input.value;
+  loadDashboardMetrics();
+};
+
 const getDashboardPeriodRange = (periodType, periodValue) => {
   const value = periodValue || getCurrentDashboardPeriodValue(periodType);
   let start;
@@ -1695,6 +1727,19 @@ const loadDashboardMetrics = async () => {
     periodSelect.addEventListener("change", () => {
       selectedDashPeriod = periodSelect.value || "month";
       selectedDashPeriodValue = periodInputs[selectedDashPeriod]?.value || getCurrentDashboardPeriodValue(selectedDashPeriod);
+      loadDashboardMetrics();
+    });
+    document.querySelector("[data-dash-prev]")?.addEventListener("click", () => {
+      navigateDashPeriod(selectedDashPeriod, periodInputs[selectedDashPeriod], -1);
+    });
+    document.querySelector("[data-dash-next]")?.addEventListener("click", () => {
+      navigateDashPeriod(selectedDashPeriod, periodInputs[selectedDashPeriod], 1);
+    });
+    document.querySelector("[data-dash-today]")?.addEventListener("click", () => {
+      const input = periodInputs[selectedDashPeriod];
+      if (!input) return;
+      input.value = getCurrentDashboardPeriodValue(selectedDashPeriod);
+      selectedDashPeriodValue = input.value;
       loadDashboardMetrics();
     });
   }

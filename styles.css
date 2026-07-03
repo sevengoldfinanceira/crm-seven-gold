@@ -2997,6 +2997,52 @@ body.theme-dark .crm-workspace {
   padding-right: 16px !important;
 }
 
+/* Dashboard period navigation buttons */
+.dash-nav-btn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #344054;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+  margin: 0 2px;
+}
+
+.dash-nav-btn:hover {
+  border-color: #7c3aed;
+  background: #f5f3ff;
+  color: #7c3aed;
+  transform: translateY(-1px);
+}
+
+.dash-today-btn {
+  flex-shrink: 0;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid #7c3aed;
+  border-radius: 10px;
+  background: #7c3aed;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.dash-today-btn:hover {
+  background: #6d28d9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
 .dash-filter-field--calendar input::-webkit-calendar-picker-indicator {
   opacity: 0.55;
   cursor: pointer;
@@ -3066,6 +3112,29 @@ body.theme-dark .dash-filter-control .sg-search-select.is-open .sg-search-select
   background: transparent;
   color: #f1f5f9;
   box-shadow: none;
+}
+
+/* Dark theme — dashboard period nav buttons */
+body.theme-dark .dash-nav-btn {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: #17121d;
+  color: #e2e8f0;
+}
+
+body.theme-dark .dash-nav-btn:hover {
+  border-color: #7c3aed;
+  background: #1e1830;
+  color: #c4b5fd;
+}
+
+body.theme-dark .dash-today-btn {
+  border-color: #7c3aed;
+  background: #7c3aed;
+  color: #fff;
+}
+
+body.theme-dark .dash-today-btn:hover {
+  background: #6d28d9;
 }
 
 .tab-content[data-tab="pipeline"] .filter-row {
