@@ -3266,6 +3266,15 @@ body.theme-dark .dash-filter-control .sg-search-select.is-open .sg-search-select
   box-shadow: none;
 }
 
+/* Pipeline calendar picker */
+.pipeline-calendar-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 0.8;
+  min-width: 280px;
+}
+
 /* Dark theme — dashboard calendar picker */
 body.theme-dark .dash-calendar-nav {
   border-color: rgba(255, 255, 255, 0.1);

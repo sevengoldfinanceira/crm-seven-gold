@@ -917,6 +917,35 @@ const initPipelineTeamFilter = async (currentCrmUser) => {
   });
 };
 
+const initPipelineCalendarPicker = () => {
+  const input = document.getElementById("pipeline-period-day-input");
+  const todayBtn = document.querySelector("[data-pipeline-calendar-today]");
+  const prevBtn = document.querySelector("[data-pipeline-calendar-prev]");
+  const nextBtn = document.querySelector("[data-pipeline-calendar-next]");
+  if (!input) return;
+
+  const now = new Date();
+  const pad = (v) => String(v).padStart(2, "0");
+  input.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+  const navigate = (dir) => {
+    const d = new Date(`${input.value}T12:00:00`);
+    d.setDate(d.getDate() + dir);
+    input.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    input.dispatchEvent(new Event("change"));
+  };
+
+  const goToday = () => {
+    const d = new Date();
+    input.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    input.dispatchEvent(new Event("change"));
+  };
+
+  prevBtn?.addEventListener("click", () => navigate(-1));
+  nextBtn?.addEventListener("click", () => navigate(1));
+  todayBtn?.addEventListener("click", goToday);
+};
+
 const initDashTeamFilter = async (currentCrmUser) => {
   if (dashTeamFilterInitialized) return;
   if (!shouldSeeAllLeads(currentCrmUser)) return;
@@ -1085,6 +1114,7 @@ const initResponsibleFilter = async (currentCrmUser) => {
   if (!client) return;
 
   await initPipelineTeamFilter(currentCrmUser);
+  initPipelineCalendarPicker();
 
   responsibleFilterInitialized = true;
   containerEl.style.display = "grid";
