@@ -1,4 +1,4 @@
-const { supabase } = require('../../../api/_shared/supabase');
+const { supabase } = require('../../../lib/server/supabase');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -6,7 +6,8 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.writeHead(200);
+    return res.end();
   }
 
   if (req.method === 'GET') {
@@ -17,10 +18,12 @@ module.exports = async (req, res) => {
     console.log('[WhatsApp Webhook] GET verification', { mode });
 
     if (mode === 'subscribe' && token === process.env.WHATSAPP_VERIFY_TOKEN) {
-      return res.status(200).send(challenge);
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      return res.end(String(challenge));
     }
 
-    return res.status(403).send('Token verification failed');
+    res.writeHead(403, { 'Content-Type': 'text/plain' });
+    return res.end('Token verification failed');
   }
 
   if (req.method === 'POST') {
@@ -28,13 +31,15 @@ module.exports = async (req, res) => {
       const body = req.body;
 
       if (body.entry?.[0]?.changes?.[0]?.value?.statuses) {
-        return res.status(200).send('EVENT_RECEIVED');
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        return res.end('EVENT_RECEIVED');
       }
 
       const message = body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 
       if (!message || message.type !== 'text') {
-        return res.status(200).send('EVENT_RECEIVED');
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        return res.end('EVENT_RECEIVED');
       }
 
       const telefone = message.from;
@@ -76,14 +81,14 @@ module.exports = async (req, res) => {
         } else {
           const { data: newLead, error: insertError } = await supabase
             .from('leads')
-          .insert({
-            name: `WhatsApp ${telefone}`,
-            telefone,
-            owner_id: ownerId,
-            interesse: 'Lead via WhatsApp',
-            opt_in: true,
-            ultima_interacao: new Date().toISOString(),
-          })
+            .insert({
+              name: `WhatsApp ${telefone}`,
+              telefone,
+              owner_id: ownerId,
+              interesse: 'Lead via WhatsApp',
+              opt_in: true,
+              ultima_interacao: new Date().toISOString(),
+            })
             .select('id')
             .single();
 
@@ -112,8 +117,10 @@ module.exports = async (req, res) => {
       console.error('[WhatsApp Webhook] Erro inesperado:', process.env.NODE_ENV !== 'production' ? err : err.message);
     }
 
-    return res.status(200).send('EVENT_RECEIVED');
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    return res.end('EVENT_RECEIVED');
   }
 
-  res.status(405).send('Method not allowed');
+  res.writeHead(405, { 'Content-Type': 'text/plain' });
+  res.end('Method not allowed');
 };

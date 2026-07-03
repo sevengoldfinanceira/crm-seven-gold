@@ -3,146 +3,31 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
-// -----------------------------------------------------------
-// Importar handlers de API
-// -----------------------------------------------------------
 const apiRoutes = {};
 
-try {
-  apiRoutes["/api/whatsapp/webhook"] = require("./api/whatsapp/webhook");
-  console.log("Rota de API carregada: /api/whatsapp/webhook");
-} catch (e) {
+function loadRoute(routePath, filePath) {
   try {
-    apiRoutes["/api/whatsapp/webhook"] = require("./pages/api/whatsapp/webhook");
-    console.log("Rota de API carregada (pages): /api/whatsapp/webhook");
-  } catch (e2) {
-    console.warn("Aviso: webhook.js nao pode ser carregado.", e2.message);
+    apiRoutes[routePath] = require(filePath);
+    console.log(`Rota de API carregada: ${routePath}`);
+  } catch (e) {
+    console.warn(`Aviso: ${filePath} nao pode ser carregado.`, e.message);
   }
 }
 
-try {
-  apiRoutes["/api/leads/from-whatsapp-extension"] = require("./api/leads/from-whatsapp-extension");
-  console.log("Rota de API carregada: /api/leads/from-whatsapp-extension");
-} catch (e) {
-  try {
-    apiRoutes["/api/leads/from-whatsapp-extension"] = require("./pages/api/leads/from-whatsapp-extension");
-    console.log("Rota de API carregada (pages): /api/leads/from-whatsapp-extension");
-  } catch (e2) {
-    console.warn("Aviso: from-whatsapp-extension.js nao pode ser carregado.", e2.message);
-  }
-}
-
-try {
-  apiRoutes["/api/leads/delete"] = require("./api/leads/delete");
-  console.log("Rota de API carregada: /api/leads/delete");
-} catch (e) {
-  try {
-    apiRoutes["/api/leads/delete"] = require("./pages/api/leads/delete");
-    console.log("Rota de API carregada (pages): /api/leads/delete");
-  } catch (e2) {
-    console.warn("Aviso: delete.js nao pode ser carregado.", e2.message);
-  }
-}
-
-try {
-  apiRoutes["/api/leads/by-phone"] = require("./api/leads/by-phone");
-  console.log("Rota de API carregada: /api/leads/by-phone");
-} catch (e) {
-  try {
-    apiRoutes["/api/leads/by-phone"] = require("./pages/api/leads/by-phone");
-    console.log("Rota de API carregada (pages): /api/leads/by-phone");
-  } catch (e2) {
-    console.warn("Aviso: by-phone.js nao pode ser carregado.", e2.message);
-  }
-}
-
-try {
-  apiRoutes["/api/leads/create"] = require("./api/leads/create");
-  apiRoutes["/api/productions/manage"] = require("./api/productions/manage");
-  console.log("Rotas de producao comercial carregadas.");
-} catch (e) {
-  console.warn("Aviso: rotas de producao comercial nao puderam ser carregadas.", e.message);
-}
-
-try {
-  apiRoutes["/api/leads/update-stage"] = require("./api/leads/update-stage");
-  console.log("Rota de API carregada: /api/leads/update-stage");
-} catch (e) {
-  try {
-    apiRoutes["/api/leads/update-stage"] = require("./pages/api/leads/update-stage");
-    console.log("Rota de API carregada (pages): /api/leads/update-stage");
-  } catch (e2) {
-    console.warn("Aviso: update-stage.js nao pode ser carregado.", e2.message);
-  }
-}
-
-try {
-  apiRoutes["/api/leads/assignees"] = require("./api/leads/assignees");
-  console.log("Rota de API carregada: /api/leads/assignees");
-} catch (e) {
-  console.warn("Aviso: leads/assignees.js nao pode ser carregado.", e.message);
-}
-
-try {
-  apiRoutes["/api/appointments/list"] = require("./api/appointments/list");
-  console.log("Rota de API carregada: /api/appointments/list");
-} catch (e) {
-  try {
-    apiRoutes["/api/appointments/list"] = require("./pages/api/appointments/list");
-    console.log("Rota de API carregada (pages): /api/appointments/list");
-  } catch (e2) {
-    console.warn("Aviso: appointments/list.js nao pode ser carregado.", e2.message);
-  }
-}
-
-try {
-  apiRoutes["/api/appointments/create"] = require("./api/appointments/create");
-  console.log("Rota de API carregada: /api/appointments/create");
-} catch (e) {
-  try {
-    apiRoutes["/api/appointments/create"] = require("./pages/api/appointments/create");
-    console.log("Rota de API carregada (pages): /api/appointments/create");
-  } catch (e2) {
-    console.warn("Aviso: appointments/create.js nao pode ser carregado.", e2.message);
-  }
-}
-
-try {
-  apiRoutes["/api/tasks/list"] = require("./api/tasks/list");
-  console.log("Rota de API carregada: /api/tasks/list");
-} catch (e) {
-  try {
-    apiRoutes["/api/tasks/list"] = require("./pages/api/tasks/list");
-    console.log("Rota de API carregada (pages): /api/tasks/list");
-  } catch (e2) {
-    console.warn("Aviso: tasks/list.js nao pode ser carregado.", e2.message);
-  }
-}
-
-try {
-  apiRoutes["/api/tasks/create"] = require("./api/tasks/create");
-  console.log("Rota de API carregada: /api/tasks/create");
-} catch (e) {
-  try {
-    apiRoutes["/api/tasks/create"] = require("./pages/api/tasks/create");
-    console.log("Rota de API carregada (pages): /api/tasks/create");
-  } catch (e2) {
-    console.warn("Aviso: tasks/create.js nao pode ser carregado.", e2.message);
-  }
-}
-
-try {
-  apiRoutes["/api/tasks/update"] = require("./api/tasks/update");
-  console.log("Rota de API carregada: /api/tasks/update");
-} catch (e) {
-  try {
-    apiRoutes["/api/tasks/update"] = require("./pages/api/tasks/update");
-    console.log("Rota de API carregada (pages): /api/tasks/update");
-  } catch (e2) {
-    console.warn("Aviso: tasks/update.js nao pode ser carregado.", e2.message);
-  }
-}
-
+loadRoute("/api/whatsapp/webhook", "./pages/api/whatsapp/webhook");
+loadRoute("/api/leads/from-whatsapp-extension", "./pages/api/leads/from-whatsapp-extension");
+loadRoute("/api/leads/delete", "./pages/api/leads/delete");
+loadRoute("/api/leads/by-phone", "./pages/api/leads/by-phone");
+loadRoute("/api/leads/create", "./pages/api/leads/create");
+loadRoute("/api/leads/update-stage", "./pages/api/leads/update-stage");
+loadRoute("/api/leads/assignees", "./pages/api/leads/assignees");
+loadRoute("/api/appointments/list", "./pages/api/appointments");
+loadRoute("/api/appointments/create", "./pages/api/appointments");
+loadRoute("/api/tasks/list", "./pages/api/tasks");
+loadRoute("/api/tasks/create", "./pages/api/tasks");
+loadRoute("/api/tasks/update", "./pages/api/tasks");
+loadRoute("/api/productions/manage", "./pages/api/productions/manage");
+loadRoute("/api/permissions/save", "./pages/api/permissions/save");
 
 const port = 3000;
 const root = __dirname;
@@ -162,9 +47,6 @@ const server = http.createServer((request, response) => {
   const requestUrl = new URL(request.url, `http://localhost:${port}`);
   const pathname = decodeURIComponent(requestUrl.pathname);
 
-  // ---------------------------------------------------------
-  // Rotas de API
-  // ---------------------------------------------------------
   const handler = apiRoutes[pathname];
   if (handler) {
     request.query = Object.fromEntries(requestUrl.searchParams);
@@ -186,9 +68,6 @@ const server = http.createServer((request, response) => {
     return;
   }
 
-  // ---------------------------------------------------------
-  // Arquivos estáticos
-  // ---------------------------------------------------------
   const normalizedPath = path.normalize(pathname);
   const safePath = normalizedPath
     .replace(/^[/\\]+/, "")

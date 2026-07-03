@@ -2,5 +2,12 @@
   "version": 2,
   "github": {
     "silent": true
-  }
+  },
+  "rewrites": [
+    { "source": "/api/tasks/list", "destination": "/api/tasks" },
+    { "source": "/api/tasks/create", "destination": "/api/tasks" },
+    { "source": "/api/tasks/update", "destination": "/api/tasks" },
+    { "source": "/api/appointments/list", "destination": "/api/appointments" },
+    { "source": "/api/appointments/create", "destination": "/api/appointments" }
+  ]
 }

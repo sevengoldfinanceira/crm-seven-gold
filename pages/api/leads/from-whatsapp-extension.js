@@ -1,28 +1,42 @@
-const { supabase } = require('../../../api/_shared/supabase');
-const { normalizeLeadClientInfo } = require('../../../api/_shared/lead-client-info');
-const { getAuthorizedCrmUser, canAccessLead } = require('../../../api/_shared/crm-authorization');
+const { supabase } = require('../../../lib/server/supabase');
+const { normalizeLeadClientInfo } = require('../../../lib/server/lead-client-info');
+const { getAuthorizedCrmUser, canAccessLead } = require('../../../lib/server/crm-authorization');
+const { getOpenProduction, NO_OPEN_PRODUCTION, productionFields } = require('../../../lib/server/commercial-productions');
+
+const sendJson = (res, status, payload) => {
+  res.writeHead(status, { 'Content-Type': 'application/json' });
+  return res.end(JSON.stringify(payload));
+};
 
 module.exports = async (req, res) => {
-  const origin = req.headers?.origin || '*';
-  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.writeHead(200);
+    return res.end();
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ ok: false, error: 'Method not allowed' });
+    return sendJson(res, 405, { ok: false, error: 'Method not allowed' });
   }
 
   try {
     const authorization = await getAuthorizedCrmUser(req);
     if (authorization.error) {
-      return res.status(authorization.status).json({ ok: false, error: authorization.error });
+      return sendJson(res, authorization.status, { ok: false, error: authorization.error });
     }
 
     const { name, phone, tags, notes, source } = req.body;
+    const open = await getOpenProduction();
+    const legacyMode = open.error && /commercial_productions|schema cache/i.test(open.error);
+    if (open.error && !legacyMode) {
+      return sendJson(res, 500, { ok: false, error: open.error });
+    }
+    if (!open.production && !legacyMode) {
+      return sendJson(res, 409, { ok: false, error: NO_OPEN_PRODUCTION });
+    }
     const owner_id = authorization.user.auth_user_id;
     const owner_email = authorization.user.email;
     const owner_name = authorization.user.nome || authorization.user.email;
@@ -30,17 +44,12 @@ module.exports = async (req, res) => {
     console.log('[from-whatsapp-extension] Requisição recebida');
 
     if (!name || !phone) {
-      return res.status(400).json({
-        ok: false,
-        error: 'name e phone são obrigatórios',
-      });
+      return sendJson(res, 400, { ok: false, error: 'name e phone são obrigatórios' });
     }
 
     const cleanedPhone = String(phone).replace(/\D/g, '');
 
-
     const ownerId = owner_id;
-
 
     const { data: existingLead, error: findError } = await supabase
       .from('leads')
@@ -50,7 +59,7 @@ module.exports = async (req, res) => {
 
     if (findError) {
       console.error('[from-whatsapp-extension] Erro ao buscar lead:', findError.message);
-      return res.status(500).json({ ok: false, error: findError.message });
+      return sendJson(res, 500, { ok: false, error: findError.message });
     }
 
     console.log('[from-whatsapp-extension] Lead existente encontrado:', existingLead ? existingLead.id : 'nenhum');
@@ -58,7 +67,7 @@ module.exports = async (req, res) => {
     if (existingLead) {
       console.log('[from-whatsapp-extension] Lead duplicado encontrado, retornando 409');
       const mayAccessExistingLead = canAccessLead(authorization.user, existingLead);
-      return res.status(409).json({
+      return sendJson(res, 409, {
         ok: false,
         action: 'duplicate',
         error: mayAccessExistingLead
@@ -78,6 +87,7 @@ module.exports = async (req, res) => {
       assigned_to_name: owner_name || null,
       created_by_email: owner_email || null,
       created_by_name: owner_name || null,
+      ...(open.production ? productionFields(open.production) : {}),
       ...normalizeLeadClientInfo(req.body),
     };
     if (tags) insertData.tags = tags;
@@ -90,24 +100,21 @@ module.exports = async (req, res) => {
 
     if (insertError) {
       console.error('[from-whatsapp-extension] Erro ao criar lead:', insertError.message);
-      return res.status(500).json({ ok: false, error: insertError.message });
+      return sendJson(res, 500, { ok: false, error: insertError.message });
     }
 
     if (!newLead || !newLead.id) {
       console.error('[from-whatsapp-extension] Insert retornou lead inválido');
-      return res.status(500).json({ ok: false, error: 'Falha ao criar lead: nenhum lead retornado' });
+      return sendJson(res, 500, { ok: false, error: 'Falha ao criar lead: nenhum lead retornado' });
     }
 
-    lead = newLead;
+    const lead = newLead;
 
     console.log('[from-whatsapp-extension] Lead criado:', { id: lead.id });
 
-    return res.status(200).json({ ok: true, lead });
+    return sendJson(res, 200, { ok: true, lead });
   } catch (err) {
     console.error('[from-whatsapp-extension] Erro interno:', process.env.NODE_ENV !== 'production' ? err : err.message);
-    return res.status(500).json({
-      ok: false,
-      error: err.message || 'Erro interno do servidor',
-    });
+    return sendJson(res, 500, { ok: false, error: err.message || 'Erro interno do servidor' });
   }
 };

@@ -1,6 +1,6 @@
-const { supabase } = require('../../../api/_shared/supabase');
-const { hasBasicLeadInfo, hasLeadClientInfo, normalizeBasicLeadInfo, normalizeLeadClientInfo } = require('../../../api/_shared/lead-client-info');
-const { getAuthorizedCrmUser, canAccessLead } = require('../../../api/_shared/crm-authorization');
+const { supabase } = require('../../../lib/server/supabase');
+const { hasBasicLeadInfo, hasLeadClientInfo, normalizeBasicLeadInfo, normalizeLeadClientInfo } = require('../../../lib/server/lead-client-info');
+const { getAuthorizedCrmUser, canAccessLead } = require('../../../lib/server/crm-authorization');
 
 const ALLOWED_STATUSES = [
   "lead_recebido",
