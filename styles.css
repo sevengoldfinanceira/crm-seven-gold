@@ -2897,18 +2897,18 @@ body.theme-dark .crm-workspace {
 }
 
 .dash-filter-field--team {
-  flex: 2;
+  flex: 3;
   min-width: 200px;
 }
 
 .dash-filter-field--responsible {
-  flex: 2;
+  flex: 4;
   min-width: 200px;
 }
 
 .dash-filter-field--period {
-  flex: 0.6;
-  min-width: 120px;
+  flex: 0.4;
+  min-width: 100px;
 }
 
 .dash-filter-field--calendar {
