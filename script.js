@@ -919,6 +919,7 @@ const initPipelineTeamFilter = async (currentCrmUser) => {
 
 const initPipelineCalendarPicker = () => {
   const periodSelect = document.getElementById("pipeline-period-type-select");
+  const calendarLabel = document.getElementById("pipeline-period-calendar-label");
   const todayBtn = document.querySelector("[data-pipeline-calendar-today]");
   const prevBtn = document.querySelector("[data-pipeline-calendar-prev]");
   const nextBtn = document.querySelector("[data-pipeline-calendar-next]");
@@ -959,6 +960,11 @@ const initPipelineCalendarPicker = () => {
     hideAllInputs();
     const active = getActiveInput();
     if (active) active.hidden = false;
+    if (calendarLabel) {
+      calendarLabel.textContent = pipelinePeriod === "day"
+        ? "Selecionar dia"
+        : pipelinePeriod === "week" ? "Selecionar semana" : "Selecionar mês";
+    }
   };
 
   const navigate = (dir) => {
