@@ -44,21 +44,21 @@ module.exports = async (req, res) => {
     }
 
     // Inserir no Supabase usando service role (bypassa RLS)
+    const insertPayload = {
+      lead_id,
+      nome_cliente,
+      telefone_cliente: req.body.telefone_cliente || null,
+      nome_usuario: assigned_to_name || req.body.nome_usuario || 'Extensão WhatsApp',
+      data_agendamento,
+      hora_agendamento,
+      observacao: observacao || null,
+      status: 'agendado',
+    };
+    if (usuario_id) insertPayload.usuario_id = usuario_id;
+
     const { data, error } = await supabase
       .from('appointments')
-      .insert({
-        lead_id,
-        nome_cliente,
-        telefone_cliente: req.body.telefone_cliente || null,
-        usuario_id,
-        nome_usuario: assigned_to_name || req.body.nome_usuario || 'Extensão WhatsApp',
-        data_agendamento,
-        hora_agendamento,
-        observacao: observacao || null,
-        status: 'agendado',
-        assigned_to_email,
-        assigned_to_name
-      })
+      .insert(insertPayload)
       .select('*')
       .single();
 
