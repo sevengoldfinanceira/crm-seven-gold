@@ -4867,9 +4867,10 @@ body.sidebar-collapsed .user-box .sidebar-user-actions .sidebar-logout-btn:hover
   }
 }
 /* Commercial production controls */
-.pipeline-header { flex-wrap: wrap; gap: 14px; }
-.pipeline-title-copy { min-width: 150px; }
-.production-control { display: flex; align-items: center; gap: 9px; min-height: 56px; padding: 5px 8px; margin-left: auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 18px; box-shadow: 0 8px 24px rgba(15,23,42,.06); transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+.pipeline-header { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: start; gap: 14px; }
+.pipeline-title-copy { min-width: 150px; grid-column: 1; }
+.pipeline-header > .new-lead-button { grid-column: 3; justify-self: end; }
+.production-control { display: flex; grid-column: 2; align-items: center; gap: 9px; min-height: 56px; padding: 5px 8px; margin: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 18px; box-shadow: 0 8px 24px rgba(15,23,42,.06); transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
 .production-control:hover { border-color: rgba(109,74,255,.44); box-shadow: 0 12px 28px rgba(91,63,255,.11); transform: translateY(-1px); }
 .production-summary { display: grid; min-width: 155px; line-height: 1.15; }
 .production-summary span { color: #64748b; font-size: .62rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
@@ -4894,4 +4895,4 @@ body.theme-dark .production-summary strong { color: #f8fafc; }
 body.theme-dark .production-summary span, body.theme-dark .production-summary small { color: #94a3b8; }
 body.theme-dark .production-nav, body.theme-dark .production-action { background: #0f172a; border-color: #334155; color: #e2e8f0; }
 body.theme-dark .lead-card.is-production-locked { background: #111827; }
-@media (max-width: 900px) { .production-control { order: 3; width: 100%; margin-left: 0; flex-wrap: wrap; } .production-summary { flex: 1; } }
+@media (max-width: 900px) { .pipeline-header { grid-template-columns: 1fr auto; } .pipeline-title-copy { grid-column: 1; } .pipeline-header > .new-lead-button { grid-column: 2; } .production-control { grid-column: 1 / -1; width: 100%; flex-wrap: wrap; } .production-summary { flex: 1; } }
