@@ -1712,7 +1712,7 @@ const loadDashboardMetrics = async () => {
   });
 
   document.querySelectorAll(".kpi-day-only").forEach((el) => {
-    el.style.display = selectedDashPeriod === "day" ? "" : "none";
+    el.style.display = selectedDashPeriod === "day" ? "flex" : "none";
   });
 
   if (!selectedDashPeriodValue) {
