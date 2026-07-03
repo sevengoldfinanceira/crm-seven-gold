@@ -3281,8 +3281,8 @@ body.theme-dark .dash-filter-control .sg-search-select.is-open .sg-search-select
   align-items: stretch;
   justify-content: center;
   gap: 10px;
-  flex: 0 1 620px;
-  width: min(100%, 620px);
+  flex: 0 1 420px;
+  width: min(100%, 420px);
   min-width: 0;
   margin-inline: auto;
 }
@@ -3418,7 +3418,7 @@ body.theme-dark .dash-calendar-today::before {
 
 .tab-content[data-tab="pipeline"] .filter-row {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: flex-end;
   gap: 12px;
   width: min(100%, 1100px);
@@ -3439,18 +3439,14 @@ body.theme-dark .dash-calendar-today::before {
   text-align: left;
 }
 
-.tab-content[data-tab="pipeline"] .pipeline-filter-field--team,
-.tab-content[data-tab="pipeline"] .pipeline-filter-field--responsible {
-  flex: 1 1 auto;
-  min-width: 200px;
-}
-
 .tab-content[data-tab="pipeline"] .pipeline-filter-field--team {
-  flex: 1 1 180px;
+  flex: 0 0 130px;
+  min-width: 130px;
 }
 
 .tab-content[data-tab="pipeline"] .pipeline-filter-field--responsible {
-  flex: 1 1 240px;
+  flex: 0 0 150px;
+  min-width: 150px;
 }
 
 .tab-content[data-tab="pipeline"] .pipeline-filter-label {
