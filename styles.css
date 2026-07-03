@@ -2894,19 +2894,21 @@ body.theme-dark .crm-workspace {
   gap: 7px;
   min-width: 0;
   text-align: left;
-  flex: 1;
 }
 
 .dash-filter-field--team {
+  flex: 2;
   min-width: 200px;
 }
 
 .dash-filter-field--responsible {
+  flex: 2;
   min-width: 200px;
 }
 
 .dash-filter-field--period {
-  min-width: 160px;
+  flex: 0.6;
+  min-width: 120px;
 }
 
 .dash-filter-field--calendar {
