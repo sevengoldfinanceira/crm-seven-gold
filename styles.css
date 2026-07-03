@@ -3279,10 +3279,10 @@ body.theme-dark .dash-filter-control .sg-search-select.is-open .sg-search-select
 .pipeline-calendar-picker {
   display: flex;
   align-items: stretch;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 10px;
-  flex: 0 0 420px;
-  width: 420px;
+  flex: 0 0 580px;
+  width: 580px;
   min-width: 0;
 }
 
@@ -3292,17 +3292,15 @@ body.theme-dark .dash-filter-control .sg-search-select.is-open .sg-search-select
 }
 
 .pipeline-calendar-picker .dash-calendar-nav {
-  flex: 0 1 455px;
-  width: min(100%, 455px);
+  flex: 1;
   min-width: 0;
 }
 
 .pipeline-calendar-date-picker {
+  flex: 1;
   display: flex;
-  flex: 0 1 455px;
   flex-direction: column;
   gap: 7px;
-  width: min(100%, 455px);
   min-width: 0;
 }
 
