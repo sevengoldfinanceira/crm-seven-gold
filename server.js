@@ -57,6 +57,14 @@ try {
 }
 
 try {
+  apiRoutes["/api/leads/create"] = require("./api/leads/create");
+  apiRoutes["/api/productions/manage"] = require("./api/productions/manage");
+  console.log("Rotas de producao comercial carregadas.");
+} catch (e) {
+  console.warn("Aviso: rotas de producao comercial nao puderam ser carregadas.", e.message);
+}
+
+try {
   apiRoutes["/api/leads/update-stage"] = require("./api/leads/update-stage");
   console.log("Rota de API carregada: /api/leads/update-stage");
 } catch (e) {

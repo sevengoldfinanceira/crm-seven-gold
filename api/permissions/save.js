@@ -22,12 +22,33 @@ const normalizeRole = (value) =>
 
 const PIPELINE_TEAM_ROLES = new Set(['coordenador-comercial', 'supervisor-comercial']);
 
-async function listAuthorizedPipelineLeads(crmUser) {
+async function listAuthorizedPipelineLeads(crmUser, productionId) {
   const role = normalizeRole(crmUser.cargo);
+  let scopedProductionId = productionId;
+  if (scopedProductionId) {
+    const { data: requestedProduction, error: productionError } = await supabase
+      .from('commercial_productions').select('id,status').eq('id', scopedProductionId).maybeSingle();
+    if (productionError) return { status: 500, error: productionError.message };
+    if (!requestedProduction) return { status: 404, error: 'Produção não encontrada.' };
+    if (role !== 'diretor-ceo' && requestedProduction.status !== 'open') {
+      return { status: 403, error: 'Seu perfil só pode acessar a produção atual aberta.' };
+    }
+  } else {
+    const { data: openProduction, error: productionError } = await supabase
+      .from('commercial_productions').select('id').eq('status', 'open').limit(1).maybeSingle();
+    if (productionError?.code === 'PGRST205') scopedProductionId = null;
+    else if (productionError) return { status: 500, error: productionError.message };
+    if (!openProduction && productionError?.code !== 'PGRST205') return { status: 409, error: 'Não existe produção aberta. Peça ao Diretor-CEO para iniciar uma nova produção.' };
+    if (openProduction) scopedProductionId = openProduction.id;
+  }
+  const baseLeadFields = 'id,name,origin,note,status,created_at,updated_at,ultima_interacao,telefone,property_region,credit_value,down_payment_value,installment_value,tags,assigned_to_email,assigned_to_name,created_by_email,created_by_name,updated_by_email,updated_by_name';
+  const productionLeadFields = ',production_id,production_month,production_year,locked_at,locked_reason,original_lead_id,commercial_productions(id,name,status,starts_at,ends_at)';
   let query = supabase
     .from('leads')
-    .select('id,name,origin,note,status,created_at,updated_at,ultima_interacao,telefone,property_region,credit_value,down_payment_value,installment_value,tags,assigned_to_email,assigned_to_name,created_by_email,created_by_name,updated_by_email,updated_by_name')
+    .select(baseLeadFields + (scopedProductionId ? productionLeadFields : ''))
     .order('created_at', { ascending: false });
+
+  if (scopedProductionId) query = query.eq('production_id', scopedProductionId);
 
   if (PIPELINE_TEAM_ROLES.has(role)) {
     const { data: team, error: teamError } = await supabase
@@ -104,8 +125,8 @@ async function listAuthorizedPipelineLeads(crmUser) {
   };
 }
 
-async function getAuthorizedPipelineHistory(crmUser) {
-  const leadResult = await listAuthorizedPipelineLeads(crmUser);
+async function getAuthorizedPipelineHistory(crmUser, productionId) {
+  const leadResult = await listAuthorizedPipelineLeads(crmUser, productionId);
   if (leadResult.error) return leadResult;
 
   const leads = leadResult.leads || [];
@@ -1204,12 +1225,12 @@ module.exports = async (req, res) => {
       return sendJson(res, 200, { ok: true, user: result.user });
     }
     if (payload.pipeline_action === 'list_leads') {
-      const result = await listAuthorizedPipelineLeads(crmUser);
+      const result = await listAuthorizedPipelineLeads(crmUser, String(payload.production_id || '').trim() || null);
       if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });
       return sendJson(res, 200, { ok: true, leads: result.leads });
     }
     if (payload.pipeline_action === 'dashboard_history') {
-      const result = await getAuthorizedPipelineHistory(crmUser);
+      const result = await getAuthorizedPipelineHistory(crmUser, String(payload.production_id || '').trim() || null);
       if (result.error) return sendJson(res, result.status, { ok: false, error: result.error });
       return sendJson(res, 200, {
         ok: true,

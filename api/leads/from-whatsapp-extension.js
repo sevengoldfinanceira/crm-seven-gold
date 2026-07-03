@@ -1,6 +1,7 @@
 const { supabase } = require('../_shared/supabase');
 const { normalizeLeadClientInfo } = require('../_shared/lead-client-info');
 const { getAuthorizedCrmUser, canAccessLead } = require('../_shared/crm-authorization');
+const { getOpenProduction, NO_OPEN_PRODUCTION, productionFields } = require('../_shared/commercial-productions');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,6 +26,16 @@ module.exports = async (req, res) => {
     }
 
     const { name, phone, tags, notes, source } = req.body;
+    const open = await getOpenProduction();
+    const legacyMode = open.error && /commercial_productions|schema cache/i.test(open.error);
+    if (open.error && !legacyMode) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: false, error: open.error }));
+    }
+    if (!open.production && !legacyMode) {
+      res.writeHead(409, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: false, error: NO_OPEN_PRODUCTION }));
+    }
     const owner_id = authorization.user.auth_user_id;
     const owner_email = authorization.user.email;
     const owner_name = authorization.user.nome || authorization.user.email;
@@ -84,6 +95,7 @@ module.exports = async (req, res) => {
       assigned_to_name: owner_name || null,
       created_by_email: owner_email || null,
       created_by_name: owner_name || null,
+      ...(open.production ? productionFields(open.production) : {}),
       ...normalizeLeadClientInfo(req.body),
     };
     if (tags) insertData.tags = tags;

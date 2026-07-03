@@ -1,5 +1,6 @@
 const { supabase } = require('../_shared/supabase');
 const { getAuthorizedCrmUser } = require('../_shared/crm-authorization');
+const { assertLeadMutable } = require('../_shared/commercial-productions');
 
 const sendJson = (res, status, payload) => {
   res.writeHead(status, { 'Content-Type': 'application/json' });
@@ -41,6 +42,8 @@ module.exports = async (req, res) => {
     if (!leadId || !assigneeEmail) {
       return sendJson(res, 400, { ok: false, error: 'Lead e responsável são obrigatórios.' });
     }
+    const mutable = await assertLeadMutable(leadId);
+    if (mutable.error) return sendJson(res, mutable.status || 500, { ok: false, error: mutable.error });
 
     const { data: assignee, error: assigneeError } = await supabase
       .from('crm_users')

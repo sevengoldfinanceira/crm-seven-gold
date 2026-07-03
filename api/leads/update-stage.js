@@ -1,6 +1,7 @@
 const { supabase } = require('../_shared/supabase');
 const { hasBasicLeadInfo, hasLeadClientInfo, normalizeBasicLeadInfo, normalizeLeadClientInfo } = require('../_shared/lead-client-info');
 const { getAuthorizedCrmUser, canAccessLead, normalizeRole, normalizeEmail } = require('../_shared/crm-authorization');
+const { assertLeadMutable } = require('../_shared/commercial-productions');
 
 const REASSIGN_ROLES = new Set(['diretor-ceo', 'dono', 'admin', 'administrador']);
 
@@ -111,6 +112,11 @@ module.exports = async (req, res) => {
     }
 
     const leadId = fetchLead[0].id;
+    const mutable = await assertLeadMutable(leadId);
+    if (mutable.error) {
+      res.writeHead(mutable.status || 500, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: false, error: mutable.error }));
+    }
     const updateTime = new Date().toISOString();
     const updateData = {
       ...basicInfo,

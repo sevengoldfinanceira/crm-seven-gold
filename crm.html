@@ -598,10 +598,18 @@
         <!-- Pipeline -->
         <section class="tab-content" data-tab="pipeline">
           <section class="pipeline-header" id="pipeline">
-            <div>
+            <div class="pipeline-title-copy">
               <h1>Pipeline</h1>
               <span class="lead-count" data-lead-count>Carregando leads...</span>
             </div>
+            <section id="production-control" class="production-control" aria-live="polite" hidden>
+              <button id="production-prev" class="production-nav" type="button" aria-label="Produção anterior">←</button>
+              <div class="production-summary"><span id="production-eyebrow">Produção atual</span><strong id="production-name">Carregando...</strong><small id="production-range"></small></div>
+              <span id="production-status" class="production-status"></span>
+              <button id="production-next" class="production-nav" type="button" aria-label="Próxima produção">→</button>
+              <button id="production-close" class="production-action production-action--danger" type="button">Fechar produção</button>
+              <button id="production-start" class="production-action" type="button">Iniciar nova produção</button>
+            </section>
             <button class="new-lead-button" type="button" data-open-modal>
               <span aria-hidden="true">+</span>
               Novo lead
@@ -664,6 +672,7 @@
               </div>
             </div>
           </section>
+          <p id="production-readonly-warning" class="production-readonly-warning" hidden>Produção encerrada — dados disponíveis apenas para consulta.</p>
 
           <section class="kanban-wrap" aria-label="Quadro de leads">
             <div class="kanban-board" data-kanban-board>
@@ -1111,7 +1120,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=profile-access-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=compact-pipeline-calendar-v2"></script>
+    <script src="script.js?v=commercial-productions-v1"></script>
     <script src="/searchable-select.js?v=responsible-select-fix-v1"></script>
     <script src="/pwa.js"></script>
   </body>

@@ -21,6 +21,76 @@ let calendarAppointments = [];
 let appointmentResolution = null;
 let currentEditingLead = null;
 let deepLinkedLeadHandled = false;
+let commercialProductions = [];
+let selectedProduction = null;
+let isProductionDirectorCeo = false;
+
+const isSelectedProductionClosed = () => selectedProduction?.status === "closed";
+const formatProductionDate = (value) => value ? new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`)) : "";
+
+const productionRequest = async (body) => {
+  const client = getClient();
+  const { data: sessionData } = await client.auth.getSession();
+  const response = await fetch("/api/productions/manage", {
+    method: body ? "POST" : "GET",
+    headers: { ...(body ? { "Content-Type": "application/json" } : {}), Authorization: `Bearer ${sessionData?.session?.access_token}` },
+    ...(body ? { body: JSON.stringify(body) } : {}),
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || result.ok !== true) throw new Error(result.error || "Não foi possível gerenciar a produção.");
+  return result;
+};
+
+const renderProductionControl = () => {
+  const control = document.getElementById("production-control");
+  if (!control || !selectedProduction) return;
+  control.hidden = false;
+  document.getElementById("production-eyebrow").textContent = isSelectedProductionClosed() ? "Produção encerrada" : "Produção atual";
+  document.getElementById("production-name").textContent = selectedProduction.name;
+  document.getElementById("production-range").textContent = `${formatProductionDate(selectedProduction.starts_at)} até ${formatProductionDate(selectedProduction.ends_at)}`;
+  const status = document.getElementById("production-status");
+  status.textContent = isSelectedProductionClosed() ? "Encerrada" : "Aberta";
+  status.className = `production-status ${isSelectedProductionClosed() ? "is-closed" : "is-open"}`;
+  const index = commercialProductions.findIndex((item) => item.id === selectedProduction.id);
+  const prev = document.getElementById("production-prev"); const next = document.getElementById("production-next");
+  prev.hidden = !isProductionDirectorCeo; next.hidden = !isProductionDirectorCeo;
+  prev.disabled = index >= commercialProductions.length - 1; next.disabled = index <= 0;
+  document.getElementById("production-close").hidden = !isProductionDirectorCeo || isSelectedProductionClosed();
+  document.getElementById("production-start").hidden = !isProductionDirectorCeo || commercialProductions.some((item) => item.status === "open");
+  document.getElementById("production-readonly-warning").hidden = !isSelectedProductionClosed();
+  document.body.classList.toggle("production-readonly", isSelectedProductionClosed());
+  if (openModalButton) openModalButton.disabled = isSelectedProductionClosed();
+};
+
+const loadCommercialProductions = async () => {
+  try {
+    const result = await productionRequest();
+    commercialProductions = result.productions || [];
+    isProductionDirectorCeo = result.isDirectorCeo === true;
+    selectedProduction = commercialProductions.find((item) => item.status === "open") || commercialProductions[0] || null;
+    if (selectedProduction) renderProductionControl();
+  } catch (error) {
+    console.error("Erro ao carregar produção comercial:", error);
+    if (leadCount) leadCount.textContent = error.message;
+  }
+};
+
+const initProductionControls = () => {
+  const switchProduction = async (direction) => {
+    const index = commercialProductions.findIndex((item) => item.id === selectedProduction?.id);
+    const target = commercialProductions[index + direction]; if (!target) return;
+    selectedProduction = target; renderProductionControl(); await Promise.all([loadLeads(), loadDashboardMetrics()]);
+  };
+  document.getElementById("production-prev")?.addEventListener("click", () => switchProduction(1));
+  document.getElementById("production-next")?.addEventListener("click", () => switchProduction(-1));
+  document.getElementById("production-close")?.addEventListener("click", async () => {
+    if (!confirm("Tem certeza que deseja encerrar esta produção? Após o fechamento, todos os leads deste mês ficarão bloqueados para edição.")) return;
+    try { await productionRequest({ action: "close", production_id: selectedProduction.id }); await loadCommercialProductions(); await loadLeads(); } catch (error) { alert(error.message); }
+  });
+  document.getElementById("production-start")?.addEventListener("click", async () => {
+    try { await productionRequest({ action: "start_next" }); await loadCommercialProductions(); await loadLeads(); } catch (error) { alert(error.message); }
+  });
+};
 
 const createLeadActivityLog = async ({
   leadId,
@@ -130,6 +200,7 @@ if (sidebarCollapseBtn) {
 }
 
 openModalButton?.addEventListener("click", () => {
+  if (isSelectedProductionClosed()) return alert("Lead travado porque pertence a uma produção encerrada.");
   if (typeof modal?.showModal === "function") {
     const title = modal.querySelector("#modal-title");
     const submitButton = modal.querySelector("button[type='submit']");
@@ -1657,7 +1728,7 @@ const fetchAuthorizedLeads = async (client) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ pipeline_action: "list_leads" }),
+    body: JSON.stringify({ pipeline_action: "list_leads", production_id: selectedProduction?.id || null }),
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok || result.ok !== true) {
@@ -1677,7 +1748,7 @@ const fetchDashboardHistory = async (client) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ pipeline_action: "dashboard_history" }),
+    body: JSON.stringify({ pipeline_action: "dashboard_history", production_id: selectedProduction?.id || null }),
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok || result.ok !== true) {
@@ -2981,10 +3052,12 @@ const deleteLead = async (leadId) => {
   }
 
   try {
+    const { data: sessionData } = await getClient().auth.getSession();
     const response = await fetch(`/api/leads/delete`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionData?.session?.access_token}`,
       },
       body: JSON.stringify({ id: leadId }),
     });
@@ -3083,6 +3156,10 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
   const client = getClient();
 
   if (!client || !leadId || !status) {
+    return false;
+  }
+  if (isSelectedProductionClosed()) {
+    alert("Não é possível alterar lead de uma produção encerrada.");
     return false;
   }
 
@@ -3256,7 +3333,9 @@ const createLeadCard = (lead) => {
   const showResponsible = Boolean(currentCrmUser) && shouldSeeAllLeads(currentCrmUser);
   const card = document.createElement("article");
   card.className = lead.status === "venda_fechada" ? "lead-card done" : "lead-card";
-  card.draggable = true;
+  const leadLocked = lead.commercial_productions?.status === "closed" || Boolean(lead.locked_at);
+  card.draggable = !leadLocked;
+  card.classList.toggle("is-production-locked", leadLocked);
   card.dataset.leadId = lead.id;
   card.dataset.status = lead.status || "lead_recebido";
   if (lead.created_at) card.dataset.createdAt = lead.created_at;
@@ -3421,12 +3500,26 @@ const createLeadCard = (lead) => {
   editBtn.type = "button";
   editBtn.className = "lead-action-btn edit-btn";
   editBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Editar`;
+  editBtn.disabled = leadLocked;
+  editBtn.title = leadLocked ? "Lead travado porque pertence a uma produção encerrada." : "Editar lead";
   editBtn.addEventListener("click", (e) => {
     e.stopPropagation();
+    if (leadLocked) return alert("Lead travado porque pertence a uma produção encerrada.");
     openEditLeadModal(lead);
   });
 
   actionsRow.append(waBtn, callBtn, editBtn);
+  if (leadLocked && isProductionDirectorCeo) {
+    const copyBtn = document.createElement("button");
+    copyBtn.type = "button";
+    copyBtn.className = "lead-action-btn copy-production-btn";
+    copyBtn.textContent = "Copiar para atual";
+    copyBtn.addEventListener("click", async () => {
+      try { await productionRequest({ action: "copy_lead", lead_id: lead.id }); alert("Lead copiado para a produção atual."); }
+      catch (error) { alert(error.message); }
+    });
+    actionsRow.append(copyBtn);
+  }
 
   // Tags Container
   const tagsContainer = document.createElement("div");
@@ -3810,7 +3903,11 @@ leadForm?.addEventListener("submit", async (event) => {
       return;
     }
 
-    const { error } = await client.from("leads").insert({
+    const { data: sessionData } = await client.auth.getSession();
+    const response = await fetch("/api/leads/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${sessionData?.session?.access_token}` },
+      body: JSON.stringify({
       name,
       telefone: String(formData.get("telefone") || "").replace(/\D/g, ""),
       origin: String(formData.get("origin") || "").trim(),
@@ -3821,18 +3918,15 @@ leadForm?.addEventListener("submit", async (event) => {
       credit_value: parseOptionalMoney(formData.get("credit_value")),
       down_payment_value: parseOptionalMoney(formData.get("down_payment_value")),
       installment_value: parseOptionalMoney(formData.get("installment_value")),
-      owner_id: user.id,
-      assigned_to_email: responsibleEmail,
-      assigned_to_name: responsibleName,
-      created_by_email: responsibleEmail,
-      created_by_name: responsibleName,
+      })
     });
+    const created = await response.json().catch(() => ({}));
 
     submitButton.disabled = false;
     submitButton.textContent = "Salvar lead";
 
-    if (error) {
-      setFormStatus("Nao consegui salvar. Confira se a tabela leads foi criada no Supabase.");
+    if (!response.ok || created.ok !== true) {
+      setFormStatus(created.error || "Não foi possível salvar o lead.");
       return;
     }
   }
@@ -3955,10 +4049,12 @@ const setupBulkActions = () => {
       updateBulkActionsBar();
 
       try {
+        const { data: sessionData } = await client.auth.getSession();
         const response = await fetch(`/api/leads/delete`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionData?.session?.access_token}`,
           },
           body: JSON.stringify({ ids: leadIds }),
         });
@@ -4265,6 +4361,7 @@ document.addEventListener("DOMContentLoaded", () => {
   calendarWeekStart = getWeekStart();
   renderCalendar();
   initPipelineCalendarPicker();
+  initProductionControls();
   setupDragAndDrop();
   setupTouchMove();
   setupBulkActions();
@@ -4275,8 +4372,9 @@ document.addEventListener("DOMContentLoaded", () => {
   loadLeads();
 });
 
-document.addEventListener("crm-authorized", () => {
+document.addEventListener("crm-authorized", async () => {
   window.currentCrmUser = window.crmUser || window.sevenGoldCrmSession?.crmUser;
+  await loadCommercialProductions();
   loadLeads();
   const hash = window.location.hash.replace("#", "") || "pipeline";
   if (hash === "calendario") {
