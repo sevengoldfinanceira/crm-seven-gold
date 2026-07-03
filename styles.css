@@ -3420,10 +3420,10 @@ body.theme-dark .dash-calendar-today::before {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 16px;
-  width: 100%;
+  gap: 12px;
+  width: min(100%, 1100px);
   margin: 0 auto 20px;
-  padding: 18px;
+  padding: 12px;
   border: 1px solid rgba(99, 102, 241, 0.1);
   border-radius: 24px;
   background: linear-gradient(180deg, #f8faff 0%, #eef2ff 100%);
