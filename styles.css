@@ -2017,6 +2017,8 @@ body.theme-dark .crm-profile-card input[readonly] { background: #151019; color: 
 .calendar-day-header strong { font-size: .83rem; text-transform: uppercase; }
 .calendar-day-header span { color: var(--muted); font-size: .76rem; }
 .calendar-day-header.is-today { color: var(--gold-dark); background: #fff9e9; }
+.calendar-day-count-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 999px; background: #e2e8f0; color: #64748b; font-size: .62rem; font-weight: 800; line-height: 1; margin-top: 2px; }
+.calendar-day-count-badge.has-appointments { background: #6366f1; color: #fff; }
 .calendar-time-label { position: sticky; left: 0; z-index: 3; display: flex; align-items: flex-start; justify-content: center; min-height: 40px; padding-top: 8px; border-bottom: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: .68rem; font-weight: 700; }
 .calendar-slot { position: relative; display: flex; flex-direction: column; gap: 4px; min-width: 0; min-height: 40px; padding: 3px 4px; border: 0; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--surface); text-align: left; overflow: hidden; }
 .calendar-slot:hover, .calendar-slot:focus-visible { outline: none; background: #fffaf0; box-shadow: inset 0 0 0 1px rgba(216,173,61,.35); }
@@ -2388,6 +2390,8 @@ body.theme-dark .calendar-time-label { background: #151019; }
 body.theme-dark .calendar-slot { background: #17121d; }
 body.theme-dark .calendar-slot.is-today,
 body.theme-dark .calendar-day-header.is-today { background: #282014; }
+body.theme-dark .calendar-day-count-badge { background: #2d2640; color: #94a3b8; }
+body.theme-dark .calendar-day-count-badge.has-appointments { background: #7c3aed; color: #fff; }
 body.theme-dark .calendar-slot.is-saturday { background: rgba(37, 99, 235, .035); }
 body.theme-dark .calendar-slot.is-sunday { background: rgba(225, 29, 72, .03); }
 

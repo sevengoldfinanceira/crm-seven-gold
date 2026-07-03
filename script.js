@@ -2420,6 +2420,17 @@ const renderCalendar = () => {
       const date = document.createElement("span");
       date.textContent = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" }).format(day);
       header.append(weekday, date);
+
+      if (day.getDay() !== 0) {
+        const dateKey = toDateKey(day);
+        const dayCount = calendarAppointments.filter((item) => item.data_agendamento === dateKey).length;
+        const badge = document.createElement("span");
+        badge.className = "calendar-day-count-badge";
+        badge.textContent = dayCount;
+        if (dayCount > 0) badge.classList.add("has-appointments");
+        header.append(badge);
+      }
+
       calendarGrid.append(header);
     });
 
