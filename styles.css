@@ -3499,6 +3499,8 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
   white-space: nowrap;
 }
 
+.kpi-day-only { display: none; }
+
 /* Divider between number and conversion */
 .kpi-divider {
   width: 1px;

@@ -1669,6 +1669,7 @@ const loadDashboardMetrics = async () => {
   const elNotInterestedConversion = document.getElementById("dash-not-interested-conversion");
   const elCancelled = document.getElementById("dash-cancelled-leads");
   const elCancelledConversion = document.getElementById("dash-cancelled-conversion");
+  const elTodayClients = document.getElementById("dash-today-clients");
 
   if (!elReceived) return;
 
@@ -1712,6 +1713,10 @@ const loadDashboardMetrics = async () => {
 
   document.querySelectorAll(".kpi-day-hide-store").forEach((el) => {
     el.style.display = selectedDashPeriod === "day" ? "none" : "";
+  });
+
+  document.querySelectorAll(".kpi-day-only").forEach((el) => {
+    el.style.display = selectedDashPeriod === "day" ? "" : "none";
   });
 
   if (!selectedDashPeriodValue) {
@@ -1826,12 +1831,24 @@ const loadDashboardMetrics = async () => {
   elNotServed.textContent = notServed;
   elAppointments.textContent = totalAppointments;
   elClientsInStore.textContent = clientsInStore;
+  if (elTodayClients) elTodayClients.textContent = totalAppointments;
   if (elNoShows) elNoShows.textContent = noShows;
   if (elNoShowsConversion) elNoShowsConversion.textContent = `${noShowsConversion}%`;
   elInApproval.textContent = inApproval;
   elNotInterested.textContent = notInterested;
   elClosed.textContent = closedLeads;
-  elClosingConversion.textContent = `${closingConversion}%`;
+  if (selectedDashPeriod === "day") {
+    const dayStoreConv = totalAppointments > 0 ? ((clientsInStore / totalAppointments) * 100).toFixed(1) : "0.0";
+    const dayApprovalConv = clientsInStore > 0 ? ((inApproval / clientsInStore) * 100).toFixed(1) : "0.0";
+    const dayClosingConv = clientsInStore > 0 ? ((closedLeads / clientsInStore) * 100).toFixed(1) : "0.0";
+    const dayNotInterestedConv = clientsInStore > 0 ? ((notInterested / clientsInStore) * 100).toFixed(1) : "0.0";
+    if (elStoreConversion) elStoreConversion.textContent = `${dayStoreConv}%`;
+    elClosingConversion.textContent = `${dayClosingConv}%`;
+    if (elApprovalConversion) elApprovalConversion.textContent = `${dayApprovalConv}%`;
+    if (elNotInterestedConversion) elNotInterestedConversion.textContent = `${dayNotInterestedConv}%`;
+  } else {
+    elClosingConversion.textContent = `${closingConversion}%`;
+  }
   elAppointmentConversion.textContent = `${appointmentConversion}%`;
   if (elCancelled) elCancelled.textContent = cancelledLeads;
 
