@@ -31,16 +31,12 @@ module.exports = async (req, res) => {
     const assigned_to_email = lead?.assigned_to_email || req.body.assigned_to_email || null;
     const assigned_to_name = lead?.assigned_to_name || req.body.assigned_to_name || null;
 
-    // Resolver usuario_id a partir do email do responsável
-    let usuario_id = req.body.usuario_id || null;
-    if (!usuario_id && assigned_to_email) {
-      const { data: crmUser } = await supabase
-        .from('crm_users')
-        .select('id')
-        .eq('email', assigned_to_email)
-        .eq('ativo', true)
-        .maybeSingle();
-      usuario_id = crmUser?.id || null;
+    // Resolver usuario_id a partir do email do responsável (FK referencia auth.users)
+    // SEMPRE resolver pelo email, ignorar usuario_id do body (pode ser crm_users.id)
+    let usuario_id = null;
+    if (assigned_to_email) {
+      const { data: userData } = await supabase.auth.admin.getUserByEmail(assigned_to_email);
+      usuario_id = userData?.user?.id || null;
     }
 
     // Inserir no Supabase usando service role (bypassa RLS)

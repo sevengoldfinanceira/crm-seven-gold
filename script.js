@@ -2364,6 +2364,7 @@ const loadAppointments = async () => {
 
   const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
   if (!currentCrmUser) return;
+  const authUserId = window.currentUser?.id || window.sevenGoldCrmSession?.currentUser?.id || null;
   await initCalendarResponsibleFilter(currentCrmUser);
 
   setCalendarStatus("Carregando agendamentos...");
@@ -2395,8 +2396,8 @@ const loadAppointments = async () => {
     }
   }
 
-  if (!shouldSeeAllLeads(currentCrmUser) && currentCrmUser?.id) {
-    query = query.eq("usuario_id", currentCrmUser.id);
+  if (!shouldSeeAllLeads(currentCrmUser) && authUserId) {
+    query = query.eq("usuario_id", authUserId);
   } else if (activeResponsibleId) {
     query = query.eq("usuario_id", activeResponsibleId);
   } else if (activeTeamId) {
