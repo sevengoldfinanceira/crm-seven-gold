@@ -645,6 +645,7 @@
                   <select id="pipeline-period-type-select">
                     <option value="day">Dia</option>
                     <option value="week" selected>Semana</option>
+                    <option value="month">Mês</option>
                   </select>
                   <svg class="pipeline-filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                 </span>
@@ -659,6 +660,7 @@
                     <svg class="dash-calendar-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
                     <input id="pipeline-period-day-input" type="date" aria-label="Selecionar dia" hidden>
                     <input id="pipeline-period-week-input" type="week" aria-label="Selecionar semana">
+                    <input id="pipeline-period-month-input" type="month" aria-label="Mês da produção" hidden>
                   </div>
                   <button class="dash-calendar-today" type="button" data-pipeline-calendar-today aria-label="Ir para hoje">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>
@@ -1118,7 +1120,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=profile-access-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=pipeline-created-date-filter-v1"></script>
+    <script src="script.js?v=production-locked-month-filter-v1"></script>
     <script src="/searchable-select.js?v=responsible-select-fix-v1"></script>
     <script src="/pwa.js"></script>
   </body>

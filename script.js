@@ -27,6 +27,16 @@ let isProductionDirectorCeo = false;
 let selectedPipelinePeriod = "week";
 let selectedPipelinePeriodValue = "";
 
+const syncPipelineMonthToProduction = () => {
+  const monthInput = document.getElementById("pipeline-period-month-input");
+  const productionMonth = selectedProduction?.starts_at?.slice(0, 7);
+  if (!monthInput || !productionMonth) return;
+  monthInput.min = productionMonth;
+  monthInput.max = productionMonth;
+  monthInput.value = productionMonth;
+  if (selectedPipelinePeriod === "month") selectedPipelinePeriodValue = productionMonth;
+};
+
 const isSelectedProductionClosed = () => selectedProduction?.status === "closed";
 const formatProductionDate = (value) => value ? new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`)) : "";
 
@@ -62,6 +72,7 @@ const renderProductionControl = () => {
   document.getElementById("production-readonly-warning").hidden = !isSelectedProductionClosed();
   document.body.classList.toggle("production-readonly", isSelectedProductionClosed());
   if (openModalButton) openModalButton.disabled = isSelectedProductionClosed();
+  if (typeof syncPipelineMonthToProduction === "function") syncPipelineMonthToProduction();
 };
 
 const loadCommercialProductions = async () => {
@@ -999,6 +1010,7 @@ const initPipelineCalendarPicker = () => {
   const inputs = {
     day: document.getElementById("pipeline-period-day-input"),
     week: document.getElementById("pipeline-period-week-input"),
+    month: document.getElementById("pipeline-period-month-input"),
   };
   if (!periodSelect || !inputs.day) return;
   if (periodSelect.dataset.calendarReady === "true") return;
@@ -1017,6 +1029,7 @@ const initPipelineCalendarPicker = () => {
       const weekNumber = Math.ceil((((utcDate - yearStart) / 86400000) + 1) / 7);
       return `${utcDate.getUTCFullYear()}-W${pad(weekNumber)}`;
     }
+    if (type === "month") return selectedProduction?.starts_at?.slice(0, 7) || `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
     return "";
   };
 
@@ -1030,12 +1043,18 @@ const initPipelineCalendarPicker = () => {
     hideAllInputs();
     const active = getActiveInput();
     if (active) active.hidden = false;
+    if (selectedPipelinePeriod === "month") syncPipelineMonthToProduction();
+    if (prevBtn) prevBtn.disabled = selectedPipelinePeriod === "month";
+    if (nextBtn) nextBtn.disabled = selectedPipelinePeriod === "month";
     if (calendarLabel) {
-      calendarLabel.textContent = selectedPipelinePeriod === "day" ? "Selecionar dia" : "Selecionar semana";
+      calendarLabel.textContent = selectedPipelinePeriod === "day"
+        ? "Selecionar dia"
+        : selectedPipelinePeriod === "week" ? "Selecionar semana" : "Mês da produção";
     }
   };
 
   const navigate = (dir) => {
+    if (selectedPipelinePeriod === "month") return;
     const input = getActiveInput();
     if (!input || !input.value) return;
     if (selectedPipelinePeriod === "day") {
@@ -1061,6 +1080,11 @@ const initPipelineCalendarPicker = () => {
   const goToday = () => {
     const input = getActiveInput();
     if (!input) return;
+    if (selectedPipelinePeriod === "month") {
+      syncPipelineMonthToProduction();
+      loadLeads();
+      return;
+    }
     input.value = getCurrentValue(selectedPipelinePeriod);
     selectedPipelinePeriodValue = input.value;
     input.dispatchEvent(new Event("change"));
@@ -1071,6 +1095,7 @@ const initPipelineCalendarPicker = () => {
     input.value = getCurrentValue(type);
     input.addEventListener("change", () => {
       if (type !== selectedPipelinePeriod) return;
+      if (type === "month") syncPipelineMonthToProduction();
       selectedPipelinePeriodValue = input.value;
       loadLeads();
     });
@@ -3615,6 +3640,15 @@ const getPipelineLeadDateRange = () => {
     const start = new Date(`${selectedPipelinePeriodValue}T00:00:00-03:00`);
     if (Number.isNaN(start.getTime())) return null;
     return { start, end: new Date(start.getTime() + 24 * 60 * 60 * 1000) };
+  }
+
+  if (selectedPipelinePeriod === "month") {
+    const startsAt = selectedProduction?.starts_at;
+    const endsAt = selectedProduction?.ends_at;
+    if (!startsAt || !endsAt) return null;
+    const start = new Date(`${startsAt}T00:00:00-03:00`);
+    const finalDay = new Date(`${endsAt}T00:00:00-03:00`);
+    return { start, end: new Date(finalDay.getTime() + 24 * 60 * 60 * 1000) };
   }
 
   const match = /^(\d{4})-W(\d{2})$/.exec(selectedPipelinePeriodValue);
