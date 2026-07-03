@@ -142,6 +142,19 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
   color: #17130a;
 }
 
+.nav-item[draggable="true"] {
+  cursor: grab;
+}
+
+.nav-item.is-nav-dragging {
+  opacity: 0.42;
+  cursor: grabbing;
+}
+
+.nav-list.is-nav-reordering .nav-item:not(.is-nav-dragging) {
+  transition: transform 0.14s ease, background-color 0.14s ease;
+}
+
 .nav-icon {
   display: grid;
   place-items: center;

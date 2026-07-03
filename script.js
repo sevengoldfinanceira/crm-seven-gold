@@ -3750,6 +3750,85 @@ const initLeadModalTabs = () => {
 };
 
 const dashboardMetricOrderKey = "sevenGoldDashboardMetricOrder";
+const sidebarNavOrderKey = "sevenGoldSidebarNavOrder";
+
+const saveSidebarNavOrder = (navList) => {
+  const order = Array.from(navList.querySelectorAll(".nav-item"))
+    .map((item) => item.dataset.permissionKey || item.getAttribute("href"))
+    .filter(Boolean);
+  try {
+    localStorage.setItem(sidebarNavOrderKey, JSON.stringify(order));
+  } catch (error) {
+    console.warn("Não foi possível salvar a ordem das abas:", error);
+  }
+};
+
+const setupSidebarNavDrag = () => {
+  const navList = document.querySelector(".nav-list");
+  if (!navList || navList.dataset.dragReady === "true") return;
+  navList.dataset.dragReady = "true";
+
+  const items = Array.from(navList.querySelectorAll(".nav-item"));
+  items.forEach((item) => {
+    item.draggable = true;
+  });
+
+  try {
+    const savedOrder = JSON.parse(localStorage.getItem(sidebarNavOrderKey) || "[]");
+    if (Array.isArray(savedOrder)) {
+      const itemByKey = new Map(
+        items.map((item) => [item.dataset.permissionKey || item.getAttribute("href"), item])
+      );
+      savedOrder.forEach((key) => {
+        const item = itemByKey.get(key);
+        if (item) navList.append(item);
+      });
+      items.forEach((item) => {
+        const key = item.dataset.permissionKey || item.getAttribute("href");
+        if (!savedOrder.includes(key)) navList.append(item);
+      });
+    }
+  } catch (error) {
+    console.warn("Não foi possível restaurar a ordem das abas:", error);
+  }
+
+  let draggedItem = null;
+
+  navList.addEventListener("dragstart", (event) => {
+    const item = event.target.closest?.(".nav-item");
+    if (!item) return;
+    draggedItem = item;
+    navList.classList.add("is-nav-reordering");
+    item.classList.add("is-nav-dragging");
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", item.dataset.permissionKey || item.getAttribute("href"));
+  });
+
+  navList.addEventListener("dragover", (event) => {
+    if (!draggedItem) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    const targetItem = event.target.closest?.(".nav-item");
+    if (!targetItem || targetItem === draggedItem) return;
+
+    const targetRect = targetItem.getBoundingClientRect();
+    const insertAfter = event.clientY > targetRect.top + targetRect.height / 2;
+    navList.insertBefore(draggedItem, insertAfter ? targetItem.nextSibling : targetItem);
+  });
+
+  navList.addEventListener("drop", (event) => {
+    if (!draggedItem) return;
+    event.preventDefault();
+    saveSidebarNavOrder(navList);
+  });
+
+  navList.addEventListener("dragend", () => {
+    draggedItem?.classList.remove("is-nav-dragging");
+    navList.classList.remove("is-nav-reordering");
+    draggedItem = null;
+    saveSidebarNavOrder(navList);
+  });
+};
 
 const saveDashboardMetricOrder = (grid) => {
   const order = Array.from(grid.querySelectorAll(".kpi-card"))
@@ -3837,6 +3916,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupDragAndDrop();
   setupTouchMove();
   setupBulkActions();
+  setupSidebarNavDrag();
   setupDashboardMetricDrag();
   initLeadModalTabs();
   switchTab();
