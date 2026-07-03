@@ -24,6 +24,8 @@ let deepLinkedLeadHandled = false;
 let commercialProductions = [];
 let selectedProduction = null;
 let isProductionDirectorCeo = false;
+let selectedPipelinePeriod = "week";
+let selectedPipelinePeriodValue = "";
 
 const isSelectedProductionClosed = () => selectedProduction?.status === "closed";
 const formatProductionDate = (value) => value ? new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`)) : "";
@@ -1002,8 +1004,6 @@ const initPipelineCalendarPicker = () => {
   if (periodSelect.dataset.calendarReady === "true") return;
   periodSelect.dataset.calendarReady = "true";
 
-  let pipelinePeriod = "week";
-
   const pad = (v) => String(v).padStart(2, "0");
 
   const getCurrentValue = (type) => {
@@ -1020,7 +1020,7 @@ const initPipelineCalendarPicker = () => {
     return "";
   };
 
-  const getActiveInput = () => inputs[pipelinePeriod];
+  const getActiveInput = () => inputs[selectedPipelinePeriod];
 
   const hideAllInputs = () => {
     Object.values(inputs).forEach((inp) => { if (inp) inp.hidden = true; });
@@ -1031,18 +1031,18 @@ const initPipelineCalendarPicker = () => {
     const active = getActiveInput();
     if (active) active.hidden = false;
     if (calendarLabel) {
-      calendarLabel.textContent = pipelinePeriod === "day" ? "Selecionar dia" : "Selecionar semana";
+      calendarLabel.textContent = selectedPipelinePeriod === "day" ? "Selecionar dia" : "Selecionar semana";
     }
   };
 
   const navigate = (dir) => {
     const input = getActiveInput();
     if (!input || !input.value) return;
-    if (pipelinePeriod === "day") {
+    if (selectedPipelinePeriod === "day") {
       const d = new Date(`${input.value}T12:00:00`);
       d.setDate(d.getDate() + dir);
       input.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-    } else if (pipelinePeriod === "week") {
+    } else if (selectedPipelinePeriod === "week") {
       const match = /^(\d{4})-W(\d{2})$/.exec(input.value);
       if (!match) return;
       const d = new Date(Number(match[1]), 0, 1 + (Number(match[2]) - 1) * 7);
@@ -1054,28 +1054,38 @@ const initPipelineCalendarPicker = () => {
       const wn = Math.ceil((((utcDate - ys) / 86400000) + 1) / 7);
       input.value = `${utcDate.getUTCFullYear()}-W${pad(wn)}`;
     }
+    selectedPipelinePeriodValue = input.value;
     input.dispatchEvent(new Event("change"));
   };
 
   const goToday = () => {
     const input = getActiveInput();
     if (!input) return;
-    input.value = getCurrentValue(pipelinePeriod);
+    input.value = getCurrentValue(selectedPipelinePeriod);
+    selectedPipelinePeriodValue = input.value;
     input.dispatchEvent(new Event("change"));
   };
 
   Object.entries(inputs).forEach(([type, input]) => {
     if (!input) return;
     input.value = getCurrentValue(type);
+    input.addEventListener("change", () => {
+      if (type !== selectedPipelinePeriod) return;
+      selectedPipelinePeriodValue = input.value;
+      loadLeads();
+    });
   });
+  selectedPipelinePeriodValue = inputs[selectedPipelinePeriod]?.value || getCurrentValue(selectedPipelinePeriod);
 
   showActiveInput();
 
   periodSelect.addEventListener("change", () => {
-    pipelinePeriod = periodSelect.value || "week";
+    selectedPipelinePeriod = periodSelect.value || "week";
     const active = getActiveInput();
-    if (active && !active.value) active.value = getCurrentValue(pipelinePeriod);
+    if (active && !active.value) active.value = getCurrentValue(selectedPipelinePeriod);
+    selectedPipelinePeriodValue = active?.value || "";
     showActiveInput();
+    loadLeads();
   });
 
   prevBtn?.addEventListener("click", () => navigate(-1));
@@ -3598,6 +3608,37 @@ const renderLeads = (leads) => {
   }
 };
 
+const getPipelineLeadDateRange = () => {
+  if (!selectedPipelinePeriodValue) return null;
+
+  if (selectedPipelinePeriod === "day") {
+    const start = new Date(`${selectedPipelinePeriodValue}T00:00:00-03:00`);
+    if (Number.isNaN(start.getTime())) return null;
+    return { start, end: new Date(start.getTime() + 24 * 60 * 60 * 1000) };
+  }
+
+  const match = /^(\d{4})-W(\d{2})$/.exec(selectedPipelinePeriodValue);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const week = Number(match[2]);
+  const januaryFourth = new Date(Date.UTC(year, 0, 4));
+  const januaryFourthDay = januaryFourth.getUTCDay() || 7;
+  const monday = new Date(januaryFourth);
+  monday.setUTCDate(januaryFourth.getUTCDate() - januaryFourthDay + 1 + ((week - 1) * 7));
+  const date = `${monday.getUTCFullYear()}-${String(monday.getUTCMonth() + 1).padStart(2, "0")}-${String(monday.getUTCDate()).padStart(2, "0")}`;
+  const start = new Date(`${date}T00:00:00-03:00`);
+  return { start, end: new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000) };
+};
+
+const filterLeadsByPipelinePeriod = (leads) => {
+  const range = getPipelineLeadDateRange();
+  if (!range) return leads;
+  return leads.filter((lead) => {
+    const createdAt = new Date(lead.created_at);
+    return !Number.isNaN(createdAt.getTime()) && createdAt >= range.start && createdAt < range.end;
+  });
+};
+
 const loadLeads = async () => {
   const client = getClient();
 
@@ -3649,6 +3690,8 @@ const loadLeads = async () => {
     const allowedTeamEmails = new Set(teamEmails.map(normalizeLeadEmail));
     visibleLeads = visibleLeads.filter((lead) => allowedTeamEmails.has(normalizeLeadEmail(lead.assigned_to_email)));
   }
+
+  visibleLeads = filterLeadsByPipelinePeriod(visibleLeads);
 
   renderLeads(visibleLeads);
   if (!deepLinkedLeadHandled) {
