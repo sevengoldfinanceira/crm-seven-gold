@@ -1705,6 +1705,11 @@ const loadDashboardMetrics = async () => {
       ? "Selecionar dia"
       : selectedDashPeriod === "week" ? "Selecionar semana" : "Selecionar mês";
   }
+
+  document.querySelectorAll(".kpi-day-hide").forEach((el) => {
+    el.style.display = selectedDashPeriod === "day" ? "none" : "";
+  });
+
   if (!selectedDashPeriodValue) {
     selectedDashPeriodValue = periodInputs[selectedDashPeriod]?.value || getCurrentDashboardPeriodValue(selectedDashPeriod);
   }
