@@ -14,20 +14,20 @@ function loadRoute(routePath, filePath) {
   }
 }
 
-loadRoute("/api/whatsapp/webhook", "./pages/api/whatsapp/webhook");
-loadRoute("/api/leads/from-whatsapp-extension", "./pages/api/leads/from-whatsapp-extension");
-loadRoute("/api/leads/delete", "./pages/api/leads/delete");
-loadRoute("/api/leads/by-phone", "./pages/api/leads/by-phone");
-loadRoute("/api/leads/create", "./pages/api/leads/create");
-loadRoute("/api/leads/update-stage", "./pages/api/leads/update-stage");
-loadRoute("/api/leads/assignees", "./pages/api/leads/assignees");
-loadRoute("/api/appointments/list", "./pages/api/appointments");
-loadRoute("/api/appointments/create", "./pages/api/appointments");
-loadRoute("/api/tasks/list", "./pages/api/tasks");
-loadRoute("/api/tasks/create", "./pages/api/tasks");
-loadRoute("/api/tasks/update", "./pages/api/tasks");
-loadRoute("/api/productions/manage", "./pages/api/productions/manage");
-loadRoute("/api/permissions/save", "./pages/api/permissions/save");
+loadRoute("/api/whatsapp/webhook", "./api/whatsapp/webhook");
+loadRoute("/api/leads/from-whatsapp-extension", "./api/leads/from-whatsapp-extension");
+loadRoute("/api/leads/delete", "./api/leads/delete");
+loadRoute("/api/leads/by-phone", "./api/leads/by-phone");
+loadRoute("/api/leads/create", "./api/leads/create");
+loadRoute("/api/leads/update-stage", "./api/leads/update-stage");
+loadRoute("/api/leads/assignees", "./api/leads/assignees");
+loadRoute("/api/appointments/list", "./api/appointments");
+loadRoute("/api/appointments/create", "./api/appointments");
+loadRoute("/api/tasks/list", "./api/tasks");
+loadRoute("/api/tasks/create", "./api/tasks");
+loadRoute("/api/tasks/update", "./api/tasks");
+loadRoute("/api/productions/manage", "./api/productions/manage");
+loadRoute("/api/permissions/save", "./api/permissions/save");
 
 const port = 3000;
 const root = __dirname;

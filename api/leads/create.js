@@ -1,7 +1,7 @@
-const { supabase } = require('../../../lib/server/supabase');
-const { getAuthorizedCrmUser } = require('../../../lib/server/crm-authorization');
-const { getOpenProduction, NO_OPEN_PRODUCTION, productionFields } = require('../../../lib/server/commercial-productions');
-const { normalizeLeadClientInfo } = require('../../../lib/server/lead-client-info');
+const { supabase } = require('../../lib/server/supabase');
+const { getAuthorizedCrmUser } = require('../../lib/server/crm-authorization');
+const { getOpenProduction, NO_OPEN_PRODUCTION, productionFields } = require('../../lib/server/commercial-productions');
+const { normalizeLeadClientInfo } = require('../../lib/server/lead-client-info');
 
 const send = (res, status, body) => {
   res.writeHead(status, { 'Content-Type': 'application/json' });

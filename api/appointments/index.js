@@ -1,6 +1,6 @@
-const { supabase } = require('../../../lib/server/supabase');
-const { getAuthorizedCrmUser, canAccessLead } = require('../../../lib/server/crm-authorization');
-const { assertLeadMutable } = require('../../../lib/server/commercial-productions');
+const { supabase } = require('../../lib/server/supabase');
+const { getAuthorizedCrmUser, canAccessLead } = require('../../lib/server/crm-authorization');
+const { assertLeadMutable } = require('../../lib/server/commercial-productions');
 
 const send = (res, status, body) => {
   res.writeHead(status, { 'Content-Type': 'application/json' });

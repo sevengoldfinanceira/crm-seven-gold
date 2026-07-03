@@ -1,6 +1,6 @@
-const { supabase } = require('../../../lib/server/supabase');
-const { getAuthorizedCrmUser } = require('../../../lib/server/crm-authorization');
-const { isDirectorCeo, getOpenProduction } = require('../../../lib/server/commercial-productions');
+const { supabase } = require('../../lib/server/supabase');
+const { getAuthorizedCrmUser } = require('../../lib/server/crm-authorization');
+const { isDirectorCeo, getOpenProduction } = require('../../lib/server/commercial-productions');
 
 const send = (res, status, body) => { res.writeHead(status, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(body)); };
 const monthName = (month, year) => `${new Intl.DateTimeFormat('pt-BR', { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, 1))).replace(/^./, c => c.toUpperCase())}/${year}`;

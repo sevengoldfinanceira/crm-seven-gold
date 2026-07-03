@@ -1,4 +1,4 @@
-const { supabase } = require('../../../lib/server/supabase');
+const { supabase } = require('../../lib/server/supabase');
 
 const ADMIN_ROLES = new Set(['diretor-ceo', 'dono', 'admin', 'administrador']);
 const TEAM_MANAGER_ROLES = new Set([...ADMIN_ROLES, 'coordenador-comercial', 'supervisor-comercial', 'coordenador', 'supervisor', 'coordenador-rh']);
@@ -23,7 +23,7 @@ async function listAuthorizedPipelineLeads(crmUser, productionId) {
     if (openProduction) scopedProductionId = openProduction.id;
   }
   const baseLeadFields = 'id,name,origin,note,status,created_at,updated_at,ultima_interacao,telefone,property_region,credit_value,down_payment_value,installment_value,tags,assigned_to_email,assigned_to_name,created_by_email,created_by_name,updated_by_email,updated_by_name';
-  const productionLeadFields = ',production_id,production_month,production_year,locked_at,locked_reason,original_lead_id,carried_from_lead_id,carried_from_production_id,is_carry_over,carried_over_at,commercial_productions(id,name,status,starts_at,ends_at)';
+  const productionLeadFields = ',production_id,production_month,production_year,locked_at,locked_reason,original_lead_id,commercial_productions(id,name,status,starts_at,ends_at)';
   let query = supabase.from('leads').select(baseLeadFields + (scopedProductionId ? productionLeadFields : '')).order('created_at', { ascending: false });
   if (scopedProductionId) query = query.eq('production_id', scopedProductionId);
   if (PIPELINE_TEAM_ROLES.has(role)) {

@@ -1,4 +1,4 @@
-const { supabase } = require('../../../lib/server/supabase');
+const { supabase } = require('../../lib/server/supabase');
 
 const send = (res, status, body) => {
   res.writeHead(status, { 'Content-Type': 'application/json' });
