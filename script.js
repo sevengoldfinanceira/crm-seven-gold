@@ -2415,21 +2415,34 @@ const renderCalendar = () => {
       const header = document.createElement("div");
       const weekendClass = day.getDay() === 6 ? " is-saturday" : day.getDay() === 0 ? " is-sunday" : "";
       header.className = `calendar-day-header${toDateKey(day) === todayKey ? " is-today" : ""}${weekendClass}`;
-      const weekday = document.createElement("strong");
-      weekday.textContent = new Intl.DateTimeFormat("pt-BR", { weekday: "short" }).format(day).replace(".", "");
-      const date = document.createElement("span");
-      date.textContent = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" }).format(day);
-      header.append(weekday, date);
+      const dateKey = toDateKey(day);
+      const dayCount = day.getDay() === 0 ? 0 : calendarAppointments.filter((item) => item.data_agendamento === dateKey).length;
+      const weekdayText = new Intl.DateTimeFormat("pt-BR", { weekday: "short" }).format(day).replace(".", "").toUpperCase();
+      const dateText = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" }).format(day);
 
-      if (day.getDay() !== 0) {
-        const dateKey = toDateKey(day);
-        const dayCount = calendarAppointments.filter((item) => item.data_agendamento === dateKey).length;
-        const badge = document.createElement("span");
-        badge.className = "calendar-day-count-badge";
-        badge.textContent = dayCount;
-        if (dayCount > 0) badge.classList.add("has-appointments");
-        header.append(badge);
-      }
+      header.innerHTML = `
+        <div class="day-card-left">
+          <div class="day-card-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6D4AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><rect x="7" y="13" width="3" height="3" rx="0.5"/><rect x="14" y="13" width="3" height="3" rx="0.5"/></svg>
+          </div>
+          <div class="day-card-info">
+            <span class="day-card-count">${dayCount}</span>
+            <span class="day-card-weekday">${weekdayText}</span>
+            <span class="day-card-label">TOTAL DE CLIENTES AGENDADOS</span>
+          </div>
+        </div>
+        <div class="day-card-divider"></div>
+        <div class="day-card-right">
+          <div class="day-card-data-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6D4AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>DATA</span>
+          </div>
+          <span class="day-card-date">${dateText}</span>
+        </div>
+        <div class="day-card-watermark">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><rect x="7" y="13" width="3" height="3" rx="0.5"/><rect x="14" y="13" width="3" height="3" rx="0.5"/></svg>
+        </div>
+      `;
 
       calendarGrid.append(header);
     });
