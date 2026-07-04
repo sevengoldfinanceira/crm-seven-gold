@@ -2331,9 +2331,9 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
    ============================================================ */
 .tab-content[data-tab="calendario"] {
   min-width: 0;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   padding: 36px 40px;
   background:
     radial-gradient(circle at 88% 8%, rgba(216, 160, 24, .08), transparent 27%),
