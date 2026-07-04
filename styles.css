@@ -2550,7 +2550,7 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
 .weekly-day-card.is-saturday .weekly-day-card-count { color: #2563EB; }
 
 .weekly-day-card.is-sunday .weekly-day-card-icon-wrap {
-  background: #FFE4E6;
+  background: #F1ECFF;
   color: #E11D48;
 }
 .weekly-day-card.is-sunday .weekly-day-card-count { color: #E11D48; }
