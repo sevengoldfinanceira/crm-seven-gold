@@ -809,18 +809,26 @@
                 <h1 id="calendar-title">Calendário de atendimentos</h1>
               </div>
               <div class="calendar-toolbar-actions">
-                <label id="calendar-team-filter-container" class="calendar-responsible-filter" style="display: none;">
-                  <span>Equipe</span>
-                  <select id="calendar-team-filter-select">
-                    <option value="">Todas as equipes</option>
-                  </select>
-                </label>
-                <label id="calendar-responsible-filter-container" class="calendar-responsible-filter" style="display: none;">
-                  <span>Responsável</span>
-                  <select id="calendar-responsible-filter-select">
-                    <option value="">Todos os vendedores</option>
-                  </select>
-                </label>
+                <div id="calendar-team-filter-container" class="dash-filter-field dash-filter-field--team" style="display: none;">
+                  <span class="dash-filter-label">Equipe</span>
+                  <span class="dash-filter-control">
+                    <svg class="dash-filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <select id="calendar-team-filter-select">
+                      <option value="">Todas as equipes</option>
+                    </select>
+                    <svg class="dash-filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </span>
+                </div>
+                <div id="calendar-responsible-filter-container" class="dash-filter-field dash-filter-field--responsible" style="display: none;">
+                  <span class="dash-filter-label">Responsável</span>
+                  <span class="dash-filter-control">
+                    <svg class="dash-filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <select id="calendar-responsible-filter-select">
+                      <option value="">Todos os vendedores</option>
+                    </select>
+                    <svg class="dash-filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </span>
+                </div>
                 <button class="calendar-nav-button" type="button" data-calendar-prev aria-label="Semana anterior">&larr;</button>
                 <button class="calendar-today-button" type="button" data-calendar-today>Semana atual</button>
                 <button class="calendar-nav-button" type="button" data-calendar-next aria-label="Proxima semana">&rarr;</button>
