@@ -2468,7 +2468,13 @@ const renderDashboardCharts = ({ receivedLeads, inService, totalAppointments, cl
     pieData.sort((a, b) => b.value - a.value);
 
     const total = pieData.reduce((sum, d) => sum + d.value, 0) || 1;
-    const cx = 80, cy = 80, r = 64, inner = 40;
+
+    const totalEl = document.getElementById("dash-status-total");
+    const totalPctEl = document.getElementById("dash-status-total-pct");
+    if (totalEl) totalEl.textContent = String(total);
+    if (totalPctEl) totalPctEl.textContent = "100% do total";
+
+    const cx = 100, cy = 100, r = 86, inner = 56;
     let cumAngle = -Math.PI / 2;
     let paths = "";
 
@@ -2484,30 +2490,46 @@ const renderDashboardCharts = ({ receivedLeads, inService, totalAppointments, cl
       const iy2 = cy + inner * Math.sin(cumAngle + angle);
       const large = angle > Math.PI ? 1 : 0;
 
-      paths += `<path d="M${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} L${ix2},${iy2} A${inner},${inner} 0 ${large} 0 ${ix1},${iy1} Z" fill="${d.color}" opacity="0.85"/>`;
+      paths += `<path d="M${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} L${ix2},${iy2} A${inner},${inner} 0 ${large} 0 ${ix1},${iy1} Z" fill="${d.color}"/>`;
       cumAngle += angle;
     });
+
+    const softBg = {
+      lead_recebido: { bg: "#EEF2FF", fg: "#5B4BFF" },
+      venda_fechada: { bg: "#D1FAE5", fg: "#059669" },
+      agendamento: { bg: "#DBEAFE", fg: "#2563EB" },
+      cliente_em_loja: { bg: "#FEF3C7", fg: "#D97706" },
+      primeiro_contato: { bg: "#FFEDD5", fg: "#F97316" },
+      proposta_enviada: { bg: "#F5F3FF", fg: "#7C3AED" },
+      em_aprovacao: { bg: "#F5F3FF", fg: "#8B5CF6" },
+      cancelado: { bg: "#FEE2E2", fg: "#EF4444" },
+    };
 
     let legendHTML = "";
     pieData.forEach((d) => {
       const pct = ((d.value / total) * 100).toFixed(1);
+      const soft = softBg[d.key] || { bg: "#F1F5F9", fg: d.color };
       legendHTML += `
-        <div class="dash-donut-legend-item">
-          <span class="dash-donut-legend-dot" style="background: ${d.color};"></span>
-          <span class="dash-donut-legend-label">${d.label}</span>
-          <span class="dash-donut-legend-value">${d.value}</span>
-          <span class="dash-donut-legend-pct">${pct}%</span>
+        <div class="status-item" style="--status-color: ${d.color};">
+          <span class="status-dot" style="background: ${d.color};"></span>
+          <div class="status-info">
+            <div class="status-name">${d.label}</div>
+            <div class="status-description">${pct}% do total</div>
+          </div>
+          <div class="status-quantity">${d.value}</div>
+          <div class="status-percent-badge" style="background: ${soft.bg}; color: ${soft.fg};">${pct}%</div>
         </div>`;
     });
 
     statusEl.innerHTML = `
-      <div class="dash-donut-wrapper">
-        <svg class="dash-donut-svg" viewBox="0 0 160 160">${paths}
-          <text x="${cx}" y="${cy - 4}" text-anchor="middle" font-size="18" font-weight="800" fill="#101233">${total}</text>
-          <text x="${cx}" y="${cy + 12}" text-anchor="middle" font-size="10" font-weight="600" fill="#667085">leads</text>
-        </svg>
-        <div class="dash-donut-legend">${legendHTML}</div>
-      </div>`;
+      <div class="chart-wrapper">
+        <svg class="dash-donut-svg" viewBox="0 0 200 200">${paths}</svg>
+        <div class="chart-center">
+          <div class="chart-center-number">${total}</div>
+          <div class="chart-center-label">leads</div>
+        </div>
+      </div>
+      <div class="status-list">${legendHTML}</div>`;
   }
 
   if (conversionEl) {

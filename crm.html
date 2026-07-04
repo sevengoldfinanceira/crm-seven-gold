@@ -468,17 +468,25 @@
               </article>
 
               <!-- Distribuição dos Status -->
-              <article class="dash-chart-card">
-                <div class="dash-chart-header">
-                  <div class="dash-chart-icon-box" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+              <article class="dash-chart-card dash-status-card">
+                <div class="status-header">
+                  <div class="status-title-area">
+                    <div class="status-icon-box">
+                      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                    </div>
+                    <div>
+                      <h3 class="status-title">Distribuição dos Status</h3>
+                      <span class="status-subtitle">Leads por etapa atual</span>
+                    </div>
                   </div>
-                  <div>
-                    <h3 class="dash-chart-title">Distribuição dos Status</h3>
-                    <span class="dash-chart-subtitle">Leads por etapa atual</span>
+                  <div class="status-total-card">
+                    <div class="status-total-label">Total de leads</div>
+                    <div class="status-total-number" id="dash-status-total">0</div>
+                    <div class="status-total-percent" id="dash-status-total-pct">100% do total</div>
                   </div>
                 </div>
-                <div id="dash-status-chart" class="dash-chart-body">
+                <div class="status-divider"></div>
+                <div id="dash-status-chart" class="status-content">
                   <div class="skeleton-shimmer" style="height: 100%; border-radius: 8px;"></div>
                 </div>
               </article>
