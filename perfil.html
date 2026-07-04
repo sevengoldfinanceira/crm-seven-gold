@@ -66,7 +66,6 @@
 
       <main class="profile-page-shell">
         <header class="profile-page-header">
-          <a class="profile-back-link" href="painel.html">← Voltar para os painéis</a>
           <div>
             <p class="eyebrow">Cadastro único</p>
             <h1>Meu perfil</h1>
@@ -75,19 +74,51 @@
         </header>
 
         <section class="profile-editor-card">
-          <form data-profile-form>
-            <div class="profile-photo-editor">
-              <span class="profile-avatar profile-avatar-large" data-user-avatar>U</span>
-              <label>
-                Alterar foto
-                <input type="file" name="avatar" accept="image/*" />
-              </label>
-              <small>A foto inicial vem do Google. Você pode substituí-la aqui.</small>
+          <div class="profile-card-section-header">
+            <div class="profile-card-icon-wrap">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6D4CFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </div>
-            <label>Nome<input type="text" name="full_name" required /></label>
-            <label>E-mail conectado pelo Google<input type="email" name="email" readonly /></label>
-            <button type="submit">Salvar perfil</button>
-            <p class="profile-form-status" data-profile-status></p>
+            <div>
+              <strong>Informações do perfil</strong>
+              <small>Atualize como seu nome e foto aparecem dentro do CRM.</small>
+            </div>
+          </div>
+          <form data-profile-form>
+            <div class="profile-form-grid">
+              <div class="profile-photo-column">
+                <span class="profile-avatar profile-avatar-large" data-user-avatar>U</span>
+                <label class="profile-upload-button">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  Alterar foto
+                  <input type="file" name="avatar" accept="image/*" />
+                </label>
+                <small class="profile-photo-hint">Essa foto aparece no CRM e nas áreas da empresa.</small>
+              </div>
+              <div class="profile-fields-column">
+                <label class="profile-field">
+                  <span class="profile-field-label">Nome</span>
+                  <input type="text" name="full_name" required />
+                </label>
+                <label class="profile-field">
+                  <span class="profile-field-label">E-mail conectado pelo Google</span>
+                  <div class="profile-email-display">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <input type="email" name="email" readonly />
+                  </div>
+                </label>
+                <p class="profile-email-note">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6D4CFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  Este e-mail vem da sua conta Google e não pode ser alterado aqui.
+                </p>
+              </div>
+            </div>
+            <div class="profile-form-footer">
+              <button type="submit" class="profile-save-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1-2 2h11v6a2 2 0 0 0 2 2h6"/><path d="M19 21v-4"/><path d="M14 7h-4"/><path d="M14 7v4"/></svg>
+                Salvar alterações
+              </button>
+              <p class="profile-form-status" data-profile-status></p>
+            </div>
           </form>
         </section>
       </main>
