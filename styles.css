@@ -2418,7 +2418,7 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
 
 .calendar-nav-button,
 .calendar-today-button {
-  min-height: 46px;
+  min-height: 56px;
   border: 1px solid #e5e7eb;
   border-radius: 18px;
   background: #fff;
@@ -2441,7 +2441,7 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
 }
 
 .calendar-nav-button {
-  width: 46px;
+  width: 56px;
   font-size: 1.15rem;
 }
 
