@@ -3345,7 +3345,7 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
   }
 
   let cancelledAppointment = false;
-  if (goBack && currentStatus === "agendamento") {
+  if (currentStatus === "agendamento" && status !== "agendamento") {
     const { data: appointments } = await client
       .from("appointments")
       .select("id")
