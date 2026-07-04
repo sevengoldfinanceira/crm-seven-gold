@@ -2323,7 +2323,7 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
 .tab-content[data-tab="pipeline"] {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  overflow: hidden;
 }
 
 /* ============================================================
