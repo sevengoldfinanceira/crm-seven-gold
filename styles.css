@@ -2320,6 +2320,17 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
 }
 
 /* ============================================================
+   Dashboard tab — no scroll
+   ============================================================ */
+.tab-content[data-tab="dashboard"] {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 0;
+  margin-bottom: -32px;
+}
+
+/* ============================================================
    Pipeline tab — full-height flex layout
    ============================================================ */
 .tab-content[data-tab="pipeline"] {
