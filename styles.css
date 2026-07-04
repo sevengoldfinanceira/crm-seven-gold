@@ -361,9 +361,9 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
   padding: 0 18px;
   border: 0;
   border-radius: 8px;
-  background: var(--gold);
-  color: #17130a;
-  box-shadow: 0 8px 18px rgba(155, 113, 27, 0.22);
+  background: #6D4CFF;
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(109, 76, 255, 0.22);
   font-weight: 800;
 }
 
@@ -599,9 +599,9 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
   padding: 0 18px;
   border: 0;
   border-radius: 8px;
-  background: var(--gold);
-  color: #17130a;
-  box-shadow: 0 8px 18px rgba(155, 113, 27, 0.22);
+  background: #6D4CFF;
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(109, 76, 255, 0.22);
   font-weight: 800;
 }
 
@@ -2453,11 +2453,11 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
 .calendar-new-button {
   min-height: 46px;
   padding: 0 19px;
-  border: 1px solid rgba(177, 124, 0, .25);
+  border: 1px solid rgba(109, 76, 255, .25);
   border-radius: 13px;
-  background: linear-gradient(135deg, #e6b72d 0%, #d8a018 100%);
-  color: #241b05;
-  box-shadow: 0 10px 24px rgba(216, 160, 24, .25);
+  background: linear-gradient(135deg, #7C5CFF 0%, #6D4CFF 100%);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(109, 76, 255, .25);
   font-size: .82rem;
   font-weight: 800;
   transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
@@ -2466,7 +2466,7 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
 .calendar-new-button:hover {
   transform: translateY(-2px);
   filter: brightness(.97);
-  box-shadow: 0 14px 28px rgba(216, 160, 24, .32);
+  box-shadow: 0 14px 28px rgba(109, 76, 255, .32);
 }
 
 .calendar-new-button span {
