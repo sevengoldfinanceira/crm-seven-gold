@@ -451,7 +451,7 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
 .kanban-wrap {
   min-width: 0;
   overflow-x: auto;
-  padding-bottom: 12px;
+  padding-bottom: 0;
   margin-top: 8px;
   flex: 1;
   display: flex;
@@ -648,7 +648,7 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
 .kanban-wrap {
   min-width: 0;
   overflow-x: auto;
-  padding-bottom: 12px;
+  padding-bottom: 0;
   margin-top: 8px;
   flex: 1;
   display: flex;
@@ -2326,6 +2326,7 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  padding-bottom: 0;
 }
 
 /* ============================================================
