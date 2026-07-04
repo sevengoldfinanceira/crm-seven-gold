@@ -2010,8 +2010,13 @@ body.theme-dark .crm-profile-card input[readonly] { background: #151019; color: 
 .calendar-status { min-height: 20px; margin: 0 0 8px; color: var(--muted); font-size: .82rem; }
 .calendar-status[data-type="error"] { color: #c93636; }
 .calendar-scroll { max-height: calc(100vh - 205px); overflow: auto; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); }
-.calendar-grid { display: grid; grid-template-columns: 74px repeat(7, minmax(150px, 1fr)); min-width: 1124px; }
-.calendar-corner { position: sticky; top: 0; left: 0; z-index: 6; min-height: 50px; border-bottom: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; color: var(--muted); font-size: .72rem; font-weight: 800; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); min-width: 900px; }
+.calendar-day-column { display: flex; flex-direction: column; min-width: 0; }
+.calendar-day-appointments { display: flex; flex-direction: column; gap: 6px; padding: 6px 8px; flex: 1; }
+.calendar-day-empty { padding: 16px 8px; color: var(--muted); font-size: .78rem; text-align: center; }
+.calendar-day-add-btn { width: 100%; margin-top: auto; padding: 8px; border: 1px dashed var(--line); border-radius: 10px; background: transparent; color: var(--muted); font-size: .72rem; font-weight: 700; cursor: pointer; transition: background .15s, color .15s; }
+.calendar-day-add-btn:hover { background: rgba(109,74,255,.06); color: #6D4AFF; border-color: rgba(109,74,255,.3); }
+.calendar-corner { display: none; }
 .calendar-day-header { position: sticky; top: 0; z-index: 5; min-height: 80px; border-radius: 20px; margin: 6px; padding: 12px 14px; background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%); border: 1px solid rgba(15,23,42,0.06); box-shadow: 0 4px 12px rgba(15,23,42,0.06); display: flex; align-items: center; gap: 10px; }
 .day-card-icon-box { width: 44px; height: 44px; border-radius: 14px; background: rgba(109,74,255,0.1); display: grid; place-items: center; flex-shrink: 0; }
 .day-card-info { display: flex; flex-direction: column; gap: 1px; }
@@ -2070,6 +2075,12 @@ body.theme-dark .appointment-card .appointment-card-seller { color: #fff; }
 body.theme-dark .appointment-card .appointment-card-phone { color: #fff; }
 body.theme-dark .appointment-card .appointment-card-time { background: #181221; color: #fff; border-color: rgba(190,153,255,.42); }
 body.theme-dark .appointment-form-grid input, body.theme-dark .appointment-form-grid textarea, body.theme-dark .calendar-nav-button, body.theme-dark .calendar-today-button { background: #211829; color: #fff; border-color: rgba(255,255,255,.1); }
+body.theme-dark .calendar-day-column { border-color: rgba(255,255,255,.06); }
+body.theme-dark .calendar-day-column.is-today { background: rgba(33,24,41,.5); }
+body.theme-dark .calendar-day-appointments { background: transparent; }
+body.theme-dark .calendar-day-empty { color: #6b5f7a; }
+body.theme-dark .calendar-day-add-btn { border-color: rgba(255,255,255,.1); color: #6b5f7a; }
+body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); color: #c4a5f7; border-color: rgba(156,91,240,.3); }
 @media (max-width: 900px) {
   .commercial-calendar { padding: 14px; }
   .calendar-toolbar { align-items: flex-start; flex-direction: column; }
@@ -2244,8 +2255,8 @@ body.theme-dark .appointment-form-grid input, body.theme-dark .appointment-form-
 }
 
 .calendar-grid {
-  grid-template-columns: 82px repeat(7, minmax(158px, 1fr));
-  min-width: 1188px;
+  grid-template-columns: repeat(7, 1fr);
+  min-width: 900px;
 }
 
 .calendar-corner,
@@ -2257,16 +2268,7 @@ body.theme-dark .appointment-form-grid input, body.theme-dark .appointment-form-
 }
 
 .calendar-corner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  text-align: center;
-  color: #667085;
-  font-size: .64rem;
-  letter-spacing: .04em;
-  text-transform: uppercase;
+  display: none;
 }
 
 .calendar-corner svg { color: #344054; }
@@ -2274,13 +2276,7 @@ body.theme-dark .appointment-form-grid input, body.theme-dark .appointment-form-
 .calendar-day-header { border-left: none; }
 
 .calendar-time-label {
-  min-height: 54px;
-  padding-top: 16px;
-  border-bottom: 1px dashed #e8ebf1;
-  background: #fbfcfe;
-  color: #667085;
-  font-size: .71rem;
-  font-weight: 750;
+  display: none;
 }
 
 .calendar-slot {
@@ -2301,6 +2297,51 @@ body.theme-dark .appointment-form-grid input, body.theme-dark .appointment-form-
   z-index: 1;
   background: #fffaf0;
   box-shadow: inset 0 0 0 1px rgba(216, 160, 24, .38);
+}
+
+.calendar-day-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-right: 1px solid #eef0f4;
+}
+.calendar-day-column:last-child { border-right: none; }
+.calendar-day-column.is-today { background: rgba(255, 247, 223, .25); }
+
+.calendar-day-appointments {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 10px 6px;
+  flex: 1;
+  min-height: 120px;
+}
+
+.calendar-day-empty {
+  padding: 24px 10px;
+  color: #98a1b5;
+  font-size: .76rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.calendar-day-add-btn {
+  width: calc(100% - 16px);
+  margin: 6px 8px 10px;
+  padding: 9px;
+  border: 1.5px dashed #d5d9e2;
+  border-radius: 11px;
+  background: transparent;
+  color: #98a1b5;
+  font-size: .72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.calendar-day-add-btn:hover {
+  background: rgba(99, 102, 241, .06);
+  color: #6366f1;
+  border-color: rgba(99, 102, 241, .35);
 }
 
 .appointment-card {
@@ -3033,16 +3074,16 @@ body.theme-dark .crm-workspace {
   align-items: center;
   gap: 10px;
   height: 56px;
-  padding: 0 12px;
+  padding: 0 8px;
   border: 1px solid #e5e7eb;
   border-radius: 18px;
   background: #fff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
   transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 
 .dash-calendar-nav:hover {
-  border-color: rgba(109, 74, 255, 0.42);
+  border-color: rgba(109, 74, 255, 0.44);
   box-shadow: 0 12px 28px rgba(91, 63, 255, 0.11);
   transform: translateY(-1px);
 }
@@ -4028,6 +4069,150 @@ body.theme-dark .kpi-subtext {
   flex-shrink: 0;
 }
 
+/* Funnel V2 - Premium centered funnel */
+.dash-chart-card--funnel {
+  border: 1px solid #E5E7EB;
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.dash-chart-body--funnel {
+  padding: 20px 24px 24px;
+  min-height: 420px;
+}
+
+.dash-funnel-v2 {
+  display: flex;
+  gap: 0;
+  flex: 1;
+  align-items: stretch;
+}
+
+.dash-funnel-v2-stages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.dash-funnel-v2-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.dash-funnel-v2-piece {
+  position: relative;
+  height: 64px;
+  border-radius: 12px;
+  clip-path: polygon(0 0, 100% 0, 88% 100%, 12% 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 20px;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.10);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+
+.dash-funnel-v2-piece:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.16);
+}
+
+.dash-funnel-v2-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dash-funnel-v2-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.dash-funnel-v2-dotted {
+  flex: 1;
+  height: 0;
+  border-top: 2px dashed #CBD5E1;
+  min-width: 20px;
+  max-width: 80px;
+  position: relative;
+}
+
+.dash-funnel-v2-dotted::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--stage-color);
+}
+
+.dash-funnel-v2-metrics {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  min-width: 150px;
+  padding-left: 8px;
+}
+
+.dash-funnel-v2-metrics-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 4px 6px;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.dash-funnel-v2-metrics-header span {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dash-funnel-v2-metric {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 64px;
+  padding: 0 4px;
+}
+
+.dash-funnel-v2-metric-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+  min-width: 36px;
+  text-align: right;
+}
+
+.dash-funnel-v2-metric-pct {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
 /* Donut chart */
 .dash-donut-wrapper {
   display: flex;
@@ -4164,6 +4349,26 @@ body.theme-dark .dash-donut-legend-pct {
   color: #64748b;
 }
 
+body.theme-dark .dash-chart-card--funnel {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.theme-dark .dash-funnel-v2-icon {
+  background: rgba(30, 20, 50, 0.85);
+}
+
+body.theme-dark .dash-funnel-v2-metrics-header {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.theme-dark .dash-funnel-v2-metrics-header span {
+  color: #94a3b8;
+}
+
+body.theme-dark .dash-funnel-v2-dotted {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
 body.theme-dark .dash-donut-legend-item {
   color: #cbd5e1;
 }
@@ -4196,6 +4401,43 @@ body.theme-dark .dash-hbar-track {
   .dash-donut-wrapper {
     flex-direction: column;
     align-items: center;
+  }
+  .dash-funnel-v2 {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .dash-funnel-v2-stages {
+    gap: 10px;
+  }
+  .dash-funnel-v2-piece {
+    height: 54px;
+  }
+  .dash-funnel-v2-dotted {
+    display: none;
+  }
+  .dash-funnel-v2-metrics {
+    min-width: 0;
+    padding-left: 0;
+    padding-top: 8px;
+    border-top: 1px solid #E5E7EB;
+    gap: 8px;
+  }
+  .dash-funnel-v2-metric {
+    height: 44px;
+  }
+  .dash-funnel-v2-metric-value {
+    font-size: 1.2rem;
+  }
+  .dash-funnel-v2-icon {
+    width: 32px;
+    height: 32px;
+  }
+  .dash-funnel-v2-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+  .dash-funnel-v2-label {
+    font-size: 0.72rem;
   }
 }
 

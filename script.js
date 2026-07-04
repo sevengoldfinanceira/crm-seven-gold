@@ -2406,29 +2406,49 @@ const renderDashboardCharts = ({ receivedLeads, inService, totalAppointments, cl
 
   if (funnelEl) {
     const steps = [
-      { label: "Recebidos", value: receivedLeads, color: "#6366f1" },
-      { label: "Atendidos", value: inService, color: "#ea580c" },
-      { label: "Agendamentos", value: totalAppointments, color: "#2563eb" },
-      { label: "Em Loja", value: clientsInStore, color: "#ca8a04" },
-      { label: "Fechados", value: closedLeads, color: "#10b981" },
+      { label: "Recebidos", value: receivedLeads, color: "#7C3AED", gradient: "linear-gradient(135deg, #7C3AED, #5B5FEF)", icon: "users" },
+      { label: "Atendidos", value: inService, color: "#EA580C", gradient: "linear-gradient(135deg, #FF7A1A, #EA580C)", icon: "headphones" },
+      { label: "Agendamentos", value: totalAppointments, color: "#2563EB", gradient: "linear-gradient(135deg, #3B82F6, #2563EB)", icon: "calendar" },
+      { label: "Em Loja", value: clientsInStore, color: "#D97706", gradient: "linear-gradient(135deg, #FBBF24, #D97706)", icon: "store" },
+      { label: "Fechados", value: closedLeads, color: "#059669", gradient: "linear-gradient(135deg, #34D399, #059669)", icon: "check" },
     ];
     const maxVal = Math.max(receivedLeads, 1);
-    let funnelHTML = '<div class="dash-funnel">';
-    steps.forEach((step) => {
+    const iconPaths = {
+      users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+      headphones: '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>',
+      calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><rect x="7" y="13" width="3" height="3" rx="0.5"/><rect x="14" y="13" width="3" height="3" rx="0.5"/>',
+      store: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+      check: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+    };
+    const widths = [100, 82, 64, 46, 30];
+    let funnelHTML = '<div class="dash-funnel-v2">';
+    funnelHTML += '<div class="dash-funnel-v2-stages">';
+    steps.forEach((step, i) => {
       const pct = ((step.value / maxVal) * 100).toFixed(0);
-      const barWidth = Math.max((step.value / maxVal) * 100, 8);
       funnelHTML += `
-        <div class="dash-funnel-step">
-          <div class="dash-funnel-bar-wrap">
-            <div class="dash-funnel-bar" style="width: ${barWidth}%; background: ${step.color};">
-              <span class="dash-funnel-bar-label">${step.label}</span>
+        <div class="dash-funnel-v2-stage" style="--stage-color: ${step.color}; --stage-width: ${widths[i]}%;">
+          <div class="dash-funnel-v2-piece" style="background: ${step.gradient}; width: ${widths[i]}%;">
+            <div class="dash-funnel-v2-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${step.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${iconPaths[step.icon]}</svg>
             </div>
+            <span class="dash-funnel-v2-label">${step.label}</span>
           </div>
-          <span class="dash-funnel-value">${step.value}</span>
-          <span class="dash-funnel-pct">${pct}%</span>
+          <div class="dash-funnel-v2-dotted" style="border-color: ${step.color};"></div>
         </div>`;
     });
-    funnelHTML += "</div>";
+    funnelHTML += '</div>';
+    funnelHTML += '<div class="dash-funnel-v2-metrics">';
+    funnelHTML += '<div class="dash-funnel-v2-metrics-header"><span>Quantidade</span><span>Conversão</span></div>';
+    steps.forEach((step, i) => {
+      const pct = ((step.value / maxVal) * 100).toFixed(0);
+      funnelHTML += `
+        <div class="dash-funnel-v2-metric" style="--stage-color: ${step.color};">
+          <span class="dash-funnel-v2-metric-value" style="color: ${step.color};">${step.value}</span>
+          <span class="dash-funnel-v2-metric-pct" style="background: ${step.color}12; color: ${step.color}; border: 1px solid ${step.color}22;">${pct}%</span>
+        </div>`;
+    });
+    funnelHTML += '</div>';
+    funnelHTML += '</div>';
     funnelEl.innerHTML = funnelHTML;
   }
 
@@ -2690,19 +2710,18 @@ const renderCalendar = () => {
 
   if (calendarGrid) {
     calendarGrid.innerHTML = "";
-    const corner = document.createElement("div");
-    corner.className = "calendar-corner";
-    corner.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Horário</span>';
-    calendarGrid.append(corner);
 
     days.forEach((day) => {
-      const header = document.createElement("div");
-      const weekendClass = day.getDay() === 6 ? " is-saturday" : day.getDay() === 0 ? " is-sunday" : "";
-      header.className = `calendar-day-header${toDateKey(day) === todayKey ? " is-today" : ""}${weekendClass}`;
       const dateKey = toDateKey(day);
+      const weekendClass = day.getDay() === 6 ? " is-saturday" : day.getDay() === 0 ? " is-sunday" : "";
+      const isToday = dateKey === todayKey;
+
+      const column = document.createElement("div");
+      column.className = `calendar-day-column${isToday ? " is-today" : ""}${weekendClass}`;
+
+      const header = document.createElement("div");
+      header.className = `calendar-day-header${isToday ? " is-today" : ""}${weekendClass}`;
       const dayCount = day.getDay() === 0 ? 0 : calendarAppointments.filter((item) => item.data_agendamento === dateKey).length;
-      const weekdayText = new Intl.DateTimeFormat("pt-BR", { weekday: "short" }).format(day).replace(".", "").toUpperCase();
-      const dateText = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" }).format(day);
 
       header.innerHTML = `
         <div class="day-card-icon-box">
@@ -2714,41 +2733,32 @@ const renderCalendar = () => {
         </div>
       `;
 
-      calendarGrid.append(header);
-    });
+      column.append(header);
 
-    calendarTimes.forEach((time) => {
-      const label = document.createElement("div");
-      label.className = "calendar-time-label";
-      label.textContent = time;
-      calendarGrid.append(label);
+      const dayAppointments = calendarAppointments
+        .filter((item) => item.data_agendamento === dateKey)
+        .sort((a, b) => normalizeAppointmentTime(a.hora_agendamento).localeCompare(normalizeAppointmentTime(b.hora_agendamento)));
 
-      days.forEach((day) => {
-        const dateKey = toDateKey(day);
-        const slot = document.createElement("div");
-        const weekendClass = day.getDay() === 6 ? " is-saturday" : day.getDay() === 0 ? " is-sunday" : "";
-        slot.className = `calendar-slot${dateKey === todayKey ? " is-today" : ""}${weekendClass}`;
-        slot.dataset.date = dateKey;
-        slot.dataset.time = time;
-        slot.tabIndex = 0;
-        slot.setAttribute("role", "button");
-        slot.setAttribute("aria-label", `Criar agendamento em ${dateKey} as ${time}`);
-        slot.addEventListener("click", () => openAppointmentModal({ date: dateKey, time }));
-        slot.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            openAppointmentModal({ date: dateKey, time });
-          }
-        });
+      const list = document.createElement("div");
+      list.className = "calendar-day-appointments";
 
-        calendarAppointments
-          .filter((item) => {
-            const appointmentTime = normalizeAppointmentTime(item.hora_agendamento);
-            return item.data_agendamento === dateKey && appointmentTime.slice(0, 2) === time.slice(0, 2);
-          })
-          .forEach((item) => slot.append(createAppointmentCard(item)));
-        calendarGrid.append(slot);
-      });
+      if (dayAppointments.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "calendar-day-empty";
+        empty.textContent = "Nenhum agendamento";
+        list.append(empty);
+      } else {
+        dayAppointments.forEach((item) => list.append(createAppointmentCard(item)));
+      }
+
+      const addBtn = document.createElement("button");
+      addBtn.type = "button";
+      addBtn.className = "calendar-day-add-btn";
+      addBtn.textContent = "+ Novo agendamento";
+      addBtn.addEventListener("click", () => openAppointmentModal({ date: dateKey, time: "08:00" }));
+
+      column.append(list, addBtn);
+      calendarGrid.append(column);
     });
   }
 
