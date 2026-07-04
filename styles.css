@@ -6324,6 +6324,7 @@ body.theme-dark .lead-card.is-production-locked { background: #111827; }
   border-radius: 8px !important;
   padding: 0 16px !important;
   box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05) !important;
+  width: calc(var(--stage-width) * 0.8) !important;
 }
 
 .dash-funnel-v2-icon {
@@ -6341,8 +6342,16 @@ body.theme-dark .lead-card.is-production-locked { background: #111827; }
   font-size: 0.75rem !important;
 }
 
+.dash-funnel-v2-stage::before {
+  content: '' !important;
+  flex: 1 !important;
+  height: 0 !important;
+}
+
 .dash-funnel-v2-dotted {
-  max-width: 48px !important;
+  flex: 1 !important;
+  max-width: none !important;
+  min-width: 0 !important;
 }
 
 .dash-funnel-v2-metrics {
