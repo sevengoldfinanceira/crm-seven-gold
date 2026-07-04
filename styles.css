@@ -6544,3 +6544,112 @@ body.theme-dark .card-stack::-webkit-scrollbar-thumb:hover {
   background: #6d4cff !important;
 }
 
+/* Stretch Calendar Layout */
+.tab-content[data-tab="calendario"] {
+  height: calc(100vh - 60px) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.tab-content[data-tab="calendario"] .commercial-calendar {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  height: 100% !important;
+}
+
+.calendar-desktop-view {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  margin-top: 10px !important;
+}
+
+.calendar-scroll {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  max-height: calc(100vh - 210px) !important;
+  overflow: visible !important;
+}
+
+.calendar-grid {
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+  grid-template-columns: repeat(7, minmax(140px, 1fr)) !important;
+  align-items: stretch !important;
+  flex: 1 !important;
+}
+
+.weekly-day-card {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.weekly-day-card-header {
+  flex-shrink: 0 !important;
+}
+
+.weekly-day-card-divider {
+  flex-shrink: 0 !important;
+}
+
+.weekly-day-card-appointments {
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  padding-right: 4px !important;
+}
+
+.weekly-day-empty {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 0 !important;
+  height: 100% !important;
+}
+
+.weekly-day-card-appointments::-webkit-scrollbar {
+  width: 5px !important;
+}
+
+.weekly-day-card-appointments::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.weekly-day-card-appointments::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+  border-radius: 999px !important;
+}
+
+.weekly-day-card-appointments::-webkit-scrollbar-thumb:hover {
+  background: #a78bfa !important;
+}
+
+body.theme-dark .weekly-day-card-appointments::-webkit-scrollbar-thumb {
+  background: #374151 !important;
+}
+
+body.theme-dark .weekly-day-card-appointments::-webkit-scrollbar-thumb:hover {
+  background: #6d4cff !important;
+}
+
+
