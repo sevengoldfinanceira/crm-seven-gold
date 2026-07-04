@@ -2863,7 +2863,7 @@ body.theme-dark .appointment-card .appointment-card-time {
   box-sizing: border-box !important;
   display: grid !important;
   grid-template-rows: auto 1fr !important;
-  min-height: 580px !important;
+  min-height: calc(100vh - 260px) !important;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
