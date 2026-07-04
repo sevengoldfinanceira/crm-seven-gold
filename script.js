@@ -202,6 +202,65 @@ const statusLabels = {
   cancelado: "Lixeira",
 };
 
+const PIPELINE_STAGE_TAGS = {
+  primeiro_contato: [
+    {
+      value: "pre_agendamento",
+      label: "Pré-agendamento",
+      className: "pre-agendamento",
+    },
+    {
+      value: "retornar",
+      label: "Retornar",
+      className: "retornar",
+    },
+  ],
+  agendamento: [
+    {
+      value: "faltou",
+      label: "Faltou",
+      className: "faltou",
+    },
+    {
+      value: "remarcar",
+      label: "Remarcar",
+      className: "remarcar",
+    },
+    {
+      value: "nao_responde",
+      label: "Não responde",
+      className: "nao-responde",
+    },
+  ],
+};
+
+const PIPELINE_STAGE_TAGS_MAP = Object.values(PIPELINE_STAGE_TAGS)
+  .flat()
+  .reduce((acc, tag) => {
+    acc[tag.value] = tag;
+    return acc;
+  }, {});
+
+const getAvailableTagsForStage = (stageId) => {
+  if (!stageId) return [];
+  const tags = PIPELINE_STAGE_TAGS[stageId];
+  return Array.isArray(tags) ? tags : [];
+};
+
+const getLeadTagValue = (lead) => {
+  if (!lead) return null;
+  const tags = Array.isArray(lead.tags) ? lead.tags : (typeof lead.tags === "string" && lead.tags.trim() !== ""
+    ? lead.tags.split(",").map((t) => t.trim()).filter(Boolean)
+    : []);
+  return tags.length > 0 ? String(tags[0]) : null;
+};
+
+const getLeadTagConfig = (lead) => {
+  const value = getLeadTagValue(lead);
+  if (!value) return null;
+  return PIPELINE_STAGE_TAGS_MAP[value] || { value, label: value, className: "default" };
+};
+
 const pipelineStatusOrder = [
   "lead_recebido",
   "primeiro_contato",
@@ -414,6 +473,35 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
   }
   if (leadForm.elements["installment_value"]) {
     leadForm.elements["installment_value"].value = lead.installment_value ?? "";
+  }
+
+  const tagSelectEl = leadForm.querySelector("[data-lead-tag-select]");
+  const tagFieldEl = leadForm.querySelector("[data-lead-form-tag-field]");
+  if (tagSelectEl) {
+    const stageId = lead.status || "lead_recebido";
+    const availableTags = getAvailableTagsForStage(stageId);
+    const previousValue = getLeadTagValue(lead) || "";
+    tagSelectEl.innerHTML = "";
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = availableTags.length === 0 ? "Sem etiqueta disponível nesta etapa" : "Sem etiqueta";
+    tagSelectEl.append(placeholder);
+    availableTags.forEach((config) => {
+      const opt = document.createElement("option");
+      opt.value = config.value;
+      opt.textContent = config.label;
+      tagSelectEl.append(opt);
+    });
+    if (availableTags.length === 0) {
+      tagSelectEl.value = "";
+      tagSelectEl.disabled = true;
+    } else {
+      tagSelectEl.disabled = false;
+      tagSelectEl.value = previousValue && availableTags.some((c) => c.value === previousValue) ? previousValue : "";
+    }
+    if (tagFieldEl) {
+      tagFieldEl.style.display = "flex";
+    }
   }
 
   // Fetch and render tasks for this lead
@@ -3359,6 +3447,61 @@ const updateLeadThroughApi = async (client, leadId, payload) => {
 const updateLeadStageThroughApi = (client, leadId, status, goBack = false) =>
   updateLeadThroughApi(client, leadId, { status, ...(goBack ? { go_back: true } : {}) });
 
+const updateLeadTag = async (leadId, tagValue) => {
+  const client = getClient();
+  if (!client || !leadId) return false;
+
+  const card = document.querySelector(`[data-lead-id="${leadId}"]`);
+  if (!card) {
+    try {
+      await updateLeadThroughApi(client, leadId, { tags: tagValue ? [tagValue] : [] });
+      return true;
+    } catch (error) {
+      alert(error.message || "Não consegui atualizar a etiqueta do lead.");
+      return false;
+    }
+  }
+
+  try {
+    await updateLeadThroughApi(client, leadId, { tags: tagValue ? [tagValue] : [] });
+    if (Array.isArray(card.dataset) && card.dataset) {
+      if (tagValue) {
+        card.dataset.leadTag = tagValue;
+      } else {
+        delete card.dataset.leadTag;
+      }
+    }
+    const previousManualTag = card.querySelector(".lead-tag.manual-tag");
+    if (previousManualTag) previousManualTag.remove();
+    const badgeRow = card.querySelector(".lead-card-badge-row") || card.querySelector(".lead-trash-badge-row");
+    const stageId = card.dataset.status;
+    if (tagValue && badgeRow && getAvailableTagsForStage(stageId).length > 0) {
+      const config = PIPELINE_STAGE_TAGS_MAP[tagValue] || { value: tagValue, label: tagValue, className: "default" };
+      const tagEl = document.createElement("div");
+      tagEl.className = `lead-tag manual-tag lead-tag-${config.className}`;
+      tagEl.dataset.leadTagValue = config.value;
+      tagEl.textContent = config.label;
+      tagEl.title = `Etiqueta: ${config.label}`;
+      if (badgeRow.firstChild) {
+        badgeRow.insertBefore(tagEl, badgeRow.firstChild);
+      } else {
+        badgeRow.appendChild(tagEl);
+      }
+    }
+    card.querySelectorAll(".lead-card-tag-option").forEach((opt) => {
+      if (opt.dataset.tagValue && String(opt.dataset.tagValue) === String(tagValue || "")) {
+        opt.classList.add("is-selected");
+      } else {
+        opt.classList.remove("is-selected");
+      }
+    });
+    return true;
+  } catch (error) {
+    alert(error.message || "Não consegui atualizar a etiqueta do lead.");
+    return false;
+  }
+};
+
 const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppointment = false, goBack = false } = {}) => {
   const client = getClient();
 
@@ -3470,6 +3613,12 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
       } else {
         targetStack.append(sourceCard);
         sourceCard.dataset.status = status;
+        const targetTagsAvailable = getAvailableTagsForStage(status).length > 0;
+        const existingManualTag = sourceCard.querySelector(".lead-tag.manual-tag");
+        if (!targetTagsAvailable && existingManualTag) {
+          existingManualTag.remove();
+          sourceCard.dataset.leadTag = "";
+        }
       }
 
       const counter = targetColumn.querySelector("small");
@@ -3492,8 +3641,12 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
     }
   }
 
+  const shouldClearManualTag = status === "cancelado" || (getAvailableTagsForStage(status).length === 0 && status !== "lead_recebido");
+
   try {
-    await updateLeadStageThroughApi(client, leadId, status, goBack);
+    const updatePayload = { status, ...(goBack ? { go_back: true } : {}) };
+    if (shouldClearManualTag) updatePayload.tags = [];
+    await updateLeadThroughApi(client, leadId, updatePayload);
   } catch (error) {
     if (createdAppointment?.id) {
       await client.from("appointments").delete().eq("id", createdAppointment.id);
@@ -3609,6 +3762,23 @@ const createLeadCard = (lead) => {
   const badgeRow = document.createElement("div");
   badgeRow.className = "lead-card-badge-row";
   badgeRow.append(warningBadge);
+
+  const stageTagsAvailable = getAvailableTagsForStage(lead.status).length > 0;
+  const manualTagConfig = lead.status !== "cancelado" ? getLeadTagConfig(lead) : null;
+  let manualTagBadge = null;
+  if (stageTagsAvailable && manualTagConfig) {
+    manualTagBadge = document.createElement("div");
+    manualTagBadge.className = `lead-tag manual-tag lead-tag-${manualTagConfig.className}`;
+    manualTagBadge.dataset.leadTagValue = manualTagConfig.value;
+    manualTagBadge.textContent = manualTagConfig.label;
+    manualTagBadge.title = `Etiqueta: ${manualTagConfig.label}`;
+    badgeRow.prepend(manualTagBadge);
+  }
+  if (manualTagConfig && lead?.id) {
+    card.dataset.leadTag = manualTagConfig.value;
+  } else if (lead?.id) {
+    delete card.dataset.leadTag;
+  }
 
   let trashBadgeRow = null;
   if (lead.status === "cancelado") {
@@ -3746,8 +3916,13 @@ const createLeadCard = (lead) => {
     tagsArray = lead.tags.split(",").map(t => t.trim()).filter(Boolean);
   }
 
-  if (tagsArray.length > 0) {
-    tagsArray.forEach(tag => {
+  const knownManualTagValues = new Set(Object.keys(PIPELINE_STAGE_TAGS_MAP));
+  const legacyTags = stageTagsAvailable
+    ? []
+    : tagsArray.filter((tag) => !knownManualTagValues.has(String(tag)));
+
+  if (legacyTags.length > 0) {
+    legacyTags.forEach(tag => {
       const tagEl = document.createElement("span");
       tagEl.className = "lead-tag-pill";
       tagEl.textContent = tag;
@@ -3761,7 +3936,7 @@ const createLeadCard = (lead) => {
 
   // Append everything
   card.append(top, trashBadgeRow || badgeRow);
-  if (tagsArray.length > 0) {
+  if (legacyTags.length > 0) {
     card.append(tagsContainer);
   }
   card.append(phoneLine);
@@ -3791,6 +3966,63 @@ const createLeadCard = (lead) => {
     editItem.title = "Lead travado porque pertence a uma produção encerrada.";
   }
   leadDropdown.append(editItem);
+
+  const stageHasManualTags = getAvailableTagsForStage(lead.status).length > 0;
+  let tagMenuContainer = null;
+  let tagMenuButton = null;
+  if (stageHasManualTags) {
+    tagMenuContainer = document.createElement("div");
+    tagMenuContainer.className = "lead-card-tag-menu";
+
+    tagMenuButton = document.createElement("button");
+    tagMenuButton.className = "lead-card-dropdown-item btn-tag-toggle";
+    tagMenuButton.type = "button";
+    tagMenuButton.innerHTML = '<span>Etiqueta</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
+    tagMenuContainer.append(tagMenuButton);
+
+    const tagOptionsList = document.createElement("div");
+    tagOptionsList.className = "lead-card-tag-options";
+
+    const clearTagItem = document.createElement("button");
+    clearTagItem.className = "lead-card-tag-option lead-card-tag-option--clear";
+    clearTagItem.type = "button";
+    clearTagItem.textContent = "Sem etiqueta";
+    tagOptionsList.append(clearTagItem);
+    clearTagItem.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      tagMenuContainer.classList.remove("is-open");
+      leadDropdown.classList.remove("is-open");
+      const ok = await updateLeadTag(lead.id, null);
+      if (ok === false) return;
+    });
+
+    getAvailableTagsForStage(lead.status).forEach((config) => {
+      const opt = document.createElement("button");
+      opt.className = `lead-card-tag-option lead-card-tag-option--${config.className}`;
+      opt.type = "button";
+      opt.dataset.tagValue = config.value;
+      opt.innerHTML = `<span class="lead-card-tag-swatch lead-tag lead-tag-${config.className}">${config.label}</span><span class="lead-card-tag-check" aria-hidden="true"></span>`;
+      tagOptionsList.append(opt);
+      if (manualTagConfig && manualTagConfig.value === config.value) {
+        opt.classList.add("is-selected");
+      }
+      opt.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        tagMenuContainer.classList.remove("is-open");
+        leadDropdown.classList.remove("is-open");
+        const ok = await updateLeadTag(lead.id, config.value);
+        if (ok === false) return;
+      });
+    });
+
+    tagMenuContainer.append(tagOptionsList);
+    tagMenuButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+      tagMenuContainer.classList.toggle("is-open");
+    });
+
+    leadDropdown.append(tagMenuContainer);
+  }
 
   if (lead.status === "cancelado" && isProductionDirectorCeo) {
     const recoverItem = document.createElement("button");
@@ -4145,9 +4377,16 @@ leadForm?.addEventListener("submit", async (event) => {
   const leadId = leadForm.dataset.leadId;
 
   const tagsInput = String(formData.get("tags") || "").trim();
-  const tagsArray = tagsInput
+  const baseTags = tagsInput
     ? tagsInput.split(",").map(t => t.trim()).filter(Boolean)
     : [];
+  const leadTagSelect = leadForm?.querySelector?.("[data-lead-tag-select]");
+  const leadTagValue = leadTagSelect ? String(leadTagSelect.value || "").trim() : "";
+  let tagsArray = baseTags;
+  if (mode === "edit" && leadTagSelect) {
+    const finalTagValue = leadTagSelect.disabled ? "" : leadTagValue;
+    tagsArray = finalTagValue ? [finalTagValue] : [];
+  }
 
   if (mode === "edit" && leadId) {
     const originalStatus = String(leadForm.dataset.originalStatus || "").trim();

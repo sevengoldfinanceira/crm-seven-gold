@@ -3096,6 +3096,176 @@ body.theme-dark .lead-tag-pill {
   filter: brightness(0.85) contrast(1.15) !important;
 }
 
+/* Lead Card Manual Tag Badge */
+.lead-tag {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  padding: 4px 8px !important;
+  border-radius: 999px !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+}
+
+.lead-tag.manual-tag {
+  align-self: center !important;
+}
+
+.lead-tag.pre-agendamento {
+  background: #EEF2FF !important;
+  color: #4F46E5 !important;
+  border-color: #C7D2FE !important;
+}
+
+.lead-tag.retornar {
+  background: #FFF7ED !important;
+  color: #EA580C !important;
+  border-color: #FDBA74 !important;
+}
+
+.lead-tag.faltou {
+  background: #FEF2F2 !important;
+  color: #DC2626 !important;
+  border-color: #FECACA !important;
+}
+
+.lead-tag.remarcar {
+  background: #EEF2FF !important;
+  color: #4F46E5 !important;
+  border-color: #C7D2FE !important;
+}
+
+.lead-tag.nao-responde {
+  background: #F1F5F9 !important;
+  color: #475569 !important;
+  border-color: #CBD5E1 !important;
+}
+
+body.theme-dark .lead-tag.pre-agendamento {
+  background: rgba(79, 70, 229, 0.18) !important;
+  color: #C7D2FE !important;
+  border-color: rgba(199, 210, 254, 0.35) !important;
+}
+
+body.theme-dark .lead-tag.retornar {
+  background: rgba(234, 88, 12, 0.18) !important;
+  color: #FED7AA !important;
+  border-color: rgba(253, 186, 116, 0.35) !important;
+}
+
+body.theme-dark .lead-tag.faltou {
+  background: rgba(220, 38, 38, 0.2) !important;
+  color: #FECACA !important;
+  border-color: rgba(254, 202, 202, 0.35) !important;
+}
+
+body.theme-dark .lead-tag.remarcar {
+  background: rgba(79, 70, 229, 0.18) !important;
+  color: #C7D2FE !important;
+  border-color: rgba(199, 210, 254, 0.35) !important;
+}
+
+body.theme-dark .lead-tag.nao-responde {
+  background: rgba(71, 85, 105, 0.22) !important;
+  color: #CBD5E1 !important;
+  border-color: rgba(203, 213, 225, 0.35) !important;
+}
+
+/* Lead Card Tag Menu (Dropdown Submenu) */
+.lead-card-tag-menu {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+}
+
+.lead-card-dropdown-item.btn-tag-toggle {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  cursor: pointer !important;
+}
+
+.lead-card-tag-options {
+  display: none !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  padding: 6px !important;
+  margin-top: 4px !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+}
+
+body.theme-dark .lead-card-tag-options {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.lead-card-tag-menu.is-open .lead-card-tag-options {
+  display: flex !important;
+}
+
+.lead-card-tag-option {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  width: 100% !important;
+  padding: 6px 8px !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  color: #334155 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+
+body.theme-dark .lead-card-tag-option {
+  color: #cbd5e1 !important;
+}
+
+.lead-card-tag-option:hover {
+  background-color: #eef2ff !important;
+  color: #1e293b !important;
+}
+
+.lead-card-tag-option--clear:hover {
+  background-color: #f1f5f9 !important;
+}
+
+.lead-card-tag-swatch {
+  pointer-events: none !important;
+  font-size: 10px !important;
+}
+
+.lead-card-tag-check {
+  width: 14px !important;
+  height: 14px !important;
+  display: inline-block !important;
+  border-radius: 999px !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+.lead-card-tag-option.is-selected .lead-card-tag-check {
+  background: #4F46E5 !important;
+  border-color: #4F46E5 !important;
+  box-shadow: inset 0 0 0 2px #ffffff !important;
+}
+
+body.theme-dark .lead-card-tag-option.is-selected .lead-card-tag-check {
+  box-shadow: inset 0 0 0 2px #1e1b29 !important;
+}
+
 /* Modal Lead Metadata Display */
 .modal-lead-meta-row {
   display: flex !important;
