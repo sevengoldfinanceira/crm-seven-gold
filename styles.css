@@ -3878,9 +3878,9 @@ body.theme-dark .dash-calendar-today::before {
   width: min(100%, 1100px);
   margin: 0 auto 20px;
   padding: 12px;
-  border: 1px solid rgba(99, 102, 241, 0.1);
+  border: none;
   border-radius: 24px;
-  background: linear-gradient(180deg, #f8faff 0%, #eef2ff 100%);
+  background: transparent;
   box-sizing: border-box;
 }
 
@@ -4057,8 +4057,8 @@ body.theme-dark .dash-calendar-today::before {
 }
 
 body.theme-dark .tab-content[data-tab="pipeline"] .filter-row {
-  border-color: rgba(139, 92, 246, 0.18);
-  background: linear-gradient(180deg, rgba(28, 20, 37, 0.96), rgba(36, 25, 53, 0.9));
+  border: none;
+  background: transparent;
 }
 
 body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-filter-label {
