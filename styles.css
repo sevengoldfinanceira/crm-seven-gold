@@ -4182,8 +4182,8 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
 .commercial-summary-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
 /* === KPI Card === */
@@ -4191,12 +4191,12 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
   position: relative;
   background: #ffffff;
   border-radius: 14px;
-  padding: 14px 14px 14px 16px;
+  padding: 10px 12px 10px 14px;
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.04);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px rgba(0, 0, 0, 0.04);
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  min-height: 110px;
+  min-height: 84px;
   display: flex;
   box-sizing: border-box;
 }
@@ -4254,24 +4254,24 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
 
 /* Icon box */
 .kpi-icon-box {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
   background: var(--kpi-bg);
   color: var(--kpi-color);
   display: grid;
   place-items: center;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .kpi-icon-box svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 /* Title */
 .kpi-title {
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 800;
   color: #64748b;
   text-transform: uppercase;
@@ -4297,7 +4297,7 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
 }
 
 .kpi-number {
-  font-size: clamp(1.2rem, 2vw, 1.6rem);
+  font-size: clamp(1rem, 1.6vw, 1.35rem);
   font-weight: 800;
   color: var(--kpi-color);
   line-height: 1;
@@ -4305,7 +4305,7 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
 }
 
 .kpi-conversion {
-  font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+  font-size: clamp(0.8rem, 1.4vw, 1.1rem);
   font-weight: 800;
   color: var(--kpi-color);
   line-height: 1;
