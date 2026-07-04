@@ -4941,6 +4941,216 @@ body.theme-dark .kpi-subtext {
   text-align: right;
 }
 
+/* Premium Conversão por Etapa card */
+.dash-conversion-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 28px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+  padding: 28px;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+}
+
+.conversion-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.conversion-title-area {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.conversion-icon-box {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #FEF3C7, #FFFBEB);
+  color: #F59E0B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 24px rgba(245, 158, 11, 0.16);
+  flex-shrink: 0;
+}
+
+.conversion-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.conversion-subtitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #64748B;
+  margin-top: 8px;
+  display: block;
+}
+
+.conversion-total-card {
+  min-width: 150px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  border: 1px solid #E2E8F0;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+  text-align: left;
+}
+
+.conversion-total-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748B;
+  margin-bottom: 10px;
+}
+
+.conversion-total-number {
+  font-size: 36px;
+  font-weight: 900;
+  color: #0F172A;
+  line-height: 1;
+}
+
+.conversion-total-percent {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748B;
+  margin-top: 10px;
+}
+
+.conversion-divider {
+  width: 100%;
+  height: 1px;
+  background: #E2E8F0;
+  margin: 28px 0;
+}
+
+.conversion-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Conversion stage cards */
+.conversion-stage-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 100%);
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+  transition: all 0.2s ease;
+}
+
+.conversion-stage-card:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
+}
+
+.conversion-stage-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.conversion-stage-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.conversion-stage-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 6px;
+}
+
+.conversion-stage-bar-track {
+  height: 8px;
+  background: #E2E8F0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.conversion-stage-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  min-width: 2px;
+}
+
+.conversion-stage-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.conversion-stage-pct {
+  font-size: 20px;
+  font-weight: 900;
+  color: #0F172A;
+  line-height: 1;
+}
+
+.conversion-stage-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+/* General conversion summary block at the bottom */
+.general-conversion-card {
+  margin-top: auto;
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #6D4CFF 0%, #7C3AED 100%);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: 0 12px 32px rgba(109, 76, 255, 0.24);
+}
+
+.general-conversion-label {
+  font-size: 16px;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.general-conversion-value {
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.general-conversion-detail {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.75;
+}
+
 /* Horizontal bar chart */
 .dash-hbars {
   display: flex;
@@ -5056,6 +5266,71 @@ body.theme-dark .dash-hbar-track {
   background: #1e293b;
 }
 
+/* Dark theme conversion card */
+body.theme-dark .dash-conversion-card {
+  background: #111827;
+  border-color: rgba(255, 255, 255, 0.05);
+  box-shadow: none;
+}
+
+body.theme-dark .conversion-title {
+  color: #e2e8f0;
+}
+
+body.theme-dark .conversion-subtitle {
+  color: #94a3b8;
+}
+
+body.theme-dark .conversion-total-card {
+  background: linear-gradient(180deg, #1e293b 0%, #111827 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.theme-dark .conversion-total-label {
+  color: #94a3b8;
+}
+
+body.theme-dark .conversion-total-number {
+  color: #e2e8f0;
+}
+
+body.theme-dark .conversion-total-percent {
+  color: #94a3b8;
+}
+
+body.theme-dark .conversion-divider {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.theme-dark .conversion-stage-card {
+  background: linear-gradient(135deg, #1e293b 0%, #111827 100%);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.theme-dark .conversion-stage-card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.theme-dark .conversion-stage-label {
+  color: #e2e8f0;
+}
+
+body.theme-dark .conversion-stage-bar-track {
+  background: #1e293b;
+}
+
+body.theme-dark .conversion-stage-pct {
+  color: #e2e8f0;
+}
+
+body.theme-dark .conversion-stage-count {
+  color: #94a3b8;
+}
+
+body.theme-dark .general-conversion-card {
+  box-shadow: 0 12px 32px rgba(109, 76, 255, 0.15);
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
   .dash-charts-grid {
@@ -5113,6 +5388,34 @@ body.theme-dark .dash-hbar-track {
   }
   .dash-funnel-v2-label {
     font-size: 0.72rem;
+  }
+  .conversion-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .conversion-total-card {
+    min-width: 0;
+    width: 100%;
+  }
+  .conversion-stage-card {
+    padding: 12px 16px;
+  }
+  .conversion-stage-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    font-size: 16px;
+  }
+  .conversion-stage-pct {
+    font-size: 16px;
+  }
+  .general-conversion-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  .general-conversion-value {
+    font-size: 24px;
   }
 }
 

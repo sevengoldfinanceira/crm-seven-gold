@@ -492,17 +492,25 @@
               </article>
 
               <!-- Conversão por Etapa -->
-              <article class="dash-chart-card">
-                <div class="dash-chart-header">
-                  <div class="dash-chart-icon-box" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              <article class="dash-chart-card dash-conversion-card">
+                <div class="conversion-header">
+                  <div class="conversion-title-area">
+                    <div class="conversion-icon-box">
+                      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    </div>
+                    <div>
+                      <h3 class="conversion-title">Conversão por Etapa</h3>
+                      <span class="conversion-subtitle">Taxa de progressão entre etapas</span>
+                    </div>
                   </div>
-                  <div>
-                    <h3 class="dash-chart-title">Conversão por Etapa</h3>
-                    <span class="dash-chart-subtitle">Taxa de progressão entre etapas</span>
+                  <div class="conversion-total-card">
+                    <div class="conversion-total-label">Etapas concluídas</div>
+                    <div class="conversion-total-number" id="dash-conversion-total">0</div>
+                    <div class="conversion-total-percent" id="dash-conversion-total-pct">0% conversão geral</div>
                   </div>
                 </div>
-                <div id="dash-conversion-chart" class="dash-chart-body">
+                <div class="conversion-divider"></div>
+                <div id="dash-conversion-chart" class="conversion-content">
                   <div class="skeleton-shimmer" style="height: 100%; border-radius: 8px;"></div>
                 </div>
               </article>

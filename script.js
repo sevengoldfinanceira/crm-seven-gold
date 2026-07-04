@@ -2534,29 +2534,49 @@ const renderDashboardCharts = ({ receivedLeads, inService, totalAppointments, cl
 
   if (conversionEl) {
     const convSteps = [
-      { label: "Atendimento", from: receivedLeads, to: inService },
-      { label: "Agendamento", from: inService, to: totalAppointments },
-      { label: "Em Loja", from: totalAppointments, to: clientsInStore },
-      { label: "Fechamento", from: clientsInStore, to: closedLeads },
+      { label: "Atendimento", from: receivedLeads, to: inService, color: "#ea580c", icon: "📞" },
+      { label: "Agendamento", from: inService, to: totalAppointments, color: "#2563eb", icon: "📅" },
+      { label: "Em Loja", from: totalAppointments, to: clientsInStore, color: "#ca8a04", icon: "🏪" },
+      { label: "Fechamento", from: clientsInStore, to: closedLeads, color: "#10b981", icon: "✅" },
     ];
-    const barColors = ["#ea580c", "#2563eb", "#ca8a04", "#10b981"];
-    let barsHTML = '<div class="dash-hbars">';
-    convSteps.forEach((step, i) => {
+    const generalPct = receivedLeads > 0 ? ((closedLeads / receivedLeads) * 100) : 0;
+
+    const totalNumEl = document.getElementById("dash-conversion-total");
+    const totalPctEl = document.getElementById("dash-conversion-total-pct");
+    if (totalNumEl) totalNumEl.textContent = closedLeads;
+    if (totalPctEl) totalPctEl.textContent = generalPct.toFixed(1) + "% conversão geral";
+
+    let html = '<div class="conversion-stages">';
+    convSteps.forEach((step) => {
       const pct = step.from > 0 ? ((step.to / step.from) * 100) : 0;
       const pctText = pct.toFixed(1) + "%";
-      barsHTML += `
-        <div class="dash-hbar-row">
-          <span class="dash-hbar-label">${step.label}</span>
-          <div class="dash-hbar-track">
-            <div class="dash-hbar-fill" style="width: ${Math.min(pct, 100)}%; background: ${barColors[i]};">
-              ${pct > 15 ? `<span class="dash-hbar-count">${step.to}</span>` : ""}
+      html += `
+        <div class="conversion-stage-card">
+          <div class="conversion-stage-icon" style="background: ${step.color};">
+            ${step.icon}
+          </div>
+          <div class="conversion-stage-info">
+            <div class="conversion-stage-label">${step.label}</div>
+            <div class="conversion-stage-bar-track">
+              <div class="conversion-stage-bar-fill" style="width: ${Math.min(pct, 100)}%; background: ${step.color};"></div>
             </div>
           </div>
-          <span class="dash-hbar-pct">${pctText}</span>
+          <div class="conversion-stage-meta">
+            <div class="conversion-stage-pct">${pctText}</div>
+            <div class="conversion-stage-count">${step.to} leads</div>
+          </div>
         </div>`;
     });
-    barsHTML += "</div>";
-    conversionEl.innerHTML = barsHTML;
+    html += '</div>';
+    html += `
+      <div class="general-conversion-card">
+        <div>
+          <div class="general-conversion-label">Conversão Geral</div>
+          <div class="general-conversion-detail">${closedLeads} de ${receivedLeads} leads convertidos</div>
+        </div>
+        <div class="general-conversion-value">${generalPct.toFixed(1)}%</div>
+      </div>`;
+    conversionEl.innerHTML = html;
   }
 };
 
