@@ -3736,29 +3736,6 @@ const createLeadCard = (lead) => {
     actionsRow.append(copyBtn);
   }
 
-  if (lead.status === "cancelado" && isProductionDirectorCeo) {
-    const recoverBtn = document.createElement("button");
-    recoverBtn.type = "button";
-    recoverBtn.className = "lead-action-btn copy-production-btn";
-    recoverBtn.style.color = "#059669";
-    recoverBtn.style.borderColor = "#a7f3d0";
-    recoverBtn.style.background = "#ecfdf5";
-    recoverBtn.textContent = "Recuperar";
-    recoverBtn.title = "Recuperar este lead da lixeira criando uma cópia na produção atual";
-    recoverBtn.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      if (!confirm("Deseja recuperar este lead para a produção atual? Será criada uma cópia com status 'Lead recebido'.")) return;
-      try {
-        await productionRequest({ action: "recover_trash", lead_id: lead.id });
-        alert("Lead recuperado e copiado para a produção atual.");
-        await loadLeads();
-      } catch (error) {
-        alert(error.message);
-      }
-    });
-    actionsRow.append(recoverBtn);
-  }
-
   // Tags Container
   const tagsContainer = document.createElement("div");
   tagsContainer.className = "lead-tags-container";
