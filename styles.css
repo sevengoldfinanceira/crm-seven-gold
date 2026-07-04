@@ -2549,11 +2549,6 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
 }
 .weekly-day-card.is-saturday .weekly-day-card-count { color: #2563EB; }
 
-.weekly-day-card.is-sunday .weekly-day-card-icon-wrap {
-  background: #F1ECFF;
-  color: #E11D48;
-}
-.weekly-day-card.is-sunday .weekly-day-card-count { color: #E11D48; }
 
 .weekly-day-card.has-appointments {
   background: linear-gradient(180deg, #FFFBEB 0%, #FFFFFF 100%);
@@ -2794,8 +2789,7 @@ body.theme-dark .weekly-day-card {
 }
 body.theme-dark .weekly-day-card.is-saturday .weekly-day-card-icon-wrap { background: rgba(96, 165, 250, .15); color: #60a5fa; }
 body.theme-dark .weekly-day-card.is-saturday .weekly-day-card-count { color: #60a5fa; }
-body.theme-dark .weekly-day-card.is-sunday .weekly-day-card-icon-wrap { background: rgba(251, 113, 133, .15); color: #fb7185; }
-body.theme-dark .weekly-day-card.is-sunday .weekly-day-card-count { color: #fb7185; }
+
 body.theme-dark .weekly-day-card.has-appointments {
   background: linear-gradient(180deg, rgba(66, 43, 8, .6) 0%, #181221 100%);
   border-color: rgba(217, 119, 6, .35);
