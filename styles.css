@@ -452,7 +452,7 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
   min-width: 0;
   overflow-x: auto;
   padding-bottom: 12px;
-  margin-top: 24px;
+  margin-top: 8px;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -648,7 +648,7 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
   min-width: 0;
   overflow-x: auto;
   padding-bottom: 12px;
-  margin-top: 24px;
+  margin-top: 8px;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -3876,7 +3876,7 @@ body.theme-dark .dash-calendar-today::before {
   justify-content: center;
   gap: 12px;
   width: min(100%, 1100px);
-  margin: 0 auto 20px;
+  margin: 0 auto 8px;
   padding: 12px;
   border: none;
   border-radius: 24px;
