@@ -2473,29 +2473,26 @@ const renderDashboardCharts = ({ receivedLeads, inService, totalAppointments, cl
     };
     const widths = [100, 82, 64, 46, 30];
     let funnelHTML = '<div class="dash-funnel-v2">';
-    funnelHTML += '<div class="dash-funnel-v2-stages">';
+    funnelHTML += '<div class="dash-funnel-v2-header">';
+    funnelHTML += '  <div class="dash-funnel-v2-header-spacer"></div>';
+    funnelHTML += '  <div class="dash-funnel-v2-header-metrics"><span>Quantidade</span><span>Conversão</span></div>';
+    funnelHTML += '</div>';
+    funnelHTML += '<div class="dash-funnel-v2-rows">';
     steps.forEach((step, i) => {
       const pct = ((step.value / maxVal) * 100).toFixed(0);
       funnelHTML += `
-        <div class="dash-funnel-v2-stage" style="--stage-color: ${step.color}; --stage-width: ${widths[i]}%;">
-          <div class="dash-funnel-v2-piece" style="background: ${step.gradient}; width: ${widths[i]}%;">
+        <div class="dash-funnel-v2-row" style="--stage-color: ${step.color}; --stage-width: ${widths[i]}%;">
+          <div class="dash-funnel-v2-piece" style="background: ${step.gradient}; width: calc(${widths[i]}% * 0.8);">
             <div class="dash-funnel-v2-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${step.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${iconPaths[step.icon]}</svg>
             </div>
             <span class="dash-funnel-v2-label">${step.label}</span>
           </div>
           <div class="dash-funnel-v2-dotted" style="border-color: ${step.color};"></div>
-        </div>`;
-    });
-    funnelHTML += '</div>';
-    funnelHTML += '<div class="dash-funnel-v2-metrics">';
-    funnelHTML += '<div class="dash-funnel-v2-metrics-header"><span>Quantidade</span><span>Conversão</span></div>';
-    steps.forEach((step, i) => {
-      const pct = ((step.value / maxVal) * 100).toFixed(0);
-      funnelHTML += `
-        <div class="dash-funnel-v2-metric" style="--stage-color: ${step.color};">
-          <span class="dash-funnel-v2-metric-value" style="color: ${step.color};">${step.value}</span>
-          <span class="dash-funnel-v2-metric-pct" style="background: ${step.color}12; color: ${step.color}; border: 1px solid ${step.color}22;">${pct}%</span>
+          <div class="dash-funnel-v2-metrics-row">
+            <span class="dash-funnel-v2-metric-value" style="color: ${step.color};">${step.value}</span>
+            <span class="dash-funnel-v2-metric-pct" style="background: ${step.color}12; color: ${step.color}; border: 1px solid ${step.color}22;">${pct}%</span>
+          </div>
         </div>`;
     });
     funnelHTML += '</div>';

@@ -6317,10 +6317,62 @@ body.theme-dark .lead-card.is-production-locked { background: #111827; }
 .dash-chart-body--funnel {
   padding: 12px 16px 16px !important;
   min-height: 310px !important;
+  display: block !important;
 }
 
-.dash-funnel-v2-stages {
+.dash-funnel-v2 {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+}
+
+.dash-funnel-v2-header {
+  display: flex !important;
+  width: 100% !important;
+  margin-bottom: 8px !important;
+  border-bottom: 1px solid #E5E7EB !important;
+  padding-bottom: 6px !important;
+}
+
+.dash-funnel-v2-header-spacer {
+  flex: 1 !important;
+}
+
+.dash-funnel-v2-header-metrics {
+  width: 160px !important;
+  display: grid !important;
+  grid-template-columns: 80px 70px !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+.dash-funnel-v2-header-metrics span {
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  color: #475569 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+  text-align: center !important;
+}
+
+.dash-funnel-v2-rows {
+  display: flex !important;
+  flex-direction: column !important;
   gap: 10px !important;
+  width: 100% !important;
+}
+
+.dash-funnel-v2-row {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 42px !important;
+}
+
+.dash-funnel-v2-row::before {
+  content: '' !important;
+  flex: 1 !important;
+  height: 0 !important;
 }
 
 .dash-funnel-v2-piece {
@@ -6328,13 +6380,15 @@ body.theme-dark .lead-card.is-production-locked { background: #111827; }
   border-radius: 8px !important;
   padding: 0 16px !important;
   box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05) !important;
-  width: calc(var(--stage-width) * 0.8) !important;
+  flex-shrink: 0 !important;
+  min-width: 100px !important;
 }
 
 .dash-funnel-v2-icon {
   width: 28px !important;
   height: 28px !important;
   box-shadow: none !important;
+  flex-shrink: 0 !important;
 }
 
 .dash-funnel-v2-icon svg {
@@ -6346,68 +6400,40 @@ body.theme-dark .lead-card.is-production-locked { background: #111827; }
   font-size: 0.75rem !important;
 }
 
-.dash-funnel-v2-stage::before {
-  content: '' !important;
-  flex: 1 !important;
-  height: 0 !important;
-}
-
 .dash-funnel-v2-dotted {
   flex: 1 !important;
-  max-width: none !important;
+  height: 0 !important;
+  border-top: 2px dashed var(--stage-color) !important;
   min-width: 0 !important;
+  max-width: none !important;
+  position: relative !important;
 }
 
-.dash-funnel-v2-metrics {
-  min-width: 160px !important;
-  gap: 10px !important;
-  padding-left: 8px !important;
-}
-
-.dash-funnel-v2-metrics-header,
-.dash-funnel-v2-metric {
+.dash-funnel-v2-metrics-row {
+  width: 160px !important;
   display: grid !important;
   grid-template-columns: 80px 70px !important;
   align-items: center !important;
   gap: 8px !important;
-}
-
-.dash-funnel-v2-metrics-header {
-  padding: 0 2px 4px !important;
-}
-
-.dash-funnel-v2-metrics-header span {
-  font-size: 0.68rem !important;
-}
-
-.dash-funnel-v2-metrics-header span:first-child,
-.dash-funnel-v2-metric-value {
-  text-align: center !important;
-  display: block !important;
-  width: 100% !important;
-}
-
-.dash-funnel-v2-metrics-header span:last-child,
-.dash-funnel-v2-metric-pct {
-  text-align: center !important;
-  display: inline-block !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.dash-funnel-v2-metric {
-  height: 42px !important;
-  padding: 0 2px !important;
+  flex-shrink: 0 !important;
 }
 
 .dash-funnel-v2-metric-value {
   font-size: 1.2rem !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+  display: block !important;
+  width: 100% !important;
 }
 
 .dash-funnel-v2-metric-pct {
   font-size: 0.68rem !important;
   padding: 3px 8px !important;
   border-radius: 6px !important;
+  text-align: center !important;
+  display: inline-block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
   justify-self: center !important;
 }
 
