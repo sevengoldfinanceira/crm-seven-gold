@@ -6444,7 +6444,8 @@ body.theme-dark .lead-card.is-production-locked { background: #111827; }
 
 /* Center filter labels above their inputs */
 .dash-filter-label,
-.dash-calendar-label {
+.dash-calendar-label,
+.tab-content[data-tab="pipeline"] .pipeline-filter-label {
   text-align: center !important;
   width: 100% !important;
   padding-left: 0 !important;
