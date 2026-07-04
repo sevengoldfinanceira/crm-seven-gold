@@ -2225,7 +2225,7 @@ body.theme-dark .crm-profile-header h1 { color: #f1f1f4; }
 .tab-content .lead-count { font-size: 0.88rem; color: #667085; margin-top: 4px; }
 .calendar-toolbar h1 { margin: 0 0 4px; white-space: nowrap; }
 .calendar-week-label { margin: 0; color: var(--muted); font-size: .88rem; font-weight: 600; }
-.calendar-toolbar-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.calendar-toolbar-actions { display: flex; align-items: flex-end; justify-content: flex-end; gap: 12px; flex-wrap: nowrap; }
 .calendar-nav-button, .calendar-today-button { min-height: 40px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-weight: 700; }
 .calendar-nav-button { width: 42px; padding: 0; font-size: 1.1rem; }
 .calendar-today-button { padding: 0 14px; }
@@ -2393,8 +2393,8 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 12px;
+  flex-wrap: nowrap;
 }
 
 .calendar-nav-button,
