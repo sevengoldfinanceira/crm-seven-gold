@@ -96,10 +96,61 @@ const initProductionControls = () => {
   };
   document.getElementById("production-prev")?.addEventListener("click", () => switchProduction(1));
   document.getElementById("production-next")?.addEventListener("click", () => switchProduction(-1));
+  const closePreviewModal = document.getElementById("production-close-preview-modal");
   document.getElementById("production-close")?.addEventListener("click", async () => {
-    if (!isProductionDirectorCeo) return;
-    if (!confirm("Tem certeza que deseja encerrar esta produção? Após o fechamento, todos os leads deste mês ficarão bloqueados para edição.")) return;
-    try { await productionRequest({ action: "close", production_id: selectedProduction.id }); await loadCommercialProductions(); await loadLeads(); } catch (error) { alert(error.message); }
+    if (!isProductionDirectorCeo || !selectedProduction) return;
+    document.getElementById("close-preview-range").textContent = selectedProduction.name;
+    document.getElementById("close-preview-total").textContent = "...";
+    document.getElementById("close-preview-vendas").textContent = "...";
+    document.getElementById("close-preview-lixeira").textContent = "...";
+    document.getElementById("close-preview-continuar").textContent = "...";
+    document.getElementById("close-preview-dups-warning").style.display = "none";
+    if (typeof closePreviewModal?.showModal === "function") {
+      closePreviewModal.showModal();
+    }
+    try {
+      const res = await productionRequest({ action: "preview_close", production_id: selectedProduction.id });
+      if (res.ok && res.preview) {
+        const p = res.preview;
+        document.getElementById("close-preview-total").textContent = String(p.total);
+        document.getElementById("close-preview-vendas").textContent = String(p.vendaFechada);
+        document.getElementById("close-preview-lixeira").textContent = String(p.lixeira);
+        document.getElementById("close-preview-continuar").textContent = String(p.continuaveis);
+        if (p.duplicados > 0) {
+          document.getElementById("close-preview-dups-count").textContent = String(p.duplicados);
+          document.getElementById("close-preview-dups-warning").style.display = "list-item";
+        } else {
+          document.getElementById("close-preview-dups-warning").style.display = "none";
+        }
+      } else {
+        alert(res.error || "Não foi possível carregar a prévia de fechamento.");
+        closePreviewModal?.close();
+      }
+    } catch (err) {
+      alert(err.message || "Erro ao carregar prévia.");
+      closePreviewModal?.close();
+    }
+  });
+
+  document.getElementById("close-preview-cancel-btn")?.addEventListener("click", () => closePreviewModal?.close());
+  document.getElementById("close-preview-cancel-btn2")?.addEventListener("click", () => closePreviewModal?.close());
+
+  document.getElementById("close-preview-confirm-btn")?.addEventListener("click", async () => {
+    if (!selectedProduction) return;
+    const confirmBtn = document.getElementById("close-preview-confirm-btn");
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = "Fechando...";
+    try {
+      await productionRequest({ action: "close", production_id: selectedProduction.id });
+      closePreviewModal?.close();
+      await loadCommercialProductions();
+      await loadLeads();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = "Confirmar Fechamento";
+    }
   });
   document.getElementById("production-start")?.addEventListener("click", async () => {
     try { await productionRequest({ action: "start_next" }); await loadCommercialProductions(); await loadLeads(); } catch (error) { alert(error.message); }
@@ -3517,12 +3568,35 @@ const createLeadCard = (lead) => {
     const originStatus = lead.trash_origin_status && lead.trash_origin_status !== "cancelado"
       ? lead.trash_origin_status
       : "unknown";
+  let trashBadgeRow = null;
+  if (lead.status === "cancelado") {
+    trashBadgeRow = document.createElement("div");
+    trashBadgeRow.className = "lead-trash-badge-row";
+
+    const originBadge = document.createElement("div");
+    const originStatus = lead.trash_origin_status && lead.trash_origin_status !== "cancelado"
+      ? lead.trash_origin_status
+      : "unknown";
     originBadge.className = `lead-trash-origin-badge lead-trash-origin-badge--${originStatus}`;
     const originLabel = statusLabels[lead.trash_origin_status] || "Origem desconhecida";
     originBadge.textContent = originLabel;
     originBadge.title = `Enviado para a Lixeira a partir de: ${originLabel}`;
 
     trashBadgeRow.append(originBadge, warningBadge);
+  }
+
+  if (lead.is_carry_over) {
+    const carryBadge = document.createElement("span");
+    const originProd = commercialProductions.find((p) => p.id === lead.carried_from_production_id);
+    const originName = originProd ? originProd.name : "Mês anterior";
+    carryBadge.className = "lead-carry-badge";
+    carryBadge.textContent = `Veio de ${originName}`;
+    carryBadge.title = `Lead continuado da produção de ${originName}`;
+    if (trashBadgeRow) {
+      trashBadgeRow.prepend(carryBadge);
+    } else {
+      badgeRow.prepend(carryBadge);
+    }
   }
 
   // Phone Line
@@ -3621,10 +3695,38 @@ const createLeadCard = (lead) => {
     copyBtn.className = "lead-action-btn copy-production-btn";
     copyBtn.textContent = "Copiar para atual";
     copyBtn.addEventListener("click", async () => {
-      try { await productionRequest({ action: "copy_lead", lead_id: lead.id }); alert("Lead copiado para a produção atual."); }
-      catch (error) { alert(error.message); }
+      try {
+        await productionRequest({ action: "copy_lead", lead_id: lead.id });
+        alert("Lead copiado para a produção atual.");
+        await loadLeads();
+      } catch (error) {
+        alert(error.message);
+      }
     });
     actionsRow.append(copyBtn);
+  }
+
+  if (lead.status === "cancelado" && isProductionDirectorCeo) {
+    const recoverBtn = document.createElement("button");
+    recoverBtn.type = "button";
+    recoverBtn.className = "lead-action-btn copy-production-btn";
+    recoverBtn.style.color = "#059669";
+    recoverBtn.style.borderColor = "#a7f3d0";
+    recoverBtn.style.background = "#ecfdf5";
+    recoverBtn.textContent = "Recuperar";
+    recoverBtn.title = "Recuperar este lead da lixeira criando uma cópia na produção atual";
+    recoverBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      if (!confirm("Deseja recuperar este lead para a produção atual? Será criada uma cópia com status 'Lead recebido'.")) return;
+      try {
+        await productionRequest({ action: "recover_trash", lead_id: lead.id });
+        alert("Lead recuperado e copiado para a produção atual.");
+        await loadLeads();
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+    actionsRow.append(recoverBtn);
   }
 
   // Tags Container

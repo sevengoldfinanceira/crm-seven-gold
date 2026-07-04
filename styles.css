@@ -6451,3 +6451,22 @@ body.theme-dark .lead-card.is-production-locked { background: #111827; }
   display: block !important;
 }
 
+/* Lead carry-over badge style */
+.lead-carry-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  white-space: nowrap;
+  background: rgba(109, 76, 255, 0.08);
+  color: #6d4cff;
+  border: 1px solid rgba(109, 76, 255, 0.2);
+}
+body.theme-dark .lead-carry-badge {
+  background: rgba(109, 76, 255, 0.2);
+  color: #a78bfa;
+  border-color: rgba(109, 76, 255, 0.4);
+}
+

@@ -997,6 +997,55 @@
               <div id="team-detail-ranking"></div>
             </div>
           </dialog>
+
+          <!-- Modal de Pré-Fechamento da Produção -->
+          <dialog id="production-close-preview-modal" style="border: none; border-radius: 20px; padding: 0; max-width: 520px; width: 92vw; box-shadow: 0 24px 48px rgba(0,0,0,0.22); background: #ffffff;">
+            <div style="padding: 24px 28px;">
+              <header style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                <h2 id="close-preview-title" style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #101233;">Fechar Produção Comercial</h2>
+                <button id="close-preview-cancel-btn" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: #9ca3af; padding: 4px 8px; border-radius: 8px;">&times;</button>
+              </header>
+
+              <div id="close-preview-content" style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 14px;">
+                <div style="padding: 12px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; font-size: 0.85rem; color: #475569;">
+                  Período: <strong id="close-preview-range" style="color: #0f172a;"></strong>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                  <div style="padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; text-align: center;">
+                    <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Total de Leads</div>
+                    <strong id="close-preview-total" style="font-size: 1.3rem; color: #0f172a; font-weight: 800;">0</strong>
+                  </div>
+                  <div style="padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; text-align: center; border-top: 3px solid #10b981;">
+                    <div style="font-size: 0.72rem; font-weight: 700; color: #10b981; text-transform: uppercase;">Vendas Fechadas</div>
+                    <strong id="close-preview-vendas" style="font-size: 1.3rem; color: #10b981; font-weight: 800;">0</strong>
+                  </div>
+                  <div style="padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; text-align: center; border-top: 3px solid #ef4444;">
+                    <div style="font-size: 0.72rem; font-weight: 700; color: #ef4444; text-transform: uppercase;">Lixeira (Descartados)</div>
+                    <strong id="close-preview-lixeira" style="font-size: 1.3rem; color: #ef4444; font-weight: 800;">0</strong>
+                  </div>
+                  <div style="padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; text-align: center; border-top: 3px solid #6366f1;">
+                    <div style="font-size: 0.72rem; font-weight: 700; color: #6366f1; text-transform: uppercase;">Leads em Andamento</div>
+                    <strong id="close-preview-continuar" style="font-size: 1.3rem; color: #6366f1; font-weight: 800;">0</strong>
+                  </div>
+                </div>
+
+                <div id="close-preview-warnings" style="padding: 12px; border-radius: 12px; background: #fffbeb; border: 1px solid #fef3c7; font-size: 0.82rem; color: #b45309; line-height: 1.4;">
+                  <strong>Aviso Importante:</strong>
+                  <ul style="margin: 4px 0 0; padding-left: 16px;">
+                    <li>Leads na <strong>Lixeira</strong> e em <strong>Venda Fechada</strong> ficarão bloqueados no histórico e NÃO continuarão.</li>
+                    <li>Leads em andamento serão copiados e continuarão disponíveis na próxima produção automaticamente.</li>
+                    <li id="close-preview-dups-warning" style="display:none;">Existem <strong id="close-preview-dups-count">0</strong> leads com telefones duplicados na próxima produção que serão ignorados para evitar duplicidade.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <footer style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="close-preview-cancel-btn2" type="button" style="padding: 10px 16px; border: 1px solid #d1d5db; border-radius: 10px; background: #ffffff; color: #374151; font-weight: 700; cursor: pointer; font-size: 0.85rem;">Cancelar</button>
+                <button id="close-preview-confirm-btn" type="button" style="padding: 10px 20px; border: none; border-radius: 10px; background: #ef4444; color: #ffffff; font-weight: 800; cursor: pointer; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);">Confirmar Fechamento</button>
+              </footer>
+            </div>
+          </dialog>
         </section>
       </main>
     </div>
