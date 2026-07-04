@@ -2711,53 +2711,79 @@ const renderCalendar = () => {
   if (calendarGrid) {
     calendarGrid.innerHTML = "";
 
+    const dayAcronyms = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
+
     days.forEach((day) => {
       const dateKey = toDateKey(day);
-      const weekendClass = day.getDay() === 6 ? " is-saturday" : day.getDay() === 0 ? " is-sunday" : "";
+      const dayOfWeek = day.getDay();
+      const isSaturday = dayOfWeek === 6;
+      const isSunday = dayOfWeek === 0;
       const isToday = dateKey === todayKey;
-
-      const column = document.createElement("div");
-      column.className = `calendar-day-column${isToday ? " is-today" : ""}${weekendClass}`;
-
-      const header = document.createElement("div");
-      header.className = `calendar-day-header${isToday ? " is-today" : ""}${weekendClass}`;
-      const dayCount = day.getDay() === 0 ? 0 : calendarAppointments.filter((item) => item.data_agendamento === dateKey).length;
-
-      header.innerHTML = `
-        <div class="day-card-icon-box">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6D4AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><rect x="7" y="13" width="3" height="3" rx="0.5"/><rect x="14" y="13" width="3" height="3" rx="0.5"/></svg>
-        </div>
-        <div class="day-card-info">
-          <span class="day-card-count">${dayCount}</span>
-          <span class="day-card-label">CLIENTES AGENDADOS</span>
-        </div>
-      `;
-
-      column.append(header);
+      const dayAcronym = dayAcronyms[dayOfWeek];
+      const dayDate = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" }).format(day);
 
       const dayAppointments = calendarAppointments
         .filter((item) => item.data_agendamento === dateKey)
         .sort((a, b) => normalizeAppointmentTime(a.hora_agendamento).localeCompare(normalizeAppointmentTime(b.hora_agendamento)));
 
-      const list = document.createElement("div");
-      list.className = "calendar-day-appointments";
+      const hasAppointments = dayAppointments.length > 0;
+      const dayCount = dayOfWeek === 0 ? 0 : dayAppointments.length;
 
-      if (dayAppointments.length === 0) {
-        const empty = document.createElement("p");
-        empty.className = "calendar-day-empty";
-        empty.textContent = "Nenhum agendamento";
+      const column = document.createElement("div");
+      const stateClass = isToday ? " is-today" : hasAppointments ? " has-appointments" : "";
+      const themeClass = isSunday ? " is-sunday" : isSaturday ? " is-saturday" : "";
+      column.className = `weekly-day-card${stateClass}${themeClass}`;
+
+      const header = document.createElement("div");
+      header.className = "weekly-day-card-header";
+
+      const title = document.createElement("div");
+      title.className = "weekly-day-card-title";
+      title.innerHTML = `
+        <span class="weekly-day-card-acronym">${dayAcronym}</span>
+        <span class="weekly-day-card-date">${dayDate}</span>
+      `;
+
+      const iconWrap = document.createElement("div");
+      iconWrap.className = "weekly-day-card-icon-wrap";
+      iconWrap.innerHTML = `<svg class="weekly-day-card-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><rect x="7" y="13" width="3" height="3" rx="0.5"/><rect x="14" y="13" width="3" height="3" rx="0.5"/></svg>`;
+
+      const counter = document.createElement("div");
+      counter.className = "weekly-day-card-counter";
+      const countNumber = document.createElement("span");
+      countNumber.className = "weekly-day-card-count";
+      countNumber.textContent = dayCount;
+      const countLabel = document.createElement("span");
+      countLabel.className = "weekly-day-card-label";
+      countLabel.textContent = dayCount === 1 ? "cliente agendado" : "clientes agendados";
+      counter.append(countNumber, countLabel);
+
+      header.append(title, iconWrap, counter);
+
+      const divider = document.createElement("div");
+      divider.className = "weekly-day-card-divider";
+
+      const list = document.createElement("div");
+      list.className = "weekly-day-card-appointments";
+
+      if (!hasAppointments) {
+        const empty = document.createElement("div");
+        empty.className = "weekly-day-empty";
+        empty.innerHTML = `
+          <svg class="weekly-day-empty-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span>Nenhum agendamento</span>
+        `;
         list.append(empty);
       } else {
         dayAppointments.forEach((item) => list.append(createAppointmentCard(item)));
       }
 
-      const addBtn = document.createElement("button");
-      addBtn.type = "button";
-      addBtn.className = "calendar-day-add-btn";
-      addBtn.textContent = "+ Novo agendamento";
-      addBtn.addEventListener("click", () => openAppointmentModal({ date: dateKey, time: "08:00" }));
-
-      column.append(list, addBtn);
+      column.append(header, divider, list);
       calendarGrid.append(column);
     });
   }
