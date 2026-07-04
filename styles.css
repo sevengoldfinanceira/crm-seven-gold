@@ -2401,11 +2401,19 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
 }
 
 .calendar-toolbar-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: flex-end;
   justify-content: flex-end;
   gap: 12px;
   flex-wrap: nowrap;
+}
+
+.calendar-week-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: center;
 }
 
 .calendar-nav-button,
