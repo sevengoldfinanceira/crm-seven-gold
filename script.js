@@ -3718,19 +3718,7 @@ const createLeadCard = (lead) => {
   callBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Ligar`;
   if (!lead.telefone) callBtn.style.opacity = "0.5";
 
-  const editBtn = document.createElement("button");
-  editBtn.type = "button";
-  editBtn.className = "lead-action-btn edit-btn";
-  editBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Editar`;
-  editBtn.disabled = leadLocked;
-  editBtn.title = leadLocked ? "Lead travado porque pertence a uma produção encerrada." : "Editar lead";
-  editBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (leadLocked) return alert("Lead travado porque pertence a uma produção encerrada.");
-    openEditLeadModal(lead);
-  });
-
-  actionsRow.append(waBtn, callBtn, editBtn);
+  actionsRow.append(waBtn, callBtn);
   if (leadLocked && isProductionDirectorCeo) {
     const copyBtn = document.createElement("button");
     copyBtn.type = "button";
