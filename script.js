@@ -2668,7 +2668,7 @@ const createAppointmentCard = (appointment) => {
   const header = document.createElement("div");
   header.className = "appointment-card-header";
   const client = document.createElement("strong");
-  client.textContent = `Cliente - ${appointment.nome_cliente}`;
+  client.textContent = appointment.nome_cliente;
   const time = document.createElement("time");
   time.className = "appointment-card-time";
   time.textContent = normalizeAppointmentTime(appointment.hora_agendamento);
