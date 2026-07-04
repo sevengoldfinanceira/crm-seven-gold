@@ -6815,5 +6815,114 @@ body.theme-dark .appointment-card-dropdown-item.btn-cancel:hover {
   background-color: rgba(220, 38, 38, 0.15) !important;
 }
 
+/* Lead Card Actions Menu & Dropdown */
+.lead-card {
+  position: relative !important;
+}
+
+.lead-card-top {
+  padding-right: 24px !important;
+}
+
+.lead-card-menu-btn {
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  border: none !important;
+  color: #64748b !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+  padding: 0 !important;
+}
+
+.lead-card-menu-btn:hover {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+}
+
+body.theme-dark .lead-card-menu-btn:hover {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+.lead-card-dropdown {
+  position: absolute !important;
+  top: 36px !important;
+  right: 10px !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  z-index: 20 !important;
+  display: none;
+  flex-direction: column !important;
+  padding: 6px !important;
+  min-width: 150px !important;
+}
+
+.lead-card-dropdown.is-open {
+  display: flex !important;
+}
+
+body.theme-dark .lead-card-dropdown {
+  background: #1e1b29 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.lead-card-dropdown-item {
+  width: 100% !important;
+  padding: 8px 12px !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  text-align: left !important;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  color: #334155 !important;
+  display: flex !important;
+  align-items: center !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+
+body.theme-dark .lead-card-dropdown-item {
+  color: #cbd5e1 !important;
+}
+
+.lead-card-dropdown-item:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.theme-dark .lead-card-dropdown-item:hover {
+  background-color: #272335 !important;
+  color: #ffffff !important;
+}
+
+.lead-card-dropdown-item.btn-recover {
+  color: #059669 !important;
+}
+
+body.theme-dark .lead-card-dropdown-item.btn-recover {
+  color: #34d399 !important;
+}
+
+.lead-card-dropdown-item.btn-recover:hover {
+  background-color: #ecfdf5 !important;
+}
+
+body.theme-dark .lead-card-dropdown-item.btn-recover:hover {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+}
+
+
 
 

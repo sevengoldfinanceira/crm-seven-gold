@@ -3806,6 +3806,68 @@ const createLeadCard = (lead) => {
   if (noteEl) {
     card.append(noteEl);
   }
+  // 3-dots actions menu
+  const leadMenuBtn = document.createElement("button");
+  leadMenuBtn.className = "lead-card-menu-btn";
+  leadMenuBtn.type = "button";
+  leadMenuBtn.setAttribute("aria-label", "Opções do lead");
+  leadMenuBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>';
+
+  const leadDropdown = document.createElement("div");
+  leadDropdown.className = "lead-card-dropdown";
+
+  const editItem = document.createElement("button");
+  editItem.className = "lead-card-dropdown-item btn-edit";
+  editItem.type = "button";
+  editItem.textContent = "Editar lead";
+  if (leadLocked) {
+    editItem.disabled = true;
+    editItem.style.opacity = "0.5";
+    editItem.title = "Lead travado porque pertence a uma produção encerrada.";
+  }
+  leadDropdown.append(editItem);
+
+  if (lead.status === "cancelado" && isProductionDirectorCeo) {
+    const recoverItem = document.createElement("button");
+    recoverItem.className = "lead-card-dropdown-item btn-recover";
+    recoverItem.type = "button";
+    recoverItem.textContent = "Recuperar";
+    leadDropdown.append(recoverItem);
+
+    recoverItem.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      leadDropdown.classList.remove("is-open");
+      if (!confirm("Deseja recuperar este lead para a produção atual? Será criada uma cópia com status 'Lead recebido'.")) return;
+      try {
+        await productionRequest({ action: "recover_trash", lead_id: lead.id });
+        alert("Lead recuperado e copiado para a produção atual.");
+        await loadLeads();
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+  }
+
+  editItem.addEventListener("click", (e) => {
+    e.stopPropagation();
+    leadDropdown.classList.remove("is-open");
+    if (leadLocked) return alert("Lead travado porque pertence a uma produção encerrada.");
+    openEditLeadModal(lead);
+  });
+
+  leadMenuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.querySelectorAll(".lead-card-dropdown.is-open, .appointment-card-dropdown.is-open").forEach((d) => {
+      if (d !== leadDropdown) d.classList.remove("is-open");
+    });
+    leadDropdown.classList.toggle("is-open");
+  });
+
+  document.addEventListener("click", () => {
+    leadDropdown.classList.remove("is-open");
+  });
+
+  card.append(leadMenuBtn, leadDropdown);
   card.append(divider, actionsRow);
 
   return card;
