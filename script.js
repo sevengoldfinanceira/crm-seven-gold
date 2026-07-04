@@ -3398,7 +3398,8 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
   }
 
   let cancelledAppointment = false;
-  if (currentStatus === "agendamento" && status !== "agendamento") {
+  const backwardStatuses = ["lead_recebido", "primeiro_contato", "cancelado"];
+  if (currentStatus === "agendamento" && backwardStatuses.includes(status)) {
     const { data: appointments } = await client
       .from("appointments")
       .select("id")
