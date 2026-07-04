@@ -6442,3 +6442,12 @@ body.theme-dark .lead-card.is-production-locked { background: #111827; }
   font-size: 9px !important;
 }
 
+/* Center filter labels above their inputs */
+.dash-filter-label,
+.dash-calendar-label {
+  text-align: center !important;
+  width: 100% !important;
+  padding-left: 0 !important;
+  display: block !important;
+}
+
