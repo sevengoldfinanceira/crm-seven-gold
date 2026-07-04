@@ -2306,7 +2306,10 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
    ============================================================ */
 .tab-content[data-tab="calendario"] {
   min-width: 0;
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background:
     radial-gradient(circle at 88% 8%, rgba(216, 160, 24, .08), transparent 27%),
     linear-gradient(135deg, #f8fafc 0%, #eef2ff 55%, #faf5ff 100%);
@@ -2316,6 +2319,10 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
   width: min(100%, 1680px);
   margin: 0 auto;
   padding: clamp(22px, 3vw, 42px);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .calendar-toolbar {
@@ -2453,6 +2460,9 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
   border: 0;
   background: transparent;
   box-shadow: none;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .calendar-grid {
@@ -2461,6 +2471,7 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
   gap: 14px;
   align-items: stretch;
   margin-top: 8px;
+  height: 100%;
 }
 
 .calendar-corner,
@@ -2486,7 +2497,7 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
   display: flex;
   flex-direction: column;
   min-width: 0;
-  min-height: 540px;
+  height: 100%;
   background: #ffffff;
   border: 1px solid #E5E7EB;
   border-radius: 20px;
@@ -2602,6 +2613,7 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
   gap: 10px;
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
 }
 
 .weekly-day-empty {
@@ -2790,7 +2802,6 @@ body.theme-dark .appointment-card .appointment-card-time {
 @media (min-width: 701px) and (max-width: 900px) {
   .calendar-desktop-view { display: block; }
   .calendar-mobile-view { display: none; }
-  .calendar-scroll { max-height: calc(100vh - 285px); }
   .calendar-grid { grid-template-columns: repeat(4, minmax(180px, 1fr)); }
 }
 
@@ -2800,7 +2811,7 @@ body.theme-dark .appointment-card .appointment-card-time {
 
 @media (max-width: 768px) {
   .calendar-grid { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
-  .weekly-day-card { min-height: 380px; padding: 14px 10px; }
+  .weekly-day-card { padding: 14px 10px; }
   .weekly-day-card-count { font-size: 1.4rem; }
   .weekly-day-card-icon-wrap { width: 38px; height: 38px; }
   .appointment-card { padding: 10px; }
@@ -2808,7 +2819,8 @@ body.theme-dark .appointment-card .appointment-card-time {
 
 @media (max-width: 520px) {
   .calendar-grid { grid-template-columns: 1fr; }
-  .weekly-day-card { min-height: auto; }
+  .tab-content[data-tab="calendario"] { height: auto; min-height: 100vh; overflow: visible; }
+  .weekly-day-card { min-height: 300px; }
 }
 
 @media (max-width: 900px) {
