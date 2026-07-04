@@ -6568,8 +6568,8 @@ body.theme-dark .card-stack::-webkit-scrollbar-thumb:hover {
 .tab-content[data-tab="calendario"] {
   height: calc(100vh - 60px) !important;
   overflow: hidden !important;
-  display: flex !important;
-  flex-direction: column !important;
+  display: flex;
+  flex-direction: column;
 }
 
 .tab-content[data-tab="calendario"] .commercial-calendar {
