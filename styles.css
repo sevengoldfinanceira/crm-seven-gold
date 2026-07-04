@@ -2263,7 +2263,7 @@ body.theme-dark .crm-profile-header h1 { color: #f1f1f4; }
 .calendar-slot.is-today { background: rgba(216,173,61,.035); }
 .appointment-card { width: 100%; min-width: 0; padding: 7px 8px; border: 1px solid rgba(94,99,241,.18); border-left: 3px solid var(--blue); border-radius: 9px; background: #f3f4ff; color: #212448; cursor: pointer; }
 .appointment-card:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(46,51,122,.13); }
-.appointment-card-header { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-width: 0; }
+.appointment-card-header { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
 .appointment-card strong, .appointment-card span { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .appointment-card strong { font-size: .72rem; }
 .appointment-card span { margin-top: 4px; color: #606580; font-size: .62rem; }
@@ -2662,9 +2662,9 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
 
 .appointment-card-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 4px;
   margin-bottom: 8px;
 }
 
