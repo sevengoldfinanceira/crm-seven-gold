@@ -6711,4 +6711,109 @@ body.theme-dark .weekly-day-card-appointments::-webkit-scrollbar-thumb:hover {
   background: #6d4cff !important;
 }
 
+/* Appointment Card Actions Menu & Dropdown */
+.appointment-card {
+  position: relative !important;
+}
+
+.appointment-card-menu-btn {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  border: none !important;
+  color: #64748b !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+  padding: 0 !important;
+}
+
+.appointment-card-menu-btn:hover {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+}
+
+body.theme-dark .appointment-card-menu-btn:hover {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+.appointment-card-dropdown {
+  position: absolute !important;
+  top: 38px !important;
+  right: 8px !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  z-index: 20 !important;
+  display: none;
+  flex-direction: column !important;
+  padding: 6px !important;
+  min-width: 170px !important;
+}
+
+.appointment-card-dropdown.is-open {
+  display: flex !important;
+}
+
+body.theme-dark .appointment-card-dropdown {
+  background: #1e1b29 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.appointment-card-dropdown-item {
+  width: 100% !important;
+  padding: 8px 12px !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  text-align: left !important;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  color: #334155 !important;
+  display: flex !important;
+  align-items: center !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+
+body.theme-dark .appointment-card-dropdown-item {
+  color: #cbd5e1 !important;
+}
+
+.appointment-card-dropdown-item:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.theme-dark .appointment-card-dropdown-item:hover {
+  background-color: #272335 !important;
+  color: #ffffff !important;
+}
+
+.appointment-card-dropdown-item.btn-cancel {
+  color: #dc2626 !important;
+}
+
+body.theme-dark .appointment-card-dropdown-item.btn-cancel {
+  color: #f87171 !important;
+}
+
+.appointment-card-dropdown-item.btn-cancel:hover {
+  background-color: #fef2f2 !important;
+}
+
+body.theme-dark .appointment-card-dropdown-item.btn-cancel:hover {
+  background-color: rgba(220, 38, 38, 0.15) !important;
+}
+
+
 

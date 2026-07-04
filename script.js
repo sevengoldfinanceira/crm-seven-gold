@@ -2770,7 +2770,29 @@ const createAppointmentCard = (appointment) => {
   const phone = document.createElement("span");
   phone.className = "appointment-card-phone";
   phone.textContent = `Telefone - ${customerPhone}`;
-  card.append(header, seller, phone);
+
+  // 3-dots menu button and dropdown menu
+  const menuBtn = document.createElement("button");
+  menuBtn.className = "appointment-card-menu-btn";
+  menuBtn.type = "button";
+  menuBtn.setAttribute("aria-label", "Opções");
+  menuBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>';
+
+  const dropdown = document.createElement("div");
+  dropdown.className = "appointment-card-dropdown";
+
+  const editItem = document.createElement("button");
+  editItem.className = "appointment-card-dropdown-item btn-edit";
+  editItem.type = "button";
+  editItem.textContent = "Editar lead";
+
+  const cancelItem = document.createElement("button");
+  cancelItem.className = "appointment-card-dropdown-item btn-cancel";
+  cancelItem.type = "button";
+  cancelItem.textContent = "Cancelar agendamento";
+
+  dropdown.append(editItem, cancelItem);
+  card.append(header, seller, phone, menuBtn, dropdown);
 
   const openLead = async (event) => {
     event.stopPropagation();
@@ -2783,10 +2805,41 @@ const createAppointmentCard = (appointment) => {
     });
     if (lead) await openEditLeadModal(lead);
   };
+
   card.addEventListener("click", openLead);
   card.addEventListener("keydown", (event) => {
     if (event.key === "Enter" || event.key === " ") openLead(event);
   });
+
+  menuBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    document.querySelectorAll(".appointment-card-dropdown.is-open").forEach((d) => {
+      if (d !== dropdown) d.classList.remove("is-open");
+    });
+    dropdown.classList.toggle("is-open");
+  });
+
+  document.addEventListener("click", () => {
+    dropdown.classList.remove("is-open");
+  });
+
+  editItem.addEventListener("click", openLead);
+
+  cancelItem.addEventListener("click", async (event) => {
+    event.stopPropagation();
+    dropdown.classList.remove("is-open");
+    const leadId = appointment.lead_id || card.dataset.leadId;
+    if (!leadId) return;
+
+    if (confirm(`Deseja cancelar o agendamento de "${appointment.nome_cliente}" e voltar o lead para "Primeiro contato"?`)) {
+      setCalendarStatus("Cancelando agendamento...");
+      const success = await updateLeadStatus(leadId, "primeiro_contato", { goBack: true });
+      if (success) {
+        await loadLeads();
+      }
+    }
+  });
+
   return card;
 };
 
