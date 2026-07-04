@@ -453,12 +453,16 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
   overflow-x: auto;
   padding-bottom: 12px;
   margin-top: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .kanban-board {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 8px;
+  flex: 1;
 }
 
 .kanban-column {
@@ -645,12 +649,16 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
   overflow-x: auto;
   padding-bottom: 12px;
   margin-top: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .kanban-board {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 8px;
+  flex: 1;
 }
 
 .kanban-column {
@@ -2310,6 +2318,15 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
 }
 
 /* ============================================================
+   Pipeline tab — full-height flex layout
+   ============================================================ */
+.tab-content[data-tab="pipeline"] {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ============================================================
    Premium SaaS Calendar visual layer
    ============================================================ */
 .tab-content[data-tab="calendario"] {
@@ -2857,13 +2874,13 @@ body.theme-dark .appointment-card .appointment-card-time {
    ============================================================ */
 .kanban-column {
   border-radius: 16px !important;
-  border: 1.5px dashed #cbd5e1 !important; /* Primeira borda/Borda externa */
+  border: 1.5px dashed #cbd5e1 !important;
   background: #ffffff !important;
   overflow: hidden;
   box-sizing: border-box !important;
   display: grid !important;
   grid-template-rows: auto 1fr !important;
-  min-height: calc(100vh - 260px) !important;
+  height: 100% !important;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
