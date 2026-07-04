@@ -2311,6 +2311,7 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  padding: 36px 40px;
   background:
     radial-gradient(circle at 88% 8%, rgba(216, 160, 24, .08), transparent 27%),
     linear-gradient(135deg, #f8fafc 0%, #eef2ff 55%, #faf5ff 100%);
@@ -2830,6 +2831,7 @@ body.theme-dark .appointment-card .appointment-card-time {
 
 @media (max-width: 900px) {
   .tab-content { padding: 24px 20px; }
+  .tab-content[data-tab="calendario"] { padding: 24px 20px; }
   .calendar-toolbar { gap: 18px; }
   .calendar-toolbar-actions { width: 100%; }
   .calendar-responsible-filter { flex: 1 1 260px; }
@@ -2837,7 +2839,7 @@ body.theme-dark .appointment-card .appointment-card-time {
 }
 
 @media (max-width: 700px) {
-  .tab-content[data-tab="calendario"] { min-height: calc(100vh - 54px); }
+  .tab-content[data-tab="calendario"] { min-height: calc(100vh - 54px); padding: 16px 12px; }
   .tab-content { padding: 16px 12px; }
   .calendar-toolbar h1 { font-size: clamp(1.05rem, 6vw, 1.55rem); }
   .calendar-toolbar-actions { display: grid; grid-template-columns: 46px 1fr 46px; }
