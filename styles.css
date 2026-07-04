@@ -2470,6 +2470,7 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
   box-shadow: none;
   flex: 1;
   min-height: 0;
+  max-height: none;
   overflow: hidden;
   display: flex;
   flex-direction: column;
