@@ -5549,10 +5549,14 @@ body.theme-dark .general-conversion-card {
   color: #b45309;
 }
 
-.lead-warning-spinner {
+.lead-warning-spinner,
+.lead-warning-icon {
   width: 12px;
   height: 12px;
   flex: 0 0 auto;
+}
+
+.lead-warning-spinner {
   animation: lead-warning-spin 1.1s linear infinite;
   transform-origin: 50% 50%;
 }

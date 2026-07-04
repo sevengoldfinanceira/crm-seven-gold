@@ -3548,11 +3548,11 @@ const createLeadCard = (lead) => {
 
   const warningBadge = document.createElement("div");
   warningBadge.className = "lead-warning-badge";
-  const spinnerIcon = '<svg class="lead-warning-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 3v4"/><path d="M12 3h4"/></svg>';
+  const warningIcon = '<svg class="lead-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
   if (diffDays === 0) {
-    warningBadge.innerHTML = `${spinnerIcon}<span>Criado hoje</span>`;
+    warningBadge.innerHTML = `${warningIcon}<span>Hoje</span>`;
   } else {
-    warningBadge.innerHTML = `${spinnerIcon}<span>${diffDays} ${diffDays === 1 ? 'dia' : 'dias'} sem contato</span>`;
+    warningBadge.innerHTML = `${warningIcon}<span>${diffDays} ${diffDays === 1 ? 'dia' : 'dias'}</span>`;
   }
 
   const badgeRow = document.createElement("div");
