@@ -2951,6 +2951,118 @@ const loadCrmUsersForSelect = async (selectElement, currentAssignedEmail) => {
   });
 };
 
+const fetchActiveCrmUsers = async () => {
+  const client = getClient();
+  if (!client) return [];
+  const { data, error } = await client
+    .from("crm_users")
+    .select("id, nome, email, cargo, ativo")
+    .eq("ativo", true)
+    .order("nome", { ascending: true });
+  if (error || !data) {
+    throw new Error(error?.message || "Não consegui carregar os usuários ativos.");
+  }
+  return data;
+};
+
+const openTrashRecoverAssigneeModal = async (lead) => {
+  const users = await fetchActiveCrmUsers();
+  const sourceEmail = String(lead?.assigned_to_email || "").trim().toLowerCase();
+  const availableUsers = users.filter((user) => String(user.email || "").trim().toLowerCase() !== sourceEmail);
+  const escapeHtml = (value) => String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+  if (!availableUsers.length) {
+    alert("Não encontrei outro usuário ativo para receber este lead.");
+    return null;
+  }
+
+  return new Promise((resolve) => {
+    const dialog = document.createElement("dialog");
+    dialog.className = "trash-recover-modal";
+    dialog.innerHTML = `
+      <div class="trash-recover-panel">
+        <header class="trash-recover-header">
+          <div>
+            <span class="trash-recover-kicker">Enviar como lead novo</span>
+            <h3>Escolha o vendedor</h3>
+            <p>O lead original continua na Lixeira. Será criado um novo lead com origem rastreável.</p>
+          </div>
+          <button type="button" class="trash-recover-close" aria-label="Fechar">X</button>
+        </header>
+        <div class="trash-recover-lead">
+          <strong>${escapeHtml(lead?.name || "Lead sem nome")}</strong>
+          <span>${escapeHtml(lead?.telefone || "Sem telefone")}</span>
+        </div>
+        <label class="trash-recover-search">
+          <span>Buscar usuário</span>
+          <input type="search" placeholder="Nome, e-mail ou cargo..." autocomplete="off">
+        </label>
+        <div class="trash-recover-list"></div>
+        <footer class="trash-recover-footer">
+          <button type="button" class="trash-recover-cancel">Cancelar</button>
+        </footer>
+      </div>
+    `;
+
+    const list = dialog.querySelector(".trash-recover-list");
+    const search = dialog.querySelector(".trash-recover-search input");
+    const close = (value = null) => {
+      dialog.close();
+      dialog.remove();
+      resolve(value);
+    };
+
+    const renderUsers = (filter = "") => {
+      const term = String(filter || "").trim().toLowerCase();
+      const filtered = availableUsers.filter((user) => {
+        const haystack = `${user.nome || ""} ${user.email || ""} ${user.cargo || ""}`.toLowerCase();
+        return !term || haystack.includes(term);
+      });
+      list.innerHTML = "";
+      if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "trash-recover-empty";
+        empty.textContent = "Nenhum usuário encontrado.";
+        list.append(empty);
+        return;
+      }
+      filtered.forEach((user) => {
+        const email = String(user.email || "").trim().toLowerCase();
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "trash-recover-user";
+        item.innerHTML = `
+          <span class="trash-recover-avatar">${escapeHtml(String(user.nome || user.email || "?").trim().charAt(0).toUpperCase())}</span>
+          <span class="trash-recover-user-main">
+            <strong>${escapeHtml(user.nome || email)}</strong>
+            <small>${escapeHtml(email)}</small>
+          </span>
+          <span class="trash-recover-role">${escapeHtml(user.cargo || "Sem cargo")}</span>
+        `;
+        item.addEventListener("click", () => close(email));
+        list.append(item);
+      });
+    };
+
+    dialog.querySelector(".trash-recover-close")?.addEventListener("click", () => close(null));
+    dialog.querySelector(".trash-recover-cancel")?.addEventListener("click", () => close(null));
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      close(null);
+    });
+    search?.addEventListener("input", () => renderUsers(search.value));
+    renderUsers();
+    document.body.append(dialog);
+    dialog.showModal();
+    setTimeout(() => search?.focus(), 50);
+  });
+};
+
 const changeLeadResponsible = async (leadId, newEmail) => {
   const client = getClient();
   if (!client || !leadId) return null;
@@ -4626,8 +4738,7 @@ const createLeadCard = (lead) => {
         alert("Este lead da Lixeira já foi enviado como novo para outro vendedor.");
         return;
       }
-      const targetEmail = prompt("Informe o e-mail do novo vendedor para recuperar este lead como novo:");
-      const normalizedEmail = String(targetEmail || "").trim().toLowerCase();
+      const normalizedEmail = await openTrashRecoverAssigneeModal(lead);
       if (!normalizedEmail) return;
       if (!confirm(`Deseja enviar este lead como novo para "${normalizedEmail}"?`)) return;
       try {
