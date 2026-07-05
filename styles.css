@@ -7528,7 +7528,7 @@ body.theme-dark .calendar-status {
 
 .calendar-header-stats {
   display: grid !important;
-  grid-template-columns: repeat(3, minmax(156px, 176px)) !important;
+  grid-template-columns: repeat(3, minmax(218px, 238px)) !important;
   align-items: stretch !important;
   gap: 12px !important;
   flex: 0 0 auto !important;
@@ -7584,6 +7584,7 @@ body.theme-dark .calendar-status {
   font-size: .72rem !important;
   font-weight: 800 !important;
   line-height: 1.18 !important;
+  white-space: nowrap !important;
 }
 
 .calendar-toolbar-actions {
