@@ -6494,6 +6494,59 @@ body.theme-dark .production-summary span, body.theme-dark .production-summary sm
 body.theme-dark .production-nav, body.theme-dark .production-action { background: #0f172a; border-color: #334155; color: #e2e8f0; }
 body.theme-dark .production-action--danger { color: #f87171; border-color: rgba(248,113,113,.5); background: rgba(127,29,29,.22); }
 body.theme-dark .lead-card.is-production-locked { background: #111827; }
+
+.pipeline-title-copy {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  min-width: 260px !important;
+}
+
+.pipeline-title-icon {
+  display: grid !important;
+  place-items: center !important;
+  width: 58px !important;
+  height: 58px !important;
+  border-radius: 18px !important;
+  background: #2a0f4b !important;
+  color: #e9ddff !important;
+  flex: 0 0 auto !important;
+}
+
+.pipeline-title-icon svg {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.pipeline-title-text {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  min-width: 0 !important;
+}
+
+.pipeline-header .pipeline-title-copy h1 {
+  margin: 0 !important;
+  color: #0F172A !important;
+  font-size: clamp(1.85rem, 2.5vw, 2.35rem) !important;
+  font-weight: 800 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -.03em !important;
+}
+
+.pipeline-header .lead-count {
+  display: none !important;
+}
+
+body.theme-dark .pipeline-title-icon {
+  background: rgba(167, 139, 250, .16) !important;
+  color: #c4b5fd !important;
+}
+
+body.theme-dark .pipeline-header .pipeline-title-copy h1 {
+  color: #f8fafc !important;
+}
+
 @media (max-width: 900px) { .pipeline-header { grid-template-columns: 1fr auto; } .pipeline-title-copy { grid-column: 1; } .pipeline-header > .new-lead-button { grid-column: 2; } .production-control { grid-column: 1 / -1; width: 100%; flex-wrap: wrap; gap: 12px; padding: 14px; } .production-summary { flex: 1 1 220px; min-width: 0; } .production-nav:first-child, #production-next { margin: 0; } .production-nav:first-child::after, #production-next::before { display: none; } .production-action { flex: 1 1 190px; } }
 @media (max-width: 520px) { .production-control { justify-content: space-between; border-radius: 20px; } .production-summary { order: -1; flex-basis: 100%; text-align: center; } .production-summary small { justify-content: center; } .production-status { order: -1; margin: 0 auto; } .production-nav { width: 46px; min-height: 46px; flex-basis: 46px; } .production-action { min-height: 50px; flex-basis: 100%; } }
 
