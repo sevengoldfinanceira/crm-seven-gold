@@ -2555,16 +2555,16 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
 
 
 .weekly-day-card.has-appointments {
-  background: linear-gradient(180deg, #FFFBEB 0%, #FFFFFF 100%);
-  border-color: #FDE68A;
-  box-shadow: 0 12px 30px rgba(217, 119, 6, 0.12);
+  background: linear-gradient(180deg, #EFF6FF 0%, #FFFFFF 100%);
+  border-color: #BFDBFE;
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.12);
 }
 .weekly-day-card.has-appointments .weekly-day-card-icon-wrap {
-  background: #FEF3C7;
-  color: #D97706;
+  background: #DBEAFE;
+  color: #2563EB;
 }
-.weekly-day-card.has-appointments .weekly-day-card-count { color: #D97706; }
-.weekly-day-card.has-appointments .weekly-day-card-acronym { color: #D97706; }
+.weekly-day-card.has-appointments .weekly-day-card-count { color: #2563EB; }
+.weekly-day-card.has-appointments .weekly-day-card-acronym { color: #2563EB; }
 
 .weekly-day-card.is-today .weekly-day-card-icon-wrap {
   background: #DBEAFE;
@@ -2795,12 +2795,12 @@ body.theme-dark .weekly-day-card.is-saturday .weekly-day-card-icon-wrap { backgr
 body.theme-dark .weekly-day-card.is-saturday .weekly-day-card-count { color: #60a5fa; }
 
 body.theme-dark .weekly-day-card.has-appointments {
-  background: linear-gradient(180deg, rgba(66, 43, 8, .6) 0%, #181221 100%);
-  border-color: rgba(217, 119, 6, .35);
+  background: linear-gradient(180deg, rgba(37, 99, 235, .18) 0%, #181221 100%);
+  border-color: rgba(96, 165, 250, .35);
 }
-body.theme-dark .weekly-day-card.has-appointments .weekly-day-card-icon-wrap { background: rgba(251, 191, 36, .15); color: #fbbf24; }
-body.theme-dark .weekly-day-card.has-appointments .weekly-day-card-count { color: #fbbf24; }
-body.theme-dark .weekly-day-card.has-appointments .weekly-day-card-acronym { color: #fbbf24; }
+body.theme-dark .weekly-day-card.has-appointments .weekly-day-card-icon-wrap { background: rgba(96, 165, 250, .15); color: #60a5fa; }
+body.theme-dark .weekly-day-card.has-appointments .weekly-day-card-count { color: #60a5fa; }
+body.theme-dark .weekly-day-card.has-appointments .weekly-day-card-acronym { color: #60a5fa; }
 body.theme-dark .weekly-day-card.is-today .weekly-day-card-icon-wrap { background: rgba(96, 165, 250, .15); color: #60a5fa; }
 body.theme-dark .weekly-day-card.is-today .weekly-day-card-count { color: #60a5fa; }
 body.theme-dark .weekly-day-card-acronym { color: #f1f1f4; }
@@ -7469,7 +7469,7 @@ body.theme-dark .weekly-day-card-footer {
   color: #2563EB !important;
 }
 .weekly-day-card.has-appointments .weekly-day-card-footer .weekly-day-card-count {
-  color: #D97706 !important;
+  color: #2563EB !important;
 }
 
 body.theme-dark .weekly-day-card-footer .weekly-day-card-count {
@@ -7517,7 +7517,7 @@ body.theme-dark .weekly-day-card-footer .weekly-day-card-label {
   color: #2563EB !important;
 }
 .weekly-day-card.has-appointments .weekly-day-card-footer .weekly-day-card-percent {
-  color: #D97706 !important;
+  color: #2563EB !important;
 }
 
 body.theme-dark .weekly-day-card-percent {
@@ -7530,7 +7530,7 @@ body.theme-dark .weekly-day-card.is-today .weekly-day-card-footer .weekly-day-ca
   color: #60a5fa !important;
 }
 body.theme-dark .weekly-day-card.has-appointments .weekly-day-card-footer .weekly-day-card-percent {
-  color: #fbbf24 !important;
+  color: #60a5fa !important;
 }
 
 /* Calendar Toolbar Redesign */
@@ -7907,13 +7907,13 @@ body.theme-dark .day-count-label {
 
 /* Day Color Definitions per card status/day theme */
 .weekly-day-card {
-  --day-color: #6D4CFF;
-  --day-soft-bg: #F1ECFF;
+  --day-color: #2563EB;
+  --day-soft-bg: #DBEAFE;
 }
 
 body.theme-dark .weekly-day-card {
-  --day-color: #a78bfa;
-  --day-soft-bg: rgba(167, 139, 250, 0.15);
+  --day-color: #60a5fa;
+  --day-soft-bg: rgba(96, 165, 250, 0.15);
 }
 
 .weekly-day-card.is-saturday {
@@ -7927,13 +7927,13 @@ body.theme-dark .weekly-day-card.is-saturday {
 }
 
 .weekly-day-card.is-sunday {
-  --day-color: #EF4444;
-  --day-soft-bg: #FEE2E2;
+  --day-color: #2563EB;
+  --day-soft-bg: #DBEAFE;
 }
 
 body.theme-dark .weekly-day-card.is-sunday {
-  --day-color: #f87171;
-  --day-soft-bg: rgba(248, 113, 113, 0.15);
+  --day-color: #60a5fa;
+  --day-soft-bg: rgba(96, 165, 250, 0.15);
 }
 
 .weekly-day-card.is-today {
@@ -7947,13 +7947,13 @@ body.theme-dark .weekly-day-card.is-today {
 }
 
 .weekly-day-card.has-appointments {
-  --day-color: #D97706;
-  --day-soft-bg: #FEF3C7;
+  --day-color: #2563EB;
+  --day-soft-bg: #DBEAFE;
 }
 
 body.theme-dark .weekly-day-card.has-appointments {
-  --day-color: #fbbf24;
-  --day-soft-bg: rgba(251, 191, 36, 0.15);
+  --day-color: #60a5fa;
+  --day-soft-bg: rgba(96, 165, 250, 0.15);
 }
 
 /* Apply day-color theme dynamically to icon and count if highlighted */
@@ -7975,7 +7975,7 @@ body.theme-dark .weekly-day-card.has-appointments {
 .appointment-card {
   position: relative !important;
   background: #ffffff !important;
-  border: 1px solid #facc15 !important;
+  border: 1px solid var(--day-color, #2563EB) !important;
   border-radius: 18px !important;
   padding: 10px !important;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
@@ -7987,7 +7987,7 @@ body.theme-dark .weekly-day-card.has-appointments {
   box-sizing: border-box !important;
   align-items: stretch !important;
   cursor: pointer !important;
-  border-left: 1px solid #facc15 !important;
+  border-left: 1px solid var(--day-color, #2563EB) !important;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
   flex-shrink: 0 !important;
@@ -7997,8 +7997,8 @@ body.theme-dark .weekly-day-card.has-appointments {
 
 body.theme-dark .appointment-card {
   background: #1e1b29 !important;
-  border-color: rgba(250, 204, 21, 0.3) !important;
-  border-left-color: rgba(250, 204, 21, 0.3) !important;
+  border-color: var(--day-color, #60a5fa) !important;
+  border-left-color: var(--day-color, #60a5fa) !important;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3) !important;
 }
 
@@ -8869,37 +8869,45 @@ body.theme-dark .calendar-today-subtitle {
 
 /* Weekly Day Card Border & Highlight Overrides */
 
-/* 1. Other Days (Normal): Thin Purple Border, White Background, No Yellow Blur */
+/* 1. Other Days (Normal): Thin Blue Border, White Background, No Yellow Blur */
 .weekly-day-card.is-normal-day {
-  border: 1px solid #e9e3ff !important;
+  border: 1px solid #DBEAFE !important;
   background: #ffffff !important;
   box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06) !important;
 }
 
 body.theme-dark .weekly-day-card.is-normal-day {
-  border: 1px solid rgba(167, 139, 250, 0.15) !important;
+  border: 1px solid rgba(96, 165, 250, 0.22) !important;
   background: #1e1b29 !important;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* 2. Best Day Highlight (Most Busy): Green Border and Soft Green Shadow */
 .weekly-day-card.is-most-busy {
+  --day-color: #10b981;
+  --day-soft-bg: #e6f4ea;
   border: 1.5px solid #10b981 !important;
   box-shadow: 0 12px 32px rgba(16, 185, 129, 0.15), 0 0 0 0.5px #10b981 !important;
 }
 
 body.theme-dark .weekly-day-card.is-most-busy {
+  --day-color: #34d399;
+  --day-soft-bg: rgba(16, 185, 129, 0.15);
   border-color: #34d399 !important;
   box-shadow: 0 12px 32px rgba(52, 211, 153, 0.25), 0 0 0 0.5px #34d399 !important;
 }
 
 /* 3. Worst Day Highlight (Least Busy): Red Border and Soft Red Shadow */
 .weekly-day-card.is-least-busy {
+  --day-color: #ef4444;
+  --day-soft-bg: #fee2e2;
   border: 1.5px solid #ef4444 !important;
   box-shadow: 0 12px 32px rgba(239, 68, 68, 0.15), 0 0 0 0.5px #ef4444 !important;
 }
 
 body.theme-dark .weekly-day-card.is-least-busy {
+  --day-color: #f87171;
+  --day-soft-bg: rgba(239, 68, 68, 0.15);
   border-color: #f87171 !important;
   box-shadow: 0 12px 32px rgba(248, 113, 113, 0.25), 0 0 0 0.5px #f87171 !important;
 }
