@@ -308,6 +308,123 @@ const getLeadTagConfig = (lead) => {
   return PIPELINE_STAGE_TAGS_MAP[value] || { value, label: value, className: "default" };
 };
 
+const pipelineColumnTagFilters = new Map();
+
+const getFilterTagsForStage = (stageId) => {
+  if (stageId === "cancelado") return Object.values(PIPELINE_STAGE_TAGS_MAP);
+  return getAvailableTagsForStage(stageId);
+};
+
+const getPipelineTagFilterValues = (stageId) => pipelineColumnTagFilters.get(stageId) || new Set();
+
+const leadMatchesColumnTagFilter = (lead, stageId) => {
+  const selectedTags = getPipelineTagFilterValues(stageId);
+  if (!selectedTags.size) return true;
+  const tagValue = getLeadTagValue(lead);
+  if (!tagValue) return selectedTags.has("__none__");
+  return selectedTags.has(tagValue);
+};
+
+const refreshPipelineTagFilterButton = (stageId) => {
+  const column = columns.find((col) => col.dataset.status === stageId);
+  const button = column?.querySelector(".kanban-tag-filter-button");
+  if (!button) return;
+  const count = getPipelineTagFilterValues(stageId).size;
+  button.classList.toggle("is-active", count > 0);
+  button.title = count > 0 ? `${count} filtro(s) de etiqueta ativo(s)` : "Filtrar por etiqueta";
+  button.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18"/><path d="M6 12h12"/><path d="M10 19h4"/></svg>
+    ${count > 0 ? `<span>${count}</span>` : ""}
+  `;
+};
+
+const renderPipelineTagFilterMenu = (column, menu) => {
+  const stageId = column.dataset.status;
+  const selectedTags = getPipelineTagFilterValues(stageId);
+  const tags = getFilterTagsForStage(stageId);
+  const rows = [
+    { value: "__none__", label: "Sem etiqueta", className: "none" },
+    ...tags,
+  ];
+
+  menu.innerHTML = "";
+  const header = document.createElement("div");
+  header.className = "kanban-tag-filter-menu-header";
+  header.innerHTML = `<strong>Filtrar etiquetas</strong><button type="button">Limpar</button>`;
+  header.querySelector("button")?.addEventListener("click", (event) => {
+    event.stopPropagation();
+    pipelineColumnTagFilters.delete(stageId);
+    renderPipelineTagFilterMenu(column, menu);
+    refreshPipelineTagFilterButton(stageId);
+    renderLeads(window.pipelineLeadsCache || []);
+  });
+  menu.append(header);
+
+  rows.forEach((tag) => {
+    const option = document.createElement("button");
+    option.type = "button";
+    option.className = `kanban-tag-filter-option kanban-tag-filter-option--${tag.className || "default"}`;
+    option.dataset.tagValue = tag.value;
+    if (selectedTags.has(tag.value)) option.classList.add("is-selected");
+    option.innerHTML = `
+      <span class="kanban-tag-filter-check" aria-hidden="true"></span>
+      <span>${tag.label}</span>
+    `;
+    option.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const nextSelected = new Set(getPipelineTagFilterValues(stageId));
+      if (nextSelected.has(tag.value)) nextSelected.delete(tag.value);
+      else nextSelected.add(tag.value);
+      if (nextSelected.size) pipelineColumnTagFilters.set(stageId, nextSelected);
+      else pipelineColumnTagFilters.delete(stageId);
+      renderPipelineTagFilterMenu(column, menu);
+      refreshPipelineTagFilterButton(stageId);
+      renderLeads(window.pipelineLeadsCache || []);
+    });
+    menu.append(option);
+  });
+};
+
+const setupPipelineTagFilters = () => {
+  columns.forEach((column) => {
+    const stageId = column.dataset.status;
+    if (!getFilterTagsForStage(stageId).length) return;
+    const header = column.querySelector("header");
+    const icon = header?.querySelector(".stage-icon");
+    if (!header || !icon || header.querySelector(".kanban-tag-filter")) return;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "kanban-tag-filter";
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "kanban-tag-filter-button";
+    button.setAttribute("aria-label", `Filtrar etiquetas de ${statusLabels[stageId] || "etapa"}`);
+
+    const menu = document.createElement("div");
+    menu.className = "kanban-tag-filter-menu";
+
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      document.querySelectorAll(".kanban-tag-filter-menu.is-open").forEach((openMenu) => {
+        if (openMenu !== menu) openMenu.classList.remove("is-open");
+      });
+      renderPipelineTagFilterMenu(column, menu);
+      menu.classList.toggle("is-open");
+    });
+
+    wrapper.append(button, menu);
+    icon.insertAdjacentElement("afterend", wrapper);
+    refreshPipelineTagFilterButton(stageId);
+  });
+};
+
+document.addEventListener("click", () => {
+  document.querySelectorAll(".kanban-tag-filter-menu.is-open").forEach((menu) => {
+    menu.classList.remove("is-open");
+  });
+});
+
 const pipelineStatusOrder = [
   "lead_recebido",
   "primeiro_contato",
@@ -4992,16 +5109,22 @@ const renderLeads = (leads) => {
     const stack = column.querySelector(".card-stack");
     const counter = column.querySelector("small");
     const leadsInColumn = leads.filter((lead) => lead.status === status);
+    const visibleLeadsInColumn = leadsInColumn.filter((lead) => leadMatchesColumnTagFilter(lead, status));
+    const activeFilterCount = getPipelineTagFilterValues(status).size;
 
     stack.innerHTML = "";
-    counter.textContent = leadsInColumn.length;
+    counter.textContent = visibleLeadsInColumn.length;
+    column.classList.toggle("has-tag-filter", activeFilterCount > 0);
+    counter.title = activeFilterCount > 0
+      ? `${visibleLeadsInColumn.length} de ${leadsInColumn.length} lead(s) com filtro de etiqueta`
+      : "";
 
-    if (leadsInColumn.length === 0) {
+    if (visibleLeadsInColumn.length === 0) {
       renderEmptyState(stack);
       return;
     }
 
-    leadsInColumn.forEach((lead) => {
+    visibleLeadsInColumn.forEach((lead) => {
       stack.append(createLeadCard(lead));
     });
   });
@@ -5010,6 +5133,8 @@ const renderLeads = (leads) => {
     leadCount.textContent = `${total} ${total === 1 ? "lead ativo" : "leads ativos"}`;
   }
 };
+
+setupPipelineTagFilters();
 
 const getPipelineLeadDateRange = () => {
   if (!selectedPipelinePeriodValue) return null;
