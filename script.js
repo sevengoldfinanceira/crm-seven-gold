@@ -3810,11 +3810,11 @@ const createLeadCard = (lead) => {
   if (lead.assigned_to_name) card.dataset.assignedName = lead.assigned_to_name;
 
   const top = document.createElement("div");
-  top.className = "lead-card-top";
+  top.className = "lead-card-header";
 
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
-  checkbox.className = "lead-select-checkbox";
+  checkbox.className = "lead-checkbox";
   checkbox.addEventListener("change", (e) => {
     if (e.target.checked) {
       card.classList.add("selected");
@@ -3824,30 +3824,15 @@ const createLeadCard = (lead) => {
     updateBulkActionsBar();
   });
 
-  const name = document.createElement("strong");
-  name.className = "lead-card-name";
-  // Format casing nicely (Capitalized words)
+  const name = document.createElement("div");
+  name.className = "lead-name";
   name.textContent = lead.name
     .toLowerCase()
     .split(" ")
     .map(w => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 
-  // Dynamic font sizing to keep the name in a single line
-  const nameLength = lead.name.length;
-  if (nameLength > 24) {
-    name.style.fontSize = "0.7rem";
-  } else if (nameLength > 16) {
-    name.style.fontSize = "0.78rem";
-  } else {
-    name.style.fontSize = "0.85rem";
-  }
-
-  const nameWrapper = document.createElement("div");
-  nameWrapper.className = "lead-card-title-group";
-  nameWrapper.append(checkbox, name);
-
-  top.append(nameWrapper);
+  top.append(checkbox, name);
 
   // Warning Badge (days without contact)
   const createdDate = lead.created_at ? new Date(lead.created_at) : null;
@@ -3856,29 +3841,48 @@ const createLeadCard = (lead) => {
     ? Math.floor(Math.abs(now - createdDate) / (1000 * 60 * 60 * 24))
     : 0;
 
-  const warningBadge = document.createElement("div");
-  warningBadge.className = "lead-warning-badge";
+  const warningBadge = document.createElement("span");
+  warningBadge.className = "lead-time-badge";
   const warningIcon = '<svg class="lead-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
   if (diffDays === 0) {
-    warningBadge.innerHTML = `${warningIcon}<span>Hoje</span>`;
+    warningBadge.innerHTML = `${warningIcon} Hoje`;
   } else {
-    warningBadge.innerHTML = `${warningIcon}<span>${diffDays} ${diffDays === 1 ? 'dia' : 'dias'}</span>`;
+    warningBadge.innerHTML = `${warningIcon} ${diffDays} ${diffDays === 1 ? 'dia' : 'dias'}`;
   }
 
   const badgeRow = document.createElement("div");
-  badgeRow.className = "lead-card-badge-row";
+  badgeRow.className = "lead-badges-row";
   badgeRow.append(warningBadge);
+
+  const getLeadTagIcon = (className) => {
+    if (className === "pre-agendamento") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+    }
+    if (className === "retornar") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
+    }
+    if (className === "nao-responde" || className === "esfriando") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5L7 19M19 17L5 7M2 12h20"/></svg>`;
+    }
+    if (className === "faltou" || className === "cancelado") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+    }
+    if (className === "remarcar" || className === "proposta" || className === "qualificado" || className === "fechado") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+    }
+    return "";
+  };
 
   const stageTagsAvailable = getAvailableTagsForStage(lead.status).length > 0;
   const manualTagConfig = lead.status !== "cancelado" ? getLeadTagConfig(lead) : null;
   let manualTagBadge = null;
   if (stageTagsAvailable && manualTagConfig) {
-    manualTagBadge = document.createElement("div");
-    manualTagBadge.className = `lead-tag manual-tag lead-tag-${manualTagConfig.className}`;
+    manualTagBadge = document.createElement("span");
+    manualTagBadge.className = `lead-tag-badge lead-tag-${manualTagConfig.className}`;
     manualTagBadge.dataset.leadTagValue = manualTagConfig.value;
-    manualTagBadge.textContent = manualTagConfig.label;
     manualTagBadge.title = `Etiqueta: ${manualTagConfig.label}`;
-    badgeRow.prepend(manualTagBadge);
+    manualTagBadge.innerHTML = `${getLeadTagIcon(manualTagConfig.className)} ${manualTagConfig.label}`;
+    badgeRow.append(manualTagBadge);
   }
   if (manualTagConfig && lead?.id) {
     card.dataset.leadTag = manualTagConfig.value;
@@ -3889,25 +3893,25 @@ const createLeadCard = (lead) => {
   let trashBadgeRow = null;
   if (lead.status === "cancelado") {
     trashBadgeRow = document.createElement("div");
-    trashBadgeRow.className = "lead-trash-badge-row";
+    trashBadgeRow.className = "lead-badges-row";
 
-    const originBadge = document.createElement("div");
+    const originBadge = document.createElement("span");
     const originStatus = lead.trash_origin_status && lead.trash_origin_status !== "cancelado"
       ? lead.trash_origin_status
       : "unknown";
-    originBadge.className = `lead-trash-origin-badge lead-trash-origin-badge--${originStatus}`;
+    originBadge.className = `lead-tag-badge lead-trash-origin-badge--${originStatus}`;
     const originLabel = statusLabels[lead.trash_origin_status] || "Origem desconhecida";
     originBadge.textContent = originLabel;
     originBadge.title = `Enviado para a Lixeira a partir de: ${originLabel}`;
 
-    trashBadgeRow.append(originBadge, warningBadge);
+    trashBadgeRow.append(warningBadge, originBadge);
   }
 
   if (lead.is_carry_over) {
     const carryBadge = document.createElement("span");
     const originProd = commercialProductions.find((p) => p.id === lead.carried_from_production_id);
     const originName = originProd ? originProd.name : "Mês anterior";
-    carryBadge.className = "lead-carry-badge";
+    carryBadge.className = "lead-tag-badge lead-carry";
     carryBadge.textContent = `Veio de ${originName}`;
     carryBadge.title = `Lead continuado da produção de ${originName}`;
     if (trashBadgeRow) {
@@ -3917,46 +3921,38 @@ const createLeadCard = (lead) => {
     }
   }
 
-  // Phone Line
-  const phoneLine = document.createElement("div");
-  phoneLine.className = "lead-phone-line";
-  const phoneIcon = `<span class="lead-info-icon lead-info-icon--phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 1 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>`;
-  const phoneCopy = document.createElement("span");
-  phoneCopy.className = "lead-info-copy";
-  const phoneText = document.createElement("span");
-  phoneText.className = "lead-info-value";
-  phoneText.textContent = lead.telefone ? formatDisplayPhone(lead.telefone) : "Sem telefone";
-  const phoneLabel = document.createElement("small");
-  phoneLabel.textContent = "Celular";
-  phoneLine.innerHTML = phoneIcon;
-  phoneCopy.append(phoneText, phoneLabel);
-  phoneLine.append(phoneCopy);
+  // Info List (Phone and Responsible)
+  const infoList = document.createElement("div");
+  infoList.className = "lead-info-list";
 
-  // Responsible Badge
-  const responsibleBadge = document.createElement("div");
-  responsibleBadge.className = "lead-responsible-badge";
-  const responsibleCopy = document.createElement("span");
-  responsibleCopy.className = "lead-info-copy";
-  if (lead.assigned_to_name) {
-    const respIcon = `<span class="lead-info-icon lead-info-icon--responsible"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>`;
-    responsibleBadge.innerHTML = respIcon;
-    const respText = document.createElement("span");
-    respText.className = "lead-info-value";
-    respText.textContent = lead.assigned_to_name;
-    const respLabel = document.createElement("small");
-    respLabel.textContent = "Responsável";
-    responsibleCopy.append(respText, respLabel);
-    responsibleBadge.append(responsibleCopy);
-  } else {
-    const respIcon = `<span class="lead-info-icon lead-info-icon--responsible"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>`;
-    responsibleBadge.innerHTML = respIcon;
-    const respText = document.createElement("span");
-    respText.className = "lead-info-value";
-    respText.textContent = "Sem responsavel";
-    const respLabel = document.createElement("small");
-    respLabel.textContent = "Responsável";
-    responsibleCopy.append(respText, respLabel);
-    responsibleBadge.append(responsibleCopy);
+  const phoneRow = document.createElement("div");
+  phoneRow.className = "lead-info-row";
+
+  const phoneIconSpan = document.createElement("span");
+  phoneIconSpan.className = "lead-info-icon phone";
+  phoneIconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 1 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+
+  const phoneTextSpan = document.createElement("span");
+  phoneTextSpan.className = "lead-info-text";
+  phoneTextSpan.textContent = lead.telefone ? formatDisplayPhone(lead.telefone) : "Sem telefone";
+
+  phoneRow.append(phoneIconSpan, phoneTextSpan);
+  infoList.append(phoneRow);
+
+  if (showResponsible) {
+    const respRow = document.createElement("div");
+    respRow.className = "lead-info-row";
+
+    const respIconSpan = document.createElement("span");
+    respIconSpan.className = "lead-info-icon responsible";
+    respIconSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+
+    const respTextSpan = document.createElement("span");
+    respTextSpan.className = "lead-info-text";
+    respTextSpan.textContent = lead.assigned_to_name || "Sem responsável";
+
+    respRow.append(respIconSpan, respTextSpan);
+    infoList.append(respRow);
   }
 
   // Optional Note
@@ -3968,13 +3964,16 @@ const createLeadCard = (lead) => {
     noteEl.textContent = lead.note;
   }
 
-  // Separator
-  const divider = document.createElement("hr");
-  divider.className = "lead-card-divider";
+  // Separators
+  const divider1 = document.createElement("div");
+  divider1.className = "lead-card-divider";
+
+  const divider2 = document.createElement("div");
+  divider2.className = "lead-card-divider";
 
   // Actions Row
   const actionsRow = document.createElement("div");
-  actionsRow.className = "lead-card-actions-row";
+  actionsRow.className = "lead-actions";
 
   const cleanDigits = lead.telefone ? lead.telefone.replace(/\D/g, "") : "";
   const waPhone = (cleanDigits.length <= 11 && !cleanDigits.startsWith("55") && cleanDigits.length >= 10) 
@@ -3984,21 +3983,22 @@ const createLeadCard = (lead) => {
   const waBtn = document.createElement("a");
   waBtn.href = lead.telefone ? `https://wa.me/${waPhone}` : "#";
   waBtn.target = lead.telefone ? "_blank" : "_self";
-  waBtn.className = "lead-action-btn wa-btn";
-  waBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>WhatsApp`;
+  waBtn.className = "lead-action-button whatsapp";
+  waBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-7.6-4.7 8.38 8.38 0 0 1 3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>WhatsApp`;
   if (!lead.telefone) waBtn.style.opacity = "0.5";
 
   const callBtn = document.createElement("a");
   callBtn.href = lead.telefone ? `tel:+${waPhone}` : "#";
-  callBtn.className = "lead-action-btn call-btn";
-  callBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Ligar`;
+  callBtn.className = "lead-action-button call";
+  callBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 1 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Ligar`;
   if (!lead.telefone) callBtn.style.opacity = "0.5";
 
   actionsRow.append(waBtn, callBtn);
+
   if (leadLocked && isProductionDirectorCeo) {
     const copyBtn = document.createElement("button");
     copyBtn.type = "button";
-    copyBtn.className = "lead-action-btn copy-production-btn";
+    copyBtn.className = "lead-action-button copy";
     copyBtn.textContent = "Copiar para atual";
     copyBtn.addEventListener("click", async () => {
       try {
@@ -4010,9 +4010,10 @@ const createLeadCard = (lead) => {
       }
     });
     actionsRow.append(copyBtn);
+    actionsRow.style.gridTemplateColumns = "repeat(3, 1fr)";
   }
 
-  // Tags Container
+  // Tags Container (legacy)
   const tagsContainer = document.createElement("div");
   tagsContainer.className = "lead-tags-container";
   let tagsArray = [];
@@ -4045,16 +4046,14 @@ const createLeadCard = (lead) => {
   if (legacyTags.length > 0) {
     card.append(tagsContainer);
   }
-  card.append(phoneLine);
-  if (showResponsible) {
-    card.append(responsibleBadge);
-  }
+  card.append(divider1, infoList);
   if (noteEl) {
     card.append(noteEl);
   }
+
   // 3-dots actions menu
   const leadMenuBtn = document.createElement("button");
-  leadMenuBtn.className = "lead-card-menu-btn";
+  leadMenuBtn.className = "lead-menu-button";
   leadMenuBtn.type = "button";
   leadMenuBtn.setAttribute("aria-label", "Opções do lead");
   leadMenuBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>';
@@ -4171,7 +4170,7 @@ const createLeadCard = (lead) => {
   });
 
   card.append(leadMenuBtn, leadDropdown);
-  card.append(divider, actionsRow);
+  card.append(divider2, actionsRow);
 
   return card;
 };
