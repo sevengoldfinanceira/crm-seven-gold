@@ -7501,7 +7501,7 @@ body.theme-dark .weekly-day-card.has-appointments {
   background: #ffffff !important;
   border: 1px solid #facc15 !important;
   border-radius: 18px !important;
-  padding: 14px !important;
+  padding: 10px !important;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
   transition: all 0.2s ease !important;
   overflow: hidden !important;
@@ -7514,6 +7514,9 @@ body.theme-dark .weekly-day-card.has-appointments {
   border-left: 1px solid #facc15 !important;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
+  flex-shrink: 0 !important;
+  height: auto !important;
+  min-height: fit-content !important;
 }
 
 body.theme-dark .appointment-card {
@@ -7535,24 +7538,24 @@ body.theme-dark .appointment-card:hover {
 .appointment-top-row {
   display: flex !important;
   align-items: center !important;
-  gap: 8px !important;
-  padding-right: 28px !important;
-  margin-bottom: 12px !important;
-  flex-wrap: wrap !important;
+  gap: 6px !important;
+  padding-right: 22px !important;
+  margin-bottom: 8px !important;
+  flex-wrap: nowrap !important;
   min-width: 0 !important;
 }
 
 .appointment-time-badge {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 5px !important;
+  gap: 4px !important;
   width: fit-content !important;
-  padding: 7px 10px !important;
+  padding: 4px 8px !important;
   border-radius: 999px !important;
   background: #fef3c7 !important;
   color: #b45309 !important;
   border: 1px solid #fde68a !important;
-  font-size: 13px !important;
+  font-size: 11px !important;
   font-weight: 900 !important;
   line-height: 1 !important;
   white-space: nowrap !important;
@@ -7565,19 +7568,19 @@ body.theme-dark .appointment-time-badge {
 }
 
 .appointment-time-badge svg {
-  width: 15px !important;
-  height: 15px !important;
+  width: 12px !important;
+  height: 12px !important;
   stroke-width: 2.6 !important;
 }
 
 .appointment-confirmation-badge {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 5px !important;
+  gap: 4px !important;
   width: fit-content !important;
-  padding: 7px 10px !important;
+  padding: 4px 8px !important;
   border-radius: 999px !important;
-  font-size: 13px !important;
+  font-size: 11px !important;
   font-weight: 900 !important;
   line-height: 1 !important;
   border: 1px solid transparent !important;
@@ -7593,8 +7596,8 @@ body.theme-dark .appointment-time-badge {
 }
 
 .appointment-confirmation-badge svg {
-  width: 15px !important;
-  height: 15px !important;
+  width: 12px !important;
+  height: 12px !important;
   stroke-width: 2.7 !important;
 }
 
@@ -7624,8 +7627,8 @@ body.theme-dark .appointment-confirmation-badge.confirmed {
 
 .appointment-menu-button {
   position: absolute !important;
-  top: 13px !important;
-  right: 12px !important;
+  top: 10px !important;
+  right: 6px !important;
   width: 24px !important;
   height: 24px !important;
   border: none !important;
@@ -7657,16 +7660,16 @@ body.theme-dark .appointment-menu-button:hover {
 
 .appointment-card-dropdown {
   position: absolute !important;
-  top: 40px !important;
-  right: 12px !important;
+  top: 36px !important;
+  right: 6px !important;
 }
 
 .appointment-client-name {
-  font-size: 17px !important;
+  font-size: 14px !important;
   font-weight: 900 !important;
   color: #0f172a !important;
   line-height: 1.2 !important;
-  margin-bottom: 12px !important;
+  margin-bottom: 8px !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
@@ -7681,21 +7684,21 @@ body.theme-dark .appointment-client-name {
 .appointment-info-list {
   display: flex !important;
   flex-direction: column !important;
-  gap: 8px !important;
+  gap: 6px !important;
   align-items: stretch !important;
 }
 
 .appointment-info-row {
   display: flex !important;
   align-items: center !important;
-  gap: 9px !important;
+  gap: 8px !important;
   min-width: 0 !important;
 }
 
 .appointment-info-icon {
-  width: 30px !important;
-  height: 30px !important;
-  border-radius: 10px !important;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 8px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -7703,8 +7706,8 @@ body.theme-dark .appointment-client-name {
 }
 
 .appointment-info-icon svg {
-  width: 16px !important;
-  height: 16px !important;
+  width: 13px !important;
+  height: 13px !important;
   stroke-width: 2.5 !important;
 }
 
@@ -7729,7 +7732,7 @@ body.theme-dark .appointment-info-icon.phone {
 }
 
 .appointment-info-text {
-  font-size: 13px !important;
+  font-size: 12px !important;
   font-weight: 800 !important;
   color: #334155 !important;
   line-height: 1.25 !important;
