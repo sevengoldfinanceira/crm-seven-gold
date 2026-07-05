@@ -370,6 +370,25 @@ const renderPipelineTagFilterMenu = (column, menu) => {
   });
   menu.append(header);
 
+  const selectAllOption = document.createElement("button");
+  selectAllOption.type = "button";
+  selectAllOption.className = "kanban-tag-filter-option kanban-tag-filter-option--select-all";
+  const allSelected = rows.length > 0 && rows.every((tag) => selectedTags.has(tag.value));
+  if (allSelected) selectAllOption.classList.add("is-selected");
+  selectAllOption.innerHTML = `
+    <span class="kanban-tag-filter-check" aria-hidden="true"></span>
+    <span>Marcar todos</span>
+  `;
+  selectAllOption.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const nextSelected = new Set(rows.map((tag) => tag.value));
+    pipelineColumnTagFilters.set(stageId, nextSelected);
+    renderPipelineTagFilterMenu(column, menu);
+    refreshPipelineTagFilterButton(stageId);
+    renderLeads(window.pipelineLeadsCache || []);
+  });
+  menu.append(selectAllOption);
+
   rows.forEach((tag) => {
     const option = document.createElement("button");
     option.type = "button";

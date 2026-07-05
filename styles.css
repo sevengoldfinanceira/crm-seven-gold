@@ -3109,6 +3109,14 @@ body.theme-dark .kanban-column header small {
   color: #5b21b6;
 }
 
+.kanban-tag-filter-option--select-all {
+  margin-bottom: 4px;
+  border-color: rgba(109, 74, 255, 0.16);
+  background: rgba(109, 74, 255, 0.06);
+  color: #5b21b6;
+  box-shadow: inset 0 -1px 0 rgba(109, 74, 255, 0.1);
+}
+
 .kanban-tag-filter-check {
   width: 14px;
   height: 14px;
