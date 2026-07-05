@@ -3039,6 +3039,14 @@ const renderCalendar = () => {
 
     const dayAcronyms = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
 
+    const dayCounts = days.map((d) => {
+      const dKey = toDateKey(d);
+      const dow = d.getDay();
+      if (dow === 0) return 0;
+      return calendarAppointments.filter((item) => item.data_agendamento === dKey).length;
+    });
+    const maxAppointments = Math.max(...dayCounts);
+
     days.forEach((day) => {
       const dateKey = toDateKey(day);
       const dayOfWeek = day.getDay();
@@ -3055,10 +3063,13 @@ const renderCalendar = () => {
       const hasAppointments = dayAppointments.length > 0;
       const dayCount = dayOfWeek === 0 ? 0 : dayAppointments.length;
 
+      const isMostBusy = maxAppointments > 0 && dayCount === maxAppointments;
+      const busyClass = isMostBusy ? " is-most-busy" : "";
+
       const column = document.createElement("div");
       const stateClass = isToday ? " is-today" : hasAppointments ? " has-appointments" : "";
       const themeClass = isSunday ? " is-sunday" : isSaturday ? " is-saturday" : "";
-      column.className = `weekly-day-card${stateClass}${themeClass}`;
+      column.className = `weekly-day-card${stateClass}${themeClass}${busyClass}`;
 
       // Redesigned Card Header
       const header = document.createElement("div");

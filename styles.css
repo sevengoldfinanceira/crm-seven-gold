@@ -8254,5 +8254,48 @@ body.theme-dark .calendar-today-subtitle {
   color: #94a3b8 !important;
 }
 
+/* Most Busy Day Highlight Styles */
+.weekly-day-card.is-most-busy {
+  border-color: var(--day-color) !important;
+  box-shadow: 0 12px 32px rgba(109, 76, 255, 0.15), 0 0 0 1.5px var(--day-color) !important;
+}
+
+.weekly-day-card.is-saturday.is-most-busy {
+  box-shadow: 0 12px 32px rgba(37, 99, 235, 0.15), 0 0 0 1.5px var(--day-color) !important;
+}
+
+.weekly-day-card.is-sunday.is-most-busy {
+  box-shadow: 0 12px 32px rgba(239, 68, 68, 0.15), 0 0 0 1.5px var(--day-color) !important;
+}
+
+.weekly-day-card.is-today.is-most-busy {
+  box-shadow: 0 12px 32px rgba(37, 99, 235, 0.18), 0 0 0 1.5px var(--day-color) !important;
+}
+
+.weekly-day-card.has-appointments.is-most-busy {
+  box-shadow: 0 12px 32px rgba(217, 119, 6, 0.15), 0 0 0 1.5px var(--day-color) !important;
+}
+
+/* Dark Theme support */
+body.theme-dark .weekly-day-card.is-most-busy {
+  box-shadow: 0 12px 32px rgba(167, 139, 250, 0.25), 0 0 0 1.5px var(--day-color) !important;
+}
+
+body.theme-dark .weekly-day-card.is-saturday.is-most-busy {
+  box-shadow: 0 12px 32px rgba(96, 165, 250, 0.25), 0 0 0 1.5px var(--day-color) !important;
+}
+
+body.theme-dark .weekly-day-card.is-sunday.is-most-busy {
+  box-shadow: 0 12px 32px rgba(248, 113, 113, 0.25), 0 0 0 1.5px var(--day-color) !important;
+}
+
+body.theme-dark .weekly-day-card.is-today.is-most-busy {
+  box-shadow: 0 12px 32px rgba(96, 165, 250, 0.25), 0 0 0 1.5px var(--day-color) !important;
+}
+
+body.theme-dark .weekly-day-card.has-appointments.is-most-busy {
+  box-shadow: 0 12px 32px rgba(251, 191, 36, 0.25), 0 0 0 1.5px var(--day-color) !important;
+}
+
 
 
