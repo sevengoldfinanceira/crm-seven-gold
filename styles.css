@@ -7533,10 +7533,11 @@ body.theme-dark .calendar-status {
 
 .calendar-toolbar {
   display: grid !important;
-  grid-template-columns: auto minmax(0, 1fr) auto !important;
+  grid-template-columns: 1fr auto !important;
+  row-gap: 32px !important;
+  column-gap: 16px !important;
   align-items: center !important;
   justify-content: stretch !important;
-  gap: 16px !important;
   margin-bottom: 24px !important;
 }
 
@@ -7548,7 +7549,7 @@ body.theme-dark .calendar-status {
   flex: 0 0 auto !important;
   grid-column: 2 !important;
   grid-row: 1 !important;
-  justify-self: center !important;
+  justify-self: end !important;
   margin-left: 0 !important;
 }
 
@@ -7606,13 +7607,16 @@ body.theme-dark .calendar-status {
 
 .calendar-toolbar-actions {
   flex: 0 0 auto !important;
-  grid-column: 3 !important;
-  grid-row: 1 !important;
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
   align-items: center !important;
-  justify-self: end !important;
+  justify-content: center !important;
+  justify-self: center !important;
   align-self: center !important;
   margin-top: 0 !important;
   margin-left: 0 !important;
+  display: flex !important;
+  gap: 16px !important;
 }
 
 .calendar-toolbar-actions .dash-filter-field {
