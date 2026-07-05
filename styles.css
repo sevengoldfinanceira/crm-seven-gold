@@ -7556,8 +7556,10 @@ body.theme-dark .appointment-card:hover {
 .appointment-top-row {
   display: flex !important;
   align-items: center !important;
+  justify-content: center !important;
   gap: 4px !important;
-  padding-right: 20px !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
   margin-bottom: 8px !important;
   flex-wrap: nowrap !important;
   min-width: 0 !important;
