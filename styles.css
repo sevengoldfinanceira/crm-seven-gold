@@ -1331,6 +1331,19 @@ body.theme-dark .lead-trash-origin-badge--unknown {
   font-weight: 600;
 }
 
+.lead-modal .lead-modal-row-grid > label,
+.lead-modal .lead-modal-tag-field {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.lead-modal .lead-modal-tag-field select {
+  display: block;
+}
+
 .lead-modal input,
 .lead-modal select,
 .lead-modal textarea {
