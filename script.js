@@ -3375,7 +3375,7 @@ const changeLeadResponsible = async (leadId, newEmail) => {
   if (!client || !leadId) return null;
   try {
     const updatedLead = await updateLeadThroughApi(client, leadId, { assigned_to_email: newEmail });
-    await loadLeads();
+    await Promise.all([loadLeads(), loadAppointments()]);
     return updatedLead;
   } catch (error) {
     alert("Erro ao alterar responsável: " + (error.message || "Tente novamente."));
@@ -4060,7 +4060,7 @@ const loadAppointments = async () => {
 
   let query = client
     .from("appointments")
-    .select("id, lead_id, nome_cliente, telefone_cliente, usuario_id, nome_usuario, data_agendamento, hora_agendamento, observacao, status, created_at, updated_at, leads ( status )")
+    .select("id, lead_id, nome_cliente, telefone_cliente, usuario_id, nome_usuario, data_agendamento, hora_agendamento, observacao, status, created_at, updated_at, leads ( status, assigned_to_email, assigned_to_name )")
     .gte("data_agendamento", start)
     .lte("data_agendamento", end)
     .neq("status", "cancelado")
@@ -4137,7 +4137,7 @@ const loadAppointments = async () => {
       || passedStoreLeadIds.has(String(item.lead_id));
     return {
       ...item,
-      vendedor_nome: item.vendedor_nome || item.nome_usuario,
+      vendedor_nome: item.leads?.assigned_to_name || item.vendedor_nome || item.nome_usuario,
       lead_status: currentStatus,
       ever_passed_store: everPassedStore,
     };

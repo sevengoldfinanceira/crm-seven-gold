@@ -145,7 +145,7 @@ module.exports = async (req, res) => {
       }
       const { data: assignee, error: assigneeError } = await supabase
         .from('crm_users')
-        .select('email,nome,cargo,ativo')
+        .select('id,email,nome,cargo,ativo')
         .ilike('email', requestedAssigneeEmail)
         .eq('ativo', true)
         .maybeSingle();
@@ -281,6 +281,34 @@ module.exports = async (req, res) => {
     }
 
     if (hasAssigneeChange && newAssignee && normalizeEmail(fetchLead[0].assigned_to_email) !== normalizeEmail(newAssignee.email)) {
+      const appointmentAssigneePayload = {
+        usuario_id: newAssignee.id,
+        nome_usuario: newAssignee.nome || newAssignee.email,
+        assigned_to_email: normalizeEmail(newAssignee.email),
+        assigned_to_name: newAssignee.nome || newAssignee.email,
+        updated_at: updateTime,
+      };
+      let appointmentSync = await supabase
+        .from('appointments')
+        .update(appointmentAssigneePayload)
+        .eq('lead_id', leadId)
+        .neq('status', 'cancelado');
+
+      if (appointmentSync.error && /assigned_to_(email|name)/i.test(appointmentSync.error.message || '')) {
+        const { assigned_to_email, assigned_to_name, ...legacyAppointmentPayload } = appointmentAssigneePayload;
+        appointmentSync = await supabase
+          .from('appointments')
+          .update(legacyAppointmentPayload)
+          .eq('lead_id', leadId)
+          .neq('status', 'cancelado');
+      }
+
+      if (appointmentSync.error) {
+        console.error('Error syncing appointments after lead assignee update', appointmentSync.error);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ ok: false, error: 'Responsável alterado, mas não foi possível atualizar os agendamentos vinculados.' }));
+      }
+
       const oldAssigneeName = fetchLead[0].assigned_to_name || fetchLead[0].assigned_to_email || 'Sem responsável';
       const newAssigneeName = newAssignee.nome || newAssignee.email;
       const { error: assigneeHistoryError } = await supabase.from('lead_activity_logs').insert({
