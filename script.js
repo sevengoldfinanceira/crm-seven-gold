@@ -2843,25 +2843,9 @@ const createAppointmentCard = (appointment) => {
   card.dataset.appointmentId = appointment.id;
   if (appointment.lead_id) card.dataset.leadId = appointment.lead_id;
 
-  const header = document.createElement("div");
-  header.className = "appointment-card-header";
-  const client = document.createElement("strong");
-  client.textContent = appointment.nome_cliente;
-  const time = document.createElement("time");
-  time.className = "appointment-card-time";
-  time.textContent = normalizeAppointmentTime(appointment.hora_agendamento);
-  header.append(client, time);
-  const seller = document.createElement("span");
-  seller.className = "appointment-card-seller";
-  seller.textContent = `Vendedor - ${formatSellerName(appointment.vendedor_nome || appointment.nome_usuario)}`;
-  const customerPhone = formatDisplayPhone(appointment.telefone_cliente) || "Telefone nao informado";
-  const phone = document.createElement("span");
-  phone.className = "appointment-card-phone";
-  phone.textContent = `Telefone - ${customerPhone}`;
-
   // 3-dots menu button and dropdown menu
   const menuBtn = document.createElement("button");
-  menuBtn.className = "appointment-card-menu-btn";
+  menuBtn.className = "appointment-menu-button";
   menuBtn.type = "button";
   menuBtn.setAttribute("aria-label", "Opções");
   menuBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>';
@@ -2880,7 +2864,68 @@ const createAppointmentCard = (appointment) => {
   cancelItem.textContent = "Cancelar agendamento";
 
   dropdown.append(editItem, cancelItem);
-  card.append(header, seller, phone, menuBtn, dropdown);
+
+  // Top Row: horários + confirmação
+  const topRow = document.createElement("div");
+  topRow.className = "appointment-top-row";
+
+  // Horário Pill
+  const timeBadge = document.createElement("span");
+  timeBadge.className = "appointment-time-badge";
+  timeBadge.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${normalizeAppointmentTime(appointment.hora_agendamento)}`;
+
+  // Confirmação Pill
+  const isConfirmed = appointment.status === "confirmado";
+  const confBadge = document.createElement("button");
+  confBadge.type = "button";
+  confBadge.className = `appointment-confirmation-badge ${isConfirmed ? "confirmed" : "pending"}`;
+  if (isConfirmed) {
+    confBadge.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Confirmado`;
+  } else {
+    confBadge.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> A confirmar`;
+  }
+
+  topRow.append(timeBadge, confBadge);
+
+  // Client Name
+  const clientName = document.createElement("div");
+  clientName.className = "appointment-client-name";
+  clientName.textContent = appointment.nome_cliente;
+
+  // Info List (Seller and Phone)
+  const infoList = document.createElement("div");
+  infoList.className = "appointment-info-list";
+
+  // Seller row
+  const sellerRow = document.createElement("div");
+  sellerRow.className = "appointment-info-row";
+  
+  const sellerIcon = document.createElement("span");
+  sellerIcon.className = "appointment-info-icon vendor";
+  sellerIcon.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+
+  const sellerText = document.createElement("span");
+  sellerText.className = "appointment-info-text";
+  sellerText.textContent = formatSellerName(appointment.vendedor_nome || appointment.nome_usuario);
+
+  sellerRow.append(sellerIcon, sellerText);
+
+  // Phone row
+  const phoneRow = document.createElement("div");
+  phoneRow.className = "appointment-info-row";
+
+  const phoneIcon = document.createElement("span");
+  phoneIcon.className = "appointment-info-icon phone";
+  phoneIcon.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 1 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+
+  const phoneText = document.createElement("span");
+  phoneText.className = "appointment-info-text";
+  phoneText.textContent = formatDisplayPhone(appointment.telefone_cliente) || "Sem telefone";
+
+  phoneRow.append(phoneIcon, phoneText);
+  infoList.append(sellerRow, phoneRow);
+
+  card.append(menuBtn, dropdown, topRow, clientName, infoList);
 
   const openLead = async (event) => {
     event.stopPropagation();
@@ -2901,7 +2946,7 @@ const createAppointmentCard = (appointment) => {
 
   menuBtn.addEventListener("click", (event) => {
     event.stopPropagation();
-    document.querySelectorAll(".appointment-card-dropdown.is-open").forEach((d) => {
+    document.querySelectorAll(".appointment-card-dropdown.is-open, .lead-card-dropdown.is-open").forEach((d) => {
       if (d !== dropdown) d.classList.remove("is-open");
     });
     dropdown.classList.toggle("is-open");
@@ -2925,6 +2970,24 @@ const createAppointmentCard = (appointment) => {
       if (success) {
         await loadLeads();
       }
+    }
+  });
+
+  confBadge.addEventListener("click", async (event) => {
+    event.stopPropagation();
+    const newStatus = appointment.status === "confirmado" ? "agendado" : "confirmado";
+    const client = getClient();
+    if (!client) return;
+    try {
+      const { error } = await client
+        .from("appointments")
+        .update({ status: newStatus })
+        .eq("id", appointment.id);
+      if (error) throw error;
+      appointment.status = newStatus;
+      renderCalendar();
+    } catch (e) {
+      alert("Erro ao atualizar confirmação: " + e.message);
     }
   });
 
@@ -3590,7 +3653,7 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
       .from("appointments")
       .select("id")
       .eq("lead_id", leadId)
-      .eq("status", "agendado");
+      .neq("status", "cancelado");
     if (appointments && appointments.length > 0) {
       for (const apt of appointments) {
         await client.from("appointments").update({ status: "cancelado" }).eq("id", apt.id);

@@ -7495,3 +7495,252 @@ body.theme-dark .weekly-day-card.has-appointments {
   padding: 12px 14px !important;
 }
 
+/* Redesigned Appointment Card Styles */
+.appointment-card {
+  position: relative !important;
+  background: #ffffff !important;
+  border: 1px solid #facc15 !important;
+  border-radius: 18px !important;
+  padding: 14px !important;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
+  transition: all 0.2s ease !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  align-items: stretch !important;
+  cursor: pointer !important;
+  border-left: 1px solid #facc15 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+body.theme-dark .appointment-card {
+  background: #1e1b29 !important;
+  border-color: rgba(250, 204, 21, 0.3) !important;
+  border-left-color: rgba(250, 204, 21, 0.3) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+.appointment-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12) !important;
+}
+
+body.theme-dark .appointment-card:hover {
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+.appointment-top-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding-right: 28px !important;
+  margin-bottom: 12px !important;
+  flex-wrap: wrap !important;
+  min-width: 0 !important;
+}
+
+.appointment-time-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  width: fit-content !important;
+  padding: 7px 10px !important;
+  border-radius: 999px !important;
+  background: #fef3c7 !important;
+  color: #b45309 !important;
+  border: 1px solid #fde68a !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+body.theme-dark .appointment-time-badge {
+  background: rgba(251, 191, 36, 0.15) !important;
+  color: #fbbf24 !important;
+  border-color: rgba(251, 191, 36, 0.3) !important;
+}
+
+.appointment-time-badge svg {
+  width: 15px !important;
+  height: 15px !important;
+  stroke-width: 2.6 !important;
+}
+
+.appointment-confirmation-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  width: fit-content !important;
+  padding: 7px 10px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  border: 1px solid transparent !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  user-select: none !important;
+  white-space: nowrap !important;
+}
+
+.appointment-confirmation-badge:hover {
+  transform: translateY(-1px) !important;
+  filter: brightness(0.95) !important;
+}
+
+.appointment-confirmation-badge svg {
+  width: 15px !important;
+  height: 15px !important;
+  stroke-width: 2.7 !important;
+}
+
+.appointment-confirmation-badge.pending {
+  background: #fee2e2 !important;
+  color: #dc2626 !important;
+  border-color: #fecaca !important;
+}
+
+body.theme-dark .appointment-confirmation-badge.pending {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+.appointment-confirmation-badge.confirmed {
+  background: #dcfce7 !important;
+  color: #16a34a !important;
+  border-color: #bbf7d0 !important;
+}
+
+body.theme-dark .appointment-confirmation-badge.confirmed {
+  background: rgba(34, 197, 94, 0.15) !important;
+  color: #4ade80 !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+}
+
+.appointment-menu-button {
+  position: absolute !important;
+  top: 13px !important;
+  right: 12px !important;
+  width: 24px !important;
+  height: 24px !important;
+  border: none !important;
+  background: transparent !important;
+  color: #475569 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  z-index: 10 !important;
+  padding: 0 !important;
+}
+
+.appointment-menu-button:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.theme-dark .appointment-menu-button {
+  color: #94a3b8 !important;
+}
+
+body.theme-dark .appointment-menu-button:hover {
+  background: #334155 !important;
+  color: #f8fafc !important;
+}
+
+.appointment-card-dropdown {
+  position: absolute !important;
+  top: 40px !important;
+  right: 12px !important;
+}
+
+.appointment-client-name {
+  font-size: 17px !important;
+  font-weight: 900 !important;
+  color: #0f172a !important;
+  line-height: 1.2 !important;
+  margin-bottom: 12px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  text-align: left !important;
+  display: block !important;
+}
+
+body.theme-dark .appointment-client-name {
+  color: #f8fafc !important;
+}
+
+.appointment-info-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  align-items: stretch !important;
+}
+
+.appointment-info-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 9px !important;
+  min-width: 0 !important;
+}
+
+.appointment-info-icon {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.appointment-info-icon svg {
+  width: 16px !important;
+  height: 16px !important;
+  stroke-width: 2.5 !important;
+}
+
+.appointment-info-icon.vendor {
+  background: #f3e8ff !important;
+  color: #7c3aed !important;
+}
+
+body.theme-dark .appointment-info-icon.vendor {
+  background: rgba(124, 58, 237, 0.15) !important;
+  color: #a78bfa !important;
+}
+
+.appointment-info-icon.phone {
+  background: #dbeafe !important;
+  color: #2563eb !important;
+}
+
+body.theme-dark .appointment-info-icon.phone {
+  background: rgba(37, 99, 235, 0.15) !important;
+  color: #60a5fa !important;
+}
+
+.appointment-info-text {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  color: #334155 !important;
+  line-height: 1.25 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  text-align: left !important;
+}
+
+body.theme-dark .appointment-info-text {
+  color: #cbd5e1 !important;
+}
+
+
