@@ -8323,5 +8323,100 @@ body.theme-dark .weekly-day-card.is-least-busy {
   box-shadow: 0 12px 32px rgba(248, 113, 113, 0.25), 0 0 0 0.5px #f87171 !important;
 }
 
+/* Appointment Status Dropdown Card Styling */
+.appointment-status-dropdown {
+  position: absolute !important;
+  top: 36px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12) !important;
+  padding: 6px !important;
+  z-index: 100 !important;
+  display: none !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  min-width: 130px !important;
+}
+
+body.theme-dark .appointment-status-dropdown {
+  background: #1e1b29 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+}
+
+.appointment-status-dropdown.is-open {
+  display: flex !important;
+}
+
+.appointment-status-option {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  border: 1px solid transparent !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  white-space: nowrap !important;
+  background: transparent !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.appointment-status-option svg {
+  width: 12px !important;
+  height: 12px !important;
+  stroke-width: 2.7 !important;
+  flex-shrink: 0 !important;
+}
+
+.appointment-status-option.confirmed {
+  background: #dcfce7 !important;
+  color: #16a34a !important;
+  border-color: #bbf7d0 !important;
+}
+
+.appointment-status-option.confirmed:hover {
+  background: #bbf7d0 !important;
+  transform: translateY(-1px) !important;
+}
+
+.appointment-status-option.pending {
+  background: #fee2e2 !important;
+  color: #dc2626 !important;
+  border-color: #fecaca !important;
+}
+
+.appointment-status-option.pending:hover {
+  background: #fecaca !important;
+  transform: translateY(-1px) !important;
+}
+
+body.theme-dark .appointment-status-option.confirmed {
+  background: rgba(34, 197, 94, 0.15) !important;
+  color: #4ade80 !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+}
+
+body.theme-dark .appointment-status-option.confirmed:hover {
+  background: rgba(34, 197, 94, 0.25) !important;
+}
+
+body.theme-dark .appointment-status-option.pending {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+body.theme-dark .appointment-status-option.pending:hover {
+  background: rgba(239, 68, 68, 0.25) !important;
+}
+
 
 

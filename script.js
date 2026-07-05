@@ -2905,6 +2905,47 @@ const createAppointmentCard = (appointment) => {
     confBadge.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> A confirmar`;
   }
 
+  // Create Status Option Dropdown Menu
+  const statusDropdown = document.createElement("div");
+  statusDropdown.className = "appointment-status-dropdown";
+
+  const optBtn = document.createElement("button");
+  optBtn.type = "button";
+  if (isConfirmed) {
+    optBtn.className = "appointment-status-option pending";
+    optBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> A confirmar`;
+  } else {
+    optBtn.className = "appointment-status-option confirmed";
+    optBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Confirmado`;
+  }
+
+  optBtn.addEventListener("click", async (event) => {
+    event.stopPropagation();
+    statusDropdown.classList.remove("is-open");
+    const client = getClient();
+    if (!client) return;
+    const targetStatus = isConfirmed ? "agendado" : "confirmado";
+    const { error } = await client
+      .from("appointments")
+      .update({ status: targetStatus })
+      .eq("id", appointment.id);
+    if (error) {
+      alert(`Não foi possível alterar status: ${error.message}`);
+      return;
+    }
+    await loadAppointments();
+  });
+
+  statusDropdown.append(optBtn);
+
+  confBadge.addEventListener("click", (event) => {
+    event.stopPropagation();
+    document.querySelectorAll(".appointment-status-dropdown.is-open, .appointment-card-dropdown.is-open, .lead-card-dropdown.is-open").forEach((d) => {
+      if (d !== statusDropdown) d.classList.remove("is-open");
+    });
+    statusDropdown.classList.toggle("is-open");
+  });
+
   topRow.append(timeBadge, confBadge);
 
   // Client Name
@@ -2945,7 +2986,7 @@ const createAppointmentCard = (appointment) => {
   phoneRow.append(phoneIcon, phoneText);
   infoList.append(sellerRow, phoneRow);
 
-  card.append(menuBtn, dropdown, topRow, clientName, infoList);
+  card.append(menuBtn, dropdown, statusDropdown, topRow, clientName, infoList);
 
   const openLead = async (event) => {
     event.stopPropagation();
@@ -2974,6 +3015,7 @@ const createAppointmentCard = (appointment) => {
 
   document.addEventListener("click", () => {
     dropdown.classList.remove("is-open");
+    statusDropdown.classList.remove("is-open");
   });
 
   editItem.addEventListener("click", openLead);
