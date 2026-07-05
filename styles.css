@@ -8255,6 +8255,7 @@ body.theme-dark .lead-card:hover {
 .lead-card-header {
   display: flex !important;
   align-items: center !important;
+  justify-content: center !important;
   gap: 8px !important;
   padding-right: 22px !important;
   margin-bottom: 6px !important;
@@ -8269,7 +8270,7 @@ body.theme-dark .lead-card:hover {
 }
 
 .lead-name {
-  flex: 1 !important;
+  flex: 0 1 auto !important;
   min-width: 0 !important;
   font-size: 13px !important;
   font-weight: 900 !important;
@@ -8278,7 +8279,7 @@ body.theme-dark .lead-card:hover {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
-  text-align: left !important;
+  text-align: center !important;
 }
 
 body.theme-dark .lead-name {
@@ -8320,6 +8321,7 @@ body.theme-dark .lead-menu-button:hover {
 .lead-badges-row {
   display: flex !important;
   align-items: center !important;
+  justify-content: center !important;
   gap: 6px !important;
   flex-wrap: wrap !important;
   margin-bottom: 6px !important;
@@ -8488,14 +8490,16 @@ body.theme-dark .lead-card-divider {
   display: flex !important;
   flex-direction: column !important;
   gap: 4px !important;
-  align-items: stretch !important;
+  align-items: center !important;
 }
 
 .lead-info-row {
   display: flex !important;
   align-items: center !important;
+  justify-content: center !important;
   gap: 8px !important;
   min-width: 0 !important;
+  width: 100% !important;
 }
 
 .lead-info-icon {
@@ -8535,7 +8539,7 @@ body.theme-dark .lead-info-icon.responsible {
 }
 
 .lead-info-text {
-  flex: 1 !important;
+  flex: 0 1 auto !important;
   min-width: 0 !important;
   font-size: 12.5px !important;
   font-weight: 900 !important;
@@ -8544,7 +8548,7 @@ body.theme-dark .lead-info-icon.responsible {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
-  text-align: left !important;
+  text-align: center !important;
 }
 
 body.theme-dark .lead-info-text {
@@ -8556,6 +8560,8 @@ body.theme-dark .lead-info-text {
   grid-template-columns: 1fr 1fr !important;
   gap: 8px !important;
   margin-top: 6px !important;
+  justify-content: center !important;
+  width: 100% !important;
 }
 
 .lead-action-button {
