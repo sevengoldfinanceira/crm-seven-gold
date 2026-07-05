@@ -8537,7 +8537,7 @@ body.theme-dark .lead-card:hover {
   justify-content: center !important;
   gap: 8px !important;
   padding-right: 22px !important;
-  margin-bottom: 6px !important;
+  margin-bottom: 3px !important;
   width: 100% !important;
   box-sizing: border-box !important;
 }
@@ -9133,7 +9133,7 @@ body.theme-dark .lead-tag-badge.lead-carry {
 .lead-card-divider {
   height: 1px !important;
   background: #e2e8f0 !important;
-  margin: 5px 0 !important;
+  margin: 3px 0 1px 0 !important;
 }
 
 body.theme-dark .lead-card-divider {
@@ -9214,7 +9214,7 @@ body.theme-dark .lead-info-text {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
   gap: 8px !important;
-  margin-top: 6px !important;
+  margin-top: 3px !important;
   justify-content: center !important;
   width: 100% !important;
 }
