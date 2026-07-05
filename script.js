@@ -3070,10 +3070,9 @@ const renderCalendar = () => {
   const confirmedAppointments = weekAppointments.filter((item) =>
     ["concluido", "confirmado"].includes(String(item.status || "").toLowerCase())
   );
-  const storeStatuses = ["cliente_em_loja", "proposta_enviada", "venda_fechada"];
   const storeAppointments = weekAppointments.filter((item) => {
     const appointmentDay = days.find((day) => item.data_agendamento === toDateKey(day));
-    return appointmentDay?.getDay() !== 0 && storeStatuses.includes(item.lead_status);
+    return appointmentDay?.getDay() !== 0 && item.ever_passed_store;
   });
   setCalendarHeaderStats({
     total: weekAppointments.length,
@@ -3216,7 +3215,7 @@ const renderCalendar = () => {
       const footer = document.createElement("div");
       footer.className = "weekly-day-card-footer";
 
-      const storeCount = dayOfWeek === 0 ? 0 : dayAppointments.filter(apt => storeStatuses.includes(apt.lead_status)).length;
+      const storeCount = dayOfWeek === 0 ? 0 : dayAppointments.filter(apt => apt.ever_passed_store).length;
 
       const countNumber = document.createElement("span");
       countNumber.className = "weekly-day-card-count";
@@ -3377,11 +3376,32 @@ const loadAppointments = async () => {
     return;
   }
   const appointments = data || [];
-  calendarAppointments = appointments.map((item) => ({
-    ...item,
-    vendedor_nome: item.vendedor_nome || item.nome_usuario,
-    lead_status: item.leads?.status,
-  }));
+  const leadIds = [...new Set(appointments.map(item => item.lead_id).filter(Boolean))];
+  const passedStoreLeadIds = new Set();
+  
+  if (leadIds.length > 0) {
+    const { data: logData } = await client
+      .from("lead_activity_logs")
+      .select("lead_id")
+      .in("lead_id", leadIds)
+      .eq("new_value", "cliente_em_loja");
+      
+    if (logData) {
+      logData.forEach(log => passedStoreLeadIds.add(String(log.lead_id)));
+    }
+  }
+
+  calendarAppointments = appointments.map((item) => {
+    const currentStatus = String(item.leads?.status || "").trim().toLowerCase();
+    const everPassedStore = ["cliente_em_loja", "proposta_enviada", "venda_fechada"].includes(currentStatus) 
+      || passedStoreLeadIds.has(String(item.lead_id));
+    return {
+      ...item,
+      vendedor_nome: item.vendedor_nome || item.nome_usuario,
+      lead_status: currentStatus,
+      ever_passed_store: everPassedStore,
+    };
+  });
   renderCalendar();
   setCalendarStatus("Veja seus clientes agendados da semana");
 };
