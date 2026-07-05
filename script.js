@@ -3668,7 +3668,7 @@ const createAppointmentCard = (appointment) => {
       }
       if (appointment.lead_id) {
         try {
-          await setLeadReagendarTag(appointment.lead_id, statusOption === "reagendar");
+          await syncLeadTagFromAppointmentStatus(appointment.lead_id, statusOption);
         } catch (syncError) {
           alert(`Status do calendário foi salvo, mas não consegui sincronizar a etiqueta do lead: ${syncError.message}`);
         }
@@ -4498,9 +4498,10 @@ const getLeadTagsArray = (lead) => {
   return [];
 };
 
-const setLeadReagendarTag = async (leadId, enabled) => {
+const syncLeadTagFromAppointmentStatus = async (leadId, appointmentStatus) => {
   const client = getClient();
-  if (!client || !leadId) return false;
+  if (!client || !leadId) return;
+
   const cachedLead = (window.pipelineLeadsCache || []).find((lead) => String(lead.id) === String(leadId)) || null;
   let tags = getLeadTagsArray(cachedLead);
   if (!cachedLead) {
@@ -4508,19 +4509,29 @@ const setLeadReagendarTag = async (leadId, enabled) => {
       const { data } = await client.from("leads").select("tags").eq("id", leadId).maybeSingle();
       tags = getLeadTagsArray(data);
     } catch (error) {
-      console.warn("Não foi possível carregar etiquetas do lead para sincronizar reagendamento:", error);
+      console.warn("Não foi possível carregar etiquetas do lead para sincronizar status:", error);
     }
   }
-  const nextTags = enabled
-    ? Array.from(new Set([...tags.filter((tag) => tag !== "reagendar"), "reagendar"]))
-    : tags.filter((tag) => tag !== "reagendar");
+
+  let nextTags = tags.filter((tag) => !["reagendar", "reagendado", "faltou"].includes(tag));
+  
+  if (appointmentStatus === "reagendar") {
+    nextTags.push("reagendar");
+  } else if (appointmentStatus === "reagendado") {
+    nextTags.push("reagendado");
+  } else if (appointmentStatus === "faltou") {
+    nextTags.push("faltou");
+  }
+
+  nextTags = Array.from(new Set(nextTags));
+
   await updateLeadThroughApi(client, leadId, { tags: nextTags });
+  
   if (window.pipelineLeadsCache) {
     window.pipelineLeadsCache = window.pipelineLeadsCache.map((lead) =>
       String(lead.id) === String(leadId) ? { ...lead, tags: nextTags } : lead
     );
   }
-  return true;
 };
 
 const setLeadReagendadoTag = async (leadId, enabled) => {
@@ -4548,35 +4559,41 @@ const setLeadReagendadoTag = async (leadId, enabled) => {
   return true;
 };
 
-const setLatestLeadAppointmentReagendarStatus = async (leadId, enabled) => {
+const syncLatestLeadAppointmentStatusFromTag = async (leadId, tagValue) => {
   const client = getClient();
   if (!client || !leadId) return;
-  if (enabled) {
-    const { data, error } = await client
-      .from("appointments")
-      .select("id")
-      .eq("lead_id", leadId)
-      .neq("status", "cancelado")
-      .order("data_agendamento", { ascending: false })
-      .order("hora_agendamento", { ascending: false })
-      .limit(1);
-    if (error) throw error;
-    const appointmentId = data?.[0]?.id;
-    if (appointmentId) {
-      const { error: updateError } = await client
-        .from("appointments")
-        .update({ status: "reagendar" })
-        .eq("id", appointmentId);
-      if (updateError) throw updateError;
-    }
-    return;
-  }
-  const { error } = await client
+
+  const { data, error } = await client
     .from("appointments")
-    .update({ status: "faltou" })
+    .select("id, status")
     .eq("lead_id", leadId)
-    .eq("status", "reagendar");
+    .neq("status", "cancelado")
+    .order("data_agendamento", { ascending: false })
+    .order("hora_agendamento", { ascending: false })
+    .limit(1);
   if (error) throw error;
+  
+  const appointment = data?.[0];
+  if (!appointment) return;
+
+  let targetStatus = null;
+  if (tagValue === "reagendar") {
+    targetStatus = "reagendar";
+  } else if (tagValue === "reagendado") {
+    targetStatus = "reagendado";
+  } else if (tagValue === "faltou") {
+    targetStatus = "faltou";
+  } else if (tagValue === "confirmar_agend") {
+    targetStatus = "agendado";
+  }
+
+  if (targetStatus && appointment.status !== targetStatus) {
+    const { error: updateError } = await client
+      .from("appointments")
+      .update({ status: targetStatus })
+      .eq("id", appointment.id);
+    if (updateError) throw updateError;
+  }
 };
 
 const getActiveAppointmentIdsForLead = async (leadId) => {
@@ -4643,7 +4660,7 @@ const updateLeadTag = async (leadId, tagValue) => {
       );
     }
     if (stageId === "agendamento") {
-      await setLatestLeadAppointmentReagendarStatus(leadId, tagValue === "reagendar");
+      await syncLatestLeadAppointmentStatusFromTag(leadId, tagValue);
       await loadAppointments();
     }
     return true;
