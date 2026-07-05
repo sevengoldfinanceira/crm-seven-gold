@@ -10006,16 +10006,7 @@ body.theme-dark .funnel-divider {
 }
 
 .lead-modal-actions-row .new-lead-button {
-  width: auto !important;
-  height: 38px !important;
-  padding: 0 20px !important;
-  font-size: 0.9rem !important;
-  border-radius: 8px !important;
-  margin: 0 !important;
-}
-
-.lead-modal-actions-row .delete-lead-modal-btn {
-  width: auto !important;
+  width: 178px !important;
   height: 38px !important;
   padding: 0 20px !important;
   font-size: 0.9rem !important;
@@ -10024,4 +10015,22 @@ body.theme-dark .funnel-divider {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+  gap: 6px !important;
+}
+
+.lead-modal-actions-row .delete-lead-modal-btn {
+  width: 178px !important;
+  height: 38px !important;
+  padding: 0 20px !important;
+  font-size: 0.9rem !important;
+  border-radius: 8px !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+.lead-modal-actions-row .delete-lead-modal-btn svg {
+  margin-right: 0 !important;
 }
