@@ -8795,5 +8795,85 @@ body.theme-dark .appointment-status-option.pending:hover {
   background: rgba(239, 68, 68, 0.25) !important;
 }
 
+/* Most Busy (Best Day) Header and Footer Green Theme Overrides */
+.weekly-day-card.is-most-busy .day-icon {
+  background: #e6f4ea !important;
+  color: #10b981 !important;
+}
+.weekly-day-card.is-most-busy .day-name {
+  color: #10b981 !important;
+}
+.weekly-day-card.is-most-busy .day-date {
+  color: #10b981 !important;
+  opacity: 0.8 !important;
+}
+.weekly-day-card.is-most-busy .day-header-divider {
+  background-color: #a7f3d0 !important;
+}
+.weekly-day-card.is-most-busy .day-count {
+  color: #10b981 !important;
+}
+.weekly-day-card.is-most-busy .day-count-label {
+  color: #10b981 !important;
+}
+.weekly-day-card.is-most-busy .day-header-accent {
+  background-color: #10b981 !important;
+}
+.weekly-day-card.is-most-busy .weekly-day-card-footer {
+  border-top-color: #a7f3d0 !important;
+}
+.weekly-day-card.is-most-busy .weekly-day-card-footer .weekly-day-card-count {
+  color: #10b981 !important;
+}
+.weekly-day-card.is-most-busy .weekly-day-card-footer .weekly-day-card-label {
+  color: #10b981 !important;
+}
+.weekly-day-card.is-most-busy .weekly-day-card-footer-divider {
+  color: #a7f3d0 !important;
+}
+.weekly-day-card.is-most-busy .weekly-day-card-footer .weekly-day-card-percent {
+  color: #10b981 !important;
+}
+
+/* Dark Theme Support for Most Busy (Best Day) Overrides */
+body.theme-dark .weekly-day-card.is-most-busy .day-icon {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #34d399 !important;
+}
+body.theme-dark .weekly-day-card.is-most-busy .day-name {
+  color: #34d399 !important;
+}
+body.theme-dark .weekly-day-card.is-most-busy .day-date {
+  color: #34d399 !important;
+  opacity: 0.8 !important;
+}
+body.theme-dark .weekly-day-card.is-most-busy .day-header-divider {
+  background-color: rgba(52, 211, 153, 0.3) !important;
+}
+body.theme-dark .weekly-day-card.is-most-busy .day-count {
+  color: #34d399 !important;
+}
+body.theme-dark .weekly-day-card.is-most-busy .day-count-label {
+  color: #34d399 !important;
+}
+body.theme-dark .weekly-day-card.is-most-busy .day-header-accent {
+  background-color: #34d399 !important;
+}
+body.theme-dark .weekly-day-card.is-most-busy .weekly-day-card-footer {
+  border-top-color: rgba(52, 211, 153, 0.3) !important;
+}
+body.theme-dark .weekly-day-card.is-most-busy .weekly-day-card-footer .weekly-day-card-count {
+  color: #34d399 !important;
+}
+body.theme-dark .weekly-day-card.is-most-busy .weekly-day-card-footer .weekly-day-card-label {
+  color: #34d399 !important;
+}
+body.theme-dark .weekly-day-card.is-most-busy .weekly-day-card-footer-divider {
+  color: rgba(52, 211, 153, 0.3) !important;
+}
+body.theme-dark .weekly-day-card.is-most-busy .weekly-day-card-footer .weekly-day-card-percent {
+  color: #34d399 !important;
+}
+
 
 
