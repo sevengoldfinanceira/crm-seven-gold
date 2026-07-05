@@ -29,8 +29,10 @@ async function listAuthorizedPipelineLeads(crmUser, productionId) {
     }
   }
   const baseLeadFields = 'id,name,origin,note,status,created_at,updated_at,ultima_interacao,telefone,property_region,credit_value,down_payment_value,installment_value,tags,assigned_to_email,assigned_to_name,created_by_email,created_by_name,updated_by_email,updated_by_name';
+  const trashForwardFields = ',trash_forwarded_to_email,trash_forwarded_to_name,trash_forwarded_at,trash_forwarded_lead_id';
   const productionLeadFields = ',production_id,production_month,production_year,locked_at,locked_reason,original_lead_id,carried_from_lead_id,carried_from_production_id,is_carry_over,carried_over_at,commercial_productions!production_id(id,name,status,starts_at,ends_at)';
-  let query = supabase.from('leads').select(baseLeadFields + (scopedProductionId ? productionLeadFields : '')).order('created_at', { ascending: false });
+  const selectFields = baseLeadFields + trashForwardFields + (scopedProductionId ? productionLeadFields : '');
+  let query = supabase.from('leads').select(selectFields).order('created_at', { ascending: false });
   let teamEmails = null;
   if (scopedProductionId) {
     if (scopedProduction?.starts_at && scopedProduction?.ends_at) {
@@ -60,6 +62,29 @@ async function listAuthorizedPipelineLeads(crmUser, productionId) {
     query = query.ilike('assigned_to_email', String(crmUser.email || '').trim().toLowerCase());
   }
   let { data, error } = await query;
+  const isTrashForwardSchemaError = (err) => /trash_forwarded_/i.test(`${err?.message || ''} ${err?.details || ''}`);
+  if (error && isTrashForwardSchemaError(error)) {
+    console.warn('[Pipeline] Campos de reenvio da Lixeira ausentes, carregando leads sem marcação de reenvio:', error.message);
+    let fallbackQuery = supabase.from('leads').select(baseLeadFields + (scopedProductionId ? productionLeadFields : '')).order('created_at', { ascending: false });
+    if (scopedProductionId) {
+      if (scopedProduction?.starts_at && scopedProduction?.ends_at) {
+        const nextDay = new Date(`${scopedProduction.ends_at}T00:00:00Z`);
+        nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+        const endExclusive = nextDay.toISOString().slice(0, 10);
+        fallbackQuery = fallbackQuery.or(`production_id.eq.${scopedProductionId},and(production_id.is.null,created_at.gte.${scopedProduction.starts_at},created_at.lt.${endExclusive})`);
+      } else {
+        fallbackQuery = fallbackQuery.eq('production_id', scopedProductionId);
+      }
+    }
+    if (PIPELINE_TEAM_ROLES.has(role)) {
+      fallbackQuery = fallbackQuery.in('assigned_to_email', teamEmails);
+    } else if (!ADMIN_ROLES.has(role)) {
+      fallbackQuery = fallbackQuery.ilike('assigned_to_email', String(crmUser.email || '').trim().toLowerCase());
+    }
+    const fallbackResult = await fallbackQuery;
+    data = fallbackResult.data;
+    error = fallbackResult.error;
+  }
   if (error && scopedProductionId && isProductionSchemaError(error)) {
     console.warn('[Pipeline] Produção sem schema completo, carregando leads em modo legado:', error.message);
     let legacyQuery = supabase.from('leads').select(baseLeadFields).order('created_at', { ascending: false });

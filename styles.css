@@ -8415,7 +8415,8 @@ body.theme-dark .lead-menu-button:hover {
 }
 
 .lead-trash-date-row,
-.lead-trash-origin-row {
+.lead-trash-origin-row,
+.lead-trash-forwarded-row {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -8429,6 +8430,10 @@ body.theme-dark .lead-menu-button:hover {
   flex-wrap: nowrap !important;
 }
 
+.lead-trash-forwarded-row {
+  margin-top: -1px !important;
+}
+
 .lead-trash-origin-row .lead-tag-badge {
   flex: 0 1 auto !important;
   min-width: 0 !important;
@@ -8438,6 +8443,13 @@ body.theme-dark .lead-menu-button:hover {
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+}
+
+.lead-trash-forwarded-badge {
+  max-width: 100% !important;
+  border-color: #bfdbfe !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
 }
 
 .lead-time-badge {

@@ -4498,6 +4498,18 @@ const createLeadCard = (lead) => {
     }
 
     trashBadgeRow.append(trashDateRow, trashOriginRow);
+
+    if (lead.trash_forwarded_to_name || lead.trash_forwarded_to_email || lead.trash_forwarded_at) {
+      const forwardedRow = document.createElement("div");
+      forwardedRow.className = "lead-trash-forwarded-row";
+      const forwardedBadge = document.createElement("span");
+      forwardedBadge.className = "lead-tag-badge lead-trash-forwarded-badge";
+      const forwardedName = lead.trash_forwarded_to_name || lead.trash_forwarded_to_email || "outro vendedor";
+      forwardedBadge.title = `Este lead da Lixeira já foi enviado como novo para ${forwardedName}.`;
+      forwardedBadge.innerHTML = `<svg class="lead-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>Enviado como novo para ${forwardedName}`;
+      forwardedRow.append(forwardedBadge);
+      trashBadgeRow.append(forwardedRow);
+    }
   }
 
   if (lead.is_carry_over) {
@@ -4585,6 +4597,7 @@ const createLeadCard = (lead) => {
   if (!lead.telefone) callBtn.style.opacity = "0.5";
 
   if (isTrashLead && isProductionDirectorCeo) {
+    const alreadyForwardedAsNew = Boolean(lead.trash_forwarded_lead_id || lead.trash_forwarded_at);
     const reactivateBtn = document.createElement("button");
     reactivateBtn.type = "button";
     reactivateBtn.className = "lead-action-button reactivate";
@@ -4604,7 +4617,15 @@ const createLeadCard = (lead) => {
     recoverBtn.type = "button";
     recoverBtn.className = "lead-action-button recover-new";
     recoverBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg>Recuperar`;
+    if (alreadyForwardedAsNew) {
+      recoverBtn.disabled = true;
+      recoverBtn.title = "Este lead da Lixeira já foi enviado como novo para outro vendedor.";
+    }
     recoverBtn.addEventListener("click", async () => {
+      if (alreadyForwardedAsNew) {
+        alert("Este lead da Lixeira já foi enviado como novo para outro vendedor.");
+        return;
+      }
       const targetEmail = prompt("Informe o e-mail do novo vendedor para recuperar este lead como novo:");
       const normalizedEmail = String(targetEmail || "").trim().toLowerCase();
       if (!normalizedEmail) return;

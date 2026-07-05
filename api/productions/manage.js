@@ -1,6 +1,6 @@
 const { supabase } = require('../../lib/server/supabase');
 const { getAuthorizedCrmUser } = require('../../lib/server/crm-authorization');
-const { isDirectorCeo, getOpenProduction, assertLeadMutable } = require('../../lib/server/commercial-productions');
+const { isDirectorCeo, getOpenProduction, assertLeadMutable, isProductionSchemaError } = require('../../lib/server/commercial-productions');
 const { ensureLeadIsNotDuplicateForSeller, normalizePhone, mapDuplicateDbError } = require('../../lib/server/lead-duplicates');
 
 const send = (res, status, body) => { res.writeHead(status, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(body)); };
@@ -194,6 +194,9 @@ module.exports = async (req, res) => {
       const { data: source, error: sourceError } = await supabase.from('leads').select('*').eq('id', lead_id).maybeSingle();
       if (sourceError || !source) return send(res, 404, { ok: false, error: 'Lead não encontrado.' });
       if (source.status !== 'cancelado') return send(res, 409, { ok: false, error: 'Este lead não está na Lixeira.' });
+      if (source.trash_forwarded_lead_id || source.trash_forwarded_at) {
+        return send(res, 409, { ok: false, error: 'Este lead da Lixeira já foi enviado como novo para outro vendedor.' });
+      }
 
       const mutable = await assertLeadMutable(lead_id);
       if (mutable.error) return send(res, mutable.status || 500, { ok: false, error: mutable.error });
@@ -225,36 +228,106 @@ module.exports = async (req, res) => {
       }
 
       const updateTime = new Date().toISOString();
-      const { data, error } = await supabase
+      const open = await getOpenProduction();
+      const legacyMode = open.error && /commercial_productions|schema cache/i.test(open.error);
+      if (open.error && !legacyMode) return send(res, 500, { ok: false, error: open.error });
+      if (!open.production && !legacyMode) return send(res, 409, { ok: false, error: 'Não existe produção aberta.' });
+
+      const originSellerName = source.assigned_to_name || source.assigned_to_email || 'vendedor';
+      const {
+        id,
+        created_at,
+        updated_at,
+        ultima_interacao,
+        locked_at,
+        locked_reason,
+        production_id,
+        production_month,
+        production_year,
+        carried_from_lead_id,
+        carried_from_production_id,
+        is_carry_over,
+        carried_over_at,
+        trash_forwarded_to_email,
+        trash_forwarded_to_name,
+        trash_forwarded_at,
+        trash_forwarded_lead_id,
+        ...sourceCopy
+      } = source;
+
+      const insertPayload = {
+        ...sourceCopy,
+        status: 'lead_recebido',
+        origin: `Lixeira de ${originSellerName}`,
+        tags: [],
+        original_lead_id: source.original_lead_id || id,
+        assigned_to_email: String(assignee.email || '').trim().toLowerCase(),
+        assigned_to_name: assignee.nome || assignee.email,
+        created_by_email: auth.user.email || null,
+        created_by_name: auth.user.nome || auth.user.email || null,
+        updated_by_email: auth.user.email || null,
+        updated_by_name: auth.user.nome || auth.user.email || null,
+        ultima_interacao: updateTime,
+        updated_at: updateTime,
+        ...(open.production ? {
+          production_id: open.production.id,
+          production_month: open.production.month,
+          production_year: open.production.year,
+        } : {}),
+      };
+
+      let { data, error } = await supabase.from('leads').insert(insertPayload).select('*').single();
+      if (error && open.production && isProductionSchemaError(error)) {
+        const retryPayload = { ...insertPayload };
+        ['production_id', 'production_month', 'production_year', 'original_lead_id'].forEach((field) => delete retryPayload[field]);
+        const retry = await supabase.from('leads').insert(retryPayload).select('*').single();
+        data = retry.data;
+        error = retry.error;
+      }
+      if (error) return send(res, 409, { ok: false, error: mapDuplicateDbError(error) || error.message });
+
+      const { error: sourceUpdateError } = await supabase
         .from('leads')
         .update({
-          status: 'lead_recebido',
-          tags: [],
-          assigned_to_email: String(assignee.email || '').trim().toLowerCase(),
-          assigned_to_name: assignee.nome || assignee.email,
+          trash_forwarded_to_email: String(assignee.email || '').trim().toLowerCase(),
+          trash_forwarded_to_name: assignee.nome || assignee.email,
+          trash_forwarded_at: updateTime,
+          trash_forwarded_lead_id: data.id,
           ultima_interacao: updateTime,
           updated_at: updateTime,
           updated_by_email: auth.user.email || null,
           updated_by_name: auth.user.nome || auth.user.email || null,
         })
-        .eq('id', lead_id)
-        .select('*')
-        .single();
-      if (error) return send(res, 409, { ok: false, error: mapDuplicateDbError(error) || error.message });
+        .eq('id', lead_id);
+      if (sourceUpdateError) return send(res, 409, { ok: false, error: sourceUpdateError.message });
 
       const { error: historyError } = await supabase.from('lead_activity_logs').insert({
         lead_id,
-        action_type: 'status_changed',
-        action_label: 'Lead recuperado como novo',
-        description: `Lead recuperado da Lixeira como novo para ${assignee.nome || assignee.email}.`,
+        action_type: 'trash_forwarded_as_new',
+        action_label: 'Lead enviado como novo',
+        description: `Lead da Lixeira enviado como novo para ${assignee.nome || assignee.email}. Novo lead: ${data.id}.`,
         old_value: 'cancelado',
-        new_value: 'lead_recebido',
+        new_value: String(data.id),
         created_by_email: auth.user.email || null,
         created_by_name: auth.user.nome || auth.user.email || null,
         created_by_role: auth.user.cargo || null,
         created_at: updateTime,
       });
       if (historyError) console.error('[Productions] Erro ao registrar recuperação como novo:', historyError.message);
+
+      const { error: newHistoryError } = await supabase.from('lead_activity_logs').insert({
+        lead_id: data.id,
+        action_type: 'created_from_trash',
+        action_label: 'Lead criado da Lixeira',
+        description: `Lead criado a partir da Lixeira de ${originSellerName}.`,
+        old_value: String(lead_id),
+        new_value: 'lead_recebido',
+        created_by_email: auth.user.email || null,
+        created_by_name: auth.user.nome || auth.user.email || null,
+        created_by_role: auth.user.cargo || null,
+        created_at: updateTime,
+      });
+      if (newHistoryError) console.error('[Productions] Erro ao registrar origem do novo lead:', newHistoryError.message);
 
       return send(res, 200, { ok: true, lead: data });
     }
