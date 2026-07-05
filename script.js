@@ -2866,6 +2866,8 @@ const requestAppointmentForLead = async (leadId, fallback = {}) => {
 };
 
 const createAppointmentCard = (appointment) => {
+  const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+  const canSeeAppointmentSeller = shouldSeeAllLeads(currentCrmUser);
   const card = document.createElement("article");
   card.className = "appointment-card";
   card.tabIndex = 0;
@@ -2993,7 +2995,8 @@ const createAppointmentCard = (appointment) => {
   phoneText.textContent = formatDisplayPhone(appointment.telefone_cliente) || "Sem telefone";
 
   phoneRow.append(phoneIcon, phoneText);
-  infoList.append(sellerRow, phoneRow);
+  if (canSeeAppointmentSeller) infoList.append(sellerRow);
+  infoList.append(phoneRow);
 
   card.append(menuBtn, dropdown, statusDropdown, topRow, clientName, infoList);
 
