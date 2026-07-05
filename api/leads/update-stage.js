@@ -96,7 +96,7 @@ module.exports = async (req, res) => {
     const normalizedPhone = String(phone || '').replace(/\D/g, '');
     let fetchLeadQuery = supabase
       .from('leads')
-      .select('id, name, telefone, status, tags, trash_origin_status, assigned_to_email, assigned_to_name');
+      .select('id, name, telefone, status, tags, assigned_to_email, assigned_to_name');
     fetchLeadQuery = leadIdFromPayload
       ? fetchLeadQuery.eq('id', leadIdFromPayload)
       : fetchLeadQuery.eq('telefone', normalizedPhone);
@@ -166,11 +166,6 @@ module.exports = async (req, res) => {
       updateData.updated_at = updateTime;
       updateData.updated_by_email = authorization.user.email || null;
       updateData.updated_by_name = authorization.user.nome || authorization.user.email || null;
-      if (status === 'cancelado' && fetchLead[0].status !== 'cancelado') {
-        updateData.trash_origin_status = fetchLead[0].status || null;
-      } else if (fetchLead[0].status === 'cancelado' && status !== 'cancelado') {
-        updateData.trash_origin_status = null;
-      }
     }
 
     if (!canAccessLead(authorization.user, fetchLead[0])) {
@@ -230,7 +225,7 @@ module.exports = async (req, res) => {
       .from('leads')
       .update(updateData)
       .eq('id', leadId)
-      .select('id, name, telefone, status, origin, note, tags, trash_origin_status, property_region, credit_value, down_payment_value, installment_value, created_at, updated_at, ultima_interacao, assigned_to_email, assigned_to_name');
+      .select('id, name, telefone, status, origin, note, tags, property_region, credit_value, down_payment_value, installment_value, created_at, updated_at, ultima_interacao, assigned_to_email, assigned_to_name');
 
     if (updateError) {
       console.error('Error executing stage update on lead');
@@ -311,7 +306,7 @@ module.exports = async (req, res) => {
         origin: result.origin,
         note: result.note,
         tags: result.tags,
-        trash_origin_status: result.trash_origin_status,
+        trash_origin_status: result.status === 'cancelado' ? previousStatus : null,
         property_region: result.property_region,
         credit_value: result.credit_value,
         down_payment_value: result.down_payment_value,
