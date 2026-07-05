@@ -4449,16 +4449,22 @@ const updateLeadTag = async (leadId, tagValue) => {
     }
   }
 
-  try {
-    const stageId = card.dataset.status || "lead_recebido";
-    await updateLeadThroughApi(client, leadId, { status: stageId, tags: tagValue ? [tagValue] : [] });
-    if (stageId === "agendamento") {
-      await setLatestLeadAppointmentReagendarStatus(leadId, tagValue === "reagendar");
-      await loadAppointments();
-    }
+  const stageId = card.dataset.status || "lead_recebido";
+  const cachedLead = (window.pipelineLeadsCache || []).find((lead) => String(lead.id) === String(leadId)) || null;
+
+  const originalLeadTag = card.dataset.leadTag || "";
+  const originalTagsCache = cachedLead ? [...(cachedLead.tags || [])] : [];
+
+  const applyUiTag = (val) => {
     if (Array.isArray(card.dataset) && card.dataset) {
-      if (tagValue) {
-        card.dataset.leadTag = tagValue;
+      if (val) {
+        card.dataset.leadTag = val;
+      } else {
+        delete card.dataset.leadTag;
+      }
+    } else {
+      if (val) {
+        card.dataset.leadTag = val;
       } else {
         delete card.dataset.leadTag;
       }
@@ -4466,8 +4472,8 @@ const updateLeadTag = async (leadId, tagValue) => {
     const previousManualTag = card.querySelector(".lead-tag.manual-tag");
     if (previousManualTag) previousManualTag.remove();
     const badgeRow = card.querySelector(".lead-card-badge-row") || card.querySelector(".lead-trash-badge-row");
-    if (tagValue && badgeRow && getAvailableTagsForStage(stageId).length > 0) {
-      const config = PIPELINE_STAGE_TAGS_MAP[tagValue] || { value: tagValue, label: tagValue, className: "default" };
+    if (val && badgeRow && getAvailableTagsForStage(stageId).length > 0) {
+      const config = PIPELINE_STAGE_TAGS_MAP[val] || { value: val, label: val, className: "default" };
       const tagEl = document.createElement("div");
       tagEl.className = `lead-tag manual-tag lead-tag-${config.className}`;
       tagEl.dataset.leadTagValue = config.value;
@@ -4480,14 +4486,38 @@ const updateLeadTag = async (leadId, tagValue) => {
       }
     }
     card.querySelectorAll(".lead-card-tag-option").forEach((opt) => {
-      if (opt.dataset.tagValue && String(opt.dataset.tagValue) === String(tagValue || "")) {
+      if (opt.dataset.tagValue && String(opt.dataset.tagValue) === String(val || "")) {
         opt.classList.add("is-selected");
       } else {
         opt.classList.remove("is-selected");
       }
     });
+  };
+
+  applyUiTag(tagValue);
+  
+  const nextTagsArray = tagValue ? [tagValue] : [];
+  if (cachedLead) {
+    cachedLead.tags = nextTagsArray;
+  }
+
+  try {
+    const updatedLead = await updateLeadThroughApi(client, leadId, { status: stageId, tags: nextTagsArray });
+    if (updatedLead && window.pipelineLeadsCache) {
+      window.pipelineLeadsCache = window.pipelineLeadsCache.map((lead) =>
+        String(lead.id) === String(leadId) ? { ...lead, ...updatedLead } : lead
+      );
+    }
+    if (stageId === "agendamento") {
+      await setLatestLeadAppointmentReagendarStatus(leadId, tagValue === "reagendar");
+      await loadAppointments();
+    }
     return true;
   } catch (error) {
+    applyUiTag(originalLeadTag);
+    if (cachedLead) {
+      cachedLead.tags = originalTagsCache;
+    }
     alert(error.message || "Não consegui atualizar a etiqueta do lead.");
     return false;
   }
