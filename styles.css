@@ -7251,18 +7251,24 @@ body.theme-dark .weekly-day-card-footer .weekly-day-card-label {
   flex-direction: row !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  gap: 16px !important;
+  gap: 24px !important;
 }
 
 .calendar-toolbar-icon-wrap {
   display: grid !important;
   place-items: center !important;
-  width: 44px !important;
-  height: 44px !important;
-  border-radius: 14px !important;
+  width: 74px !important;
+  height: 74px !important;
+  border-radius: 22px !important;
   background: #F1ECFF !important;
   color: #6D4CFF !important;
   flex-shrink: 0 !important;
+}
+
+.calendar-toolbar-icon-wrap svg {
+  width: 36px !important;
+  height: 36px !important;
+  stroke-width: 2.2 !important;
 }
 
 body.theme-dark .calendar-toolbar-icon-wrap {
@@ -7275,16 +7281,16 @@ body.theme-dark .calendar-toolbar-icon-wrap {
   flex-direction: column !important;
   align-items: flex-start !important;
   justify-content: center !important;
-  gap: 2px !important;
+  gap: 4px !important;
   text-align: left !important;
 }
 
 #calendar-title {
-  font-size: 1.50rem !important;
+  font-size: 2.5rem !important;
   font-weight: 800 !important;
   color: #0F172A !important;
   margin: 0 !important;
-  line-height: 1.2 !important;
+  line-height: 1.1 !important;
 }
 
 body.theme-dark #calendar-title {
@@ -7297,7 +7303,7 @@ body.theme-dark #calendar-title {
   min-height: 0 !important;
   margin: 2px 0 0 !important;
   color: #64748B !important;
-  font-size: 0.82rem !important;
+  font-size: 1.3rem !important;
   font-weight: 600 !important;
   line-height: 1.2 !important;
 }
