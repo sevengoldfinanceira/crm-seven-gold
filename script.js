@@ -4289,9 +4289,8 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
       } else {
         targetStack.append(sourceCard);
         sourceCard.dataset.status = status;
-        const targetTagsAvailable = getAvailableTagsForStage(status).length > 0;
         const existingManualTag = sourceCard.querySelector(".lead-tag.manual-tag");
-        if (!targetTagsAvailable && existingManualTag) {
+        if (status !== "cancelado" && existingManualTag) {
           existingManualTag.remove();
           sourceCard.dataset.leadTag = "";
         }
@@ -4317,7 +4316,7 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
     }
   }
 
-  const shouldClearManualTag = status !== "cancelado" && getAvailableTagsForStage(status).length === 0 && status !== "lead_recebido";
+  const shouldClearManualTag = status !== "cancelado" && currentStatus && currentStatus !== status;
 
   try {
     const updatePayload = { status, ...(goBack ? { go_back: true } : {}) };

@@ -162,6 +162,9 @@ module.exports = async (req, res) => {
     }
     if (status) {
       updateData.status = status;
+      if (!hasTagsChange && fetchLead[0].status && fetchLead[0].status !== status && status !== 'cancelado') {
+        updateData.tags = [];
+      }
       updateData.ultima_interacao = updateTime;
       updateData.updated_at = updateTime;
       updateData.updated_by_email = authorization.user.email || null;
