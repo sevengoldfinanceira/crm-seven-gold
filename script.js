@@ -3891,7 +3891,7 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
     }
   }
 
-  const shouldClearManualTag = status === "cancelado" || (getAvailableTagsForStage(status).length === 0 && status !== "lead_recebido");
+  const shouldClearManualTag = status !== "cancelado" && getAvailableTagsForStage(status).length === 0 && status !== "lead_recebido";
 
   try {
     const updatePayload = { status, ...(goBack ? { go_back: true } : {}) };
@@ -4026,8 +4026,8 @@ const createLeadCard = (lead) => {
     return "";
   };
 
-  const stageTagsAvailable = getAvailableTagsForStage(lead.status).length > 0;
-  const manualTagConfig = lead.status !== "cancelado" ? getLeadTagConfig(lead) : null;
+  const stageTagsAvailable = true;
+  const manualTagConfig = getLeadTagConfig(lead);
   let manualTagBadge = null;
   if (stageTagsAvailable && manualTagConfig) {
     manualTagBadge = document.createElement("span");
@@ -4035,7 +4035,7 @@ const createLeadCard = (lead) => {
     manualTagBadge.dataset.leadTagValue = manualTagConfig.value;
     manualTagBadge.title = `Etiqueta: ${manualTagConfig.label}`;
     manualTagBadge.innerHTML = `${getLeadTagIcon(manualTagConfig.className)} ${manualTagConfig.label}`;
-    badgeRow.append(manualTagBadge);
+    if (lead.status !== "cancelado") badgeRow.append(manualTagBadge);
   }
   if (manualTagConfig && lead?.id) {
     card.dataset.leadTag = manualTagConfig.value;
@@ -4054,10 +4054,36 @@ const createLeadCard = (lead) => {
       : "unknown";
     originBadge.className = `lead-tag-badge lead-trash-origin-badge--${originStatus}`;
     const originLabel = statusLabels[lead.trash_origin_status] || "Origem desconhecida";
-    originBadge.textContent = originLabel;
+
+    const getStageCategoryIcon = (statusKey) => {
+      if (statusKey === "primeiro_contato") {
+        return `<svg class="lead-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+      }
+      if (statusKey === "agendamento") {
+        return `<svg class="lead-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
+      }
+      if (statusKey === "lead_recebido") {
+        return `<svg class="lead-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17h6M9 13h6M9 9h6"/></svg>`;
+      }
+      if (statusKey === "cliente_em_loja") {
+        return `<svg class="lead-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
+      }
+      if (statusKey === "proposta_enviada") {
+        return `<svg class="lead-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`;
+      }
+      if (statusKey === "venda_fechada") {
+        return `<svg class="lead-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
+      }
+      return `<svg class="lead-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+    };
+
+    originBadge.innerHTML = `${getStageCategoryIcon(originStatus)} ${originLabel}`;
     originBadge.title = `Enviado para a Lixeira a partir de: ${originLabel}`;
 
     trashBadgeRow.append(warningBadge, originBadge);
+    if (manualTagBadge) {
+      trashBadgeRow.append(manualTagBadge);
+    }
   }
 
   if (lead.is_carry_over) {
