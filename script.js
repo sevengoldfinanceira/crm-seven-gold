@@ -4265,8 +4265,16 @@ appointmentForm?.addEventListener("submit", async (event) => {
     return;
   }
 
+  if (isRescheduleMode && linkedLeadId) {
+    try {
+      await setLeadReagendadoTag(linkedLeadId, true);
+    } catch (syncError) {
+      console.warn("Não foi possível marcar o lead como reagendado:", syncError);
+    }
+  }
+
   closeAppointmentModal(data);
-  await loadAppointments();
+  await Promise.all([loadAppointments(), loadLeads()]);
 });
 
 document.querySelector(".user-profile-link")?.addEventListener("click", () => {
