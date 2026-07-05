@@ -257,6 +257,11 @@ const PIPELINE_STAGE_TAGS = {
       label: "Faltou",
       className: "faltou",
     },
+    {
+      value: "reagendado",
+      label: "Reagendado",
+      className: "reagendado",
+    },
   ],
   cliente_em_loja: [
     {
@@ -4327,6 +4332,31 @@ const setLeadReagendarTag = async (leadId, enabled) => {
   return true;
 };
 
+const setLeadReagendadoTag = async (leadId, enabled) => {
+  const client = getClient();
+  if (!client || !leadId) return false;
+  const cachedLead = (window.pipelineLeadsCache || []).find((lead) => String(lead.id) === String(leadId)) || null;
+  let tags = getLeadTagsArray(cachedLead);
+  if (!cachedLead) {
+    try {
+      const { data } = await client.from("leads").select("tags").eq("id", leadId).maybeSingle();
+      tags = getLeadTagsArray(data);
+    } catch (error) {
+      console.warn("Não foi possível carregar etiquetas do lead para sincronizar reagendado:", error);
+    }
+  }
+  const nextTags = enabled
+    ? Array.from(new Set([...tags.filter((tag) => tag !== "reagendado" && tag !== "reagendar"), "reagendado"]))
+    : tags.filter((tag) => tag !== "reagendado");
+  await updateLeadThroughApi(client, leadId, { tags: nextTags });
+  if (window.pipelineLeadsCache) {
+    window.pipelineLeadsCache = window.pipelineLeadsCache.map((lead) =>
+      String(lead.id) === String(leadId) ? { ...lead, tags: nextTags } : lead
+    );
+  }
+  return true;
+};
+
 const setLatestLeadAppointmentReagendarStatus = async (leadId, enabled) => {
   const client = getClient();
   if (!client || !leadId) return;
@@ -4709,7 +4739,7 @@ const createLeadCard = (lead) => {
     if (className === "nao-quer" || className === "faltou" || className === "cancelado") {
       return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
     }
-    if (className === "reagendar" || className === "remarcar") {
+    if (className === "reagendar" || className === "remarcar" || className === "reagendado") {
       return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>`;
     }
     if (className === "sem-retorno" || className === "nao-responde" || className === "esfriando") {
@@ -5121,7 +5151,7 @@ const createLeadCard = (lead) => {
         const savedAppointment = await openAppointmentModal({ lead, allowDuplicate: true });
         if (savedAppointment) {
           await markPreviousAppointmentsAsRescheduled(lead.id, savedAppointment.id, previousAppointmentIds);
-          await setLeadReagendarTag(lead.id, false);
+          await setLeadReagendadoTag(lead.id, true);
           await Promise.all([loadAppointments(), loadLeads()]);
         }
       } catch (error) {
