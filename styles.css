@@ -7533,21 +7533,20 @@ body.theme-dark .calendar-status {
 
 .calendar-toolbar {
   display: grid !important;
-  grid-template-columns: 1fr auto !important;
-  row-gap: 32px !important;
-  column-gap: 16px !important;
+  grid-template-columns: auto 1fr auto !important;
   align-items: center !important;
   justify-content: stretch !important;
+  gap: 16px !important;
   margin-bottom: 24px !important;
 }
 
 .calendar-header-stats {
   display: grid !important;
-  grid-template-columns: repeat(3, minmax(218px, 238px)) !important;
+  grid-template-columns: repeat(3, minmax(180px, 210px)) !important;
   align-items: stretch !important;
   gap: 12px !important;
   flex: 0 0 auto !important;
-  grid-column: 2 !important;
+  grid-column: 3 !important;
   grid-row: 1 !important;
   justify-self: end !important;
   margin-left: 0 !important;
@@ -7607,8 +7606,8 @@ body.theme-dark .calendar-status {
 
 .calendar-toolbar-actions {
   flex: 0 0 auto !important;
-  grid-column: 1 / -1 !important;
-  grid-row: 2 !important;
+  grid-column: 2 !important;
+  grid-row: 1 !important;
   align-items: center !important;
   justify-content: center !important;
   justify-self: center !important;
