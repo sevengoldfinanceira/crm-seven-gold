@@ -6,7 +6,7 @@ const closeModalButton = document.querySelector("[data-close-modal]");
 const leadForm = document.querySelector("[data-lead-form]");
 const leadFormStatus = document.querySelector("[data-lead-form-status]");
 const leadCount = document.querySelector("[data-lead-count]");
-const columns = Array.from(document.querySelectorAll(".kanban-column[data-status]"));
+let columns = Array.from(document.querySelectorAll(".kanban-column[data-status]"));
 const appointmentModal = document.querySelector(".appointment-modal");
 const appointmentForm = document.querySelector("[data-appointment-form]");
 const appointmentStatus = document.querySelector("[data-appointment-status]");
@@ -415,6 +415,9 @@ const renderPipelineTagFilterMenu = (column, menu) => {
 };
 
 const setupPipelineTagFilters = () => {
+  if (!columns || columns.length === 0) {
+    columns = Array.from(document.querySelectorAll(".kanban-column[data-status]"));
+  }
   columns.forEach((column) => {
     const stageId = column.dataset.status;
     if (!getFilterTagsForStage(stageId).length) return;
@@ -5128,6 +5131,7 @@ const renderEmptyState = (stack) => {
 };
 
 const renderLeads = (leads) => {
+  setupPipelineTagFilters();
   window.pipelineLeadsCache = Array.isArray(leads) ? leads : [];
   const total = leads.length;
 
@@ -5205,6 +5209,10 @@ const filterLeadsByPipelinePeriod = (leads) => {
 
 const loadLeads = async () => {
   const client = getClient();
+
+  if (!columns || columns.length === 0) {
+    columns = Array.from(document.querySelectorAll(".kanban-column[data-status]"));
+  }
 
   if (!client || columns.length === 0) {
     return;
