@@ -3261,7 +3261,7 @@ const getAppointmentStatusOptions = (appointment) => {
     const displayStatus = getAppointmentDisplayStatus(appointment);
     return [displayStatus === "concluido" ? "agendado" : "concluido"];
   }
-  return ["faltou", "compareceu", "reagendar", "reagendado"];
+  return ["faltou", "reagendar", "reagendado"];
 };
 
 const createAppointmentCard = (appointment) => {
