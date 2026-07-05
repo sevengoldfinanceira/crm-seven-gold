@@ -7529,6 +7529,7 @@ body.theme-dark .calendar-status {
   align-items: center !important;
   justify-content: stretch !important;
   gap: 16px !important;
+  margin-bottom: 24px !important;
 }
 
 .calendar-header-stats {
