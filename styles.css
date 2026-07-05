@@ -3492,6 +3492,79 @@ body.theme-dark .crm-workspace {
 }
 
 /* Metric Cards style override */
+.dashboard-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 22px;
+  margin-bottom: 22px;
+}
+
+.dashboard-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 24px;
+  text-align: left;
+}
+
+.dashboard-header-icon {
+  display: grid;
+  place-items: center;
+  width: 74px;
+  height: 74px;
+  border-radius: 22px;
+  background: #F1ECFF;
+  color: #6D4CFF;
+  box-shadow: 0 10px 24px rgba(109, 76, 255, 0.12);
+  flex-shrink: 0;
+}
+
+.dashboard-header-icon svg {
+  width: 36px;
+  height: 36px;
+  stroke-width: 2.4;
+}
+
+.dashboard-header-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.dashboard-header-title {
+  margin: 0;
+  color: #0F172A;
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.dashboard-header-subtitle {
+  margin: 0;
+  color: #64748B;
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+body.theme-dark .dashboard-header-title {
+  color: #f8fafc;
+}
+
+body.theme-dark .dashboard-header-subtitle {
+  color: #9ca3af;
+}
+
+body.theme-dark .dashboard-header-icon {
+  background: rgba(167, 139, 250, .15);
+  color: #a78bfa;
+}
+
 .dash-dashboard-filters {
   display: flex;
   width: min(100%, 1100px);
@@ -4365,12 +4438,53 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
 }
 
 @media (max-width: 768px) {
+  .dashboard-header {
+    gap: 18px;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-page-header {
+    gap: 14px;
+  }
+
+  .dashboard-header-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+  }
+
+  .dashboard-header-icon svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .dashboard-header-title {
+    font-size: 1.9rem;
+  }
+
+  .dashboard-header-subtitle {
+    font-size: .94rem;
+  }
+
   .commercial-summary-grid {
     grid-template-columns: repeat(2, minmax(160px, 1fr));
   }
 }
 
 @media (max-width: 520px) {
+  .dashboard-page-header {
+    align-items: flex-start;
+  }
+
+  .dashboard-header-title {
+    font-size: 1.6rem;
+    white-space: normal;
+  }
+
+  .dashboard-header-subtitle {
+    font-size: .88rem;
+  }
+
   .commercial-summary-grid {
     grid-template-columns: 1fr;
   }
