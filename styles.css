@@ -7005,7 +7005,8 @@ body.theme-dark .card-stack::-webkit-scrollbar-thumb:hover {
 
 /* Stretch Calendar Layout */
 .tab-content[data-tab="calendario"] {
-  height: calc(100vh - 24px) !important;
+  height: calc(100vh - 60px) !important;
+  max-height: calc(100vh - 60px) !important;
   overflow: hidden !important;
   display: flex;
   flex-direction: column;
@@ -7033,9 +7034,9 @@ body.theme-dark .card-stack::-webkit-scrollbar-thumb:hover {
   flex: 1 !important;
   display: flex !important;
   flex-direction: column !important;
-  height: calc(100vh - 172px) !important;
-  min-height: calc(100vh - 172px) !important;
-  max-height: calc(100vh - 172px) !important;
+  height: calc(100vh - 182px) !important;
+  min-height: calc(100vh - 182px) !important;
+  max-height: calc(100vh - 182px) !important;
   overflow: visible !important;
 }
 
