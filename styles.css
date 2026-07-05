@@ -8970,3 +8970,126 @@ body.theme-dark .lead-tag-badge.lead-trash-origin-badge--agendamento {
   background: rgba(109, 40, 217, 0.15) !important;
   color: #c084fc !important;
 }
+
+/* Clickable Tag Badge inside Kanban Card */
+.clickable-tag-badge {
+  cursor: pointer !important;
+  user-select: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.clickable-tag-badge:hover {
+  transform: translateY(-0.5px) !important;
+  filter: brightness(0.95) !important;
+}
+
+/* Dropdown menu for lead tags */
+.lead-tag-dropdown-menu {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  margin-top: 6px !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  padding: 6px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  z-index: 999 !important;
+  min-width: 150px !important;
+  transform: scale(0.95) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: transform 0.15s ease, opacity 0.15s ease !important;
+  transform-origin: top left !important;
+}
+
+.lead-tag-dropdown-menu.is-open {
+  transform: scale(1) !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Light & Muted tag option style */
+.lead-tag-dropdown-item {
+  width: 100% !important;
+  text-align: left !important;
+  padding: 6px 10px !important;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 8px !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+  color: #475569 !important;
+  cursor: pointer !important;
+  transition: background-color 0.12s ease, color 0.12s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.lead-tag-dropdown-item:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.lead-tag-dropdown-item.is-active {
+  background-color: #f8fafc !important;
+  color: #6366f1 !important;
+  font-weight: 900 !important;
+}
+
+/* Specific item colors */
+.lead-tag-dropdown-item--retorno { color: #2563eb !important; }
+.lead-tag-dropdown-item--retorno:hover { background-color: #eff6ff !important; }
+
+.lead-tag-dropdown-item--confirmar-agend { color: #d97706 !important; }
+.lead-tag-dropdown-item--confirmar-agend:hover { background-color: #fffbeb !important; }
+
+.lead-tag-dropdown-item--acompanhar { color: #0891b2 !important; }
+.lead-tag-dropdown-item--acompanhar:hover { background-color: #ecfeff !important; }
+
+.lead-tag-dropdown-item--nao-quer { color: #dc2626 !important; }
+.lead-tag-dropdown-item--nao-quer:hover { background-color: #fef2f2 !important; }
+
+.lead-tag-dropdown-item--reagendar { color: #7c3aed !important; }
+.lead-tag-dropdown-item--reagendar:hover { background-color: #f3e8ff !important; }
+
+.lead-tag-dropdown-item--sem-retorno { color: #475569 !important; }
+.lead-tag-dropdown-item--sem-retorno:hover { background-color: #f8fafc !important; }
+
+/* Default tag styling for "Sem etiqueta" */
+.lead-tag-none {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Dark mode support */
+body.theme-dark .lead-tag-dropdown-menu {
+  background: #1e1b29 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.theme-dark .lead-tag-dropdown-item {
+  color: #94a3b8 !important;
+}
+
+body.theme-dark .lead-tag-dropdown-item:hover {
+  background-color: #312e43 !important;
+  color: #f8fafc !important;
+}
+
+body.theme-dark .lead-tag-dropdown-item.is-active {
+  background-color: #2b283d !important;
+  color: #a78bfa !important;
+}
+
+body.theme-dark .lead-tag-none {
+  background: rgba(148, 163, 184, 0.1) !important;
+  color: #94a3b8 !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
