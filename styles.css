@@ -6687,6 +6687,11 @@ body.theme-dark .pipeline-header .pipeline-title-copy h1 {
   min-width: 90px !important;
   padding: 6px 10px !important;
   border-radius: 10px !important;
+  text-align: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .status-total-label,
