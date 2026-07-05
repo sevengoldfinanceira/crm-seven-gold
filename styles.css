@@ -9028,6 +9028,86 @@ body.theme-dark .weekly-day-card.is-most-busy .weekly-day-card-footer .weekly-da
   color: #34d399 !important;
 }
 
+/* Least Busy (Worst Day) Header and Footer Red Theme Overrides */
+.weekly-day-card.is-least-busy .day-icon {
+  background: #fee2e2 !important;
+  color: #ef4444 !important;
+}
+.weekly-day-card.is-least-busy .day-name {
+  color: #ef4444 !important;
+}
+.weekly-day-card.is-least-busy .day-date {
+  color: #ef4444 !important;
+  opacity: 0.8 !important;
+}
+.weekly-day-card.is-least-busy .day-header-divider {
+  background-color: #fecaca !important;
+}
+.weekly-day-card.is-least-busy .day-count {
+  color: #ef4444 !important;
+}
+.weekly-day-card.is-least-busy .day-count-label {
+  color: #ef4444 !important;
+}
+.weekly-day-card.is-least-busy .day-header-accent {
+  background-color: #ef4444 !important;
+}
+.weekly-day-card.is-least-busy .weekly-day-card-footer {
+  border-top-color: #fecaca !important;
+}
+.weekly-day-card.is-least-busy .weekly-day-card-footer .weekly-day-card-count {
+  color: #ef4444 !important;
+}
+.weekly-day-card.is-least-busy .weekly-day-card-footer .weekly-day-card-label {
+  color: #ef4444 !important;
+}
+.weekly-day-card.is-least-busy .weekly-day-card-footer-divider {
+  color: #fecaca !important;
+}
+.weekly-day-card.is-least-busy .weekly-day-card-footer .weekly-day-card-percent {
+  color: #ef4444 !important;
+}
+
+/* Dark Theme Support for Least Busy (Worst Day) Overrides */
+body.theme-dark .weekly-day-card.is-least-busy .day-icon {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+}
+body.theme-dark .weekly-day-card.is-least-busy .day-name {
+  color: #f87171 !important;
+}
+body.theme-dark .weekly-day-card.is-least-busy .day-date {
+  color: #f87171 !important;
+  opacity: 0.8 !important;
+}
+body.theme-dark .weekly-day-card.is-least-busy .day-header-divider {
+  background-color: rgba(248, 113, 113, 0.3) !important;
+}
+body.theme-dark .weekly-day-card.is-least-busy .day-count {
+  color: #f87171 !important;
+}
+body.theme-dark .weekly-day-card.is-least-busy .day-count-label {
+  color: #f87171 !important;
+}
+body.theme-dark .weekly-day-card.is-least-busy .day-header-accent {
+  background-color: #f87171 !important;
+}
+body.theme-dark .weekly-day-card.is-least-busy .weekly-day-card-footer {
+  border-top-color: rgba(248, 113, 113, 0.3) !important;
+}
+body.theme-dark .weekly-day-card.is-least-busy .weekly-day-card-footer .weekly-day-card-count {
+  color: #f87171 !important;
+}
+body.theme-dark .weekly-day-card.is-least-busy .weekly-day-card-footer .weekly-day-card-label {
+  color: #f87171 !important;
+}
+body.theme-dark .weekly-day-card.is-least-busy .weekly-day-card-footer-divider {
+  color: rgba(248, 113, 113, 0.3) !important;
+}
+body.theme-dark .weekly-day-card.is-least-busy .weekly-day-card-footer .weekly-day-card-percent {
+  color: #f87171 !important;
+}
+
 /* Pipeline Single Row Header and Filter Layout */
 .pipeline-header {
   display: grid !important;
