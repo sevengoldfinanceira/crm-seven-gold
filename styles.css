@@ -4345,45 +4345,88 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
 }
 
 .commercial-summary-grid {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  display: grid;
+  grid-template-columns: repeat(5, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+  margin-bottom: 18px;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
   .commercial-summary-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .commercial-summary-grid {
+    grid-template-columns: repeat(3, minmax(180px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
   .commercial-summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 520px) {
   .commercial-summary-grid {
     grid-template-columns: 1fr;
   }
 }
 
-.commercial-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+/* === Summary Section Title === */
+.summary-section-title {
+  display: flex;
+  align-items: center;
   gap: 10px;
+  font-size: 20px;
+  font-weight: 900;
+  color: #0f172a;
   margin-bottom: 16px;
+  margin-top: 0;
 }
 
-/* === KPI Card === */
+.summary-section-title h2 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+.summary-section-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: #f3efff;
+  color: #6d4cff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+body.theme-dark .summary-section-title {
+  color: #f1f5f9;
+}
+
+body.theme-dark .summary-section-icon {
+  background: rgba(109, 76, 255, 0.18);
+  color: #c4b5fd;
+}
+
+/* === KPI Card (Resumo comercial) === */
 .kpi-card {
   position: relative;
   background: #ffffff;
-  border-radius: 14px;
-  padding: 10px 12px 10px 14px;
+  border-radius: 16px;
+  padding: 18px 18px;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px rgba(0, 0, 0, 0.04);
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  min-height: 84px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.07);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 92px;
   display: flex;
   box-sizing: border-box;
 }
@@ -4394,14 +4437,13 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 4px;
   background: var(--kpi-color);
-  border-radius: 14px 14px 0 0;
 }
 
 .kpi-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06), 0 12px 28px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.10);
 }
 
 .kpi-card.is-metric-dragging {
@@ -4410,68 +4452,79 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
   cursor: grabbing;
 }
 
-/* Watermark */
+/* Watermark (ícone grande translúcido à direita) */
 .kpi-watermark {
   position: absolute;
-  bottom: -8px;
-  right: -8px;
-  width: 80px;
-  height: 80px;
-  opacity: 0.07;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 72px;
+  height: 72px;
+  opacity: 0.10;
   color: var(--kpi-color);
   pointer-events: none;
   display: grid;
   place-items: center;
+  z-index: 1;
 }
 
 .kpi-watermark svg {
-  width: 100%;
-  height: 100%;
+  width: 72px;
+  height: 72px;
+  stroke-width: 1.8;
 }
 
-/* Content wrapper */
+/* Content wrapper: ícone pequeno à esquerda, info à direita */
 .kpi-content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
   width: 100%;
+  min-width: 0;
 }
 
-/* Icon box */
+/* Icon box (caixa colorida do ícone pequeno) */
 .kpi-icon-box {
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   background: var(--kpi-bg);
   color: var(--kpi-color);
-  display: grid;
-  place-items: center;
-  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 0;
 }
 
 .kpi-icon-box svg {
-  width: 14px;
-  height: 14px;
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.2;
 }
 
 /* Title */
 .kpi-title {
-  font-size: 0.58rem;
-  font-weight: 800;
-  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 2px;
+  color: #475569;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  display: block;
+  line-height: 1.2;
 }
 
-/* Value row */
+/* Value row: número + porcentagem lado a lado */
 .kpi-value-row {
   display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  margin-top: 2px;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 0;
   flex-wrap: nowrap;
   min-width: 0;
 }
@@ -4484,16 +4537,16 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
 }
 
 .kpi-number {
-  font-size: clamp(1rem, 1.6vw, 1.35rem);
-  font-weight: 800;
+  font-size: 28px;
+  font-weight: 900;
   color: var(--kpi-color);
   line-height: 1;
   white-space: nowrap;
 }
 
 .kpi-conversion {
-  font-size: clamp(0.8rem, 1.4vw, 1.1rem);
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 900;
   color: var(--kpi-color);
   line-height: 1;
   white-space: nowrap;
@@ -4501,7 +4554,7 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
 
 .kpi-day-only { display: none; }
 
-/* Divider between number and conversion */
+/* Divider entre número e porcentagem (ainda útil em alguns layouts) */
 .kpi-divider {
   width: 1px;
   height: 28px;
@@ -4521,11 +4574,11 @@ body.theme-dark .tab-content[data-tab="pipeline"] .pipeline-clear-button {
 body.theme-dark .kpi-card {
   background: #111827;
   border-color: rgba(255, 255, 255, 0.05);
-  box-shadow: none;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55);
 }
 
 body.theme-dark .kpi-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.65);
 }
 
 body.theme-dark .kpi-title {
@@ -7103,6 +7156,92 @@ body.theme-dark .lead-card-dropdown-item.btn-recover:hover {
   background-color: rgba(16, 185, 129, 0.15) !important;
 }
 
+/* Weekly Day Card Layout Redesign */
+.weekly-day-card-header {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+  padding-bottom: 0 !important;
+  text-align: left !important;
+}
 
+.weekly-day-card-title {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 2px !important;
+  text-align: left !important;
+}
 
+.weekly-day-card-divider {
+  margin: 14px 0 10px 0 !important;
+}
 
+.weekly-day-card-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  padding-top: 12px !important;
+  margin-top: auto !important;
+  border-top: 1px solid #E5E7EB !important;
+  flex-shrink: 0 !important;
+}
+
+body.theme-dark .weekly-day-card-footer {
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.weekly-day-card-footer .weekly-day-card-count {
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  color: #6D4CFF !important;
+}
+
+.weekly-day-card.is-saturday .weekly-day-card-footer .weekly-day-card-count {
+  color: #2563EB !important;
+}
+.weekly-day-card.is-today .weekly-day-card-footer .weekly-day-card-count {
+  color: #2563EB !important;
+}
+.weekly-day-card.has-appointments .weekly-day-card-footer .weekly-day-card-count {
+  color: #D97706 !important;
+}
+
+body.theme-dark .weekly-day-card-footer .weekly-day-card-count {
+  color: #a78bfa !important;
+}
+body.theme-dark .weekly-day-card.is-saturday .weekly-day-card-footer .weekly-day-card-count {
+  color: #60a5fa !important;
+}
+body.theme-dark .weekly-day-card.is-today .weekly-day-card-footer .weekly-day-card-count {
+  color: #60a5fa !important;
+}
+body.theme-dark .weekly-day-card.has-appointments .weekly-day-card-footer .weekly-day-card-count {
+  color: #fbbf24 !important;
+}
+
+.weekly-day-card-footer-divider {
+  color: #CBD5E1 !important;
+  font-size: 1.1rem !important;
+  font-weight: 300 !important;
+  user-select: none !important;
+}
+
+body.theme-dark .weekly-day-card-footer-divider {
+  color: #374151 !important;
+}
+
+.weekly-day-card-footer .weekly-day-card-label {
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  color: #64748B !important;
+  line-height: 1.2 !important;
+}
+
+body.theme-dark .weekly-day-card-footer .weekly-day-card-label {
+  color: #9ca3af !important;
+}

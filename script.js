@@ -2979,17 +2979,7 @@ const renderCalendar = () => {
       iconWrap.className = "weekly-day-card-icon-wrap";
       iconWrap.innerHTML = `<svg class="weekly-day-card-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><rect x="7" y="13" width="3" height="3" rx="0.5"/><rect x="14" y="13" width="3" height="3" rx="0.5"/></svg>`;
 
-      const counter = document.createElement("div");
-      counter.className = "weekly-day-card-counter";
-      const countNumber = document.createElement("span");
-      countNumber.className = "weekly-day-card-count";
-      countNumber.textContent = dayCount;
-      const countLabel = document.createElement("span");
-      countLabel.className = "weekly-day-card-label";
-      countLabel.textContent = dayCount === 1 ? "cliente agendado" : "clientes agendados";
-      counter.append(countNumber, countLabel);
-
-      header.append(title, iconWrap, counter);
+      header.append(iconWrap, title);
 
       const divider = document.createElement("div");
       divider.className = "weekly-day-card-divider";
@@ -3014,7 +3004,25 @@ const renderCalendar = () => {
         dayAppointments.forEach((item) => list.append(createAppointmentCard(item)));
       }
 
-      column.append(header, divider, list);
+      // Card Footer with counter: "0 | clientes agendados"
+      const footer = document.createElement("div");
+      footer.className = "weekly-day-card-footer";
+
+      const countNumber = document.createElement("span");
+      countNumber.className = "weekly-day-card-count";
+      countNumber.textContent = dayCount;
+
+      const verticalBar = document.createElement("span");
+      verticalBar.className = "weekly-day-card-footer-divider";
+      verticalBar.textContent = "|";
+
+      const countLabel = document.createElement("span");
+      countLabel.className = "weekly-day-card-label";
+      countLabel.textContent = dayCount === 1 ? "cliente agendado" : "clientes agendados";
+
+      footer.append(countNumber, verticalBar, countLabel);
+
+      column.append(header, divider, list, footer);
       calendarGrid.append(column);
     });
   }
