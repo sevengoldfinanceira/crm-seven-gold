@@ -3985,6 +3985,7 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
 
   const existingCard = document.querySelector(`[data-lead-id="${leadId}"]`);
   const currentStatus = existingCard?.closest?.(".kanban-column")?.dataset.status || null;
+  const cachedLead = (window.pipelineLeadsCache || []).find((lead) => String(lead.id) === String(leadId)) || null;
   if (currentStatus === status) return true;
 
   if (goBack) {
@@ -4046,15 +4047,16 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
 
       if (status === "cancelado") {
         const rebuiltLead = {
+          ...(cachedLead || {}),
           id: leadId,
-          name: sourceCard.querySelector(".lead-card-name")?.textContent?.trim() || "",
-          telefone: sourceCard.querySelector(".lead-info-value")?.textContent?.trim() || "",
+          name: cachedLead?.name || sourceCard.querySelector(".lead-name")?.textContent?.trim() || "",
+          telefone: cachedLead?.telefone || sourceCard.querySelector(".lead-info-text")?.textContent?.trim() || "",
           status,
           trash_origin_status: currentStatus,
-          assigned_to_email: sourceCard.dataset.assignedEmail || "",
-          assigned_to_name: sourceCard.dataset.assignedName || "",
-          created_at: sourceCard.dataset.createdAt || new Date().toISOString(),
-          tags: [],
+          assigned_to_email: cachedLead?.assigned_to_email || sourceCard.dataset.assignedEmail || "",
+          assigned_to_name: cachedLead?.assigned_to_name || sourceCard.dataset.assignedName || "",
+          created_at: cachedLead?.created_at || sourceCard.dataset.createdAt || new Date().toISOString(),
+          tags: cachedLead?.tags || (sourceCard.dataset.leadTag ? [sourceCard.dataset.leadTag] : []),
         };
         const newCard = createLeadCard(rebuiltLead);
         if (rebuiltLead.assigned_to_email) newCard.dataset.assignedEmail = rebuiltLead.assigned_to_email;
@@ -4064,15 +4066,16 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
         sourceCard.remove();
       } else if (currentStatus === "cancelado") {
         const rebuiltLead = {
+          ...(cachedLead || {}),
           id: leadId,
-          name: sourceCard.querySelector(".lead-card-name")?.textContent?.trim() || "",
-          telefone: sourceCard.querySelector(".lead-info-value")?.textContent?.trim() || "",
+          name: cachedLead?.name || sourceCard.querySelector(".lead-name")?.textContent?.trim() || "",
+          telefone: cachedLead?.telefone || sourceCard.querySelector(".lead-info-text")?.textContent?.trim() || "",
           status,
           trash_origin_status: null,
-          assigned_to_email: sourceCard.dataset.assignedEmail || "",
-          assigned_to_name: sourceCard.dataset.assignedName || "",
-          created_at: sourceCard.dataset.createdAt || new Date().toISOString(),
-          tags: [],
+          assigned_to_email: cachedLead?.assigned_to_email || sourceCard.dataset.assignedEmail || "",
+          assigned_to_name: cachedLead?.assigned_to_name || sourceCard.dataset.assignedName || "",
+          created_at: cachedLead?.created_at || sourceCard.dataset.createdAt || new Date().toISOString(),
+          tags: cachedLead?.tags || (sourceCard.dataset.leadTag ? [sourceCard.dataset.leadTag] : []),
         };
         const newCard = createLeadCard(rebuiltLead);
         if (rebuiltLead.assigned_to_email) newCard.dataset.assignedEmail = rebuiltLead.assigned_to_email;
@@ -4116,7 +4119,12 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
   try {
     const updatePayload = { status, ...(goBack ? { go_back: true } : {}) };
     if (shouldClearManualTag) updatePayload.tags = [];
-    await updateLeadThroughApi(client, leadId, updatePayload);
+    const updatedLead = await updateLeadThroughApi(client, leadId, updatePayload);
+    if (updatedLead && window.pipelineLeadsCache) {
+      window.pipelineLeadsCache = window.pipelineLeadsCache.map((lead) =>
+        String(lead.id) === String(leadId) ? { ...lead, ...updatedLead } : lead
+      );
+    }
   } catch (error) {
     if (createdAppointment?.id && !createdAppointment.skipped) {
       await client.from("appointments").delete().eq("id", createdAppointment.id);
@@ -4131,7 +4139,7 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
     return false;
   }
 
-  if (!optimistic) {
+  if (!optimistic || status === "cancelado" || currentStatus === "cancelado") {
     await loadLeads();
   }
   if (status === "agendamento" || cancelledAppointment) {
@@ -4347,7 +4355,7 @@ const createLeadCard = (lead) => {
   let trashBadgeRow = null;
   if (lead.status === "cancelado") {
     trashBadgeRow = document.createElement("div");
-    trashBadgeRow.className = "lead-badges-row";
+    trashBadgeRow.className = "lead-badges-row lead-trash-badges";
 
     const originBadge = document.createElement("span");
     const originStatus = lead.trash_origin_status && lead.trash_origin_status !== "cancelado"
@@ -4381,10 +4389,24 @@ const createLeadCard = (lead) => {
     originBadge.innerHTML = `${getStageCategoryIcon(originStatus)} ${originLabel}`;
     originBadge.title = `Enviado para a Lixeira a partir de: ${originLabel}`;
 
-    trashBadgeRow.append(warningBadge, originBadge);
-    if (manualTagBadge) {
-      trashBadgeRow.append(manualTagBadge);
+    const trashDateRow = document.createElement("div");
+    trashDateRow.className = "lead-trash-date-row";
+    trashDateRow.append(warningBadge);
+
+    const trashOriginRow = document.createElement("div");
+    trashOriginRow.className = "lead-trash-origin-row";
+    trashOriginRow.append(originBadge);
+
+    if (manualTagConfig) {
+      const trashTagBadge = document.createElement("span");
+      trashTagBadge.className = `lead-tag-badge lead-tag-${manualTagConfig.className}`;
+      trashTagBadge.dataset.leadTagValue = manualTagConfig.value;
+      trashTagBadge.title = `Etiqueta anterior: ${manualTagConfig.label}`;
+      trashTagBadge.innerHTML = `${getLeadTagIcon(manualTagConfig.className)} ${manualTagConfig.label}`;
+      trashOriginRow.append(trashTagBadge);
     }
+
+    trashBadgeRow.append(trashDateRow, trashOriginRow);
   }
 
   if (lead.is_carry_over) {
@@ -4676,6 +4698,7 @@ const renderEmptyState = (stack) => {
 };
 
 const renderLeads = (leads) => {
+  window.pipelineLeadsCache = Array.isArray(leads) ? leads : [];
   const total = leads.length;
 
   columns.forEach((column) => {

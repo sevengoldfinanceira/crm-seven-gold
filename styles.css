@@ -8327,6 +8327,21 @@ body.theme-dark .lead-menu-button:hover {
   margin-bottom: 6px !important;
 }
 
+.lead-trash-badges {
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.lead-trash-date-row,
+.lead-trash-origin-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  flex-wrap: wrap !important;
+  width: 100% !important;
+}
+
 .lead-time-badge {
   display: inline-flex !important;
   align-items: center !important;
