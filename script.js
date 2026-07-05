@@ -2828,6 +2828,26 @@ const resolveAppointmentLeadOwner = async (lead) => {
 };
 
 const requestAppointmentForLead = async (leadId, fallback = {}) => {
+  const client = getClient();
+  if (client && leadId) {
+    try {
+      const { data: activeApts } = await client
+        .from("appointments")
+        .select("id, data_agendamento, hora_agendamento")
+        .eq("lead_id", leadId)
+        .neq("status", "cancelado")
+        .limit(1);
+      
+      if (activeApts && activeApts.length > 0) {
+        const existing = activeApts[0];
+        alert(`Este cliente já possui um agendamento ativo em ${existing.data_agendamento} às ${existing.hora_agendamento.slice(0, 5)}.`);
+        return { id: existing.id, skipped: true };
+      }
+    } catch (checkError) {
+      console.warn("Erro ao checar agendamentos existentes:", checkError);
+    }
+  }
+
   const lead = await fetchLeadForAppointment(leadId, fallback);
   if (!lead) {
     alert("Nao consegui carregar o cliente para criar o agendamento.");
@@ -3281,6 +3301,36 @@ appointmentForm?.addEventListener("submit", async (event) => {
   if (totalMinutes < 8 * 60 || totalMinutes > 20 * 60 + 59) {
     setAppointmentStatus("Escolha um horario entre 08:00 e 20:59.");
     return;
+  }
+
+  const cleanPhone = String(formData.get("telefone_cliente") || "").replace(/\D/g, "");
+  if (cleanPhone) {
+    const phoneVariants = [cleanPhone];
+    if (cleanPhone.startsWith("55") && cleanPhone.length > 2) {
+      phoneVariants.push(cleanPhone.slice(2));
+    } else {
+      phoneVariants.push("55" + cleanPhone);
+    }
+
+    const appointmentId = String(formData.get("id") || "").trim();
+    try {
+      const { data: existingApts } = await client
+        .from("appointments")
+        .select("id, data_agendamento, hora_agendamento")
+        .in("telefone_cliente", phoneVariants)
+        .neq("status", "cancelado")
+        .limit(1);
+      
+      if (existingApts && existingApts.length > 0) {
+        const existing = existingApts[0];
+        if (existing.id !== appointmentId) {
+          setAppointmentStatus(`Este número já possui agendamento ativo em ${existing.data_agendamento} às ${existing.hora_agendamento.slice(0, 5)}.`);
+          return;
+        }
+      }
+    } catch (checkError) {
+      console.warn("Erro ao verificar duplicados por telefone:", checkError);
+    }
   }
 
   const submitButton = appointmentForm.querySelector("button[type='submit']");
@@ -3754,7 +3804,7 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
     if (shouldClearManualTag) updatePayload.tags = [];
     await updateLeadThroughApi(client, leadId, updatePayload);
   } catch (error) {
-    if (createdAppointment?.id) {
+    if (createdAppointment?.id && !createdAppointment.skipped) {
       await client.from("appointments").delete().eq("id", createdAppointment.id);
     }
     if (cancelledAppointment) {
