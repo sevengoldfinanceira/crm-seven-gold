@@ -6508,14 +6508,15 @@ body.theme-dark .lead-card.is-production-locked { background: #111827; }
   width: 58px !important;
   height: 58px !important;
   border-radius: 18px !important;
-  background: #2a0f4b !important;
-  color: #e9ddff !important;
+  background: #F1ECFF !important;
+  color: #6D4CFF !important;
   flex: 0 0 auto !important;
 }
 
 .pipeline-title-icon svg {
   width: 28px !important;
   height: 28px !important;
+  stroke-width: 2.2 !important;
 }
 
 .pipeline-title-text {
