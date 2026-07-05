@@ -7599,10 +7599,24 @@ body.theme-dark .calendar-status {
   flex: 0 0 auto !important;
   grid-column: 3 !important;
   grid-row: 1 !important;
+  align-items: center !important;
   justify-self: end !important;
   align-self: center !important;
   margin-top: 0 !important;
   margin-left: 0 !important;
+}
+
+.calendar-toolbar-actions .dash-filter-field {
+  position: relative !important;
+  gap: 0 !important;
+}
+
+.calendar-toolbar-actions .dash-filter-label {
+  position: absolute !important;
+  left: 4px !important;
+  top: -21px !important;
+  padding-left: 0 !important;
+  white-space: nowrap !important;
 }
 
 body.theme-dark .calendar-header-stat-card {
@@ -7642,6 +7656,15 @@ body.theme-dark .calendar-header-stat-body span {
     grid-column: 1 !important;
     grid-row: auto !important;
     justify-self: start !important;
+  }
+
+  .calendar-toolbar-actions .dash-filter-field {
+    gap: 7px !important;
+  }
+
+  .calendar-toolbar-actions .dash-filter-label {
+    position: static !important;
+    padding-left: 4px !important;
   }
 }
 
