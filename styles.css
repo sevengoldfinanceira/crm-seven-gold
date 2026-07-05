@@ -7370,7 +7370,7 @@ body.theme-dark .lead-card-dropdown-item.btn-recover:hover {
 .weekly-day-card-footer {
   display: flex !important;
   align-items: center !important;
-  justify-content: flex-start !important;
+  justify-content: center !important;
   gap: 8px !important;
   padding-top: 12px !important;
   margin-top: auto !important;
