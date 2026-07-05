@@ -8038,6 +8038,27 @@ body.theme-dark .appointment-info-text {
   color: #cbd5e1 !important;
 }
 
+.appointment-card .appointment-client-name {
+  width: 100% !important;
+  text-align: center !important;
+  padding: 0 18px !important;
+}
+
+.appointment-card .appointment-info-list {
+  width: 100% !important;
+  align-items: center !important;
+}
+
+.appointment-card .appointment-info-row {
+  justify-content: center !important;
+  width: 100% !important;
+}
+
+.appointment-card .appointment-info-text {
+  flex: 0 1 auto !important;
+  text-align: center !important;
+}
+
 /* Redesigned Lead Card Styles */
 .lead-card {
   position: relative !important;
