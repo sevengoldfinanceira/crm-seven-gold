@@ -4598,42 +4598,7 @@ const updateLeadTag = async (leadId, tagValue) => {
   const originalTagsCache = cachedLead ? [...(cachedLead.tags || [])] : [];
 
   const applyUiTag = (val) => {
-    if (Array.isArray(card.dataset) && card.dataset) {
-      if (val) {
-        card.dataset.leadTag = val;
-      } else {
-        delete card.dataset.leadTag;
-      }
-    } else {
-      if (val) {
-        card.dataset.leadTag = val;
-      } else {
-        delete card.dataset.leadTag;
-      }
-    }
-    const previousManualTag = card.querySelector(".lead-tag.manual-tag");
-    if (previousManualTag) previousManualTag.remove();
-    const badgeRow = card.querySelector(".lead-card-badge-row") || card.querySelector(".lead-trash-badge-row");
-    if (val && badgeRow && getAvailableTagsForStage(stageId).length > 0) {
-      const config = PIPELINE_STAGE_TAGS_MAP[val] || { value: val, label: val, className: "default" };
-      const tagEl = document.createElement("div");
-      tagEl.className = `lead-tag manual-tag lead-tag-${config.className}`;
-      tagEl.dataset.leadTagValue = config.value;
-      tagEl.textContent = config.label;
-      tagEl.title = `Etiqueta: ${config.label}`;
-      if (badgeRow.firstChild) {
-        badgeRow.insertBefore(tagEl, badgeRow.firstChild);
-      } else {
-        badgeRow.appendChild(tagEl);
-      }
-    }
-    card.querySelectorAll(".lead-card-tag-option").forEach((opt) => {
-      if (opt.dataset.tagValue && String(opt.dataset.tagValue) === String(val || "")) {
-        opt.classList.add("is-selected");
-      } else {
-        opt.classList.remove("is-selected");
-      }
-    });
+    updateLeadCardTagMenu(card, stageId, val);
   };
 
   applyUiTag(tagValue);
