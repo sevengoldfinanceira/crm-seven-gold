@@ -4659,7 +4659,9 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
     return false;
   }
 
-  await loadLeads();
+  if (!optimistic) {
+    await loadLeads();
+  }
   if (status === "agendamento" || cancelledAppointment) {
     await loadAppointments();
   }
