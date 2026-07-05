@@ -2895,7 +2895,7 @@ const createAppointmentCard = (appointment) => {
   timeBadge.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${normalizeAppointmentTime(appointment.hora_agendamento)}`;
 
   // Confirmação Pill
-  const isConfirmed = appointment.status === "confirmado";
+  const isConfirmed = ["concluido", "confirmado"].includes(String(appointment.status || "").toLowerCase());
   const confBadge = document.createElement("button");
   confBadge.type = "button";
   confBadge.className = `appointment-confirmation-badge ${isConfirmed ? "confirmed" : "pending"}`;
@@ -2924,7 +2924,7 @@ const createAppointmentCard = (appointment) => {
     statusDropdown.classList.remove("is-open");
     const client = getClient();
     if (!client) return;
-    const targetStatus = isConfirmed ? "agendado" : "confirmado";
+    const targetStatus = isConfirmed ? "agendado" : "concluido";
     const { error } = await client
       .from("appointments")
       .update({ status: targetStatus })
@@ -3032,24 +3032,6 @@ const createAppointmentCard = (appointment) => {
       if (success) {
         await loadLeads();
       }
-    }
-  });
-
-  confBadge.addEventListener("click", async (event) => {
-    event.stopPropagation();
-    const newStatus = appointment.status === "confirmado" ? "agendado" : "confirmado";
-    const client = getClient();
-    if (!client) return;
-    try {
-      const { error } = await client
-        .from("appointments")
-        .update({ status: newStatus })
-        .eq("id", appointment.id);
-      if (error) throw error;
-      appointment.status = newStatus;
-      renderCalendar();
-    } catch (e) {
-      alert("Erro ao atualizar confirmação: " + e.message);
     }
   });
 
