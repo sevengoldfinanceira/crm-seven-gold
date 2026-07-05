@@ -1,12 +1,20 @@
 const { supabase } = require('../../lib/server/supabase');
 const { getAuthorizedCrmUser } = require('../../lib/server/crm-authorization');
-const { isDirectorCeo, getOpenProduction } = require('../../lib/server/commercial-productions');
+const { isDirectorCeo, getOpenProduction, assertLeadMutable } = require('../../lib/server/commercial-productions');
 
 const send = (res, status, body) => { res.writeHead(status, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(body)); };
 const monthName = (month, year) => `${new Intl.DateTimeFormat('pt-BR', { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, 1))).replace(/^./, c => c.toUpperCase())}/${year}`;
 const monthRange = (month, year) => ({ starts_at: `${year}-${String(month).padStart(2, '0')}-01`, ends_at: new Date(Date.UTC(year, month, 0)).toISOString().slice(0, 10) });
 
 const CARRY_OVER_EXCLUDED = ['cancelado', 'venda_fechada'];
+const PIPELINE_STATUSES = [
+  'lead_recebido',
+  'primeiro_contato',
+  'agendamento',
+  'cliente_em_loja',
+  'proposta_enviada',
+  'venda_fechada',
+];
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*'); res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'); res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -88,18 +96,55 @@ module.exports = async (req, res) => {
     }
 
     if (action === 'recover_trash') {
-      const open = await getOpenProduction();
-      if (!open.production) return send(res, 409, { ok: false, error: 'Não existe produção aberta.' });
       const { data: source, error: sourceError } = await supabase.from('leads').select('*').eq('id', lead_id).maybeSingle();
       if (sourceError || !source) return send(res, 404, { ok: false, error: 'Lead não encontrado.' });
       if (source.status !== 'cancelado') return send(res, 409, { ok: false, error: 'Este lead não está na Lixeira.' });
-      if (source.telefone) {
-        const { data: existing } = await supabase.from('leads').select('id').eq('production_id', open.production.id).eq('telefone', source.telefone).limit(1).maybeSingle();
-        if (existing) return send(res, 409, { ok: false, error: 'Já existe um lead com este telefone na produção atual.' });
-      }
-      const { id, created_at, updated_at, ultima_interacao, locked_at, locked_reason, production_id: ignored, production_month: ignoredMonth, production_year: ignoredYear, carried_from_lead_id: ignoredCarry1, carried_from_production_id: ignoredCarry2, is_carry_over: ignoredCarry3, carried_over_at: ignoredCarry4, ...copy } = source;
-      const { data, error } = await supabase.from('leads').insert({ ...copy, status: 'lead_recebido', original_lead_id: id, carried_from_lead_id: id, carried_from_production_id: source.production_id, is_carry_over: true, carried_over_at: new Date().toISOString(), created_by_email: auth.user.email, created_by_name: auth.user.nome || auth.user.email }).select('*').single();
+
+      const mutable = await assertLeadMutable(lead_id);
+      if (mutable.error) return send(res, mutable.status || 500, { ok: false, error: mutable.error });
+
+      const { data: cancellationEvents, error: cancellationError } = await supabase
+        .from('lead_activity_logs')
+        .select('old_value,created_at')
+        .eq('lead_id', lead_id)
+        .in('action_type', ['status_changed', 'stage_changed'])
+        .eq('new_value', 'cancelado')
+        .order('created_at', { ascending: false })
+        .limit(1);
+      if (cancellationError) return send(res, 500, { ok: false, error: cancellationError.message });
+
+      const originStatus = String(cancellationEvents?.[0]?.old_value || '').trim();
+      const restoredStatus = PIPELINE_STATUSES.includes(originStatus) ? originStatus : 'lead_recebido';
+      const updateTime = new Date().toISOString();
+
+      const { data, error } = await supabase
+        .from('leads')
+        .update({
+          status: restoredStatus,
+          ultima_interacao: updateTime,
+          updated_at: updateTime,
+          updated_by_email: auth.user.email || null,
+          updated_by_name: auth.user.nome || auth.user.email || null,
+        })
+        .eq('id', lead_id)
+        .select('*')
+        .single();
       if (error) return send(res, 409, { ok: false, error: error.message });
+
+      const { error: historyError } = await supabase.from('lead_activity_logs').insert({
+        lead_id,
+        action_type: 'status_changed',
+        action_label: 'Lead recuperado',
+        description: `Lead recuperado da Lixeira para ${restoredStatus}.`,
+        old_value: 'cancelado',
+        new_value: restoredStatus,
+        created_by_email: auth.user.email || null,
+        created_by_name: auth.user.nome || auth.user.email || null,
+        created_by_role: auth.user.cargo || null,
+        created_at: updateTime,
+      });
+      if (historyError) console.error('[Productions] Erro ao registrar recuperação do lead:', historyError.message);
+
       return send(res, 200, { ok: true, lead: data });
     }
 

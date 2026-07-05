@@ -4537,10 +4537,10 @@ const createLeadCard = (lead) => {
     recoverItem.addEventListener("click", async (e) => {
       e.stopPropagation();
       leadDropdown.classList.remove("is-open");
-      if (!confirm("Deseja recuperar este lead para a produção atual? Será criada uma cópia com status 'Lead recebido'.")) return;
+      if (!confirm("Deseja recuperar este lead para a etapa em que ele estava antes de ir para a Lixeira?")) return;
       try {
         await productionRequest({ action: "recover_trash", lead_id: lead.id });
-        alert("Lead recuperado e copiado para a produção atual.");
+        alert("Lead recuperado para a etapa anterior.");
         await loadLeads();
       } catch (error) {
         alert(error.message);
