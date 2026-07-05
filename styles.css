@@ -7220,10 +7220,6 @@ body.theme-dark .weekly-day-card.is-saturday .weekly-day-card-footer .weekly-day
 body.theme-dark .weekly-day-card.is-today .weekly-day-card-footer .weekly-day-card-count {
   color: #60a5fa !important;
 }
-body.theme-dark .weekly-day-card.has-appointments .weekly-day-card-footer .weekly-day-card-count {
-  color: #fbbf24 !important;
-}
-
 .weekly-day-card-footer-divider {
   color: #CBD5E1 !important;
   font-size: 1.1rem !important;
@@ -7243,5 +7239,66 @@ body.theme-dark .weekly-day-card-footer-divider {
 }
 
 body.theme-dark .weekly-day-card-footer .weekly-day-card-label {
+  color: #9ca3af !important;
+}
+
+/* Calendar Toolbar Redesign */
+.calendar-toolbar-title-group {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 16px !important;
+}
+
+.calendar-toolbar-icon-wrap {
+  display: grid !important;
+  place-items: center !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 14px !important;
+  background: #F1ECFF !important;
+  color: #6D4CFF !important;
+  flex-shrink: 0 !important;
+}
+
+body.theme-dark .calendar-toolbar-icon-wrap {
+  background: rgba(167, 139, 250, .15) !important;
+  color: #a78bfa !important;
+}
+
+.calendar-toolbar-text-group {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  text-align: left !important;
+}
+
+#calendar-title {
+  font-size: 1.50rem !important;
+  font-weight: 800 !important;
+  color: #0F172A !important;
+  margin: 0 !important;
+  line-height: 1.2 !important;
+}
+
+body.theme-dark #calendar-title {
+  color: #f8fafc !important;
+}
+
+.calendar-status {
+  display: flex !important;
+  align-items: center !important;
+  min-height: 0 !important;
+  margin: 2px 0 0 !important;
+  color: #64748B !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+}
+
+body.theme-dark .calendar-status {
   color: #9ca3af !important;
 }
