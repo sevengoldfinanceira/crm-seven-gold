@@ -2354,7 +2354,7 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 36px 40px;
+  padding: 18px 40px 12px;
   background:
     radial-gradient(circle at 88% 8%, rgba(216, 160, 24, .08), transparent 27%),
     linear-gradient(135deg, #f8fafc 0%, #eef2ff 55%, #faf5ff 100%);
@@ -2372,7 +2372,7 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
 .calendar-toolbar {
   align-items: center;
   gap: 28px;
-  margin-bottom: 22px;
+  margin-bottom: 14px;
 }
 
 .calendar-toolbar .route-label {
@@ -6858,16 +6858,16 @@ body.theme-dark .card-stack::-webkit-scrollbar-thumb:hover {
   flex-direction: column !important;
   min-height: 0 !important;
   height: 100% !important;
-  margin-top: 10px !important;
+  margin-top: 4px !important;
 }
 
 .calendar-scroll {
   flex: 1 !important;
   display: flex !important;
   flex-direction: column !important;
-  height: calc(100vh - 195px) !important;
-  min-height: calc(100vh - 195px) !important;
-  max-height: calc(100vh - 195px) !important;
+  height: calc(100vh - 205px) !important;
+  min-height: calc(100vh - 205px) !important;
+  max-height: calc(100vh - 205px) !important;
   overflow: visible !important;
 }
 
