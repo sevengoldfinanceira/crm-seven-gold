@@ -3495,7 +3495,14 @@ const createAppointmentCard = (appointment) => {
         alert(`Não foi possível alterar status: ${error.message}`);
         return;
       }
-      await loadAppointments();
+      if (appointment.lead_id) {
+        try {
+          await setLeadReagendarTag(appointment.lead_id, statusOption === "reagendar");
+        } catch (syncError) {
+          alert(`Status do calendário foi salvo, mas não consegui sincronizar a etiqueta do lead: ${syncError.message}`);
+        }
+      }
+      await Promise.all([loadAppointments(), loadLeads()]);
     });
     statusDropdown.append(optBtn);
   });
@@ -4269,6 +4276,95 @@ const updateLeadThroughApi = async (client, leadId, payload) => {
 const updateLeadStageThroughApi = (client, leadId, status, goBack = false) =>
   updateLeadThroughApi(client, leadId, { status, ...(goBack ? { go_back: true } : {}) });
 
+const getLeadTagsArray = (lead) => {
+  if (!lead) return [];
+  if (Array.isArray(lead.tags)) return lead.tags.map(String).filter(Boolean);
+  if (typeof lead.tags === "string" && lead.tags.trim() !== "") {
+    return lead.tags.split(",").map((tag) => tag.trim()).filter(Boolean);
+  }
+  return [];
+};
+
+const setLeadReagendarTag = async (leadId, enabled) => {
+  const client = getClient();
+  if (!client || !leadId) return false;
+  const cachedLead = (window.pipelineLeadsCache || []).find((lead) => String(lead.id) === String(leadId)) || null;
+  let tags = getLeadTagsArray(cachedLead);
+  if (!cachedLead) {
+    try {
+      const { data } = await client.from("leads").select("tags").eq("id", leadId).maybeSingle();
+      tags = getLeadTagsArray(data);
+    } catch (error) {
+      console.warn("Não foi possível carregar etiquetas do lead para sincronizar reagendamento:", error);
+    }
+  }
+  const nextTags = enabled
+    ? Array.from(new Set([...tags.filter((tag) => tag !== "reagendar"), "reagendar"]))
+    : tags.filter((tag) => tag !== "reagendar");
+  await updateLeadThroughApi(client, leadId, { tags: nextTags });
+  if (window.pipelineLeadsCache) {
+    window.pipelineLeadsCache = window.pipelineLeadsCache.map((lead) =>
+      String(lead.id) === String(leadId) ? { ...lead, tags: nextTags } : lead
+    );
+  }
+  return true;
+};
+
+const setLatestLeadAppointmentReagendarStatus = async (leadId, enabled) => {
+  const client = getClient();
+  if (!client || !leadId) return;
+  if (enabled) {
+    const { data, error } = await client
+      .from("appointments")
+      .select("id")
+      .eq("lead_id", leadId)
+      .neq("status", "cancelado")
+      .order("data_agendamento", { ascending: false })
+      .order("hora_agendamento", { ascending: false })
+      .limit(1);
+    if (error) throw error;
+    const appointmentId = data?.[0]?.id;
+    if (appointmentId) {
+      const { error: updateError } = await client
+        .from("appointments")
+        .update({ status: "reagendar" })
+        .eq("id", appointmentId);
+      if (updateError) throw updateError;
+    }
+    return;
+  }
+  const { error } = await client
+    .from("appointments")
+    .update({ status: "faltou" })
+    .eq("lead_id", leadId)
+    .eq("status", "reagendar");
+  if (error) throw error;
+};
+
+const getActiveAppointmentIdsForLead = async (leadId) => {
+  const client = getClient();
+  if (!client || !leadId) return [];
+  const { data, error } = await client
+    .from("appointments")
+    .select("id")
+    .eq("lead_id", leadId)
+    .neq("status", "cancelado");
+  if (error) throw error;
+  return (data || []).map((appointment) => appointment.id).filter(Boolean);
+};
+
+const markPreviousAppointmentsAsRescheduled = async (leadId, newAppointmentId, previousAppointmentIds = []) => {
+  const client = getClient();
+  const ids = previousAppointmentIds.filter((id) => String(id) !== String(newAppointmentId || ""));
+  if (!client || !leadId || ids.length === 0) return;
+  const { error } = await client
+    .from("appointments")
+    .update({ status: "reagendado" })
+    .in("id", ids)
+    .eq("lead_id", leadId);
+  if (error) throw error;
+};
+
 const updateLeadTag = async (leadId, tagValue) => {
   const client = getClient();
   if (!client || !leadId) return false;
@@ -4287,6 +4383,10 @@ const updateLeadTag = async (leadId, tagValue) => {
   try {
     const stageId = card.dataset.status || "lead_recebido";
     await updateLeadThroughApi(client, leadId, { status: stageId, tags: tagValue ? [tagValue] : [] });
+    if (stageId === "agendamento") {
+      await setLatestLeadAppointmentReagendarStatus(leadId, tagValue === "reagendar");
+      await loadAppointments();
+    }
     if (Array.isArray(card.dataset) && card.dataset) {
       if (tagValue) {
         card.dataset.leadTag = tagValue;
@@ -4999,9 +5099,16 @@ const createLeadCard = (lead) => {
       e.stopPropagation();
       leadDropdown.classList.remove("is-open");
       if (leadLocked) return alert("Lead travado porque pertence a uma produção encerrada.");
-      const savedAppointment = await openAppointmentModal({ lead, allowDuplicate: true });
-      if (savedAppointment) {
-        await loadAppointments();
+      try {
+        const previousAppointmentIds = await getActiveAppointmentIdsForLead(lead.id);
+        const savedAppointment = await openAppointmentModal({ lead, allowDuplicate: true });
+        if (savedAppointment) {
+          await markPreviousAppointmentsAsRescheduled(lead.id, savedAppointment.id, previousAppointmentIds);
+          await setLeadReagendarTag(lead.id, false);
+          await Promise.all([loadAppointments(), loadLeads()]);
+        }
+      } catch (error) {
+        alert(error.message || "Não consegui concluir o reagendamento.");
       }
     });
   }
