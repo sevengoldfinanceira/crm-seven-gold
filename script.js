@@ -76,6 +76,7 @@ const renderProductionControl = () => {
   document.body.classList.toggle("production-readonly", isSelectedProductionClosed());
   if (openModalButton) openModalButton.disabled = isSelectedProductionClosed();
   if (typeof syncPipelineMonthToProduction === "function") syncPipelineMonthToProduction();
+  if (typeof window.refreshPipelinePeriodPicker === "function") window.refreshPipelinePeriodPicker();
 };
 
 const loadCommercialProductions = async () => {
@@ -1166,6 +1167,7 @@ const initPipelineCalendarPicker = () => {
   const todayBtn = document.querySelector("[data-pipeline-calendar-today]");
   const prevBtn = document.querySelector("[data-pipeline-calendar-prev]");
   const nextBtn = document.querySelector("[data-pipeline-calendar-next]");
+  const displayInput = document.getElementById("pipeline-period-display-input");
   const inputs = {
     day: document.getElementById("pipeline-period-day-input"),
     week: document.getElementById("pipeline-period-week-input"),
@@ -1176,17 +1178,61 @@ const initPipelineCalendarPicker = () => {
   periodSelect.dataset.calendarReady = "true";
 
   const pad = (v) => String(v).padStart(2, "0");
+  const parseDateKey = (value) => value ? new Date(`${value}T12:00:00`) : null;
+  const toDateKeyFromDate = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  const shortDate = (date) => `${pad(date.getDate())}/${pad(date.getMonth() + 1)}`;
+  const fullDate = (date) => `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
+  const productionStartDate = () => parseDateKey(selectedProduction?.starts_at);
+  const productionEndDate = () => parseDateKey(selectedProduction?.ends_at);
+
+  const getWeekStartFromValue = (value) => {
+    const match = /^(\d{4})-W(\d{2})$/.exec(value || "");
+    if (!match) return null;
+    const year = Number(match[1]);
+    const week = Number(match[2]);
+    const januaryFourth = new Date(Date.UTC(year, 0, 4));
+    const januaryFourthDay = januaryFourth.getUTCDay() || 7;
+    const monday = new Date(januaryFourth);
+    monday.setUTCDate(januaryFourth.getUTCDate() - januaryFourthDay + 1 + ((week - 1) * 7));
+    return new Date(monday.getUTCFullYear(), monday.getUTCMonth(), monday.getUTCDate(), 12);
+  };
+
+  const getWeekValueFromDate = (date) => {
+    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNumber = utcDate.getUTCDay() || 7;
+    utcDate.setUTCDate(utcDate.getUTCDate() + 4 - dayNumber);
+    const yearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+    const weekNumber = Math.ceil((((utcDate - yearStart) / 86400000) + 1) / 7);
+    return `${utcDate.getUTCFullYear()}-W${pad(weekNumber)}`;
+  };
+
+  const clampDayToProduction = (value) => {
+    const date = parseDateKey(value);
+    const start = productionStartDate();
+    const end = productionEndDate();
+    if (!date || !start || !end) return value;
+    if (date < start) return toDateKeyFromDate(start);
+    if (date > end) return toDateKeyFromDate(end);
+    return value;
+  };
+
+  const clampWeekToProduction = (value) => {
+    const weekStart = getWeekStartFromValue(value);
+    const start = productionStartDate();
+    const end = productionEndDate();
+    if (!weekStart || !start || !end) return value;
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    if (weekEnd < start) return getWeekValueFromDate(start);
+    if (weekStart > end) return getWeekValueFromDate(end);
+    return value;
+  };
 
   const getCurrentValue = (type) => {
     const now = new Date();
-    if (type === "day") return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    if (type === "day") return clampDayToProduction(`${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`);
     if (type === "week") {
-      const utcDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
-      const dayNumber = utcDate.getUTCDay() || 7;
-      utcDate.setUTCDate(utcDate.getUTCDate() + 4 - dayNumber);
-      const yearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
-      const weekNumber = Math.ceil((((utcDate - yearStart) / 86400000) + 1) / 7);
-      return `${utcDate.getUTCFullYear()}-W${pad(weekNumber)}`;
+      return clampWeekToProduction(getWeekValueFromDate(now));
     }
     if (type === "month") return selectedProduction?.starts_at?.slice(0, 7) || `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
     return "";
@@ -1198,13 +1244,85 @@ const initPipelineCalendarPicker = () => {
     Object.values(inputs).forEach((inp) => { if (inp) inp.hidden = true; });
   };
 
+  const updateDisplayValue = () => {
+    if (!displayInput) return;
+    const input = getActiveInput();
+    const value = input?.value || "";
+    if (selectedPipelinePeriod === "day") {
+      const date = parseDateKey(value);
+      displayInput.value = date ? fullDate(date) : "";
+      return;
+    }
+    if (selectedPipelinePeriod === "week") {
+      const start = getWeekStartFromValue(value);
+      if (!start) {
+        displayInput.value = "";
+        return;
+      }
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      displayInput.value = `${shortDate(start)} - ${shortDate(end)}`;
+      return;
+    }
+    const start = productionStartDate();
+    displayInput.value = start
+      ? new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(start)
+      : value;
+  };
+
+  const updateNavigationBounds = () => {
+    if (!prevBtn || !nextBtn) return;
+    if (selectedPipelinePeriod === "month") {
+      prevBtn.disabled = true;
+      nextBtn.disabled = true;
+      return;
+    }
+    const start = productionStartDate();
+    const end = productionEndDate();
+    const active = getActiveInput();
+    if (!start || !end || !active?.value) {
+      prevBtn.disabled = false;
+      nextBtn.disabled = false;
+      return;
+    }
+    if (selectedPipelinePeriod === "day") {
+      const current = parseDateKey(active.value);
+      prevBtn.disabled = current <= start;
+      nextBtn.disabled = current >= end;
+      return;
+    }
+    const weekStart = getWeekStartFromValue(active.value);
+    if (!weekStart) {
+      prevBtn.disabled = false;
+      nextBtn.disabled = false;
+      return;
+    }
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    prevBtn.disabled = weekStart <= start;
+    nextBtn.disabled = weekEnd >= end;
+  };
+
+  const normalizeActiveValue = () => {
+    const input = getActiveInput();
+    if (!input) return;
+    if (selectedPipelinePeriod === "month") {
+      syncPipelineMonthToProduction();
+    } else if (selectedPipelinePeriod === "day") {
+      input.value = clampDayToProduction(input.value || getCurrentValue("day"));
+    } else if (selectedPipelinePeriod === "week") {
+      input.value = clampWeekToProduction(input.value || getCurrentValue("week"));
+    }
+    selectedPipelinePeriodValue = input.value || "";
+  };
+
   const showActiveInput = () => {
     hideAllInputs();
     const active = getActiveInput();
     if (active) active.hidden = false;
-    if (selectedPipelinePeriod === "month") syncPipelineMonthToProduction();
-    if (prevBtn) prevBtn.disabled = selectedPipelinePeriod === "month";
-    if (nextBtn) nextBtn.disabled = selectedPipelinePeriod === "month";
+    normalizeActiveValue();
+    updateDisplayValue();
+    updateNavigationBounds();
     if (calendarLabel) {
       calendarLabel.textContent = selectedPipelinePeriod === "day"
         ? "Selecionar dia"
@@ -1219,7 +1337,7 @@ const initPipelineCalendarPicker = () => {
     if (selectedPipelinePeriod === "day") {
       const d = new Date(`${input.value}T12:00:00`);
       d.setDate(d.getDate() + dir);
-      input.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+      input.value = clampDayToProduction(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`);
     } else if (selectedPipelinePeriod === "week") {
       const match = /^(\d{4})-W(\d{2})$/.exec(input.value);
       if (!match) return;
@@ -1230,9 +1348,11 @@ const initPipelineCalendarPicker = () => {
       utcDate.setUTCDate(utcDate.getUTCDate() + 4 - dayNum);
       const ys = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
       const wn = Math.ceil((((utcDate - ys) / 86400000) + 1) / 7);
-      input.value = `${utcDate.getUTCFullYear()}-W${pad(wn)}`;
+      input.value = clampWeekToProduction(`${utcDate.getUTCFullYear()}-W${pad(wn)}`);
     }
     selectedPipelinePeriodValue = input.value;
+    updateDisplayValue();
+    updateNavigationBounds();
     input.dispatchEvent(new Event("change"));
   };
 
@@ -1241,6 +1361,8 @@ const initPipelineCalendarPicker = () => {
     if (!input) return;
     if (selectedPipelinePeriod === "month") {
       syncPipelineMonthToProduction();
+      updateDisplayValue();
+      updateNavigationBounds();
       loadLeads();
       return;
     }
@@ -1254,8 +1376,10 @@ const initPipelineCalendarPicker = () => {
     input.value = getCurrentValue(type);
     input.addEventListener("change", () => {
       if (type !== selectedPipelinePeriod) return;
-      if (type === "month") syncPipelineMonthToProduction();
+      normalizeActiveValue();
       selectedPipelinePeriodValue = input.value;
+      updateDisplayValue();
+      updateNavigationBounds();
       loadLeads();
     });
   });
@@ -1275,6 +1399,7 @@ const initPipelineCalendarPicker = () => {
   prevBtn?.addEventListener("click", () => navigate(-1));
   nextBtn?.addEventListener("click", () => navigate(1));
   todayBtn?.addEventListener("click", goToday);
+  window.refreshPipelinePeriodPicker = () => showActiveInput();
 };
 
 const initDashTeamFilter = async (currentCrmUser) => {

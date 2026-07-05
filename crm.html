@@ -688,9 +688,10 @@
                     </button>
                     <div class="dash-calendar-field">
                       <svg class="dash-calendar-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                      <input id="pipeline-period-day-input" type="date" aria-label="Selecionar dia" hidden>
-                      <input id="pipeline-period-week-input" type="week" aria-label="Selecionar semana" hidden>
-                      <input id="pipeline-period-month-input" type="month" aria-label="Mês da produção">
+                      <input id="pipeline-period-display-input" type="text" aria-label="Período selecionado" readonly>
+                      <input id="pipeline-period-day-input" class="pipeline-native-period-input" type="date" aria-label="Selecionar dia" hidden>
+                      <input id="pipeline-period-week-input" class="pipeline-native-period-input" type="week" aria-label="Selecionar semana" hidden>
+                      <input id="pipeline-period-month-input" class="pipeline-native-period-input" type="month" aria-label="Mês da produção">
                     </div>
                     <button class="dash-calendar-today" type="button" data-pipeline-calendar-today aria-label="Ir para hoje">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>
