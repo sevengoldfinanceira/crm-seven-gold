@@ -3230,8 +3230,7 @@ const renderCalendar = () => {
     ["concluido", "confirmado"].includes(String(item.status || "").toLowerCase())
   );
   const storeAppointments = weekAppointments.filter((item) => {
-    const appointmentDay = days.find((day) => item.data_agendamento === toDateKey(day));
-    return appointmentDay?.getDay() !== 0 && item.ever_passed_store;
+    return item.ever_passed_store;
   });
   setCalendarHeaderStats({
     total: weekAppointments.length,
@@ -3257,11 +3256,10 @@ const renderCalendar = () => {
     const dayAcronyms = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
 
     const dayCounts = days.map((d) => {
-      if (d.getDay() === 0) return null; // Exclude Sunday
       const dKey = toDateKey(d);
       return calendarAppointments.filter((item) => item.data_agendamento === dKey).length;
     });
-    const validCounts = dayCounts.filter((c) => c !== null);
+    const validCounts = dayCounts;
     const maxAppointments = validCounts.length > 0 ? Math.max(...validCounts) : 0;
     const minAppointments = validCounts.length > 0 ? Math.min(...validCounts) : 0;
     const hasDifferentCounts = maxAppointments !== minAppointments;
@@ -3280,10 +3278,10 @@ const renderCalendar = () => {
         .sort((a, b) => normalizeAppointmentTime(a.hora_agendamento).localeCompare(normalizeAppointmentTime(b.hora_agendamento)));
 
       const hasAppointments = dayAppointments.length > 0;
-      const dayCount = dayOfWeek === 0 ? 0 : dayAppointments.length;
+      const dayCount = dayAppointments.length;
 
       let busyClass = "";
-      if (dayOfWeek !== 0 && hasDifferentCounts) {
+      if (hasDifferentCounts) {
         if (dayCount === maxAppointments) {
           busyClass = " is-most-busy";
         } else if (dayCount === minAppointments) {
@@ -3291,7 +3289,7 @@ const renderCalendar = () => {
         } else {
           busyClass = " is-normal-day";
         }
-      } else if (dayOfWeek !== 0) {
+      } else {
         busyClass = " is-normal-day";
       }
 
@@ -3374,7 +3372,7 @@ const renderCalendar = () => {
       const footer = document.createElement("div");
       footer.className = "weekly-day-card-footer";
 
-      const storeCount = dayOfWeek === 0 ? 0 : dayAppointments.filter(apt => apt.ever_passed_store).length;
+      const storeCount = dayAppointments.filter(apt => apt.ever_passed_store).length;
 
       const countNumber = document.createElement("span");
       countNumber.className = "weekly-day-card-count";
