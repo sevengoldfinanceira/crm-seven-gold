@@ -2973,12 +2973,13 @@ const closeAppointmentModal = (result = null) => {
   }
 };
 
-const openAppointmentModal = async ({ appointment = null, lead = null, date = "", time = "" } = {}) => {
+const openAppointmentModal = async ({ appointment = null, lead = null, date = "", time = "", allowDuplicate = false } = {}) => {
   if (!appointmentModal || !appointmentForm) return null;
 
   appointmentForm.reset();
   setAppointmentStatus("");
-  appointmentForm.dataset.mode = appointment ? "edit" : "create";
+  appointmentForm.dataset.mode = appointment ? "edit" : allowDuplicate ? "reschedule" : "create";
+  appointmentForm.dataset.allowDuplicate = allowDuplicate ? "true" : "false";
   const linkedLeadId = appointment?.lead_id || lead?.id || "";
   const linkedLead = lead || (linkedLeadId ? await fetchLeadForAppointment(linkedLeadId) : null);
   const leadOwner = await resolveAppointmentLeadOwner(linkedLead);
@@ -2994,8 +2995,8 @@ const openAppointmentModal = async ({ appointment = null, lead = null, date = ""
   const title = appointmentModal.querySelector("#appointment-modal-title");
   const submit = appointmentForm.querySelector("button[type='submit']");
   const deleteButton = appointmentModal.querySelector("[data-delete-appointment]");
-  if (title) title.textContent = appointment ? "Detalhes do agendamento" : "Agendar cliente";
-  if (submit) submit.textContent = appointment ? "Salvar alteracoes" : "Confirmar agendamento";
+  if (title) title.textContent = appointment ? "Detalhes do agendamento" : allowDuplicate ? "Reagendar cliente" : "Agendar cliente";
+  if (submit) submit.textContent = appointment ? "Salvar alteracoes" : allowDuplicate ? "Confirmar reagendamento" : "Confirmar agendamento";
   if (deleteButton) deleteButton.hidden = !appointment;
 
   appointmentModal.showModal();
@@ -3610,6 +3611,8 @@ appointmentForm?.addEventListener("submit", async (event) => {
   const linkedLead = linkedLeadId ? await fetchLeadForAppointment(linkedLeadId) : null;
   const leadOwner = await resolveAppointmentLeadOwner(linkedLead);
   const time = normalizeAppointmentTime(formData.get("hora_agendamento"));
+  const appointmentMode = appointmentForm.dataset.mode || "create";
+  const isRescheduleMode = appointmentMode === "reschedule" && appointmentForm.dataset.allowDuplicate === "true";
   const [hour, minute] = time.split(":").map(Number);
   const totalMinutes = hour * 60 + minute;
   if (totalMinutes < 8 * 60 || totalMinutes > 20 * 60 + 59) {
@@ -3618,7 +3621,7 @@ appointmentForm?.addEventListener("submit", async (event) => {
   }
 
   const cleanPhone = String(formData.get("telefone_cliente") || "").replace(/\D/g, "");
-  if (cleanPhone) {
+  if (cleanPhone && !isRescheduleMode) {
     const phoneVariants = [cleanPhone];
     if (cleanPhone.startsWith("55") && cleanPhone.length > 2) {
       phoneVariants.push(cleanPhone.slice(2));
@@ -3695,7 +3698,7 @@ appointmentForm?.addEventListener("submit", async (event) => {
   }
 
   submitButton.disabled = false;
-  submitButton.textContent = appointmentId ? "Salvar alteracoes" : "Confirmar agendamento";
+  submitButton.textContent = appointmentId ? "Salvar alteracoes" : isRescheduleMode ? "Confirmar reagendamento" : "Confirmar agendamento";
   if (error) {
     setAppointmentStatus(`Nao consegui salvar o agendamento: ${error.message}`);
     return;
@@ -4613,6 +4616,29 @@ const createLeadCard = (lead) => {
     editItem.title = "Lead travado porque pertence a uma produção encerrada.";
   }
   leadDropdown.append(editItem);
+
+  if (lead.status === "agendamento") {
+    const rescheduleItem = document.createElement("button");
+    rescheduleItem.className = "lead-card-dropdown-item btn-reschedule";
+    rescheduleItem.type = "button";
+    rescheduleItem.textContent = "Reagendar";
+    if (leadLocked) {
+      rescheduleItem.disabled = true;
+      rescheduleItem.style.opacity = "0.5";
+      rescheduleItem.title = "Lead travado porque pertence a uma produção encerrada.";
+    }
+    leadDropdown.append(rescheduleItem);
+
+    rescheduleItem.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      leadDropdown.classList.remove("is-open");
+      if (leadLocked) return alert("Lead travado porque pertence a uma produção encerrada.");
+      const savedAppointment = await openAppointmentModal({ lead, allowDuplicate: true });
+      if (savedAppointment) {
+        await loadAppointments();
+      }
+    });
+  }
 
   const stageHasManualTags = false;
   let tagMenuContainer = null;
