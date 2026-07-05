@@ -7404,25 +7404,25 @@ body.theme-dark .weekly-day-card.has-appointments .weekly-day-card-footer .weekl
   flex-direction: row !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  gap: 24px !important;
-  flex: 1 1 520px !important;
-  min-width: 320px !important;
+  gap: 16px !important;
+  flex: 0 1 auto !important;
+  min-width: 260px !important;
 }
 
 .calendar-toolbar-icon-wrap {
   display: grid !important;
   place-items: center !important;
-  width: 74px !important;
-  height: 74px !important;
-  border-radius: 22px !important;
+  width: 58px !important;
+  height: 58px !important;
+  border-radius: 18px !important;
   background: #F1ECFF !important;
   color: #6D4CFF !important;
   flex-shrink: 0 !important;
 }
 
 .calendar-toolbar-icon-wrap svg {
-  width: 36px !important;
-  height: 36px !important;
+  width: 28px !important;
+  height: 28px !important;
   stroke-width: 2.2 !important;
 }
 
@@ -7441,7 +7441,7 @@ body.theme-dark .calendar-toolbar-icon-wrap {
 }
 
 #calendar-title {
-  font-size: 2.5rem !important;
+  font-size: clamp(1.85rem, 2.5vw, 2.35rem) !important;
   font-weight: 800 !important;
   color: #0F172A !important;
   margin: 0 !important;
@@ -7453,7 +7453,7 @@ body.theme-dark #calendar-title {
 }
 
 .calendar-status {
-  display: flex !important;
+  display: none !important;
   align-items: center !important;
   min-height: 0 !important;
   margin: 2px 0 0 !important;
@@ -7468,26 +7468,28 @@ body.theme-dark .calendar-status {
 }
 
 .calendar-toolbar {
-  flex-wrap: wrap !important;
+  flex-wrap: nowrap !important;
+  justify-content: flex-start !important;
+  gap: 16px !important;
 }
 
 .calendar-header-stats {
   display: grid !important;
-  grid-template-columns: repeat(3, minmax(190px, 1fr)) !important;
+  grid-template-columns: repeat(3, minmax(156px, 176px)) !important;
   align-items: stretch !important;
-  gap: 18px !important;
-  flex: 0 1 840px !important;
+  gap: 12px !important;
+  flex: 0 0 auto !important;
   margin-left: auto !important;
 }
 
 .calendar-header-stat-card {
   display: flex !important;
   align-items: center !important;
-  gap: 18px !important;
-  min-height: 92px !important;
-  padding: 18px 22px !important;
+  gap: 10px !important;
+  min-height: 62px !important;
+  padding: 10px 12px !important;
   border: 1px solid rgba(226, 232, 240, .9) !important;
-  border-radius: 24px !important;
+  border-radius: 18px !important;
   background: rgba(255, 255, 255, .94) !important;
   box-shadow: 0 16px 38px rgba(15, 23, 42, .08) !important;
 }
@@ -7495,30 +7497,30 @@ body.theme-dark .calendar-status {
 .calendar-header-stat-icon {
   display: grid !important;
   place-items: center !important;
-  width: 56px !important;
-  height: 56px !important;
-  border-radius: 18px !important;
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 13px !important;
   background: #F1ECFF !important;
   color: #6D4CFF !important;
   flex: 0 0 auto !important;
 }
 
 .calendar-header-stat-icon svg {
-  width: 30px !important;
-  height: 30px !important;
+  width: 21px !important;
+  height: 21px !important;
   stroke-width: 2.35 !important;
 }
 
 .calendar-header-stat-body {
   display: flex !important;
   flex-direction: column !important;
-  gap: 4px !important;
+  gap: 2px !important;
   min-width: 0 !important;
 }
 
 .calendar-header-stat-body strong {
   color: #7C3AED !important;
-  font-size: 2.15rem !important;
+  font-size: 1.55rem !important;
   font-weight: 900 !important;
   line-height: 1 !important;
   letter-spacing: -.04em !important;
@@ -7526,14 +7528,15 @@ body.theme-dark .calendar-status {
 
 .calendar-header-stat-body span {
   color: #475569 !important;
-  font-size: .92rem !important;
+  font-size: .72rem !important;
   font-weight: 800 !important;
   line-height: 1.18 !important;
 }
 
 .calendar-toolbar-actions {
-  flex: 1 1 100% !important;
-  margin-top: 2px !important;
+  flex: 0 0 auto !important;
+  margin-top: 0 !important;
+  margin-left: 0 !important;
 }
 
 body.theme-dark .calendar-header-stat-card {
@@ -7556,6 +7559,10 @@ body.theme-dark .calendar-header-stat-body span {
 }
 
 @media (max-width: 1280px) {
+  .calendar-toolbar {
+    flex-wrap: wrap !important;
+  }
+
   .calendar-header-stats {
     grid-template-columns: repeat(3, minmax(170px, 1fr)) !important;
     flex: 1 1 100% !important;
