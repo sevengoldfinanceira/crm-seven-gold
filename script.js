@@ -3009,11 +3009,6 @@ const createAppointmentCard = (appointment) => {
     if (lead) await openEditLeadModal(lead);
   };
 
-  card.addEventListener("click", openLead);
-  card.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") openLead(event);
-  });
-
   menuBtn.addEventListener("click", (event) => {
     event.stopPropagation();
     document.querySelectorAll(".appointment-card-dropdown.is-open, .lead-card-dropdown.is-open").forEach((d) => {

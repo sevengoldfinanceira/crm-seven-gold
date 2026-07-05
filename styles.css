@@ -3189,7 +3189,7 @@ body.theme-dark .lead-tag.nao-responde {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  cursor: pointer !important;
+  cursor: default !important;
 }
 
 .lead-card-tag-options {
