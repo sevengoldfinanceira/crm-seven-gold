@@ -220,13 +220,23 @@ const PIPELINE_STAGE_TAGS = {
       label: "Sem Whats",
       className: "sem-whats",
     },
-  ],
-  agendamento: [
+    {
+      value: "acompanhar",
+      label: "Acompanhar",
+      className: "acompanhar",
+    },
+    {
+      value: "retorno",
+      label: "Retorno",
+      className: "retorno",
+    },
     {
       value: "confirmar_agend",
       label: "Confirmar agend.",
       className: "confirmar-agend",
     },
+  ],
+  agendamento: [
     {
       value: "reagendar",
       label: "Reagendar",
