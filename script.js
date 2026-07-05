@@ -3022,6 +3022,18 @@ const renderCalendar = () => {
   const weekFormat = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" });
   if (calendarWeekLabel) calendarWeekLabel.textContent = `${weekFormat.format(days[0])} a ${weekFormat.format(end)}`;
 
+  const weekRangeEl = document.querySelector("[data-calendar-week-range]");
+  if (weekRangeEl) {
+    const d0 = days[0];
+    const d6 = days[6];
+    const fmt = (d) => {
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      return `${dd}/${mm}`;
+    };
+    weekRangeEl.textContent = `${fmt(d0)} - ${fmt(d6)}`;
+  }
+
   if (calendarGrid) {
     calendarGrid.innerHTML = "";
 

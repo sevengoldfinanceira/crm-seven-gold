@@ -8173,5 +8173,86 @@ body.theme-dark .lead-action-button.copy {
   right: 9px !important;
 }
 
+/* Calendar Week Navigation Styling Override */
+.calendar-week-nav {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.calendar-nav-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 44px !important;
+  height: 56px !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+}
+
+.calendar-today-button {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  padding: 0 16px !important;
+  min-width: 170px !important;
+  height: 56px !important;
+  cursor: pointer !important;
+  box-sizing: border-box !important;
+}
+
+.calendar-today-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 9px !important;
+  background: #F1ECFF !important;
+  color: #6D4CFF !important;
+  flex-shrink: 0 !important;
+}
+
+body.theme-dark .calendar-today-icon {
+  background: rgba(167, 139, 250, 0.15) !important;
+  color: #a78bfa !important;
+}
+
+.calendar-today-content {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  gap: 1px !important;
+  min-width: 0 !important;
+  flex: 1 !important;
+}
+
+.calendar-today-title {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+}
+
+body.theme-dark .calendar-today-title {
+  color: #f8fafc !important;
+}
+
+.calendar-today-subtitle {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+}
+
+body.theme-dark .calendar-today-subtitle {
+  color: #94a3b8 !important;
+}
+
 
 
