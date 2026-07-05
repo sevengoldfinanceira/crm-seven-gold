@@ -3851,7 +3851,8 @@ body.theme-dark .dashboard-header-icon {
   display: none;
 }
 
-#pipeline-period-display-input {
+#pipeline-period-display-input,
+#dash-period-display-input {
   pointer-events: none;
   position: relative;
   z-index: 1;

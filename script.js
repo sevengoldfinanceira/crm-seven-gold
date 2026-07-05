@@ -2149,6 +2149,35 @@ const getDashboardPeriodRange = (periodType, periodValue) => {
   return { start, end };
 };
 
+const formatDashboardPeriodDisplay = (periodType, periodValue) => {
+  const pad = (value) => String(value).padStart(2, "0");
+  const formatShortDate = (date) => `${pad(date.getDate())}/${pad(date.getMonth() + 1)}`;
+  const formatFullDate = (date) => `${formatShortDate(date)}/${date.getFullYear()}`;
+  const value = periodValue || getCurrentDashboardPeriodValue(periodType);
+
+  if (periodType === "day") {
+    const [year, month, day] = String(value).split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    return Number.isNaN(date.getTime()) ? value : formatFullDate(date);
+  }
+
+  if (periodType === "week") {
+    const range = getDashboardPeriodRange("week", value);
+    if (!range.start || !range.end || Number.isNaN(range.start.getTime()) || Number.isNaN(range.end.getTime())) {
+      return value;
+    }
+    const visibleEnd = new Date(range.end);
+    visibleEnd.setDate(visibleEnd.getDate() - 1);
+    return `${formatShortDate(range.start)} - ${formatShortDate(visibleEnd)}`;
+  }
+
+  const [year, month] = String(value).split("-").map(Number);
+  const date = new Date(year, month - 1, 1);
+  return Number.isNaN(date.getTime())
+    ? value
+    : new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(date);
+};
+
 const isWithinDashboardPeriod = (value, range, dateOnly = false) => {
   if (!value) return false;
   const date = dateOnly ? new Date(`${value}T12:00:00`) : new Date(value);
@@ -2191,6 +2220,7 @@ const loadDashboardMetrics = async () => {
 
   const periodSelect = document.getElementById("dash-period-filter-select");
   const periodLabel = document.getElementById("dash-period-calendar-label");
+  const periodDisplayInput = document.getElementById("dash-period-display-input");
   const periodInputs = {
     day: document.getElementById("dash-period-day-input"),
     week: document.getElementById("dash-period-week-input"),
@@ -2230,6 +2260,10 @@ const loadDashboardMetrics = async () => {
   Object.entries(periodInputs).forEach(([type, input]) => {
     if (input) input.hidden = type !== selectedDashPeriod;
   });
+  if (periodDisplayInput) {
+    const activeValue = periodInputs[selectedDashPeriod]?.value || selectedDashPeriodValue || getCurrentDashboardPeriodValue(selectedDashPeriod);
+    periodDisplayInput.value = formatDashboardPeriodDisplay(selectedDashPeriod, activeValue);
+  }
   if (periodLabel) {
     periodLabel.textContent = selectedDashPeriod === "day"
       ? "Selecionar dia"
