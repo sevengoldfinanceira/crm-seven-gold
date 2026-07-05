@@ -4924,7 +4924,6 @@ const createLeadCard = (lead) => {
   };
 
   const manualTagConfig = getLeadTagConfig(lead);
-  updateLeadCardTagMenu(card, lead.status, manualTagConfig?.value || null);
 
   let trashBadgeRow = null;
   if (lead.status === "cancelado") {
@@ -5179,6 +5178,7 @@ const createLeadCard = (lead) => {
 
   // Append everything
   card.append(top, trashBadgeRow || badgeRow);
+  updateLeadCardTagMenu(card, lead.status, manualTagConfig?.value || null);
   if (legacyTags.length > 0) {
     card.append(tagsContainer);
   }
