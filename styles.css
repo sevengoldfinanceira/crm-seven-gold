@@ -6929,19 +6929,28 @@ body.theme-dark .card-stack::-webkit-scrollbar-thumb:hover {
 }
 
 .weekly-day-card-appointments::-webkit-scrollbar-thumb {
-  background: #cbd5e1 !important;
+  background: transparent !important;
   border-radius: 999px !important;
+  transition: background 0.2s ease !important;
 }
 
-.weekly-day-card-appointments::-webkit-scrollbar-thumb:hover {
+.weekly-day-card:hover .weekly-day-card-appointments::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+}
+
+.weekly-day-card:hover .weekly-day-card-appointments::-webkit-scrollbar-thumb:hover {
   background: #a78bfa !important;
 }
 
 body.theme-dark .weekly-day-card-appointments::-webkit-scrollbar-thumb {
+  background: transparent !important;
+}
+
+body.theme-dark .weekly-day-card:hover .weekly-day-card-appointments::-webkit-scrollbar-thumb {
   background: #374151 !important;
 }
 
-body.theme-dark .weekly-day-card-appointments::-webkit-scrollbar-thumb:hover {
+body.theme-dark .weekly-day-card:hover .weekly-day-card-appointments::-webkit-scrollbar-thumb:hover {
   background: #6d4cff !important;
 }
 
