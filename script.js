@@ -27,7 +27,7 @@ let deepLinkedLeadHandled = false;
 let commercialProductions = [];
 let selectedProduction = null;
 let isProductionDirectorCeo = false;
-let selectedPipelinePeriod = "week";
+let selectedPipelinePeriod = "month";
 let selectedPipelinePeriodValue = "";
 
 const syncPipelineMonthToProduction = () => {
@@ -4304,6 +4304,7 @@ const createLeadCard = (lead) => {
     tagsArray = lead.tags.split(",").map(t => t.trim()).filter(Boolean);
   }
 
+  const stageTagsAvailable = getAvailableTagsForStage(lead.status).length > 0;
   const knownManualTagValues = new Set(Object.keys(PIPELINE_STAGE_TAGS_MAP));
   const legacyTags = stageTagsAvailable
     ? []
