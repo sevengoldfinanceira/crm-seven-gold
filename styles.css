@@ -8105,6 +8105,59 @@ body.theme-dark .appointment-confirmation-badge.confirmed {
   border-color: rgba(34, 197, 94, 0.3) !important;
 }
 
+.appointment-confirmation-badge.missed {
+  background: #fee2e2 !important;
+  color: #dc2626 !important;
+  border-color: #fecaca !important;
+}
+
+body.theme-dark .appointment-confirmation-badge.missed {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+.appointment-confirmation-badge.attended {
+  background: #dcfce7 !important;
+  color: #16a34a !important;
+  border-color: #bbf7d0 !important;
+  cursor: default !important;
+}
+
+body.theme-dark .appointment-confirmation-badge.attended {
+  background: rgba(34, 197, 94, 0.15) !important;
+  color: #4ade80 !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+}
+
+.appointment-confirmation-badge.reschedule {
+  background: #ffedd5 !important;
+  color: #ea580c !important;
+  border-color: #fed7aa !important;
+}
+
+body.theme-dark .appointment-confirmation-badge.reschedule {
+  background: rgba(249, 115, 22, 0.16) !important;
+  color: #fb923c !important;
+  border-color: rgba(249, 115, 22, 0.32) !important;
+}
+
+.appointment-confirmation-badge.rescheduled {
+  background: #dbeafe !important;
+  color: #2563eb !important;
+  border-color: #bfdbfe !important;
+}
+
+body.theme-dark .appointment-confirmation-badge.rescheduled {
+  background: rgba(37, 99, 235, 0.18) !important;
+  color: #60a5fa !important;
+  border-color: rgba(96, 165, 250, 0.34) !important;
+}
+
+.appointment-confirmation-badge:disabled {
+  pointer-events: none !important;
+}
+
 .appointment-menu-button {
   position: absolute !important;
   top: 10px !important;
@@ -8987,6 +9040,50 @@ body.theme-dark .appointment-status-dropdown {
   transform: translateY(-1px) !important;
 }
 
+.appointment-status-option.missed {
+  background: #fee2e2 !important;
+  color: #dc2626 !important;
+  border-color: #fecaca !important;
+}
+
+.appointment-status-option.missed:hover {
+  background: #fecaca !important;
+  transform: translateY(-1px) !important;
+}
+
+.appointment-status-option.attended {
+  background: #dcfce7 !important;
+  color: #16a34a !important;
+  border-color: #bbf7d0 !important;
+}
+
+.appointment-status-option.attended:hover {
+  background: #bbf7d0 !important;
+  transform: translateY(-1px) !important;
+}
+
+.appointment-status-option.reschedule {
+  background: #ffedd5 !important;
+  color: #ea580c !important;
+  border-color: #fed7aa !important;
+}
+
+.appointment-status-option.reschedule:hover {
+  background: #fed7aa !important;
+  transform: translateY(-1px) !important;
+}
+
+.appointment-status-option.rescheduled {
+  background: #dbeafe !important;
+  color: #2563eb !important;
+  border-color: #bfdbfe !important;
+}
+
+.appointment-status-option.rescheduled:hover {
+  background: #bfdbfe !important;
+  transform: translateY(-1px) !important;
+}
+
 body.theme-dark .appointment-status-option.confirmed {
   background: rgba(34, 197, 94, 0.15) !important;
   color: #4ade80 !important;
@@ -9001,6 +9098,30 @@ body.theme-dark .appointment-status-option.pending {
   background: rgba(239, 68, 68, 0.15) !important;
   color: #f87171 !important;
   border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+body.theme-dark .appointment-status-option.missed {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+body.theme-dark .appointment-status-option.attended {
+  background: rgba(34, 197, 94, 0.15) !important;
+  color: #4ade80 !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+}
+
+body.theme-dark .appointment-status-option.reschedule {
+  background: rgba(249, 115, 22, 0.16) !important;
+  color: #fb923c !important;
+  border-color: rgba(249, 115, 22, 0.32) !important;
+}
+
+body.theme-dark .appointment-status-option.rescheduled {
+  background: rgba(37, 99, 235, 0.18) !important;
+  color: #60a5fa !important;
+  border-color: rgba(96, 165, 250, 0.34) !important;
 }
 
 body.theme-dark .appointment-status-option.pending:hover {

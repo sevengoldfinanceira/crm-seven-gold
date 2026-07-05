@@ -14,7 +14,7 @@ create table if not exists public.appointments (
   hora_agendamento time not null,
   observacao text,
   status text not null default 'agendado'
-    check (status in ('agendado', 'concluido', 'cancelado')),
+    check (status in ('agendado', 'concluido', 'confirmado', 'cancelado', 'faltou', 'compareceu', 'reagendar', 'reagendado')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

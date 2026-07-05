@@ -3068,6 +3068,90 @@ const requestAppointmentForLead = async (leadId, fallback = {}) => {
   return openAppointmentModal({ lead });
 };
 
+const APPOINTMENT_STATUS_META = {
+  agendado: {
+    label: "A confirmar",
+    className: "pending",
+    icon: "alert",
+  },
+  concluido: {
+    label: "Confirmado",
+    className: "confirmed",
+    icon: "check",
+  },
+  confirmado: {
+    label: "Confirmado",
+    className: "confirmed",
+    icon: "check",
+  },
+  faltou: {
+    label: "Faltou",
+    className: "missed",
+    icon: "x",
+  },
+  compareceu: {
+    label: "Compareceu",
+    className: "attended",
+    icon: "check",
+  },
+  reagendar: {
+    label: "Reagendar",
+    className: "reschedule",
+    icon: "clock",
+  },
+  reagendado: {
+    label: "Reagendado",
+    className: "rescheduled",
+    icon: "calendar",
+  },
+};
+
+const getAppointmentStatusIcon = (icon) => {
+  if (icon === "check") {
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
+  }
+  if (icon === "x") {
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+  }
+  if (icon === "clock") {
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+  }
+  if (icon === "calendar") {
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
+  }
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+};
+
+const getAppointmentDateTime = (appointment) => {
+  const date = String(appointment?.data_agendamento || "").trim();
+  const time = normalizeAppointmentTime(appointment?.hora_agendamento || "00:00");
+  const value = date ? new Date(`${date}T${time}:00`) : null;
+  return value && !Number.isNaN(value.getTime()) ? value : null;
+};
+
+const isAppointmentPastDue = (appointment) => {
+  const appointmentAt = getAppointmentDateTime(appointment);
+  return Boolean(appointmentAt && appointmentAt.getTime() < Date.now());
+};
+
+const getAppointmentDisplayStatus = (appointment) => {
+  if (appointment?.ever_passed_store) return "compareceu";
+  const rawStatus = String(appointment?.status || "agendado").trim().toLowerCase();
+  if (!isAppointmentPastDue(appointment)) {
+    return ["concluido", "confirmado"].includes(rawStatus) ? "concluido" : "agendado";
+  }
+  return ["faltou", "compareceu", "reagendar", "reagendado"].includes(rawStatus) ? rawStatus : "faltou";
+};
+
+const getAppointmentStatusOptions = (appointment) => {
+  if (appointment?.ever_passed_store) return [];
+  if (!isAppointmentPastDue(appointment)) {
+    const displayStatus = getAppointmentDisplayStatus(appointment);
+    return [displayStatus === "concluido" ? "agendado" : "concluido"];
+  }
+  return ["faltou", "compareceu", "reagendar", "reagendado"];
+};
+
 const createAppointmentCard = (appointment) => {
   const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
   const canSeeAppointmentSeller = shouldSeeAllLeads(currentCrmUser);
@@ -3108,52 +3192,56 @@ const createAppointmentCard = (appointment) => {
   timeBadge.className = "appointment-time-badge";
   timeBadge.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${normalizeAppointmentTime(appointment.hora_agendamento)}`;
 
-  // Confirmação Pill
-  const isConfirmed = ["concluido", "confirmado"].includes(String(appointment.status || "").toLowerCase());
+  // Confirmação/status pill
+  const displayStatus = getAppointmentDisplayStatus(appointment);
+  const displayMeta = APPOINTMENT_STATUS_META[displayStatus] || APPOINTMENT_STATUS_META.agendado;
   const confBadge = document.createElement("button");
   confBadge.type = "button";
-  confBadge.className = `appointment-confirmation-badge ${isConfirmed ? "confirmed" : "pending"}`;
-  if (isConfirmed) {
-    confBadge.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Confirmado`;
-  } else {
-    confBadge.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> A confirmar`;
+  confBadge.className = `appointment-confirmation-badge ${displayMeta.className}`;
+  confBadge.innerHTML = `${getAppointmentStatusIcon(displayMeta.icon)} ${displayMeta.label}`;
+  if (appointment.ever_passed_store) {
+    confBadge.disabled = true;
+    confBadge.title = "Cliente já passou por Clientes em Loja.";
   }
 
   // Create Status Option Dropdown Menu
   const statusDropdown = document.createElement("div");
   statusDropdown.className = "appointment-status-dropdown";
 
-  const optBtn = document.createElement("button");
-  optBtn.type = "button";
-  if (isConfirmed) {
-    optBtn.className = "appointment-status-option pending";
-    optBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> A confirmar`;
-  } else {
-    optBtn.className = "appointment-status-option confirmed";
-    optBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Confirmado`;
-  }
+  const statusOptions = getAppointmentStatusOptions(appointment);
+  statusOptions.forEach((statusOption) => {
+    const optionMeta = APPOINTMENT_STATUS_META[statusOption] || APPOINTMENT_STATUS_META.agendado;
+    const optBtn = document.createElement("button");
+    optBtn.type = "button";
+    optBtn.className = `appointment-status-option ${optionMeta.className}`;
+    optBtn.innerHTML = `${getAppointmentStatusIcon(optionMeta.icon)} ${optionMeta.label}`;
+    optBtn.addEventListener("click", async (event) => {
+      event.stopPropagation();
+      statusDropdown.classList.remove("is-open");
+      const client = getClient();
+      if (!client) return;
 
-  optBtn.addEventListener("click", async (event) => {
-    event.stopPropagation();
-    statusDropdown.classList.remove("is-open");
-    const client = getClient();
-    if (!client) return;
-    const targetStatus = isConfirmed ? "agendado" : "concluido";
-    const { error } = await client
-      .from("appointments")
-      .update({ status: targetStatus })
-      .eq("id", appointment.id);
-    if (error) {
-      alert(`Não foi possível alterar status: ${error.message}`);
-      return;
-    }
-    await loadAppointments();
+      if (statusOption === "compareceu" && appointment.lead_id && !appointment.ever_passed_store) {
+        const moved = await updateLeadStatus(appointment.lead_id, "cliente_em_loja", { skipAppointment: true });
+        if (!moved) return;
+      }
+
+      const { error } = await client
+        .from("appointments")
+        .update({ status: statusOption })
+        .eq("id", appointment.id);
+      if (error) {
+        alert(`Não foi possível alterar status: ${error.message}`);
+        return;
+      }
+      await loadAppointments();
+    });
+    statusDropdown.append(optBtn);
   });
-
-  statusDropdown.append(optBtn);
 
   confBadge.addEventListener("click", (event) => {
     event.stopPropagation();
+    if (appointment.ever_passed_store || statusOptions.length === 0) return;
     document.querySelectorAll(".appointment-status-dropdown.is-open, .appointment-card-dropdown.is-open, .lead-card-dropdown.is-open").forEach((d) => {
       if (d !== statusDropdown) d.classList.remove("is-open");
     });
@@ -3261,7 +3349,7 @@ const renderCalendar = () => {
     days.some((day) => item.data_agendamento === toDateKey(day))
   );
   const confirmedAppointments = weekAppointments.filter((item) =>
-    ["concluido", "confirmado"].includes(String(item.status || "").toLowerCase())
+    ["concluido", "confirmado", "compareceu"].includes(getAppointmentDisplayStatus(item))
   );
   const storeAppointments = weekAppointments.filter((item) => {
     return item.ever_passed_store;
