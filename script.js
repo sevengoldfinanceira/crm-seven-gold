@@ -3153,7 +3153,7 @@ const renderCalendar = () => {
         dayAppointments.forEach((item) => list.append(createAppointmentCard(item)));
       }
 
-      // Card Footer with counter: "0 | Clientes em Loja"
+      // Card Footer with counter: "0 | Clientes em Loja | 0%"
       const footer = document.createElement("div");
       footer.className = "weekly-day-card-footer";
 
@@ -3172,7 +3172,18 @@ const renderCalendar = () => {
       countLabel.className = "weekly-day-card-label";
       countLabel.textContent = storeCount === 1 ? "Cliente em Loja" : "Clientes em Loja";
 
-      footer.append(countNumber, verticalBar, countLabel);
+      const verticalBar2 = document.createElement("span");
+      verticalBar2.className = "weekly-day-card-footer-divider";
+      verticalBar2.textContent = "|";
+
+      const countPercent = document.createElement("span");
+      countPercent.className = "weekly-day-card-percent";
+      const totalScheduled = dayCount;
+      const percentVal = totalScheduled > 0 ? (storeCount / totalScheduled) * 100 : 0;
+      const formattedPercent = percentVal % 1 === 0 ? percentVal.toFixed(0) : percentVal.toFixed(1);
+      countPercent.textContent = `${formattedPercent}%`;
+
+      footer.append(countNumber, verticalBar, countLabel, verticalBar2, countPercent);
 
       column.append(header, list, footer);
       calendarGrid.append(column);

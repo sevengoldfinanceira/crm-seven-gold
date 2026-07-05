@@ -7254,6 +7254,36 @@ body.theme-dark .weekly-day-card-footer .weekly-day-card-label {
   color: #9ca3af !important;
 }
 
+.weekly-day-card-percent {
+  font-size: 0.75rem !important;
+  font-weight: 800 !important;
+  color: #6D4CFF !important;
+  white-space: nowrap !important;
+}
+
+.weekly-day-card.is-saturday .weekly-day-card-footer .weekly-day-card-percent {
+  color: #2563EB !important;
+}
+.weekly-day-card.is-today .weekly-day-card-footer .weekly-day-card-percent {
+  color: #2563EB !important;
+}
+.weekly-day-card.has-appointments .weekly-day-card-footer .weekly-day-card-percent {
+  color: #D97706 !important;
+}
+
+body.theme-dark .weekly-day-card-percent {
+  color: #a78bfa !important;
+}
+body.theme-dark .weekly-day-card.is-saturday .weekly-day-card-footer .weekly-day-card-percent {
+  color: #60a5fa !important;
+}
+body.theme-dark .weekly-day-card.is-today .weekly-day-card-footer .weekly-day-card-percent {
+  color: #60a5fa !important;
+}
+body.theme-dark .weekly-day-card.has-appointments .weekly-day-card-footer .weekly-day-card-percent {
+  color: #fbbf24 !important;
+}
+
 /* Calendar Toolbar Redesign */
 .calendar-toolbar-title-group {
   display: flex !important;
