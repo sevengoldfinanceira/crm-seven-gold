@@ -2,6 +2,7 @@ const { supabase } = require('../../lib/server/supabase');
 const { getAuthorizedCrmUser } = require('../../lib/server/crm-authorization');
 const { getOpenProduction, NO_OPEN_PRODUCTION, productionFields, isProductionSchemaError, stripProductionFields } = require('../../lib/server/commercial-productions');
 const { normalizeLeadClientInfo } = require('../../lib/server/lead-client-info');
+const { ensureLeadIsNotDuplicateForSeller, mapDuplicateDbError } = require('../../lib/server/lead-duplicates');
 
 const send = (res, status, body) => {
   res.writeHead(status, { 'Content-Type': 'application/json' });
@@ -30,6 +31,16 @@ module.exports = async (req, res) => {
   if (!name || telefone.length < 10) return send(res, 400, { ok: false, error: 'Nome e telefone válido são obrigatórios.' });
 
   const ownerName = auth.user.nome || auth.user.email;
+  try {
+    await ensureLeadIsNotDuplicateForSeller({
+      supabase,
+      phone: telefone,
+      assignedToEmail: auth.user.email,
+    });
+  } catch (error) {
+    return send(res, error.status || 500, { ok: false, error: error.message });
+  }
+
   const payload = {
     name, telefone, status: 'lead_recebido',
     origin: String(body.origin || '').trim() || null,
@@ -50,6 +61,6 @@ module.exports = async (req, res) => {
     data = retry.data;
     error = retry.error;
   }
-  if (error) return send(res, 409, { ok: false, error: error.message });
+  if (error) return send(res, 409, { ok: false, error: mapDuplicateDbError(error) || error.message });
   return send(res, 200, { ok: true, lead: data });
 };

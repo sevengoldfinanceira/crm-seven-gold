@@ -1,6 +1,7 @@
 const { supabase } = require('../../lib/server/supabase');
 const { getAuthorizedCrmUser } = require('../../lib/server/crm-authorization');
 const { assertLeadMutable } = require('../../lib/server/commercial-productions');
+const { ensureLeadIsNotDuplicateForSeller, mapDuplicateDbError } = require('../../lib/server/lead-duplicates');
 
 const sendJson = (res, status, payload) => {
   res.writeHead(status, { 'Content-Type': 'application/json' });
@@ -56,6 +57,25 @@ module.exports = async (req, res) => {
       return sendJson(res, 400, { ok: false, error: 'Responsável inválido ou inativo.' });
     }
 
+    const { data: currentLead, error: currentLeadError } = await supabase
+      .from('leads')
+      .select('id,telefone')
+      .eq('id', leadId)
+      .maybeSingle();
+    if (currentLeadError) return sendJson(res, 500, { ok: false, error: currentLeadError.message });
+    if (!currentLead) return sendJson(res, 404, { ok: false, error: 'Lead não encontrado.' });
+
+    try {
+      await ensureLeadIsNotDuplicateForSeller({
+        supabase,
+        phone: currentLead.telefone,
+        assignedToEmail: assignee.email,
+        ignoreLeadId: leadId,
+      });
+    } catch (duplicateError) {
+      return sendJson(res, duplicateError.status || 500, { ok: false, error: duplicateError.message });
+    }
+
     const updateData = {
       assigned_to_email: assignee.email,
       assigned_to_name: assignee.nome || assignee.email,
@@ -71,7 +91,7 @@ module.exports = async (req, res) => {
       .select('id,assigned_to_email,assigned_to_name')
       .maybeSingle();
 
-    if (updateError) return sendJson(res, 500, { ok: false, error: updateError.message });
+    if (updateError) return sendJson(res, 500, { ok: false, error: mapDuplicateDbError(updateError) || updateError.message });
     if (!lead) return sendJson(res, 404, { ok: false, error: 'Lead não encontrado.' });
     return sendJson(res, 200, { ok: true, lead });
   } catch (error) {

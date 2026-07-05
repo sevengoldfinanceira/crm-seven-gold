@@ -1,5 +1,6 @@
 const { supabase } = require('../../lib/server/supabase');
 const { getAuthorizedCrmUser, canAccessLead } = require('../../lib/server/crm-authorization');
+const { findDuplicateLeadForSeller, normalizePhone } = require('../../lib/server/lead-duplicates');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -30,26 +31,24 @@ module.exports = async (req, res) => {
       return res.end(JSON.stringify({ ok: false, error: 'phone query parameter is required' }));
     }
 
-    const normalizedPhone = String(phone).replace(/\D/g, '');
-
-    const { data, error } = await supabase
-      .from('leads')
-      .select('id, name, telefone, status, tags, note, origin, created_at, ultima_interacao, property_region, credit_value, down_payment_value, installment_value, assigned_to_email, assigned_to_name, created_by_email, created_by_name')
-      .eq('telefone', normalizedPhone)
-      .limit(1);
-
-    if (error) {
+    let lead = null;
+    try {
+      lead = await findDuplicateLeadForSeller({
+        supabase,
+        phone: normalizePhone(phone),
+        assignedToEmail: authorization.user.email,
+      });
+    } catch (error) {
       console.error('Error fetching lead by phone');
       res.writeHead(500, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ ok: false, error: 'Erro ao buscar lead pelo telefone.' }));
     }
 
-    if (!data || data.length === 0) {
+    if (!lead) {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ ok: true, found: false, lead: null }));
     }
 
-    const lead = data[0];
     if (!canAccessLead(authorization.user, lead)) {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({

@@ -2,6 +2,7 @@ const { supabase } = require('../../lib/server/supabase');
 const { hasBasicLeadInfo, hasLeadClientInfo, normalizeBasicLeadInfo, normalizeLeadClientInfo } = require('../../lib/server/lead-client-info');
 const { getAuthorizedCrmUser, canAccessLead, normalizeRole, normalizeEmail } = require('../../lib/server/crm-authorization');
 const { assertLeadMutable } = require('../../lib/server/commercial-productions');
+const { ensureLeadIsNotDuplicateForSeller, mapDuplicateDbError } = require('../../lib/server/lead-duplicates');
 
 const REASSIGN_ROLES = new Set(['diretor-ceo', 'dono', 'admin', 'administrador']);
 
@@ -172,6 +173,24 @@ module.exports = async (req, res) => {
       return res.end(JSON.stringify({ ok: false, error: 'Você não pode alterar leads atribuídos a outro responsável.' }));
     }
 
+    const targetPhone = Object.prototype.hasOwnProperty.call(basicInfo, 'telefone') ? basicInfo.telefone : fetchLead[0].telefone;
+    const targetAssigneeEmail = hasAssigneeChange && newAssignee
+      ? newAssignee.email
+      : fetchLead[0].assigned_to_email;
+    if (targetPhone && targetAssigneeEmail) {
+      try {
+        await ensureLeadIsNotDuplicateForSeller({
+          supabase,
+          phone: targetPhone,
+          assignedToEmail: targetAssigneeEmail,
+          ignoreLeadId: leadId,
+        });
+      } catch (duplicateError) {
+        res.writeHead(duplicateError.status || 500, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ ok: false, error: duplicateError.message }));
+      }
+    }
+
     const previousStatus = fetchLead[0].status;
     if (status && goBack) {
       if (!canGoBackPipelineStatus(previousStatus)) {
@@ -211,7 +230,7 @@ module.exports = async (req, res) => {
     if (updateError) {
       console.error('Error executing stage update on lead');
       res.writeHead(500, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ ok: false, error: 'Erro ao atualizar etapa do lead.' }));
+      return res.end(JSON.stringify({ ok: false, error: mapDuplicateDbError(updateError) || 'Erro ao atualizar etapa do lead.' }));
     }
 
     if (status && previousStatus !== status && goBack) {

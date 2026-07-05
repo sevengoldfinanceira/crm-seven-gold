@@ -2,6 +2,7 @@ const { supabase } = require('../../lib/server/supabase');
 const { normalizeLeadClientInfo } = require('../../lib/server/lead-client-info');
 const { getAuthorizedCrmUser, canAccessLead } = require('../../lib/server/crm-authorization');
 const { getOpenProduction, NO_OPEN_PRODUCTION, productionFields, isProductionSchemaError, stripProductionFields } = require('../../lib/server/commercial-productions');
+const { findDuplicateLeadForSeller, mapDuplicateDbError } = require('../../lib/server/lead-duplicates');
 
 const sendJson = (res, status, payload) => {
   res.writeHead(status, { 'Content-Type': 'application/json' });
@@ -51,18 +52,19 @@ module.exports = async (req, res) => {
 
     const ownerId = owner_id;
 
-    const { data: existingLead, error: findError } = await supabase
-      .from('leads')
-      .select('*')
-      .eq('telefone', cleanedPhone)
-      .maybeSingle();
-
-    if (findError) {
+    let existingLead = null;
+    try {
+      existingLead = await findDuplicateLeadForSeller({
+        supabase,
+        phone: cleanedPhone,
+        assignedToEmail: owner_email,
+      });
+    } catch (findError) {
       console.error('[from-whatsapp-extension] Erro ao buscar lead:', findError.message);
       return sendJson(res, 500, { ok: false, error: findError.message });
     }
 
-    console.log('[from-whatsapp-extension] Lead existente encontrado:', existingLead ? existingLead.id : 'nenhum');
+    console.log('[from-whatsapp-extension] Lead existente do mesmo vendedor:', existingLead ? existingLead.id : 'nenhum');
 
     if (existingLead) {
       console.log('[from-whatsapp-extension] Lead duplicado encontrado, retornando 409');
@@ -70,9 +72,9 @@ module.exports = async (req, res) => {
       return sendJson(res, 409, {
         ok: false,
         action: 'duplicate',
-        error: mayAccessExistingLead
-          ? 'Número já cadastrado no CRM. Edite esse lead diretamente no CRM ou use outro número para criar um novo cadastro.'
-          : 'Este número já está cadastrado e atribuído a outro responsável.',
+        error: existingLead.status === 'cancelado'
+          ? 'Este vendedor já possui este lead na lixeira. Recupere o lead em vez de cadastrar novamente.'
+          : 'Este vendedor já possui um lead com este telefone.',
         lead: mayAccessExistingLead ? existingLead : null,
       });
     }
@@ -110,7 +112,7 @@ module.exports = async (req, res) => {
 
     if (insertError) {
       console.error('[from-whatsapp-extension] Erro ao criar lead:', insertError.message);
-      return sendJson(res, 500, { ok: false, error: insertError.message });
+      return sendJson(res, 500, { ok: false, error: mapDuplicateDbError(insertError) || insertError.message });
     }
 
     if (!newLead || !newLead.id) {
