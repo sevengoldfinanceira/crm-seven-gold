@@ -3035,7 +3035,28 @@ const renderCalendar = () => {
         dayAppointments.forEach((item) => list.append(createAppointmentCard(item)));
       }
 
-      column.append(header, list);
+      // Card Footer with counter: "0 | Clientes em Loja"
+      const footer = document.createElement("div");
+      footer.className = "weekly-day-card-footer";
+
+      const storeStatuses = ["cliente_em_loja", "proposta_enviada", "venda_fechada"];
+      const storeCount = dayOfWeek === 0 ? 0 : dayAppointments.filter(apt => storeStatuses.includes(apt.lead_status)).length;
+
+      const countNumber = document.createElement("span");
+      countNumber.className = "weekly-day-card-count";
+      countNumber.textContent = storeCount;
+
+      const verticalBar = document.createElement("span");
+      verticalBar.className = "weekly-day-card-footer-divider";
+      verticalBar.textContent = "|";
+
+      const countLabel = document.createElement("span");
+      countLabel.className = "weekly-day-card-label";
+      countLabel.textContent = storeCount === 1 ? "Cliente em Loja" : "Clientes em Loja";
+
+      footer.append(countNumber, verticalBar, countLabel);
+
+      column.append(header, list, footer);
       calendarGrid.append(column);
     });
   }
@@ -3113,7 +3134,7 @@ const loadAppointments = async () => {
 
   let query = client
     .from("appointments")
-    .select("id, lead_id, nome_cliente, telefone_cliente, usuario_id, nome_usuario, data_agendamento, hora_agendamento, observacao, status, created_at, updated_at")
+    .select("id, lead_id, nome_cliente, telefone_cliente, usuario_id, nome_usuario, data_agendamento, hora_agendamento, observacao, status, created_at, updated_at, leads ( status )")
     .gte("data_agendamento", start)
     .lte("data_agendamento", end)
     .neq("status", "cancelado")
@@ -3172,6 +3193,7 @@ const loadAppointments = async () => {
   calendarAppointments = appointments.map((item) => ({
     ...item,
     vendedor_nome: item.vendedor_nome || item.nome_usuario,
+    lead_status: item.leads?.status,
   }));
   renderCalendar();
   setCalendarStatus(`${calendarAppointments.length} agendamento${calendarAppointments.length === 1 ? "" : "s"} nesta semana.`);

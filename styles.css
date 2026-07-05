@@ -7311,9 +7311,10 @@ body.theme-dark .calendar-status {
 
 .day-header-main {
   display: grid !important;
-  grid-template-columns: 1fr auto 72px !important;
+  grid-template-columns: auto 1px 72px !important;
+  justify-content: space-between !important;
   align-items: center !important;
-  gap: 14px !important;
+  gap: 8px !important;
   min-height: 58px !important;
 }
 
