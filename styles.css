@@ -3515,7 +3515,7 @@ body.theme-dark .crm-workspace {
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  gap: 24px !important;
+  gap: 16px !important;
   text-align: left !important;
 }
 
@@ -3529,9 +3529,9 @@ body.theme-dark .crm-workspace {
 .dashboard-header-icon {
   display: grid;
   place-items: center;
-  width: 74px;
-  height: 74px;
-  border-radius: 22px;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
   background: #F1ECFF;
   color: #6D4CFF;
   box-shadow: 0 10px 24px rgba(109, 76, 255, 0.12);
@@ -3539,9 +3539,9 @@ body.theme-dark .crm-workspace {
 }
 
 .dashboard-header-icon svg {
-  width: 36px;
-  height: 36px;
-  stroke-width: 2.4;
+  width: 28px;
+  height: 28px;
+  stroke-width: 2.2;
 }
 
 .dashboard-header-text {
@@ -3556,18 +3556,15 @@ body.theme-dark .crm-workspace {
 .dashboard-header-title {
   margin: 0;
   color: #0F172A;
-  font-size: 2.5rem;
+  font-size: clamp(1.85rem, 2.5vw, 2.35rem);
   font-weight: 800;
   line-height: 1.1;
+  letter-spacing: -.03em;
   white-space: nowrap;
 }
 
 .dashboard-header-subtitle {
-  margin: 0;
-  color: #64748B;
-  font-size: 1.3rem;
-  font-weight: 600;
-  line-height: 1.2;
+  display: none;
 }
 
 body.theme-dark .dashboard-header-title {
