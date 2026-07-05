@@ -3415,7 +3415,10 @@ const openAppointmentModal = async ({ appointment = null, lead = null, date = ""
   const submit = appointmentForm.querySelector("button[type='submit']");
   const deleteButton = appointmentModal.querySelector("[data-delete-appointment]");
   if (title) title.textContent = appointment ? "Detalhes do agendamento" : allowDuplicate ? "Reagendar cliente" : "Agendar cliente";
-  if (submit) submit.textContent = appointment ? "Salvar alteracoes" : allowDuplicate ? "Confirmar reagendamento" : "Confirmar agendamento";
+  if (submit) {
+    submit.textContent = appointment ? "Salvar alteracoes" : allowDuplicate ? "Confirmar reagendamento" : "Confirmar agendamento";
+    submit.disabled = false;
+  }
   if (deleteButton) deleteButton.hidden = !appointment;
 
   appointmentModal.showModal();
