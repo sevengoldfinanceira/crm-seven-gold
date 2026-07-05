@@ -4251,7 +4251,7 @@ const createLeadCard = (lead) => {
   }
   leadDropdown.append(editItem);
 
-  const stageHasManualTags = getAvailableTagsForStage(lead.status).length > 0;
+  const stageHasManualTags = getAvailableTagsForStage(lead.status).length > 0 && lead.status !== "primeiro_contato" && lead.status !== "agendamento";
   let tagMenuContainer = null;
   let tagMenuButton = null;
   if (stageHasManualTags) {
