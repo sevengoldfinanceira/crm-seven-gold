@@ -7963,7 +7963,7 @@ body.theme-dark .weekly-day-card.has-appointments {
 
 /* Redesigned appointments list padding when divider is header accent */
 .weekly-day-card-appointments {
-  padding: 12px 2px 12px 8px !important;
+  padding: 12px 8px !important;
 }
 
 /* Redesigned Appointment Card Styles */
