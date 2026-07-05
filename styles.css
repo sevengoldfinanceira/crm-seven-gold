@@ -7305,7 +7305,7 @@ body.theme-dark .calendar-status {
 
 /* Redesigned Day Card Header */
 .day-card-header {
-  padding: 14px 6px 0 !important;
+  padding: 16px 12px 0 !important;
   flex-shrink: 0 !important;
   width: 100% !important;
   box-sizing: border-box !important;
@@ -7313,25 +7313,25 @@ body.theme-dark .calendar-status {
 
 .day-header-main {
   display: grid !important;
-  grid-template-columns: auto 1px 62px !important;
+  grid-template-columns: auto 1px 72px !important;
   justify-content: space-between !important;
   align-items: center !important;
-  gap: 4px !important;
-  min-height: 52px !important;
+  gap: 8px !important;
+  min-height: 56px !important;
   width: 100% !important;
 }
 
 .day-header-left {
   display: flex !important;
   align-items: center !important;
-  gap: 6px !important;
+  gap: 10px !important;
   min-width: 0 !important;
 }
 
 .day-icon {
-  width: 36px !important;
-  height: 36px !important;
-  border-radius: 10px !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
   background: #F1ECFF !important;
   color: #6D4CFF !important;
   display: flex !important;
@@ -7341,20 +7341,20 @@ body.theme-dark .calendar-status {
 }
 
 .day-icon svg {
-  width: 18px !important;
-  height: 18px !important;
-  stroke-width: 2.2 !important;
+  width: 20px !important;
+  height: 20px !important;
+  stroke-width: 2.3 !important;
 }
 
 .day-info {
   display: flex !important;
   flex-direction: column !important;
-  gap: 1px !important;
+  gap: 3px !important;
   min-width: 0 !important;
 }
 
 .day-name {
-  font-size: 14px !important;
+  font-size: 16px !important;
   font-weight: 900 !important;
   color: #0f172a !important;
   line-height: 1.1 !important;
@@ -7366,7 +7366,7 @@ body.theme-dark .day-name {
 }
 
 .day-date {
-  font-size: 11px !important;
+  font-size: 12px !important;
   font-weight: 700 !important;
   color: #64748b !important;
   line-height: 1.1 !important;
@@ -7378,7 +7378,7 @@ body.theme-dark .day-date {
 
 .day-header-divider {
   width: 1px !important;
-  height: 40px !important;
+  height: 44px !important;
   background: #e2e8f0 !important;
   border-radius: 999px !important;
 }
@@ -7392,13 +7392,13 @@ body.theme-dark .day-header-divider {
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 2px !important;
+  gap: 3px !important;
   text-align: center !important;
   min-width: 0 !important;
 }
 
 .day-count {
-  font-size: 18px !important;
+  font-size: 20px !important;
   font-weight: 900 !important;
   color: #0f172a !important;
   line-height: 1.1 !important;
@@ -7409,7 +7409,7 @@ body.theme-dark .day-count {
 }
 
 .day-count-label {
-  font-size: 9px !important;
+  font-size: 10px !important;
   font-weight: 800 !important;
   color: #64748b !important;
   line-height: 1.1 !important;
@@ -7424,7 +7424,7 @@ body.theme-dark .day-count-label {
 .day-header-accent {
   width: 100% !important;
   height: 3px !important;
-  margin-top: 12px !important;
+  margin-top: 14px !important;
   border-radius: 999px !important;
   background: var(--day-color, #6d4cff) !important;
 }
