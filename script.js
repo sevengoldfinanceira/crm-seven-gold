@@ -328,6 +328,148 @@ const getLeadTagConfig = (lead) => {
   return PIPELINE_STAGE_TAGS_MAP[value] || { value, label: value, className: "default" };
 };
 
+const updateLeadCardTagMenu = (card, status, currentTagValue) => {
+  const badgeRow = card.querySelector(".lead-badges-row") || card.querySelector(".lead-trash-badge-row");
+  if (!badgeRow) return;
+
+  const existingDropdown = badgeRow.querySelector(".lead-tag-dropdown-container");
+  if (existingDropdown) existingDropdown.remove();
+  const existingManualTag = badgeRow.querySelector(".lead-tag-badge:not(.lead-time-badge)");
+  if (existingManualTag) existingManualTag.remove();
+  const existingManualTag2 = badgeRow.querySelector(".lead-tag.manual-tag");
+  if (existingManualTag2) existingManualTag2.remove();
+
+  if (status === "cancelado") {
+    delete card.dataset.leadTag;
+    return;
+  }
+
+  const getLeadTagIcon = (className) => {
+    if (className === "numero-invalido" || className === "sem-whats") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2 4.18 2 2 0 0 1 4.18 2h3a2 2 0 0 1 2 1.72c.12.9.32 1.77.6 2.6"/><line x1="22" y1="2" x2="2" y2="22"/></svg>`;
+    }
+    if (className === "retorno" || className === "retornar") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
+    }
+    if (className === "confirmar-agend" || className === "pre-agendamento") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+    }
+    if (className === "acompanhar") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`;
+    }
+    if (className === "nao-quer" || className === "faltou" || className === "cancelado") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+    }
+    if (className === "reagendar" || className === "remarcar" || className === "reagendado") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>`;
+    }
+    if (className === "sem-retorno" || className === "nao-responde" || className === "esfriando") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5L7 19M19 17L5 7M2 12h20"/></svg>`;
+    }
+    if (className === "proposta" || className === "qualificado" || className === "fechado") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+    }
+    if (className === "negociando") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/></svg>`;
+    }
+    if (className === "aguardando-doc") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+    }
+    if (className === "ligar") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2 4.18 2 2 0 0 1 4.18 2h3a2 2 0 0 1 2 1.72"/></svg>`;
+    }
+    if (className === "a-checar") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 1 1 5.82 1c0 2-3 2-3 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+    }
+    if (className === "checado") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`;
+    }
+    return "";
+  };
+
+  const manualTagConfig = currentTagValue ? (PIPELINE_STAGE_TAGS_MAP[currentTagValue] || { value: currentTagValue, label: currentTagValue, className: "default" }) : null;
+  const isClickableTagStage = getAvailableTagsForStage(status).length > 0;
+
+  if (isClickableTagStage) {
+    const tagDropdownContainer = document.createElement("div");
+    tagDropdownContainer.className = "lead-tag-dropdown-container";
+    tagDropdownContainer.style.position = "relative";
+    tagDropdownContainer.style.display = "inline-flex";
+
+    const stageBadgeBtn = document.createElement("button");
+    stageBadgeBtn.type = "button";
+    
+    const tagIconSvg = `<svg class="lead-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`;
+
+    if (manualTagConfig) {
+      stageBadgeBtn.className = `lead-tag-badge clickable-tag-badge lead-tag-${manualTagConfig.className}`;
+      stageBadgeBtn.innerHTML = `${getLeadTagIcon(manualTagConfig.className) || tagIconSvg} ${manualTagConfig.label}`;
+    } else {
+      stageBadgeBtn.className = `lead-tag-badge clickable-tag-badge lead-tag-none`;
+      stageBadgeBtn.innerHTML = `${tagIconSvg} Sem etiqueta`;
+    }
+    
+    const tagDropdownList = document.createElement("div");
+    tagDropdownList.className = "lead-tag-dropdown-menu";
+    
+    const availableTags = getAvailableTagsForStage(status);
+    
+    const clearOpt = document.createElement("button");
+    clearOpt.type = "button";
+    clearOpt.className = "lead-tag-dropdown-item lead-tag-dropdown-item--clear";
+    clearOpt.textContent = "Sem etiqueta";
+    if (!manualTagConfig) clearOpt.classList.add("is-active");
+    clearOpt.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      tagDropdownList.classList.remove("is-open");
+      const leadId = card.dataset.leadId;
+      await updateLeadTag(leadId, null);
+    });
+    tagDropdownList.append(clearOpt);
+
+    availableTags.forEach((tagOpt) => {
+      const opt = document.createElement("button");
+      opt.type = "button";
+      opt.className = `lead-tag-dropdown-item lead-tag-dropdown-item--${tagOpt.className}`;
+      opt.textContent = tagOpt.label;
+      if (manualTagConfig && manualTagConfig.value === tagOpt.value) opt.classList.add("is-active");
+      opt.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        tagDropdownList.classList.remove("is-open");
+        const leadId = card.dataset.leadId;
+        await updateLeadTag(leadId, tagOpt.value);
+      });
+      tagDropdownList.append(opt);
+    });
+
+    stageBadgeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.querySelectorAll(".lead-tag-dropdown-menu.is-open, .appointment-status-dropdown.is-open, .appointment-card-dropdown.is-open, .lead-card-dropdown.is-open").forEach((openD) => {
+        if (openD !== tagDropdownList) openD.classList.remove("is-open");
+      });
+      tagDropdownList.classList.toggle("is-open");
+    });
+
+    tagDropdownContainer.append(stageBadgeBtn, tagDropdownList);
+    badgeRow.append(tagDropdownContainer);
+  } else {
+    if (manualTagConfig) {
+      const manualTagBadge = document.createElement("span");
+      manualTagBadge.className = `lead-tag-badge lead-tag-${manualTagConfig.className}`;
+      manualTagBadge.dataset.leadTagValue = manualTagConfig.value;
+      manualTagBadge.title = `Etiqueta: ${manualTagConfig.label}`;
+      manualTagBadge.innerHTML = `${getLeadTagIcon(manualTagConfig.className)} ${manualTagConfig.label}`;
+      badgeRow.append(manualTagBadge);
+    }
+  }
+
+  if (manualTagConfig) {
+    card.dataset.leadTag = manualTagConfig.value;
+  } else {
+    delete card.dataset.leadTag;
+  }
+};
+
 const pipelineColumnTagFilters = new Map();
 
 const getFilterTagsForStage = (stageId) => {
@@ -4637,11 +4779,7 @@ const updateLeadStatus = async (leadId, status, { optimistic = false, skipAppoin
       } else {
         targetStack.append(sourceCard);
         sourceCard.dataset.status = status;
-        const existingManualTag = sourceCard.querySelector(".lead-tag.manual-tag");
-        if (status !== "cancelado" && existingManualTag) {
-          existingManualTag.remove();
-          sourceCard.dataset.leadTag = "";
-        }
+        updateLeadCardTagMenu(sourceCard, status, null);
       }
 
       const counter = targetColumn.querySelector("small");
@@ -4821,86 +4959,7 @@ const createLeadCard = (lead) => {
   };
 
   const manualTagConfig = getLeadTagConfig(lead);
-  let manualTagBadge = null;
-  const isClickableTagStage = getAvailableTagsForStage(lead.status).length > 0;
-
-  if (isClickableTagStage && lead.status !== "cancelado") {
-    const tagDropdownContainer = document.createElement("div");
-    tagDropdownContainer.className = "lead-tag-dropdown-container";
-    tagDropdownContainer.style.position = "relative";
-    tagDropdownContainer.style.display = "inline-flex";
-
-    const stageBadgeBtn = document.createElement("button");
-    stageBadgeBtn.type = "button";
-    
-    const tagIconSvg = `<svg class="lead-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`;
-
-    if (manualTagConfig) {
-      stageBadgeBtn.className = `lead-tag-badge clickable-tag-badge lead-tag-${manualTagConfig.className}`;
-      stageBadgeBtn.innerHTML = `${getLeadTagIcon(manualTagConfig.className) || tagIconSvg} ${manualTagConfig.label}`;
-    } else {
-      stageBadgeBtn.className = `lead-tag-badge clickable-tag-badge lead-tag-none`;
-      stageBadgeBtn.innerHTML = `${tagIconSvg} Sem etiqueta`;
-    }
-    
-    tagDropdownList = document.createElement("div");
-    tagDropdownList.className = "lead-tag-dropdown-menu";
-    
-    const availableTags = getAvailableTagsForStage(lead.status);
-    
-    const clearOpt = document.createElement("button");
-    clearOpt.type = "button";
-    clearOpt.className = "lead-tag-dropdown-item lead-tag-dropdown-item--clear";
-    clearOpt.textContent = "Sem etiqueta";
-    if (!manualTagConfig) clearOpt.classList.add("is-active");
-    clearOpt.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      tagDropdownList.classList.remove("is-open");
-      const ok = await updateLeadTag(lead.id, null);
-      if (ok) await loadLeads();
-    });
-    tagDropdownList.append(clearOpt);
-
-    availableTags.forEach((tagOpt) => {
-      const opt = document.createElement("button");
-      opt.type = "button";
-      opt.className = `lead-tag-dropdown-item lead-tag-dropdown-item--${tagOpt.className}`;
-      opt.textContent = tagOpt.label;
-      if (manualTagConfig && manualTagConfig.value === tagOpt.value) opt.classList.add("is-active");
-      opt.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        tagDropdownList.classList.remove("is-open");
-        const ok = await updateLeadTag(lead.id, tagOpt.value);
-        if (ok) await loadLeads();
-      });
-      tagDropdownList.append(opt);
-    });
-
-    stageBadgeBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      document.querySelectorAll(".lead-tag-dropdown-menu.is-open, .appointment-status-dropdown.is-open, .appointment-card-dropdown.is-open, .lead-card-dropdown.is-open").forEach((openD) => {
-        if (openD !== tagDropdownList) openD.classList.remove("is-open");
-      });
-      tagDropdownList.classList.toggle("is-open");
-    });
-
-    tagDropdownContainer.append(stageBadgeBtn, tagDropdownList);
-    badgeRow.append(tagDropdownContainer);
-  } else {
-    if (manualTagConfig) {
-      manualTagBadge = document.createElement("span");
-      manualTagBadge.className = `lead-tag-badge lead-tag-${manualTagConfig.className}`;
-      manualTagBadge.dataset.leadTagValue = manualTagConfig.value;
-      manualTagBadge.title = `Etiqueta: ${manualTagConfig.label}`;
-      manualTagBadge.innerHTML = `${getLeadTagIcon(manualTagConfig.className)} ${manualTagConfig.label}`;
-      if (lead.status !== "cancelado") badgeRow.append(manualTagBadge);
-    }
-  }
-  if (manualTagConfig && lead?.id) {
-    card.dataset.leadTag = manualTagConfig.value;
-  } else if (lead?.id) {
-    delete card.dataset.leadTag;
-  }
+  updateLeadCardTagMenu(card, lead.status, manualTagConfig?.value || null);
 
   let trashBadgeRow = null;
   if (lead.status === "cancelado") {
