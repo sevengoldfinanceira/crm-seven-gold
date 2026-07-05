@@ -6865,9 +6865,9 @@ body.theme-dark .card-stack::-webkit-scrollbar-thumb:hover {
   flex: 1 !important;
   display: flex !important;
   flex-direction: column !important;
-  min-height: 0 !important;
-  height: 100% !important;
-  max-height: calc(100vh - 210px) !important;
+  height: calc(100vh - 260px) !important;
+  min-height: calc(100vh - 260px) !important;
+  max-height: calc(100vh - 260px) !important;
   overflow: visible !important;
 }
 
