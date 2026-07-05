@@ -8413,6 +8413,70 @@ body.theme-dark .lead-tag-badge.lead-tag-nao-responde {
   border-color: rgba(249, 115, 22, 0.3) !important;
 }
 
+.lead-tag-badge.lead-tag-numero-invalido,
+.lead-tag-badge.lead-tag-sem-whats {
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+  border-color: #fecaca !important;
+}
+
+body.theme-dark .lead-tag-badge.lead-tag-numero-invalido,
+body.theme-dark .lead-tag-badge.lead-tag-sem-whats {
+  background: rgba(220, 38, 38, 0.15) !important;
+  color: #f87171 !important;
+  border-color: rgba(248, 113, 113, 0.3) !important;
+}
+
+.lead-tag-badge.lead-tag-negociando {
+  background: #ecfeff !important;
+  color: #0891b2 !important;
+  border-color: #a5f3fc !important;
+}
+
+body.theme-dark .lead-tag-badge.lead-tag-negociando {
+  background: rgba(8, 145, 178, 0.15) !important;
+  color: #22d3ee !important;
+  border-color: rgba(34, 211, 238, 0.3) !important;
+}
+
+.lead-tag-badge.lead-tag-aguardando-doc,
+.lead-tag-badge.lead-tag-ligar {
+  background: #faf5ff !important;
+  color: #7c3aed !important;
+  border-color: #ddd6fe !important;
+}
+
+body.theme-dark .lead-tag-badge.lead-tag-aguardando-doc,
+body.theme-dark .lead-tag-badge.lead-tag-ligar {
+  background: rgba(124, 58, 237, 0.15) !important;
+  color: #c4b5fd !important;
+  border-color: rgba(196, 181, 253, 0.3) !important;
+}
+
+.lead-tag-badge.lead-tag-a-checar {
+  background: #fff7ed !important;
+  color: #ea580c !important;
+  border-color: #fed7aa !important;
+}
+
+body.theme-dark .lead-tag-badge.lead-tag-a-checar {
+  background: rgba(234, 88, 12, 0.15) !important;
+  color: #fb923c !important;
+  border-color: rgba(251, 146, 60, 0.3) !important;
+}
+
+.lead-tag-badge.lead-tag-checado {
+  background: #ecfdf5 !important;
+  color: #059669 !important;
+  border-color: #a7f3d0 !important;
+}
+
+body.theme-dark .lead-tag-badge.lead-tag-checado {
+  background: rgba(5, 150, 105, 0.15) !important;
+  color: #34d399 !important;
+  border-color: rgba(52, 211, 153, 0.3) !important;
+}
+
 .lead-tag-badge.lead-tag-qualificado {
   background: #ecfdf5 !important;
   color: #059669 !important;

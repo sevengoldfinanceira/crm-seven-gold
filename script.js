@@ -207,29 +207,26 @@ const statusLabels = {
 };
 
 const PIPELINE_STAGE_TAGS = {
+  lead_recebido: [
+    {
+      value: "numero_invalido",
+      label: "Nº inválido",
+      className: "numero-invalido",
+    },
+  ],
   primeiro_contato: [
     {
-      value: "retorno",
-      label: "Retorno",
-      className: "retorno",
+      value: "sem_whats",
+      label: "Sem Whats",
+      className: "sem-whats",
     },
+  ],
+  agendamento: [
     {
       value: "confirmar_agend",
       label: "Confirmar agend.",
       className: "confirmar-agend",
     },
-    {
-      value: "acompanhar",
-      label: "Acompanhar",
-      className: "acompanhar",
-    },
-    {
-      value: "nao_quer",
-      label: "Não quer",
-      className: "nao-quer",
-    },
-  ],
-  agendamento: [
     {
       value: "reagendar",
       label: "Reagendar",
@@ -244,6 +241,42 @@ const PIPELINE_STAGE_TAGS = {
       value: "nao_quer",
       label: "Não quer",
       className: "nao-quer",
+    },
+  ],
+  cliente_em_loja: [
+    {
+      value: "negociando",
+      label: "Negociando",
+      className: "negociando",
+    },
+  ],
+  proposta_enviada: [
+    {
+      value: "aguardando_doc",
+      label: "Aguardando doc",
+      className: "aguardando-doc",
+    },
+    {
+      value: "ligar",
+      label: "Ligar",
+      className: "ligar",
+    },
+  ],
+  venda_fechada: [
+    {
+      value: "a_checar",
+      label: "A checar",
+      className: "a-checar",
+    },
+    {
+      value: "checado",
+      label: "Checado",
+      className: "checado",
+    },
+    {
+      value: "venda_cancelada",
+      label: "Cancelado",
+      className: "cancelado",
     },
   ],
 };
@@ -3900,7 +3933,8 @@ const updateLeadTag = async (leadId, tagValue) => {
   }
 
   try {
-    await updateLeadThroughApi(client, leadId, { tags: tagValue ? [tagValue] : [] });
+    const stageId = card.dataset.status || "lead_recebido";
+    await updateLeadThroughApi(client, leadId, { status: stageId, tags: tagValue ? [tagValue] : [] });
     if (Array.isArray(card.dataset) && card.dataset) {
       if (tagValue) {
         card.dataset.leadTag = tagValue;
@@ -3911,7 +3945,6 @@ const updateLeadTag = async (leadId, tagValue) => {
     const previousManualTag = card.querySelector(".lead-tag.manual-tag");
     if (previousManualTag) previousManualTag.remove();
     const badgeRow = card.querySelector(".lead-card-badge-row") || card.querySelector(".lead-trash-badge-row");
-    const stageId = card.dataset.status;
     if (tagValue && badgeRow && getAvailableTagsForStage(stageId).length > 0) {
       const config = PIPELINE_STAGE_TAGS_MAP[tagValue] || { value: tagValue, label: tagValue, className: "default" };
       const tagEl = document.createElement("div");
@@ -4187,6 +4220,9 @@ const createLeadCard = (lead) => {
   badgeRow.append(warningBadge);
 
   const getLeadTagIcon = (className) => {
+    if (className === "numero-invalido" || className === "sem-whats") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2 4.18 2 2 0 0 1 4.18 2h3a2 2 0 0 1 2 1.72c.12.9.32 1.77.6 2.6"/><line x1="22" y1="2" x2="2" y2="22"/></svg>`;
+    }
     if (className === "retorno" || className === "retornar") {
       return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
     }
@@ -4208,12 +4244,27 @@ const createLeadCard = (lead) => {
     if (className === "proposta" || className === "qualificado" || className === "fechado") {
       return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
     }
+    if (className === "negociando") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/></svg>`;
+    }
+    if (className === "aguardando-doc") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+    }
+    if (className === "ligar") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2 4.18 2 2 0 0 1 4.18 2h3a2 2 0 0 1 2 1.72"/></svg>`;
+    }
+    if (className === "a-checar") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 1 1 5.82 1c0 2-3 2-3 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+    }
+    if (className === "checado") {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`;
+    }
     return "";
   };
 
   const manualTagConfig = getLeadTagConfig(lead);
   let manualTagBadge = null;
-  const isClickableTagStage = lead.status === "primeiro_contato" || lead.status === "agendamento";
+  const isClickableTagStage = getAvailableTagsForStage(lead.status).length > 0;
 
   if (isClickableTagStage && lead.status !== "cancelado") {
     const tagDropdownContainer = document.createElement("div");
@@ -4502,7 +4553,7 @@ const createLeadCard = (lead) => {
   }
   leadDropdown.append(editItem);
 
-  const stageHasManualTags = getAvailableTagsForStage(lead.status).length > 0 && lead.status !== "primeiro_contato" && lead.status !== "agendamento";
+  const stageHasManualTags = false;
   let tagMenuContainer = null;
   let tagMenuButton = null;
   if (stageHasManualTags) {
