@@ -11,7 +11,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=compact-cards-v4" />
+    <link rel="stylesheet" href="styles.css?v=compact-cards-v6" />
     <link rel="stylesheet" href="searchable-select.css?v=purple-highlight-v1" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
@@ -466,7 +466,7 @@
             </div>
 
             <!-- Análise de Desempenho -->
-            <div style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+            <div style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px; margin-top: 24px;">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
               <h2 style="font-size: 1.1rem; font-weight: 800; color: #101233; margin: 0;">Análise de Desempenho</h2>
             </div>
@@ -475,15 +475,18 @@
 
               <!-- Funil Comercial -->
               <article class="dash-chart-card dash-chart-card--funnel">
-                <div class="dash-chart-header">
-                  <div class="dash-chart-icon-box" style="background: #EEF2FF; color: #6D4CFF;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L2 22"/><path d="M16 2l6 6"/><path d="M12 8l6 6"/><path d="M8 14l6 6"/></svg>
-                  </div>
-                  <div>
-                    <h3 class="dash-chart-title">Funil Comercial</h3>
-                    <span class="dash-chart-subtitle">Conversão por etapa do funil</span>
+                <div class="funnel-header" style="display: flex; align-items: center; justify-content: space-between;">
+                  <div class="funnel-title-area" style="display: flex; align-items: center;">
+                    <div class="funnel-icon-box" style="background: #EEF2FF; color: #6D4CFF;">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L2 22"/><path d="M16 2l6 6"/><path d="M12 8l6 6"/><path d="M8 14l6 6"/></svg>
+                    </div>
+                    <div>
+                      <h3 class="funnel-title">Funil Comercial</h3>
+                      <span class="funnel-subtitle">Conversão por etapa do funil</span>
+                    </div>
                   </div>
                 </div>
+                <div class="funnel-divider"></div>
                 <div id="dash-funnel-chart" class="dash-chart-body dash-chart-body--funnel">
                   <div class="skeleton-shimmer" style="height: 100%; border-radius: 8px;"></div>
                 </div>
@@ -1175,15 +1178,23 @@
             Telefone
             <input name="telefone" type="text" placeholder="Ex: 11999998888" />
           </label>
-          <label>
-            Origem
-            <select name="origin">
-              <option>Site publico</option>
-              <option>Instagram</option>
-              <option>WhatsApp</option>
-              <option>Indicacao</option>
-            </select>
-          </label>
+          <div class="lead-modal-row-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <label style="margin-bottom: 0;">
+              Origem
+              <select name="origin" style="margin-bottom: 0;">
+                <option>Site publico</option>
+                <option>Instagram</option>
+                <option>WhatsApp</option>
+                <option>Indicacao</option>
+              </select>
+            </label>
+            <label class="lead-modal-tag-field" data-lead-form-tag-field style="margin-bottom: 0;">
+              Etiqueta do lead
+              <select name="lead_tag" data-lead-tag-select style="margin-bottom: 0;">
+                <option value="">Sem etiqueta</option>
+              </select>
+            </label>
+          </div>
           <label>
             Anota&ccedil;&otilde;es
             <textarea name="note" rows="4" placeholder="Anota&ccedil;&otilde;es gerais sobre o cliente"></textarea>
@@ -1197,40 +1208,37 @@
               </label>
               <label>
                 Valor do cr&eacute;dito
-                <input name="credit_value" type="number" min="0" step="0.01" inputmode="decimal" placeholder="R$ 0,00" />
+                <input name="credit_value" type="text" inputmode="decimal" placeholder="R$ 0,00" />
               </label>
               <label>
                 Valor da entrada
-                <input name="down_payment_value" type="number" min="0" step="0.01" inputmode="decimal" placeholder="R$ 0,00" />
+                <input name="down_payment_value" type="text" inputmode="decimal" placeholder="R$ 0,00" />
               </label>
               <label>
                 Valor da parcela
-                <input name="installment_value" type="number" min="0" step="0.01" inputmode="decimal" placeholder="R$ 0,00" />
+                <input name="installment_value" type="text" inputmode="decimal" placeholder="R$ 0,00" />
               </label>
             </div>
           </fieldset>
-
-          <label class="lead-modal-tag-field" data-lead-form-tag-field>
-            Etiqueta do lead
-            <select name="lead_tag" data-lead-tag-select>
-              <option value="">Sem etiqueta</option>
-            </select>
-          </label>
+ 
+          <!-- Etiqueta do lead movida para cima ao lado da Origem -->
         </div>
-
+ 
         <div id="modal-lead-tasks-section" class="lead-modal-tab-content" style="display: none; width: 100%;">
           <h3 style="font-size: 0.95rem; font-weight: 700; margin: 0 0 12px; color: var(--ink);">Tarefas / Retornos</h3>
           <div id="modal-lead-tasks-list" style="display: grid; gap: 10px;"></div>
         </div>
-
+ 
         <div id="modal-lead-history-section" class="lead-modal-tab-content" style="display: none; width: 100%;">
           <h3 style="font-size: 0.95rem; font-weight: 700; margin: 0 0 12px; color: var(--ink);">Histórico / Linha do Tempo</h3>
           <div id="modal-lead-history-list" style="display: grid; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 4px;"></div>
         </div>
-
+ 
         <p class="form-status" data-lead-form-status></p>
-        <button class="new-lead-button" type="submit">Salvar lead</button>
-        <button class="delete-lead-modal-btn" id="delete-lead-modal-btn" type="button" style="display: none;">Excluir Lead</button>
+        <div class="lead-modal-actions-row">
+          <button class="delete-lead-modal-btn" id="delete-lead-modal-btn" type="button" style="display: none;">Excluir Lead</button>
+          <button class="new-lead-button" type="submit">Salvar lead</button>
+        </div>
       </form>
     </dialog>
 
@@ -1312,7 +1320,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=profile-access-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=production-locked-month-filter-v8"></script>
+    <script src="script.js?v=production-locked-month-filter-v10"></script>
     <script src="/searchable-select.js?v=responsible-select-fix-v1"></script>
     <script src="/pwa.js"></script>
   </body>

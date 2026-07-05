@@ -814,13 +814,19 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
     leadForm.elements["property_region"].value = lead.property_region || "";
   }
   if (leadForm.elements["credit_value"]) {
-    leadForm.elements["credit_value"].value = lead.credit_value ?? "";
+    const val = lead.credit_value;
+    leadForm.elements["credit_value"].value = (val !== null && val !== undefined && val !== "") ? (parseFloat(val) * 100).toFixed(0) : "";
+    leadForm.elements["credit_value"].dispatchEvent(new Event("input"));
   }
   if (leadForm.elements["down_payment_value"]) {
-    leadForm.elements["down_payment_value"].value = lead.down_payment_value ?? "";
+    const val = lead.down_payment_value;
+    leadForm.elements["down_payment_value"].value = (val !== null && val !== undefined && val !== "") ? (parseFloat(val) * 100).toFixed(0) : "";
+    leadForm.elements["down_payment_value"].dispatchEvent(new Event("input"));
   }
   if (leadForm.elements["installment_value"]) {
-    leadForm.elements["installment_value"].value = lead.installment_value ?? "";
+    const val = lead.installment_value;
+    leadForm.elements["installment_value"].value = (val !== null && val !== undefined && val !== "") ? (parseFloat(val) * 100).toFixed(0) : "";
+    leadForm.elements["installment_value"].dispatchEvent(new Event("input"));
   }
 
   const tagSelectEl = leadForm.querySelector("[data-lead-tag-select]");
@@ -4305,10 +4311,18 @@ const formatLeadDate = (value) => {
 };
 
 const parseOptionalMoney = (value) => {
-  const normalized = String(value ?? "").trim().replace(",", ".");
-  if (!normalized) return null;
-
-  const amount = Number(normalized);
+  if (value === null || value === undefined) return null;
+  let clean = String(value)
+    .replace(/R\$/g, "")
+    .replace(/\s/g, "");
+  
+  if (clean.includes(",") && clean.includes(".")) {
+    clean = clean.replace(/\./g, "").replace(",", ".");
+  } else if (clean.includes(",")) {
+    clean = clean.replace(",", ".");
+  }
+  
+  const amount = parseFloat(clean);
   return Number.isFinite(amount) && amount >= 0 ? amount : null;
 };
 
@@ -6243,6 +6257,50 @@ const setupDashboardMetricDrag = () => {
   });
 };
 
+const setupLeadFormCurrencyFormatting = () => {
+  const formatBRL = (num) => {
+    return num.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+  };
+
+  const parseVal = (valStr) => {
+    const clean = String(valStr).replace(/\D/g, "");
+    return clean ? parseFloat(clean) / 100 : 0;
+  };
+
+  const setupInput = (inputName) => {
+    const input = document.querySelector(`input[name="${inputName}"]`);
+    if (!input) return;
+
+    input.addEventListener("input", (e) => {
+      let val = e.target.value.replace(/\D/g, "");
+      if (!val) {
+        e.target.value = "";
+        return;
+      }
+      const num = parseFloat(val) / 100;
+      e.target.value = formatBRL(num);
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+        e.preventDefault();
+        const current = parseVal(e.target.value);
+        const step = 100;
+        const next = e.key === "ArrowUp" ? current + step : Math.max(0, current - step);
+        e.target.value = next > 0 ? formatBRL(next) : "";
+        e.target.dispatchEvent(new Event("input"));
+      }
+    });
+  };
+
+  setupInput("credit_value");
+  setupInput("down_payment_value");
+  setupInput("installment_value");
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   calendarWeekStart = getWeekStart();
   renderCalendar();
@@ -6254,6 +6312,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupSidebarNavDrag();
   setupDashboardMetricDrag();
   initLeadModalTabs();
+  setupLeadFormCurrencyFormatting();
   switchTab();
   loadLeads();
 });

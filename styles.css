@@ -5085,9 +5085,14 @@ body.theme-dark .kpi-subtext {
 
 /* Funnel V2 - Premium centered funnel */
 .dash-chart-card--funnel {
+  background: #FFFFFF;
   border: 1px solid #E5E7EB;
-  border-radius: 22px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  border-radius: 28px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+  padding: 28px;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
 }
 
 .dash-chart-body--funnel {
@@ -9982,4 +9987,33 @@ body.theme-dark .funnel-subtitle {
 
 body.theme-dark .funnel-divider {
   background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.lead-modal-actions-row {
+  display: flex !important;
+  gap: 12px !important;
+  justify-content: flex-end !important;
+  margin-top: 16px !important;
+  width: 100% !important;
+}
+
+.lead-modal-actions-row .new-lead-button {
+  width: auto !important;
+  height: 38px !important;
+  padding: 0 20px !important;
+  font-size: 0.9rem !important;
+  border-radius: 8px !important;
+  margin: 0 !important;
+}
+
+.lead-modal-actions-row .delete-lead-modal-btn {
+  width: auto !important;
+  height: 38px !important;
+  padding: 0 20px !important;
+  font-size: 0.9rem !important;
+  border-radius: 8px !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
