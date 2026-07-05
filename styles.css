@@ -3500,12 +3500,30 @@ body.theme-dark .crm-workspace {
   margin-bottom: 22px;
 }
 
+.dashboard-page-header-row {
+  display: grid !important;
+  grid-template-columns: 1fr auto 1fr !important;
+  align-items: center !important;
+  justify-content: stretch !important;
+  width: 100% !important;
+  gap: 24px !important;
+}
+
 .dashboard-page-header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 24px;
-  text-align: left;
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 24px !important;
+  text-align: left !important;
+}
+
+.dashboard-page-header-row .production-control {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  justify-self: center !important;
+  margin: 0 !important;
 }
 
 .dashboard-header-icon {

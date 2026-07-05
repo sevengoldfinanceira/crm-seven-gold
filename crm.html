@@ -135,17 +135,28 @@
         <section class="tab-content" data-tab="dashboard" style="display:none; background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);">
           <section class="dashboard-section" aria-labelledby="dashboard-title">
             <header class="dashboard-header">
-              <div class="dashboard-page-header">
-                <span class="dashboard-header-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 17l6-6 4 4 7-9"/>
-                    <path d="M14 6h6v6"/>
-                  </svg>
-                </span>
-                <div class="dashboard-header-text">
-                  <h1 id="dashboard-title" class="dashboard-header-title">Dashboard Comercial</h1>
-                  <p class="dashboard-header-subtitle">Acompanhe seus leads, tarefas e fechamentos em tempo real.</p>
+              <div class="dashboard-page-header-row">
+                <div class="dashboard-page-header">
+                  <span class="dashboard-header-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 17l6-6 4 4 7-9"/>
+                      <path d="M14 6h6v6"/>
+                    </svg>
+                  </span>
+                  <div class="dashboard-header-text">
+                    <h1 id="dashboard-title" class="dashboard-header-title">Dashboard Comercial</h1>
+                    <p class="dashboard-header-subtitle">Acompanhe seus leads, tarefas e fechamentos em tempo real.</p>
+                  </div>
                 </div>
+
+                <section id="production-control" class="production-control" aria-live="polite" hidden>
+                  <button id="production-prev" class="production-nav" type="button" aria-label="Produção anterior">←</button>
+                  <div class="production-summary"><span id="production-eyebrow">Produção atual</span><strong id="production-name">Carregando...</strong><small id="production-range"></small></div>
+                  <span id="production-status" class="production-status"></span>
+                  <button id="production-next" class="production-nav" type="button" aria-label="Próxima produção">→</button>
+                  <button id="production-close" class="production-action production-action--danger" type="button" hidden>Fechar produção</button>
+                  <button id="production-start" class="production-action" type="button">Iniciar nova produção</button>
+                </section>
               </div>
               
               <div class="dash-dashboard-filters">
@@ -634,14 +645,6 @@
                 <span class="lead-count" data-lead-count>Carregando leads...</span>
               </div>
             </div>
-            <section id="production-control" class="production-control" aria-live="polite" hidden>
-              <button id="production-prev" class="production-nav" type="button" aria-label="Produção anterior">←</button>
-              <div class="production-summary"><span id="production-eyebrow">Produção atual</span><strong id="production-name">Carregando...</strong><small id="production-range"></small></div>
-              <span id="production-status" class="production-status"></span>
-              <button id="production-next" class="production-nav" type="button" aria-label="Próxima produção">→</button>
-              <button id="production-close" class="production-action production-action--danger" type="button" hidden>Fechar produção</button>
-              <button id="production-start" class="production-action" type="button">Iniciar nova produção</button>
-            </section>
             <button class="new-lead-button" type="button" data-open-modal>
               <span aria-hidden="true">+</span>
               Novo lead
