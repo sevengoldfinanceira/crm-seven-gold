@@ -8348,7 +8348,7 @@ body.theme-dark .lead-menu-button:hover {
   justify-content: center !important;
   gap: 6px !important;
   flex-wrap: wrap !important;
-  margin-bottom: 6px !important;
+  margin-bottom: 2px !important;
 }
 
 .lead-trash-badges {
@@ -8592,8 +8592,9 @@ body.theme-dark .lead-card-divider {
 .lead-info-list {
   display: flex !important;
   flex-direction: column !important;
-  gap: 4px !important;
+  gap: 3px !important;
   align-items: center !important;
+  margin-top: 0 !important;
 }
 
 .lead-info-row {
@@ -8727,6 +8728,11 @@ body.theme-dark .lead-action-button.copy {
   width: 14px !important;
   height: 14px !important;
   stroke-width: 2.5 !important;
+}
+
+.lead-action-button.whatsapp svg {
+  stroke: none !important;
+  fill: currentColor !important;
 }
 
 .lead-card-dropdown {
