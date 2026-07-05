@@ -9903,6 +9903,9 @@ body.theme-dark .lead-tag-badge.lead-trash-origin-badge--agendamento {
 .lead-tag-dropdown-item--nao-quer { color: #dc2626 !important; }
 .lead-tag-dropdown-item--nao-quer:hover { background-color: #fef2f2 !important; }
 
+.lead-tag-dropdown-item--faltou { color: #dc2626 !important; }
+.lead-tag-dropdown-item--faltou:hover { background-color: #fef2f2 !important; }
+
 .lead-tag-dropdown-item--reagendar { color: #7c3aed !important; }
 .lead-tag-dropdown-item--reagendar:hover { background-color: #f3e8ff !important; }
 

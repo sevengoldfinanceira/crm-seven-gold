@@ -252,6 +252,11 @@ const PIPELINE_STAGE_TAGS = {
       label: "Não quer",
       className: "nao-quer",
     },
+    {
+      value: "faltou",
+      label: "Faltou",
+      className: "faltou",
+    },
   ],
   cliente_em_loja: [
     {
@@ -5383,6 +5388,46 @@ const loadLeads = async () => {
   }
 
   visibleLeads = filterLeadsByPipelinePeriod(visibleLeads);
+
+  const agendamentoLeads = visibleLeads.filter((l) => l.status === "agendamento");
+  if (agendamentoLeads.length > 0) {
+    try {
+      const { data: apts } = await client
+        .from("appointments")
+        .select("lead_id, data_agendamento, hora_agendamento, status")
+        .in("lead_id", agendamentoLeads.map((l) => l.id))
+        .neq("status", "cancelado");
+
+      if (apts && apts.length > 0) {
+        const aptsByLeadId = new Map();
+        apts.forEach((apt) => {
+          const lid = String(apt.lead_id);
+          if (!aptsByLeadId.has(lid)) aptsByLeadId.set(lid, []);
+          aptsByLeadId.get(lid).push(apt);
+        });
+
+        visibleLeads = visibleLeads.map((lead) => {
+          if (lead.status !== "agendamento") return lead;
+          const currentTag = getLeadTagValue(lead);
+          if (currentTag && currentTag !== "sem_etiqueta") return lead;
+
+          const leadApts = aptsByLeadId.get(String(lead.id)) || [];
+          const hasPastDue = leadApts.some((apt) => {
+            const isPast = isAppointmentPastDue(apt);
+            const rawStatus = String(apt.status || "agendado").trim().toLowerCase();
+            return isPast && !["concluido", "confirmado", "reagendado"].includes(rawStatus);
+          });
+
+          if (hasPastDue) {
+            return { ...lead, tags: ["faltou"] };
+          }
+          return lead;
+        });
+      }
+    } catch (aptErr) {
+      console.warn("Erro ao buscar agendamentos para enriquecer tags:", aptErr);
+    }
+  }
 
   renderLeads(visibleLeads);
   if (!deepLinkedLeadHandled) {
