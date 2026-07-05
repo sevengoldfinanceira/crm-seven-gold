@@ -8903,5 +8903,43 @@ body.theme-dark .weekly-day-card.is-most-busy .weekly-day-card-footer .weekly-da
   color: #34d399 !important;
 }
 
+/* Pipeline Single Row Header and Filter Layout */
+.pipeline-header {
+  display: grid !important;
+  grid-template-columns: 1fr auto 1fr !important;
+  align-items: center !important;
+  justify-content: stretch !important;
+  width: 100% !important;
+  gap: 16px !important;
+  margin-bottom: 24px !important;
+}
 
+.pipeline-header .pipeline-title-copy {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  justify-self: start !important;
+  min-width: 0 !important;
+}
 
+.pipeline-header .filter-row {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  justify-self: center !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-end !important;
+  gap: 12px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  width: auto !important;
+}
+
+.pipeline-header .new-lead-button {
+  grid-column: 3 !important;
+  grid-row: 1 !important;
+  justify-self: end !important;
+  margin: 0 !important;
+}

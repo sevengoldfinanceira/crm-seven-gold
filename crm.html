@@ -645,67 +645,68 @@
                 <span class="lead-count" data-lead-count>Carregando leads...</span>
               </div>
             </div>
-            <button class="new-lead-button" type="button" data-open-modal>
-              <span aria-hidden="true">+</span>
-              Novo lead
-            </button>
-          </section>
 
-          <section class="filter-row" aria-label="Filtros do pipeline">
-            <label id="pipeline-team-filter-container" class="pipeline-filter-field pipeline-filter-field--team" style="display: none;">
-              <span class="pipeline-filter-label">Equipe</span>
-              <span class="pipeline-filter-control">
-                <svg class="pipeline-filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                <select id="pipeline-team-filter-select">
-                  <option value="">Todas as equipes</option>
-                </select>
-                <svg class="pipeline-filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-              </span>
-            </label>
-            <label id="responsible-filter-container" class="pipeline-filter-field pipeline-filter-field--responsible" style="display: none;">
-              <span class="pipeline-filter-label">Responsável</span>
-              <span class="pipeline-filter-control">
-                <svg class="pipeline-filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <select id="responsible-filter-select">
-                  <option value="">Todos os vendedores</option>
-                </select>
-                <svg class="pipeline-filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-              </span>
-            </label>
-            <div class="pipeline-calendar-picker">
-              <label class="pipeline-filter-field" style="flex:0 0 auto; min-width:120px;">
-                <span class="pipeline-filter-label">Período</span>
+            <section class="filter-row" aria-label="Filtros do pipeline">
+              <label id="pipeline-team-filter-container" class="pipeline-filter-field pipeline-filter-field--team" style="display: none;">
+                <span class="pipeline-filter-label">Equipe</span>
                 <span class="pipeline-filter-control">
-                  <svg class="pipeline-filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-                  <select id="pipeline-period-type-select">
-                    <option value="day">Dia</option>
-                    <option value="week" selected>Semana</option>
-                    <option value="month">Mês</option>
+                  <svg class="pipeline-filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <select id="pipeline-team-filter-select">
+                    <option value="">Todas as equipes</option>
                   </select>
                   <svg class="pipeline-filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                 </span>
               </label>
-              <div class="pipeline-calendar-date-picker">
-                <span id="pipeline-period-calendar-label" class="pipeline-filter-label">Selecionar semana</span>
-                <div class="dash-calendar-nav">
-                  <button class="dash-calendar-btn" type="button" data-pipeline-calendar-prev aria-label="Período anterior">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-                  </button>
-                  <div class="dash-calendar-field">
-                    <svg class="dash-calendar-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                    <input id="pipeline-period-day-input" type="date" aria-label="Selecionar dia" hidden>
-                    <input id="pipeline-period-week-input" type="week" aria-label="Selecionar semana">
-                    <input id="pipeline-period-month-input" type="month" aria-label="Mês da produção" hidden>
+              <label id="responsible-filter-container" class="pipeline-filter-field pipeline-filter-field--responsible" style="display: none;">
+                <span class="pipeline-filter-label">Responsável</span>
+                <span class="pipeline-filter-control">
+                  <svg class="pipeline-filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <select id="responsible-filter-select">
+                    <option value="">Todos os vendedores</option>
+                  </select>
+                  <svg class="pipeline-filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </label>
+              <div class="pipeline-calendar-picker">
+                <label class="pipeline-filter-field" style="flex:0 0 auto; min-width:120px;">
+                  <span class="pipeline-filter-label">Período</span>
+                  <span class="pipeline-filter-control">
+                    <svg class="pipeline-filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                    <select id="pipeline-period-type-select">
+                      <option value="day">Dia</option>
+                      <option value="week" selected>Semana</option>
+                      <option value="month">Mês</option>
+                    </select>
+                    <svg class="pipeline-filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </span>
+                </label>
+                <div class="pipeline-calendar-date-picker">
+                  <span id="pipeline-period-calendar-label" class="pipeline-filter-label">Selecionar semana</span>
+                  <div class="dash-calendar-nav">
+                    <button class="dash-calendar-btn" type="button" data-pipeline-calendar-prev aria-label="Período anterior">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <div class="dash-calendar-field">
+                      <svg class="dash-calendar-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                      <input id="pipeline-period-day-input" type="date" aria-label="Selecionar dia" hidden>
+                      <input id="pipeline-period-week-input" type="week" aria-label="Selecionar semana">
+                      <input id="pipeline-period-month-input" type="month" aria-label="Mês da produção" hidden>
+                    </div>
+                    <button class="dash-calendar-today" type="button" data-pipeline-calendar-today aria-label="Ir para hoje">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>
+                    </button>
+                    <button class="dash-calendar-btn" type="button" data-pipeline-calendar-next aria-label="Próximo período">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
                   </div>
-                  <button class="dash-calendar-today" type="button" data-pipeline-calendar-today aria-label="Ir para hoje">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>
-                  </button>
-                  <button class="dash-calendar-btn" type="button" data-pipeline-calendar-next aria-label="Próximo período">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-                  </button>
                 </div>
               </div>
-            </div>
+            </section>
+
+            <button class="new-lead-button" type="button" data-open-modal>
+              <span aria-hidden="true">+</span>
+              Novo lead
+            </button>
           </section>
           <p id="production-readonly-warning" class="production-readonly-warning" hidden>Produção encerrada — dados disponíveis apenas para consulta.</p>
 
