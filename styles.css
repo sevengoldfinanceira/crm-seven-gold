@@ -7405,6 +7405,8 @@ body.theme-dark .weekly-day-card.has-appointments .weekly-day-card-footer .weekl
   align-items: center !important;
   justify-content: flex-start !important;
   gap: 24px !important;
+  flex: 1 1 520px !important;
+  min-width: 320px !important;
 }
 
 .calendar-toolbar-icon-wrap {
@@ -7463,6 +7465,130 @@ body.theme-dark #calendar-title {
 
 body.theme-dark .calendar-status {
   color: #9ca3af !important;
+}
+
+.calendar-toolbar {
+  flex-wrap: wrap !important;
+}
+
+.calendar-header-stats {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(190px, 1fr)) !important;
+  align-items: stretch !important;
+  gap: 18px !important;
+  flex: 0 1 840px !important;
+  margin-left: auto !important;
+}
+
+.calendar-header-stat-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 18px !important;
+  min-height: 92px !important;
+  padding: 18px 22px !important;
+  border: 1px solid rgba(226, 232, 240, .9) !important;
+  border-radius: 24px !important;
+  background: rgba(255, 255, 255, .94) !important;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, .08) !important;
+}
+
+.calendar-header-stat-icon {
+  display: grid !important;
+  place-items: center !important;
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 18px !important;
+  background: #F1ECFF !important;
+  color: #6D4CFF !important;
+  flex: 0 0 auto !important;
+}
+
+.calendar-header-stat-icon svg {
+  width: 30px !important;
+  height: 30px !important;
+  stroke-width: 2.35 !important;
+}
+
+.calendar-header-stat-body {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  min-width: 0 !important;
+}
+
+.calendar-header-stat-body strong {
+  color: #7C3AED !important;
+  font-size: 2.15rem !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  letter-spacing: -.04em !important;
+}
+
+.calendar-header-stat-body span {
+  color: #475569 !important;
+  font-size: .92rem !important;
+  font-weight: 800 !important;
+  line-height: 1.18 !important;
+}
+
+.calendar-toolbar-actions {
+  flex: 1 1 100% !important;
+  margin-top: 2px !important;
+}
+
+body.theme-dark .calendar-header-stat-card {
+  border-color: rgba(148, 163, 184, .18) !important;
+  background: rgba(15, 23, 42, .82) !important;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, .28) !important;
+}
+
+body.theme-dark .calendar-header-stat-icon {
+  background: rgba(167, 139, 250, .16) !important;
+  color: #a78bfa !important;
+}
+
+body.theme-dark .calendar-header-stat-body strong {
+  color: #a78bfa !important;
+}
+
+body.theme-dark .calendar-header-stat-body span {
+  color: #cbd5e1 !important;
+}
+
+@media (max-width: 1280px) {
+  .calendar-header-stats {
+    grid-template-columns: repeat(3, minmax(170px, 1fr)) !important;
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .calendar-toolbar-title-group {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .calendar-header-stats {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .calendar-header-stat-card {
+    min-height: 78px !important;
+    padding: 14px 16px !important;
+    border-radius: 20px !important;
+  }
+
+  .calendar-header-stat-icon {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .calendar-header-stat-body strong {
+    font-size: 1.75rem !important;
+  }
 }
 
 /* Redesigned Day Card Header */

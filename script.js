@@ -14,6 +14,9 @@ const calendarGrid = document.querySelector("[data-calendar-grid]");
 const calendarMobileList = document.querySelector("[data-calendar-mobile-list]");
 const calendarWeekLabel = document.querySelector("[data-calendar-week-label]");
 const calendarStatus = document.querySelector("[data-calendar-status]");
+const calendarStatTotal = document.querySelector("[data-calendar-stat-total]");
+const calendarStatConfirmed = document.querySelector("[data-calendar-stat-confirmed]");
+const calendarStatStore = document.querySelector("[data-calendar-stat-store]");
 let draggedLeadId = null;
 let pointerDrag = null;
 let calendarWeekStart = null;
@@ -883,6 +886,12 @@ const setCalendarStatus = (message = "", type = "") => {
   if (!calendarStatus) return;
   calendarStatus.textContent = message;
   calendarStatus.dataset.type = type;
+};
+
+const setCalendarHeaderStats = ({ total = 0, confirmed = 0, store = 0 } = {}) => {
+  if (calendarStatTotal) calendarStatTotal.textContent = total;
+  if (calendarStatConfirmed) calendarStatConfirmed.textContent = confirmed;
+  if (calendarStatStore) calendarStatStore.textContent = store;
 };
 
 const setAppointmentStatus = (message = "", type = "error") => {
@@ -3045,6 +3054,24 @@ const renderCalendar = () => {
   const end = days[6];
   const weekFormat = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" });
   if (calendarWeekLabel) calendarWeekLabel.textContent = `${weekFormat.format(days[0])} a ${weekFormat.format(end)}`;
+  setCalendarStatus("Veja seus clientes agendados da semana");
+
+  const weekAppointments = calendarAppointments.filter((item) =>
+    days.some((day) => item.data_agendamento === toDateKey(day))
+  );
+  const confirmedAppointments = weekAppointments.filter((item) =>
+    ["concluido", "confirmado"].includes(String(item.status || "").toLowerCase())
+  );
+  const storeStatuses = ["cliente_em_loja", "proposta_enviada", "venda_fechada"];
+  const storeAppointments = weekAppointments.filter((item) => {
+    const appointmentDay = days.find((day) => item.data_agendamento === toDateKey(day));
+    return appointmentDay?.getDay() !== 0 && storeStatuses.includes(item.lead_status);
+  });
+  setCalendarHeaderStats({
+    total: weekAppointments.length,
+    confirmed: confirmedAppointments.length,
+    store: storeAppointments.length,
+  });
 
   const weekRangeEl = document.querySelector("[data-calendar-week-range]");
   if (weekRangeEl) {
@@ -3181,7 +3208,6 @@ const renderCalendar = () => {
       const footer = document.createElement("div");
       footer.className = "weekly-day-card-footer";
 
-      const storeStatuses = ["cliente_em_loja", "proposta_enviada", "venda_fechada"];
       const storeCount = dayOfWeek === 0 ? 0 : dayAppointments.filter(apt => storeStatuses.includes(apt.lead_status)).length;
 
       const countNumber = document.createElement("span");
@@ -3349,7 +3375,7 @@ const loadAppointments = async () => {
     lead_status: item.leads?.status,
   }));
   renderCalendar();
-  setCalendarStatus(`${calendarAppointments.length} agendamento${calendarAppointments.length === 1 ? "" : "s"} nesta semana.`);
+  setCalendarStatus("Veja seus clientes agendados da semana");
 };
 
 appointmentForm?.addEventListener("submit", async (event) => {
