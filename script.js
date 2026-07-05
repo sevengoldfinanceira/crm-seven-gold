@@ -3955,10 +3955,24 @@ const loadAppointments = async () => {
 
 appointmentForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
+
+  const submitButton = appointmentForm.querySelector("button[type='submit']");
+  if (submitButton.disabled) return;
+
+  submitButton.disabled = true;
+  const originalText = submitButton.textContent;
+  submitButton.textContent = "Salvando...";
+
+  const resetBtn = () => {
+    submitButton.disabled = false;
+    submitButton.textContent = originalText;
+  };
+
   const client = getClient();
   const user = await getCurrentUser();
   if (!client || !user) {
     setAppointmentStatus("Faca login novamente antes de salvar.");
+    resetBtn();
     return;
   }
 
@@ -3973,6 +3987,7 @@ appointmentForm?.addEventListener("submit", async (event) => {
   const totalMinutes = hour * 60 + minute;
   if (totalMinutes < 8 * 60 || totalMinutes > 20 * 60 + 59) {
     setAppointmentStatus("Escolha um horario entre 08:00 e 20:59.");
+    resetBtn();
     return;
   }
 
@@ -3998,6 +4013,7 @@ appointmentForm?.addEventListener("submit", async (event) => {
         const existing = existingApts[0];
         if (existing.id !== appointmentId) {
           setAppointmentStatus(`Este número já possui agendamento ativo em ${existing.data_agendamento} às ${existing.hora_agendamento.slice(0, 5)}.`);
+          resetBtn();
           return;
         }
       }
@@ -4006,9 +4022,6 @@ appointmentForm?.addEventListener("submit", async (event) => {
     }
   }
 
-  const submitButton = appointmentForm.querySelector("button[type='submit']");
-  submitButton.disabled = true;
-  submitButton.textContent = "Salvando...";
   const payload = {
     lead_id: linkedLeadId || null,
     nome_cliente: String(formData.get("nome_cliente") || "").trim(),
@@ -4053,10 +4066,9 @@ appointmentForm?.addEventListener("submit", async (event) => {
     }
   }
 
-  submitButton.disabled = false;
-  submitButton.textContent = appointmentId ? "Salvar alteracoes" : isRescheduleMode ? "Confirmar reagendamento" : "Confirmar agendamento";
   if (error) {
     setAppointmentStatus(`Nao consegui salvar o agendamento: ${error.message}`);
+    resetBtn();
     return;
   }
 
