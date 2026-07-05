@@ -7004,7 +7004,7 @@ body.theme-dark .lead-carry-badge {
   overflow-x: hidden !important;
 }
 
-/* Custom Scrollbar for Kanban columns */
+/* Custom Hover-Only Scrollbar for Kanban columns */
 .card-stack::-webkit-scrollbar {
   width: 5px !important;
 }
@@ -7014,19 +7014,28 @@ body.theme-dark .lead-carry-badge {
 }
 
 .card-stack::-webkit-scrollbar-thumb {
-  background: #cbd5e1 !important;
+  background: transparent !important;
   border-radius: 999px !important;
+  transition: background-color 0.2s ease !important;
 }
 
-.card-stack::-webkit-scrollbar-thumb:hover {
-  background: #a78bfa !important;
+.kanban-column:hover .card-stack::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+}
+
+.kanban-column:hover .card-stack::-webkit-scrollbar-thumb:hover {
+  background: #6d4cff !important;
 }
 
 body.theme-dark .card-stack::-webkit-scrollbar-thumb {
+  background: transparent !important;
+}
+
+body.theme-dark .kanban-column:hover .card-stack::-webkit-scrollbar-thumb {
   background: #374151 !important;
 }
 
-body.theme-dark .card-stack::-webkit-scrollbar-thumb:hover {
+body.theme-dark .kanban-column:hover .card-stack::-webkit-scrollbar-thumb:hover {
   background: #6d4cff !important;
 }
 
@@ -8208,6 +8217,7 @@ body.theme-dark .appointment-info-text {
   align-items: stretch !important;
   width: 100% !important;
   box-sizing: border-box !important;
+  flex-shrink: 0 !important;
 }
 
 body.theme-dark .lead-card {
