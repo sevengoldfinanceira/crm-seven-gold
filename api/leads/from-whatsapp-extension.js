@@ -1,7 +1,7 @@
 const { supabase } = require('../../lib/server/supabase');
 const { normalizeLeadClientInfo } = require('../../lib/server/lead-client-info');
 const { getAuthorizedCrmUser, canAccessLead } = require('../../lib/server/crm-authorization');
-const { getOpenProduction, NO_OPEN_PRODUCTION, productionFields } = require('../../lib/server/commercial-productions');
+const { getOpenProduction, NO_OPEN_PRODUCTION, productionFields, isProductionSchemaError, stripProductionFields } = require('../../lib/server/commercial-productions');
 
 const sendJson = (res, status, payload) => {
   res.writeHead(status, { 'Content-Type': 'application/json' });
@@ -92,11 +92,21 @@ module.exports = async (req, res) => {
     };
     if (tags) insertData.tags = tags;
 
-    const { data: newLead, error: insertError } = await supabase
+    let { data: newLead, error: insertError } = await supabase
       .from('leads')
       .insert(insertData)
       .select('*')
       .single();
+
+    if (insertError && open.production && isProductionSchemaError(insertError)) {
+      const retry = await supabase
+        .from('leads')
+        .insert(stripProductionFields(insertData))
+        .select('*')
+        .single();
+      newLead = retry.data;
+      insertError = retry.error;
+    }
 
     if (insertError) {
       console.error('[from-whatsapp-extension] Erro ao criar lead:', insertError.message);

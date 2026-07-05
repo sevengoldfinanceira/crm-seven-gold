@@ -1,6 +1,6 @@
 const { supabase } = require('../../lib/server/supabase');
 const { getAuthorizedCrmUser } = require('../../lib/server/crm-authorization');
-const { getOpenProduction, NO_OPEN_PRODUCTION, productionFields } = require('../../lib/server/commercial-productions');
+const { getOpenProduction, NO_OPEN_PRODUCTION, productionFields, isProductionSchemaError, stripProductionFields } = require('../../lib/server/commercial-productions');
 const { normalizeLeadClientInfo } = require('../../lib/server/lead-client-info');
 
 const send = (res, status, body) => {
@@ -44,7 +44,12 @@ module.exports = async (req, res) => {
     ...(open.production ? productionFields(open.production) : {}),
   };
 
-  const { data, error } = await supabase.from('leads').insert(payload).select('*').single();
+  let { data, error } = await supabase.from('leads').insert(payload).select('*').single();
+  if (error && open.production && isProductionSchemaError(error)) {
+    const retry = await supabase.from('leads').insert(stripProductionFields(payload)).select('*').single();
+    data = retry.data;
+    error = retry.error;
+  }
   if (error) return send(res, 409, { ok: false, error: error.message });
   return send(res, 200, { ok: true, lead: data });
 };

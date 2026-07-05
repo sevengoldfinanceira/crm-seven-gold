@@ -1,4 +1,5 @@
 const { supabase } = require('../../lib/server/supabase');
+const { isProductionSchemaError } = require('../../lib/server/commercial-productions');
 
 const ADMIN_ROLES = new Set(['diretor-ceo', 'dono', 'admin', 'administrador']);
 const TEAM_MANAGER_ROLES = new Set([...ADMIN_ROLES, 'coordenador-comercial', 'supervisor-comercial', 'coordenador', 'supervisor', 'coordenador-rh']);
@@ -10,26 +11,41 @@ const PIPELINE_TEAM_ROLES = new Set(['coordenador-comercial', 'supervisor-comerc
 async function listAuthorizedPipelineLeads(crmUser, productionId) {
   const role = normalizeRole(crmUser.cargo);
   let scopedProductionId = productionId;
+  let scopedProduction = null;
   if (scopedProductionId) {
-    const { data: requestedProduction, error: productionError } = await supabase.from('commercial_productions').select('id,status').eq('id', scopedProductionId).maybeSingle();
+    const { data: requestedProduction, error: productionError } = await supabase.from('commercial_productions').select('id,status,starts_at,ends_at').eq('id', scopedProductionId).maybeSingle();
     if (productionError) return { status: 500, error: productionError.message };
     if (!requestedProduction) return { status: 404, error: 'Produção não encontrada.' };
     if (role !== 'diretor-ceo' && requestedProduction.status !== 'open') return { status: 403, error: 'Seu perfil só pode acessar a produção atual aberta.' };
+    scopedProduction = requestedProduction;
   } else {
-    const { data: openProduction, error: productionError } = await supabase.from('commercial_productions').select('id').eq('status', 'open').limit(1).maybeSingle();
+    const { data: openProduction, error: productionError } = await supabase.from('commercial_productions').select('id,status,starts_at,ends_at').eq('status', 'open').limit(1).maybeSingle();
     if (productionError?.code === 'PGRST205') scopedProductionId = null;
     else if (productionError) return { status: 500, error: productionError.message };
     if (!openProduction && productionError?.code !== 'PGRST205') return { status: 409, error: 'Não existe produção aberta. Peça ao Diretor-CEO para iniciar uma nova produção.' };
-    if (openProduction) scopedProductionId = openProduction.id;
+    if (openProduction) {
+      scopedProductionId = openProduction.id;
+      scopedProduction = openProduction;
+    }
   }
   const baseLeadFields = 'id,name,origin,note,status,created_at,updated_at,ultima_interacao,telefone,property_region,credit_value,down_payment_value,installment_value,tags,assigned_to_email,assigned_to_name,created_by_email,created_by_name,updated_by_email,updated_by_name';
   const productionLeadFields = ',production_id,production_month,production_year,locked_at,locked_reason,original_lead_id,carried_from_lead_id,carried_from_production_id,is_carry_over,carried_over_at,commercial_productions!production_id(id,name,status,starts_at,ends_at)';
   let query = supabase.from('leads').select(baseLeadFields + (scopedProductionId ? productionLeadFields : '')).order('created_at', { ascending: false });
-  if (scopedProductionId) query = query.eq('production_id', scopedProductionId);
+  let teamEmails = null;
+  if (scopedProductionId) {
+    if (scopedProduction?.starts_at && scopedProduction?.ends_at) {
+      const nextDay = new Date(`${scopedProduction.ends_at}T00:00:00Z`);
+      nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+      const endExclusive = nextDay.toISOString().slice(0, 10);
+      query = query.or(`production_id.eq.${scopedProductionId},and(production_id.is.null,created_at.gte.${scopedProduction.starts_at},created_at.lt.${endExclusive})`);
+    } else {
+      query = query.eq('production_id', scopedProductionId);
+    }
+  }
   if (PIPELINE_TEAM_ROLES.has(role)) {
     const { data: team, error: teamError } = await supabase.from('crm_teams').select('id').eq('coordinator_user_id', crmUser.id).maybeSingle();
     if (teamError) return { status: 500, error: teamError.message };
-    let teamEmails = [String(crmUser.email || '').trim().toLowerCase()].filter(Boolean);
+    teamEmails = [String(crmUser.email || '').trim().toLowerCase()].filter(Boolean);
     if (team?.id) {
       const { data: members, error: membersError } = await supabase.from('crm_team_members').select('user_id').eq('team_id', team.id);
       if (membersError) return { status: 500, error: membersError.message };
@@ -43,7 +59,19 @@ async function listAuthorizedPipelineLeads(crmUser, productionId) {
   } else if (!ADMIN_ROLES.has(role)) {
     query = query.ilike('assigned_to_email', String(crmUser.email || '').trim().toLowerCase());
   }
-  const { data, error } = await query;
+  let { data, error } = await query;
+  if (error && scopedProductionId && isProductionSchemaError(error)) {
+    console.warn('[Pipeline] Produção sem schema completo, carregando leads em modo legado:', error.message);
+    let legacyQuery = supabase.from('leads').select(baseLeadFields).order('created_at', { ascending: false });
+    if (PIPELINE_TEAM_ROLES.has(role)) {
+      legacyQuery = legacyQuery.in('assigned_to_email', teamEmails);
+    } else if (!ADMIN_ROLES.has(role)) {
+      legacyQuery = legacyQuery.ilike('assigned_to_email', String(crmUser.email || '').trim().toLowerCase());
+    }
+    const legacyResult = await legacyQuery;
+    data = legacyResult.data;
+    error = legacyResult.error;
+  }
   if (error) return { status: 500, error: error.message };
   const leads = data || [];
   const cancelledLeadIds = leads.filter(l => l.status === 'cancelado').map(l => l.id).filter(Boolean);
