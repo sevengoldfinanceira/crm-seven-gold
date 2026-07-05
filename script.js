@@ -3600,13 +3600,35 @@ const createAppointmentCard = (appointment) => {
     event.stopPropagation();
     dropdown.classList.remove("is-open");
     const leadId = appointment.lead_id || card.dataset.leadId;
-    if (!leadId) return;
 
-    if (confirm(`Deseja cancelar o agendamento de "${appointment.nome_cliente}" e voltar o lead para "Primeiro contato"?`)) {
+    if (confirm(`Deseja cancelar o agendamento de "${appointment.nome_cliente}"?`)) {
       setCalendarStatus("Cancelando agendamento...");
-      const success = await updateLeadStatus(leadId, "primeiro_contato", { goBack: true });
+      const client = getClient();
+      if (!client) return;
+
+      let success = false;
+      if (leadId) {
+        try {
+          success = await updateLeadStatus(leadId, "primeiro_contato", { goBack: true });
+        } catch (err) {
+          console.warn("Falha ao atualizar status do lead, cancelando agendamento diretamente:", err);
+        }
+      }
+
+      if (!success) {
+        const { error } = await client
+          .from("appointments")
+          .update({ status: "cancelado" })
+          .eq("id", appointment.id);
+        if (error) {
+          alert(`Erro ao cancelar agendamento diretamente: ${error.message}`);
+        } else {
+          success = true;
+        }
+      }
+
       if (success) {
-        await loadLeads();
+        await Promise.all([loadAppointments(), loadLeads()]);
       }
     }
   });
