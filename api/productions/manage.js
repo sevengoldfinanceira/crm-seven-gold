@@ -190,6 +190,75 @@ module.exports = async (req, res) => {
       return send(res, 200, { ok: true, lead: data });
     }
 
+    if (action === 'recover_trash_as_new') {
+      const { data: source, error: sourceError } = await supabase.from('leads').select('*').eq('id', lead_id).maybeSingle();
+      if (sourceError || !source) return send(res, 404, { ok: false, error: 'Lead não encontrado.' });
+      if (source.status !== 'cancelado') return send(res, 409, { ok: false, error: 'Este lead não está na Lixeira.' });
+
+      const mutable = await assertLeadMutable(lead_id);
+      if (mutable.error) return send(res, mutable.status || 500, { ok: false, error: mutable.error });
+
+      const targetAssigneeEmail = String(req.body?.assigned_to_email || '').trim().toLowerCase();
+      if (!targetAssigneeEmail) return send(res, 400, { ok: false, error: 'Informe o e-mail do novo vendedor.' });
+      if (targetAssigneeEmail === String(source.assigned_to_email || '').trim().toLowerCase()) {
+        return send(res, 400, { ok: false, error: 'Escolha outro vendedor para recuperar este lead como novo.' });
+      }
+
+      const { data: assignee, error: assigneeError } = await supabase
+        .from('crm_users')
+        .select('email,nome,cargo,ativo')
+        .ilike('email', targetAssigneeEmail)
+        .eq('ativo', true)
+        .maybeSingle();
+      if (assigneeError || !assignee) return send(res, 400, { ok: false, error: 'Responsável inválido ou inativo.' });
+
+      try {
+        await ensureLeadIsNotDuplicateForSeller({
+          supabase,
+          phone: source.telefone,
+          assignedToEmail: assignee.email,
+          ignoreLeadId: lead_id,
+          recovering: true,
+        });
+      } catch (duplicateError) {
+        return send(res, duplicateError.status || 500, { ok: false, error: duplicateError.message });
+      }
+
+      const updateTime = new Date().toISOString();
+      const { data, error } = await supabase
+        .from('leads')
+        .update({
+          status: 'lead_recebido',
+          tags: [],
+          assigned_to_email: String(assignee.email || '').trim().toLowerCase(),
+          assigned_to_name: assignee.nome || assignee.email,
+          ultima_interacao: updateTime,
+          updated_at: updateTime,
+          updated_by_email: auth.user.email || null,
+          updated_by_name: auth.user.nome || auth.user.email || null,
+        })
+        .eq('id', lead_id)
+        .select('*')
+        .single();
+      if (error) return send(res, 409, { ok: false, error: mapDuplicateDbError(error) || error.message });
+
+      const { error: historyError } = await supabase.from('lead_activity_logs').insert({
+        lead_id,
+        action_type: 'status_changed',
+        action_label: 'Lead recuperado como novo',
+        description: `Lead recuperado da Lixeira como novo para ${assignee.nome || assignee.email}.`,
+        old_value: 'cancelado',
+        new_value: 'lead_recebido',
+        created_by_email: auth.user.email || null,
+        created_by_name: auth.user.nome || auth.user.email || null,
+        created_by_role: auth.user.cargo || null,
+        created_at: updateTime,
+      });
+      if (historyError) console.error('[Productions] Erro ao registrar recuperação como novo:', historyError.message);
+
+      return send(res, 200, { ok: true, lead: data });
+    }
+
     return send(res, 400, { ok: false, error: 'Ação inválida.' });
   } catch (error) { return send(res, 500, { ok: false, error: error.message }); }
 };

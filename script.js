@@ -4473,6 +4473,7 @@ const createLeadCard = (lead) => {
   // Actions Row
   const actionsRow = document.createElement("div");
   actionsRow.className = "lead-actions";
+  const isTrashLead = lead.status === "cancelado";
 
   const cleanDigits = lead.telefone ? lead.telefone.replace(/\D/g, "") : "";
   const waPhone = (cleanDigits.length <= 11 && !cleanDigits.startsWith("55") && cleanDigits.length >= 10) 
@@ -4492,7 +4493,48 @@ const createLeadCard = (lead) => {
   callBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 1 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Ligar`;
   if (!lead.telefone) callBtn.style.opacity = "0.5";
 
-  actionsRow.append(waBtn, callBtn);
+  if (isTrashLead && isProductionDirectorCeo) {
+    const reactivateBtn = document.createElement("button");
+    reactivateBtn.type = "button";
+    reactivateBtn.className = "lead-action-button reactivate";
+    reactivateBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v6h6"/></svg>Reativar`;
+    reactivateBtn.addEventListener("click", async () => {
+      if (!confirm("Deseja reativar este lead na etapa em que ele estava antes da Lixeira?")) return;
+      try {
+        await productionRequest({ action: "recover_trash", lead_id: lead.id });
+        alert("Lead reativado na etapa anterior.");
+        await loadLeads();
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+    const recoverBtn = document.createElement("button");
+    recoverBtn.type = "button";
+    recoverBtn.className = "lead-action-button recover-new";
+    recoverBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg>Recuperar`;
+    recoverBtn.addEventListener("click", async () => {
+      const targetEmail = prompt("Informe o e-mail do novo vendedor para recuperar este lead como novo:");
+      const normalizedEmail = String(targetEmail || "").trim().toLowerCase();
+      if (!normalizedEmail) return;
+      if (!confirm(`Deseja enviar este lead como novo para "${normalizedEmail}"?`)) return;
+      try {
+        await productionRequest({
+          action: "recover_trash_as_new",
+          lead_id: lead.id,
+          assigned_to_email: normalizedEmail,
+        });
+        alert("Lead recuperado como novo para outro vendedor.");
+        await loadLeads();
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+    actionsRow.append(reactivateBtn, recoverBtn);
+  } else if (!isTrashLead) {
+    actionsRow.append(waBtn, callBtn);
+  }
 
   if (leadLocked && isProductionDirectorCeo) {
     const copyBtn = document.createElement("button");
@@ -4633,16 +4675,16 @@ const createLeadCard = (lead) => {
     const recoverItem = document.createElement("button");
     recoverItem.className = "lead-card-dropdown-item btn-recover";
     recoverItem.type = "button";
-    recoverItem.textContent = "Recuperar";
+    recoverItem.textContent = "Reativar";
     leadDropdown.append(recoverItem);
 
     recoverItem.addEventListener("click", async (e) => {
       e.stopPropagation();
       leadDropdown.classList.remove("is-open");
-      if (!confirm("Deseja recuperar este lead para a etapa em que ele estava antes de ir para a Lixeira?")) return;
+      if (!confirm("Deseja reativar este lead na etapa em que ele estava antes da Lixeira?")) return;
       try {
         await productionRequest({ action: "recover_trash", lead_id: lead.id });
-        alert("Lead recuperado para a etapa anterior.");
+        alert("Lead reativado na etapa anterior.");
         await loadLeads();
       } catch (error) {
         alert(error.message);
@@ -4671,7 +4713,9 @@ const createLeadCard = (lead) => {
   });
 
   card.append(leadMenuBtn, leadDropdown);
-  card.append(divider2, actionsRow);
+  if (actionsRow.children.length > 0) {
+    card.append(divider2, actionsRow);
+  }
 
   return card;
 };

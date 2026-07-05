@@ -8366,6 +8366,22 @@ body.theme-dark .lead-menu-button:hover {
   width: 100% !important;
 }
 
+.lead-trash-origin-row {
+  gap: 4px !important;
+  flex-wrap: nowrap !important;
+}
+
+.lead-trash-origin-row .lead-tag-badge {
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  max-width: calc(50% - 2px) !important;
+  padding: 2px 5px !important;
+  font-size: 9.5px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
 .lead-time-badge {
   display: inline-flex !important;
   align-items: center !important;
@@ -8717,6 +8733,30 @@ body.theme-dark .lead-action-button.copy {
   background: rgba(217, 119, 6, 0.15) !important;
   color: #fbbf24 !important;
   border-color: rgba(251, 191, 36, 0.3) !important;
+}
+
+.lead-action-button.reactivate {
+  background: #ecfdf5 !important;
+  color: #059669 !important;
+  border-color: #a7f3d0 !important;
+}
+
+body.theme-dark .lead-action-button.reactivate {
+  background: rgba(5, 150, 105, 0.15) !important;
+  color: #34d399 !important;
+  border-color: rgba(52, 211, 153, 0.3) !important;
+}
+
+.lead-action-button.recover-new {
+  background: #eff6ff !important;
+  color: #2563eb !important;
+  border-color: #bfdbfe !important;
+}
+
+body.theme-dark .lead-action-button.recover-new {
+  background: rgba(37, 99, 235, 0.15) !important;
+  color: #60a5fa !important;
+  border-color: rgba(96, 165, 250, 0.3) !important;
 }
 
 .lead-action-button:hover {
