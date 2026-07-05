@@ -62,6 +62,7 @@ module.exports = async (req, res) => {
     const payload = req.body || {};
     const { phone, status } = payload;
     const hasAssigneeChange = Object.prototype.hasOwnProperty.call(payload, 'assigned_to_email');
+    const hasTagsChange = Object.prototype.hasOwnProperty.call(payload, 'tags');
     const requestedAssigneeEmail = normalizeEmail(payload.assigned_to_email);
     const goBack = payload.go_back === true || payload.goBack === true;
     const leadIdFromPayload = String(payload.lead_id || payload.leadId || '').trim();
@@ -71,7 +72,7 @@ module.exports = async (req, res) => {
       return res.end(JSON.stringify({ ok: false, error: 'Informe o ID ou telefone do lead.' }));
     }
 
-    if (!status && !hasAssigneeChange && !hasLeadClientInfo(payload) && !hasBasicLeadInfo(payload)) {
+    if (!status && !hasAssigneeChange && !hasTagsChange && !hasLeadClientInfo(payload) && !hasBasicLeadInfo(payload)) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ ok: false, error: 'Informe a etapa ou os dados do lead que serão atualizados.' }));
     }
@@ -122,10 +123,13 @@ module.exports = async (req, res) => {
       ...basicInfo,
       ...normalizeLeadClientInfo(payload, { onlyPresent: true }),
     };
-    if (Object.prototype.hasOwnProperty.call(payload, 'tags')) {
+    if (hasTagsChange) {
       updateData.tags = Array.isArray(payload.tags)
         ? payload.tags.map((tag) => String(tag || '').trim()).filter(Boolean)
         : [];
+      updateData.updated_at = updateTime;
+      updateData.updated_by_email = authorization.user.email || null;
+      updateData.updated_by_name = authorization.user.nome || authorization.user.email || null;
     }
 
     let newAssignee = null;
