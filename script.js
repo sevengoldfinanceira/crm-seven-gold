@@ -3040,12 +3040,14 @@ const renderCalendar = () => {
     const dayAcronyms = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
 
     const dayCounts = days.map((d) => {
+      if (d.getDay() === 0) return null; // Exclude Sunday
       const dKey = toDateKey(d);
-      const dow = d.getDay();
-      if (dow === 0) return 0;
       return calendarAppointments.filter((item) => item.data_agendamento === dKey).length;
     });
-    const maxAppointments = Math.max(...dayCounts);
+    const validCounts = dayCounts.filter((c) => c !== null);
+    const maxAppointments = validCounts.length > 0 ? Math.max(...validCounts) : 0;
+    const minAppointments = validCounts.length > 0 ? Math.min(...validCounts) : 0;
+    const hasDifferentCounts = maxAppointments !== minAppointments;
 
     days.forEach((day) => {
       const dateKey = toDateKey(day);
@@ -3063,8 +3065,18 @@ const renderCalendar = () => {
       const hasAppointments = dayAppointments.length > 0;
       const dayCount = dayOfWeek === 0 ? 0 : dayAppointments.length;
 
-      const isMostBusy = maxAppointments > 0 && dayCount === maxAppointments;
-      const busyClass = isMostBusy ? " is-most-busy" : "";
+      let busyClass = "";
+      if (dayOfWeek !== 0 && hasDifferentCounts) {
+        if (dayCount === maxAppointments) {
+          busyClass = " is-most-busy";
+        } else if (dayCount === minAppointments) {
+          busyClass = " is-least-busy";
+        } else {
+          busyClass = " is-normal-day";
+        }
+      } else if (dayOfWeek !== 0) {
+        busyClass = " is-normal-day";
+      }
 
       const column = document.createElement("div");
       const stateClass = isToday ? " is-today" : hasAppointments ? " has-appointments" : "";
