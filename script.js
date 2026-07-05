@@ -3427,6 +3427,9 @@ const openAppointmentModal = async ({ appointment = null, lead = null, date = ""
 };
 
 const fetchLeadForAppointment = async (leadId, fallback = {}) => {
+  const cached = (window.pipelineLeadsCache || []).find((item) => String(item.id) === String(leadId));
+  if (cached) return cached;
+
   const client = getClient();
   if (!client || !leadId) return null;
   try {
@@ -3440,6 +3443,13 @@ const fetchLeadForAppointment = async (leadId, fallback = {}) => {
 };
 
 const resolveAppointmentLeadOwner = async (lead) => {
+  if (lead?.assigned_to_name) {
+    return {
+      id: null,
+      name: lead.assigned_to_name,
+    };
+  }
+
   const client = getClient();
   const ownerEmail = String(lead?.assigned_to_email || "").trim().toLowerCase();
   let ownerUser = null;

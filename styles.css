@@ -1217,18 +1217,20 @@ body.theme-dark .lead-trash-origin-badge--unknown {
 
 .lead-modal .modal-lead-responsible {
   display: grid;
-  gap: 12px;
-  padding: 18px 20px;
+  gap: 6px !important;
+  padding: 10px 14px !important;
   background: linear-gradient(180deg, #FFFBEB 0%, #FEF3C7 100%);
   border: 1px solid #FDE68A;
-  border-radius: 16px;
+  border-radius: 12px !important;
+  text-align: center !important;
 }
 
 .lead-modal .modal-lead-responsible .responsible-info {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  justify-content: center !important;
+  gap: 6px !important;
   color: #92400E;
   font-size: 0.92rem;
 }
@@ -1236,11 +1238,12 @@ body.theme-dark .lead-trash-origin-badge--unknown {
 .lead-modal .modal-lead-responsible .responsible-info strong {
   color: #B45309;
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 .lead-modal .modal-lead-responsible .responsible-info small {
   flex-basis: 100%;
+  text-align: center !important;
   color: #64748B;
   font-size: 0.82rem;
 }
@@ -1248,19 +1251,24 @@ body.theme-dark .lead-trash-origin-badge--unknown {
 .lead-modal .modal-lead-responsible select {
   background: #FFFFFF;
   border: 1px solid #FCD34D;
-  height: 52px;
-  border-radius: 12px;
-  padding: 8px 14px;
+  height: 38px !important;
+  border-radius: 8px !important;
+  padding: 6px 12px !important;
   color: #0F172A;
   font-weight: 600;
+  width: 100% !important;
+  max-width: 320px !important;
+  margin: 0 auto !important;
 }
 
 .lead-modal .modal-lead-responsible label {
   display: grid;
-  gap: 6px;
-  color: #92400E;
-  font-weight: 700;
-  font-size: 0.82rem;
+  gap: 4px !important;
+  justify-content: center !important;
+  text-align: center !important;
+  color: #92400E !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
 }
 
 .lead-modal-tabs {
@@ -9992,7 +10000,7 @@ body.theme-dark .funnel-divider {
 .lead-modal-actions-row {
   display: flex !important;
   gap: 12px !important;
-  justify-content: flex-end !important;
+  justify-content: center !important;
   margin-top: 16px !important;
   width: 100% !important;
 }
