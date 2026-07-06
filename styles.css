@@ -9885,10 +9885,10 @@ body.theme-dark .lead-tag-badge.lead-trash-origin-badge--agendamento {
 
 /* Dropdown menu for lead tags */
 .lead-tag-dropdown-menu {
-  position: absolute !important;
-  top: 100% !important;
-  left: 0 !important;
-  margin-top: 6px !important;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 6px;
   background: #ffffff !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: 12px !important;
@@ -9897,17 +9897,17 @@ body.theme-dark .lead-tag-badge.lead-trash-origin-badge--agendamento {
   display: flex !important;
   flex-direction: column !important;
   gap: 4px !important;
-  z-index: 999 !important;
+  z-index: 999;
   min-width: 150px !important;
-  transform: scale(0.95) !important;
+  transform: scale(0.95);
   opacity: 0 !important;
   pointer-events: none !important;
   transition: transform 0.15s ease, opacity 0.15s ease !important;
-  transform-origin: top left !important;
+  transform-origin: top left;
 }
 
 .lead-tag-dropdown-menu.is-open {
-  transform: scale(1) !important;
+  transform: scale(1);
   opacity: 1 !important;
   pointer-events: auto !important;
 }
