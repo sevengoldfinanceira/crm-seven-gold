@@ -268,7 +268,7 @@ const PIPELINE_STAGE_TAGS = {
   proposta_enviada: [
     {
       value: "aguardando_doc",
-      label: "Aguardando doc",
+      label: "Envio de DOC",
       className: "aguardando-doc",
     },
     {
