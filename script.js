@@ -294,6 +294,28 @@ const getAvailableTagsForStage = (stageId) => {
   return Array.isArray(tags) ? tags : [];
 };
 
+const PIPELINE_STAGE_MANUAL_TAGS = {
+  agendamento: [
+    {
+      value: "reagendar",
+      label: "Reagendar",
+      className: "reagendar",
+    },
+    {
+      value: "nao_quer",
+      label: "Não quer",
+      className: "nao-quer",
+    },
+  ],
+};
+
+const getManualTagsForStage = (stageId) => {
+  if (!stageId) return [];
+  const manual = PIPELINE_STAGE_MANUAL_TAGS[stageId];
+  if (Array.isArray(manual)) return manual;
+  return getAvailableTagsForStage(stageId);
+};
+
 const getLeadTagValue = (lead) => {
   if (!lead) return null;
   const tags = Array.isArray(lead.tags) ? lead.tags : (typeof lead.tags === "string" && lead.tags.trim() !== ""
@@ -368,7 +390,7 @@ const updateLeadCardTagMenu = (card, status, currentTagValue) => {
   };
 
   const manualTagConfig = currentTagValue ? (PIPELINE_STAGE_TAGS_MAP[currentTagValue] || { value: currentTagValue, label: currentTagValue, className: "default" }) : null;
-  const isClickableTagStage = getAvailableTagsForStage(status).length > 0;
+  const isClickableTagStage = getManualTagsForStage(status).length > 0;
 
   if (isClickableTagStage) {
     const tagDropdownContainer = document.createElement("div");
@@ -392,7 +414,7 @@ const updateLeadCardTagMenu = (card, status, currentTagValue) => {
     const tagDropdownList = document.createElement("div");
     tagDropdownList.className = "lead-tag-dropdown-menu";
     
-    const availableTags = getAvailableTagsForStage(status);
+    const availableTags = getManualTagsForStage(status);
     
     const clearOpt = document.createElement("button");
     clearOpt.type = "button";
@@ -831,7 +853,7 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
   const tagFieldEl = leadForm.querySelector("[data-lead-form-tag-field]");
   if (tagSelectEl) {
     const stageId = lead.status || "lead_recebido";
-    const availableTags = getAvailableTagsForStage(stageId);
+    const availableTags = getManualTagsForStage(stageId);
     const previousValue = getLeadTagValue(lead) || "";
     tagSelectEl.innerHTML = "";
     const placeholder = document.createElement("option");
@@ -5205,7 +5227,7 @@ const createLeadCard = (lead) => {
     tagsArray = lead.tags.split(",").map(t => t.trim()).filter(Boolean);
   }
 
-  const stageTagsAvailable = getAvailableTagsForStage(lead.status).length > 0;
+  const stageTagsAvailable = getManualTagsForStage(lead.status).length > 0;
   const knownManualTagValues = new Set(Object.keys(PIPELINE_STAGE_TAGS_MAP));
   const legacyTags = stageTagsAvailable
     ? []
@@ -5315,7 +5337,7 @@ const createLeadCard = (lead) => {
       if (ok === false) return;
     });
 
-    getAvailableTagsForStage(lead.status).forEach((config) => {
+    getManualTagsForStage(lead.status).forEach((config) => {
       const opt = document.createElement("button");
       opt.className = `lead-card-tag-option lead-card-tag-option--${config.className}`;
       opt.type = "button";
