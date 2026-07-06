@@ -4591,8 +4591,6 @@ const syncLatestLeadAppointmentStatusFromTag = async (leadId, tagValue) => {
     targetStatus = "reagendado";
   } else if (tagValue === "faltou") {
     targetStatus = "faltou";
-  } else if (tagValue === "confirmar_agend") {
-    targetStatus = "agendado";
   }
 
   if (targetStatus && appointment.status !== targetStatus) {

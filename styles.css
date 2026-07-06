@@ -3065,7 +3065,9 @@ body.theme-dark .kanban-column header small {
 .kanban-tag-filter-menu {
   position: absolute;
   top: calc(100% + 10px);
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  right: auto;
   width: 210px;
   display: none;
   gap: 6px;
