@@ -238,6 +238,21 @@ const PIPELINE_STAGE_TAGS = {
   ],
   agendamento: [
     {
+      value: "reagendar",
+      label: "Reagendar",
+      className: "reagendar",
+    },
+    {
+      value: "reagendado",
+      label: "Reagendado",
+      className: "reagendado",
+    },
+    {
+      value: "faltou",
+      label: "Faltou",
+      className: "faltou",
+    },
+    {
       value: "nao_quer",
       label: "Não quer",
       className: "nao-quer",
@@ -449,7 +464,21 @@ const updateLeadCardTagMenu = (card, status, currentTagValue) => {
       document.querySelectorAll(".lead-tag-dropdown-menu.is-open, .appointment-status-dropdown.is-open, .appointment-card-dropdown.is-open, .lead-card-dropdown.is-open").forEach((openD) => {
         if (openD !== tagDropdownList) openD.classList.remove("is-open");
       });
-      tagDropdownList.classList.toggle("is-open");
+      if (tagDropdownList.classList.contains("is-open")) {
+        tagDropdownList.classList.remove("is-open");
+        if (tagDropdownList.parentElement === document.body) document.body.removeChild(tagDropdownList);
+      } else {
+        if (tagDropdownList.parentElement === document.body) document.body.removeChild(tagDropdownList);
+        document.body.appendChild(tagDropdownList);
+        const rect = stageBadgeBtn.getBoundingClientRect();
+        tagDropdownList.style.position = "fixed";
+        tagDropdownList.style.top = (rect.bottom + 4) + "px";
+        tagDropdownList.style.left = rect.left + "px";
+        tagDropdownList.style.marginTop = "0";
+        tagDropdownList.style.zIndex = "10000";
+        tagDropdownList.style.transformOrigin = "top left";
+        tagDropdownList.classList.add("is-open");
+      }
     });
 
     tagDropdownContainer.append(stageBadgeBtn, tagDropdownList);
@@ -626,6 +655,10 @@ const setupPipelineTagFilters = () => {
 document.addEventListener("click", () => {
   document.querySelectorAll(".kanban-tag-filter-menu.is-open").forEach((menu) => {
     menu.classList.remove("is-open");
+  });
+  document.querySelectorAll(".lead-tag-dropdown-menu.is-open").forEach((dropdown) => {
+    dropdown.classList.remove("is-open");
+    if (dropdown.parentElement === document.body) document.body.removeChild(dropdown);
   });
 });
 
