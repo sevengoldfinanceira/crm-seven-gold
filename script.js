@@ -346,6 +346,11 @@ const getLeadTagConfig = (lead) => {
 };
 
 const updateLeadCardTagMenu = (card, status, currentTagValue) => {
+  if (status === "cancelado") {
+    delete card.dataset.leadTag;
+    return;
+  }
+
   const badgeRow = card.querySelector(".lead-badges-row") || card.querySelector(".lead-trash-badge-row");
   if (!badgeRow) return;
 
@@ -355,11 +360,6 @@ const updateLeadCardTagMenu = (card, status, currentTagValue) => {
   if (existingManualTag) existingManualTag.remove();
   const existingManualTag2 = badgeRow.querySelector(".lead-tag.manual-tag");
   if (existingManualTag2) existingManualTag2.remove();
-
-  if (status === "cancelado") {
-    delete card.dataset.leadTag;
-    return;
-  }
 
   const getLeadTagIcon = (className) => {
     if (className === "numero-invalido" || className === "sem-whats") {
@@ -5037,7 +5037,7 @@ const createLeadCard = (lead) => {
     const originStatus = lead.trash_origin_status && lead.trash_origin_status !== "cancelado"
       ? lead.trash_origin_status
       : "unknown";
-    originBadge.className = `lead-tag-badge lead-trash-origin-badge--${originStatus}`;
+    originBadge.className = `lead-tag-badge lead-trash-origin-badge lead-trash-origin-badge--${originStatus}`;
     const originLabel = statusLabels[lead.trash_origin_status] || "Origem desconhecida";
 
     const getStageCategoryIcon = (statusKey) => {
