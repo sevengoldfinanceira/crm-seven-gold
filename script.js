@@ -235,6 +235,66 @@ const PIPELINE_STAGE_TAGS = {
       label: "Confirmar agend.",
       className: "confirmar-agend",
     },
+    {
+      value: "numero_invalido",
+      label: "Nº inválido",
+      className: "numero-invalido",
+    },
+    {
+      value: "reagendar",
+      label: "Reagendar",
+      className: "reagendar",
+    },
+    {
+      value: "sem_retorno",
+      label: "Sem retorno",
+      className: "sem-retorno",
+    },
+    {
+      value: "nao_quer",
+      label: "Não quer",
+      className: "nao-quer",
+    },
+    {
+      value: "faltou",
+      label: "Faltou",
+      className: "faltou",
+    },
+    {
+      value: "reagendado",
+      label: "Reagendado",
+      className: "reagendado",
+    },
+    {
+      value: "negociando",
+      label: "Negociando",
+      className: "negociando",
+    },
+    {
+      value: "aguardando_doc",
+      label: "Aguardando doc",
+      className: "aguardando-doc",
+    },
+    {
+      value: "ligar",
+      label: "Ligar",
+      className: "ligar",
+    },
+    {
+      value: "a_checar",
+      label: "A checar",
+      className: "a-checar",
+    },
+    {
+      value: "checado",
+      label: "Checado",
+      className: "checado",
+    },
+    {
+      value: "venda_cancelada",
+      label: "Cancelado",
+      className: "cancelado",
+    },
   ],
   agendamento: [
     {
