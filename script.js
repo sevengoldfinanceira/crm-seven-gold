@@ -591,14 +591,27 @@ const setupPipelineTagFilters = () => {
     button.addEventListener("click", (event) => {
       event.stopPropagation();
       document.querySelectorAll(".kanban-tag-filter-menu.is-open").forEach((openMenu) => {
-        if (openMenu !== menu) openMenu.classList.remove("is-open");
+        if (openMenu !== menu) {
+          openMenu.classList.remove("is-open");
+          if (openMenu.parentElement === document.body) document.body.removeChild(openMenu);
+        }
       });
       renderPipelineTagFilterMenu(column, menu);
+      if (!menu.classList.contains("is-open")) {
+        if (menu.parentElement !== document.body) document.body.appendChild(menu);
+        const rect = button.getBoundingClientRect();
+        menu.style.position = "fixed";
+        menu.style.top = (rect.bottom + 6) + "px";
+        menu.style.left = (rect.left + rect.width / 2 - 105) + "px";
+        menu.style.transform = "none";
+      }
       menu.classList.toggle("is-open");
+      if (!menu.classList.contains("is-open") && menu.parentElement === document.body) {
+        document.body.removeChild(menu);
+      }
     });
 
     wrapper.append(button, menu);
-    icon.insertAdjacentElement("afterend", wrapper);
     refreshPipelineTagFilterButton(stageId);
   });
 };
@@ -606,6 +619,7 @@ const setupPipelineTagFilters = () => {
 document.addEventListener("click", () => {
   document.querySelectorAll(".kanban-tag-filter-menu.is-open").forEach((menu) => {
     menu.classList.remove("is-open");
+    if (menu.parentElement === document.body) document.body.removeChild(menu);
   });
 });
 
