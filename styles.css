@@ -8671,9 +8671,8 @@ body.theme-dark .lead-menu-button:hover {
 }
 
 .lead-trash-origin-row .lead-tag-badge {
-  flex: 0 1 auto !important;
+  flex: 1 1 0 !important;
   min-width: 0 !important;
-  max-width: calc(50% - 2px) !important;
   padding: 2px 5px !important;
   font-size: 9.5px !important;
   white-space: nowrap !important;
