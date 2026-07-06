@@ -3063,7 +3063,9 @@ body.theme-dark .kanban-column header small {
 }
 
 .kanban-tag-filter-menu {
-  position: fixed;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
   width: 210px;
   max-height: 70vh;
   overflow-y: auto;
@@ -3074,7 +3076,7 @@ body.theme-dark .kanban-column header small {
   border-radius: 16px;
   background: #ffffff;
   box-shadow: 0 22px 50px rgba(15, 23, 42, 0.2);
-  z-index: 10000;
+  z-index: 100;
 }
 
 .kanban-tag-filter-menu.is-open {

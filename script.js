@@ -576,6 +576,7 @@ const setupPipelineTagFilters = () => {
     const header = column.querySelector("header");
     const icon = header?.querySelector(".stage-icon");
     if (!header || !icon || header.querySelector(".kanban-tag-filter")) return;
+    if (document.body.querySelector(`.kanban-tag-filter-menu[data-for-stage="${stageId}"]`)) return;
 
     const wrapper = document.createElement("div");
     wrapper.className = "kanban-tag-filter";
@@ -587,31 +588,30 @@ const setupPipelineTagFilters = () => {
 
     const menu = document.createElement("div");
     menu.className = "kanban-tag-filter-menu";
+    menu.dataset.forStage = stageId;
+    document.body.appendChild(menu);
 
     button.addEventListener("click", (event) => {
       event.stopPropagation();
       document.querySelectorAll(".kanban-tag-filter-menu.is-open").forEach((openMenu) => {
-        if (openMenu !== menu) {
-          openMenu.classList.remove("is-open");
-          if (openMenu.parentElement === document.body) document.body.removeChild(openMenu);
-        }
+        if (openMenu !== menu) openMenu.classList.remove("is-open");
       });
       renderPipelineTagFilterMenu(column, menu);
-      if (!menu.classList.contains("is-open")) {
-        if (menu.parentElement !== document.body) document.body.appendChild(menu);
+      if (menu.classList.contains("is-open")) {
+        menu.classList.remove("is-open");
+      } else {
         const rect = button.getBoundingClientRect();
         menu.style.position = "fixed";
         menu.style.top = (rect.bottom + 6) + "px";
         menu.style.left = (rect.left + rect.width / 2 - 105) + "px";
         menu.style.transform = "none";
-      }
-      menu.classList.toggle("is-open");
-      if (!menu.classList.contains("is-open") && menu.parentElement === document.body) {
-        document.body.removeChild(menu);
+        menu.style.zIndex = "10000";
+        menu.classList.add("is-open");
       }
     });
 
-    wrapper.append(button, menu);
+    wrapper.append(button);
+    icon.insertAdjacentElement("afterend", wrapper);
     refreshPipelineTagFilterButton(stageId);
   });
 };
@@ -619,7 +619,6 @@ const setupPipelineTagFilters = () => {
 document.addEventListener("click", () => {
   document.querySelectorAll(".kanban-tag-filter-menu.is-open").forEach((menu) => {
     menu.classList.remove("is-open");
-    if (menu.parentElement === document.body) document.body.removeChild(menu);
   });
 });
 
