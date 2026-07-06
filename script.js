@@ -581,9 +581,14 @@ const setupPipelineTagFilters = () => {
         menu.classList.remove("is-open");
       } else {
         const rect = button.getBoundingClientRect();
+        let top = rect.bottom + 6;
+        let left = rect.left + rect.width / 2 - 105;
+        if (left < 8) left = 8;
+        if (left + 210 > window.innerWidth - 8) left = window.innerWidth - 218;
+        if (top + menu.scrollHeight > window.innerHeight - 8) top = rect.top - menu.scrollHeight - 6;
         menu.style.position = "fixed";
-        menu.style.top = (rect.bottom + 6) + "px";
-        menu.style.left = (rect.left + rect.width / 2 - 105) + "px";
+        menu.style.top = top + "px";
+        menu.style.left = left + "px";
         menu.style.transform = "none";
         menu.style.zIndex = "10000";
         menu.classList.add("is-open");
