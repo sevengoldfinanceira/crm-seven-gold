@@ -238,29 +238,9 @@ const PIPELINE_STAGE_TAGS = {
   ],
   agendamento: [
     {
-      value: "reagendar",
-      label: "Reagendar",
-      className: "reagendar",
-    },
-    {
-      value: "sem_retorno",
-      label: "Sem retorno",
-      className: "sem-retorno",
-    },
-    {
       value: "nao_quer",
       label: "Não quer",
       className: "nao-quer",
-    },
-    {
-      value: "faltou",
-      label: "Faltou",
-      className: "faltou",
-    },
-    {
-      value: "reagendado",
-      label: "Reagendado",
-      className: "reagendado",
     },
   ],
   cliente_em_loja: [
