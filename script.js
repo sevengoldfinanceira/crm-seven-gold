@@ -3472,7 +3472,13 @@ const openAppointmentModal = async ({ appointment = null, lead = null, date = ""
     submit.textContent = appointment ? "Salvar alteracoes" : allowDuplicate ? "Confirmar reagendamento" : "Confirmar agendamento";
     submit.disabled = false;
   }
-  if (deleteButton) deleteButton.hidden = !appointment;
+  const isCompleted = appointment && (
+    appointment.status === "compareceu" ||
+    appointment.status === "concluido" ||
+    appointment.status === "confirmado" ||
+    appointment.ever_passed_store === true
+  );
+  if (deleteButton) deleteButton.hidden = !appointment || isCompleted;
 
   appointmentModal.showModal();
   appointmentForm.elements.data_agendamento.focus();
@@ -3666,7 +3672,16 @@ const createAppointmentCard = (appointment) => {
   cancelItem.type = "button";
   cancelItem.textContent = "Cancelar agendamento";
 
-  dropdown.append(editItem, cancelItem);
+  const isAptCompleted = appointment.status === "compareceu" ||
+    appointment.status === "concluido" ||
+    appointment.status === "confirmado" ||
+    appointment.ever_passed_store === true;
+
+  if (isAptCompleted) {
+    dropdown.append(editItem);
+  } else {
+    dropdown.append(editItem, cancelItem);
+  }
 
   // Top Row: horários + confirmação
   const topRow = document.createElement("div");
