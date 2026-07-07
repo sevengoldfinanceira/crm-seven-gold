@@ -5514,7 +5514,20 @@ const renderLeads = (leads) => {
     const stack = column.querySelector(".card-stack");
     const counter = column.querySelector("small");
     const leadsInColumn = leads.filter((lead) => lead.status === status);
-    const visibleLeadsInColumn = leadsInColumn.filter((lead) => leadMatchesColumnTagFilter(lead, status));
+    const searchVal = String(window.pipelineSearchQuery || "").trim().toLowerCase();
+    const visibleLeadsInColumn = leadsInColumn.filter((lead) => {
+      if (!leadMatchesColumnTagFilter(lead, status)) return false;
+      if (searchVal) {
+        const leadName = String(lead.name || "").toLowerCase();
+        const leadPhone = String(lead.telefone || "").replace(/\D/g, "");
+        const cleanSearchVal = searchVal.replace(/\D/g, "");
+        if (cleanSearchVal && /^\d+$/.test(searchVal.trim())) {
+          return leadPhone.includes(cleanSearchVal);
+        }
+        return leadName.includes(searchVal);
+      }
+      return true;
+    });
     const activeFilterCount = getPipelineTagFilterValues(status).size;
 
     stack.innerHTML = "";
@@ -6442,6 +6455,13 @@ document.addEventListener("DOMContentLoaded", () => {
   initLeadModalTabs();
   setupLeadFormCurrencyFormatting();
   switchTab();
+  const searchInput = document.getElementById("pipeline-search-input");
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      window.pipelineSearchQuery = searchInput.value;
+      renderLeads(window.pipelineLeadsCache || []);
+    });
+  }
   loadLeads();
 });
 

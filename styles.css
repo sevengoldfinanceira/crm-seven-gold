@@ -10048,3 +10048,19 @@ body.theme-dark .funnel-divider {
 .lead-modal-actions-row .delete-lead-modal-btn svg {
   margin-right: 0 !important;
 }
+
+#pipeline-search-input:focus {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15) !important;
+}
+
+body.theme-dark #pipeline-search-input {
+  background: #1e152a !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
+}
+
+body.theme-dark #pipeline-search-input:focus {
+  border-color: #a78bfa !important;
+  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.15) !important;
+}
