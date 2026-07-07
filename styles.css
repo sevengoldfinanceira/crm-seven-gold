@@ -10049,6 +10049,13 @@ body.theme-dark .funnel-divider {
   margin-right: 0 !important;
 }
 
+.pipeline-header .pipeline-title-copy {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+}
+
 #pipeline-search-input:focus {
   border-color: #6366f1 !important;
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15) !important;
@@ -10064,3 +10071,4 @@ body.theme-dark #pipeline-search-input:focus {
   border-color: #a78bfa !important;
   box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.15) !important;
 }
+

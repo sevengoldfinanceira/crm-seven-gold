@@ -11,7 +11,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=compact-cards-v8" />
+    <link rel="stylesheet" href="styles.css?v=compact-cards-v9" />
     <link rel="stylesheet" href="searchable-select.css?v=purple-highlight-v1" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#150126" />
@@ -639,14 +639,16 @@
         <section class="tab-content" data-tab="pipeline">
           <section class="pipeline-header" id="pipeline">
             <div class="pipeline-title-copy">
-              <span class="pipeline-title-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M3 5h18l-7 8v5l-4 2v-7L3 5z"/>
-                </svg>
-              </span>
-              <div class="pipeline-title-text">
-                <h1>Pipeline</h1>
-                <span class="lead-count" data-lead-count>Carregando leads...</span>
+              <div class="pipeline-title-main-row" style="display: flex; align-items: center; gap: 16px;">
+                <span class="pipeline-title-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 5h18l-7 8v5l-4 2v-7L3 5z"/>
+                  </svg>
+                </span>
+                <div class="pipeline-title-text">
+                  <h1>Pipeline</h1>
+                  <span class="lead-count" data-lead-count>Carregando leads...</span>
+                </div>
               </div>
               <div class="pipeline-search-container" style="margin-top: 8px; width: 220px; position: relative;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: #64748b; pointer-events: none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1324,7 +1326,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=profile-access-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=production-locked-month-filter-v20"></script>
+    <script src="script.js?v=production-locked-month-filter-v21"></script>
     <script src="/searchable-select.js?v=responsible-select-fix-v1"></script>
     <script src="/pwa.js"></script>
   </body>
