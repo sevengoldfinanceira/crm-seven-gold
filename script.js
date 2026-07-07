@@ -2806,8 +2806,8 @@ const loadDashboardMetrics = async () => {
 
     const confirmedCurrentWeekCount = history.appointments.filter((appointment) => {
       if (!visibleLeadIds.has(String(appointment.lead_id))) return false;
-      const status = String(appointment.status || "").trim().toLowerCase();
-      if (status !== "concluido" && status !== "confirmado") return false;
+      const displayStatus = getAppointmentDisplayStatus(appointment);
+      if (displayStatus !== "concluido" && displayStatus !== "confirmado") return false;
       if (!appointment.data_agendamento) return false;
       const parts = appointment.data_agendamento.split("-");
       if (parts.length !== 3) return false;
