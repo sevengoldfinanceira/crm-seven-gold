@@ -3902,7 +3902,7 @@ const renderCalendar = () => {
     days.some((day) => item.data_agendamento === toDateKey(day))
   );
   const confirmedAppointments = weekAppointments.filter((item) =>
-    ["concluido", "confirmado", "compareceu"].includes(getAppointmentDisplayStatus(item))
+    ["concluido", "confirmado"].includes(getAppointmentDisplayStatus(item))
   );
   const storeAppointments = weekAppointments.filter((item) => {
     return item.ever_passed_store;
