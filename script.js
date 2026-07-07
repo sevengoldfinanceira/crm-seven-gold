@@ -680,7 +680,9 @@ const canMoveToPipelineStatus = (currentStatus, targetStatus) => {
   if (currentStatus === targetStatus) return true;
   if (currentStatus === "cancelado") return false;
   if (targetStatus === "cancelado") return true;
-  return targetStatus === getNextPipelineStatus(currentStatus);
+  const isNext = targetStatus === getNextPipelineStatus(currentStatus);
+  const isPrev = targetStatus === getPreviousPipelineStatus(currentStatus);
+  return isNext || isPrev;
 };
 
 const getPreviousPipelineStatus = (status) => {
@@ -6001,6 +6003,60 @@ const updateBulkActionsBar = () => {
 
   const count = checkboxes.length;
   countSpan.textContent = count;
+
+  const allCheckboxContainers = document.querySelectorAll(".lead-select-checkbox");
+  if (count > 0) {
+    const activeColumn = checkboxes[0].closest(".kanban-column");
+    const activeStatus = activeColumn ? activeColumn.dataset.status : null;
+
+    allCheckboxContainers.forEach((cb) => {
+      if (cb.checked) return;
+      const col = cb.closest(".kanban-column");
+      const colStatus = col ? col.dataset.status : null;
+      if (colStatus !== activeStatus) {
+        cb.style.opacity = "0";
+        cb.style.pointerEvents = "none";
+      } else {
+        cb.style.opacity = "1";
+        cb.style.pointerEvents = "auto";
+      }
+    });
+
+    const bulkMoveSelect = document.getElementById("bulk-move-select");
+    if (bulkMoveSelect && activeStatus) {
+      const nextStatus = getNextPipelineStatus(activeStatus);
+      const prevStatus = getPreviousPipelineStatus(activeStatus);
+      const allowedStatuses = new Set([nextStatus, prevStatus, "cancelado"].filter(Boolean));
+
+      Array.from(bulkMoveSelect.options).forEach((opt) => {
+        if (!opt.value) {
+          opt.style.display = "";
+          opt.disabled = false;
+          return;
+        }
+        if (allowedStatuses.has(opt.value)) {
+          opt.style.display = "";
+          opt.disabled = false;
+        } else {
+          opt.style.display = "none";
+          opt.disabled = true;
+        }
+      });
+    }
+  } else {
+    allCheckboxContainers.forEach((cb) => {
+      cb.style.opacity = "1";
+      cb.style.pointerEvents = "auto";
+    });
+
+    const bulkMoveSelect = document.getElementById("bulk-move-select");
+    if (bulkMoveSelect) {
+      Array.from(bulkMoveSelect.options).forEach((opt) => {
+        opt.style.display = "";
+        opt.disabled = false;
+      });
+    }
+  }
 
   if (count > 0) {
     bar.style.display = "flex";
