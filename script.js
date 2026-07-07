@@ -2797,7 +2797,31 @@ const loadDashboardMetrics = async () => {
   elNotServed.textContent = notServed;
   elAppointments.textContent = totalAppointments;
   elClientsInStore.textContent = clientsInStore;
-  if (elTodayClients) elTodayClients.textContent = totalAppointments;
+  if (elTodayClients) {
+    const startOfWeek = getWeekStart(new Date());
+    startOfWeek.setHours(0, 0, 0, 0);
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    const confirmedCurrentWeekCount = history.appointments.filter((appointment) => {
+      if (!visibleLeadIds.has(String(appointment.lead_id))) return false;
+      const status = String(appointment.status || "").trim().toLowerCase();
+      if (status !== "concluido" && status !== "confirmado") return false;
+      if (!appointment.data_agendamento) return false;
+      const parts = appointment.data_agendamento.split("-");
+      if (parts.length !== 3) return false;
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      const aptDate = new Date(year, month, day);
+      aptDate.setHours(12, 0, 0, 0);
+
+      return aptDate >= startOfWeek && aptDate <= endOfWeek;
+    }).length;
+
+    elTodayClients.textContent = confirmedCurrentWeekCount;
+  }
   if (elNoShows) elNoShows.textContent = noShows;
   if (elNoShowsConversion) elNoShowsConversion.textContent = `${noShowsConversion}%`;
   elInApproval.textContent = inApproval;
