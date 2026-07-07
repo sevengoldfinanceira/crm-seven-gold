@@ -5608,6 +5608,7 @@ const loadLeads = async () => {
   const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
   if (!currentCrmUser) return;
   await initResponsibleFilter(currentCrmUser);
+  await initBulkResponsibleSelect(currentCrmUser);
 
   let activeTeamId = selectedPipelineTeamId;
   let activeResponsibleEmail = selectedResponsibleEmail;
@@ -5977,6 +5978,20 @@ leadForm?.addEventListener("submit", async (event) => {
   await loadLeads();
 });
 
+const initBulkResponsibleSelect = async (currentCrmUser) => {
+  const bulkRespSelect = document.getElementById("bulk-responsible-select");
+  if (!bulkRespSelect) return;
+
+  if (bulkRespSelect.options.length <= 1) {
+    const client = getClient();
+    if (!client) return;
+    await refreshResponsibleFilterForTeam(bulkRespSelect, client, currentCrmUser);
+    if (bulkRespSelect.options[0]) {
+      bulkRespSelect.options[0].textContent = "Alterar vendedor...";
+    }
+  }
+};
+
 const updateBulkActionsBar = () => {
   const checkboxes = document.querySelectorAll(".lead-select-checkbox:checked");
   const bar = document.getElementById("bulk-actions-bar");
@@ -5989,10 +6004,45 @@ const updateBulkActionsBar = () => {
 
   if (count > 0) {
     bar.style.display = "flex";
+
+    const selectedCards = Array.from(checkboxes).map((cb) => cb.closest(".lead-card")).filter(Boolean);
+    const hasOnlyTrashLeads = selectedCards.every((card) => {
+      const col = card.closest(".kanban-column");
+      return col && col.dataset.status === "cancelado";
+    });
+
+    const hasAnyTrashLeads = selectedCards.some((card) => {
+      const col = card.closest(".kanban-column");
+      return col && col.dataset.status === "cancelado";
+    });
+
+    const bulkMoveLabel = document.getElementById("bulk-move-label");
+    const bulkRespLabel = document.getElementById("bulk-responsible-label");
+    const bulkRecoverBtn = document.getElementById("bulk-recover-btn");
+
+    if (hasOnlyTrashLeads) {
+      if (bulkMoveLabel) bulkMoveLabel.style.display = "none";
+      if (bulkRespLabel) bulkRespLabel.style.display = "none";
+      if (bulkRecoverBtn) bulkRecoverBtn.style.display = "inline-flex";
+    } else if (hasAnyTrashLeads) {
+      if (bulkMoveLabel) bulkMoveLabel.style.display = "none";
+      if (bulkRespLabel) bulkRespLabel.style.display = "none";
+      if (bulkRecoverBtn) bulkRecoverBtn.style.display = "none";
+    } else {
+      if (bulkMoveLabel) bulkMoveLabel.style.display = "inline-flex";
+
+      const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+      const canAssign = currentCrmUser && (shouldSeeAllLeads(currentCrmUser) || isTeamCoordinatorRole(currentCrmUser));
+      if (bulkRespLabel) bulkRespLabel.style.display = canAssign ? "inline-flex" : "none";
+
+      if (bulkRecoverBtn) bulkRecoverBtn.style.display = "none";
+    }
   } else {
     bar.style.display = "none";
     const select = document.getElementById("bulk-move-select");
     if (select) select.value = "";
+    const respSelect = document.getElementById("bulk-responsible-select");
+    if (respSelect) respSelect.value = "";
   }
 };
 
@@ -6114,6 +6164,78 @@ const setupBulkActions = () => {
         console.error("Bulk delete failed:", err);
         await loadLeads();
       }
+    }
+  });
+
+  const respSelect = document.getElementById("bulk-responsible-select");
+  respSelect?.addEventListener("change", async (e) => {
+    const targetEmail = e.target.value;
+    if (!targetEmail) return;
+
+    const checkboxes = document.querySelectorAll(".lead-select-checkbox:checked");
+    const leadIds = Array.from(checkboxes).map((cb) => cb.closest(".lead-card")?.dataset.leadId).filter(Boolean);
+
+    if (leadIds.length === 0) return;
+
+    const selectedOption = e.target.options[e.target.selectedIndex];
+    const sellerName = selectedOption.textContent.split("—")[0].trim();
+
+    if (confirm(`Deseja alterar o responsável de ${leadIds.length} leads selecionados para "${sellerName}"?`)) {
+      const client = getClient();
+      if (!client) return;
+
+      setCalendarStatus("Alterando responsáveis...");
+      let success = true;
+      for (const leadId of leadIds) {
+        try {
+          await updateLeadThroughApi(client, leadId, { assigned_to_email: targetEmail });
+        } catch (err) {
+          console.error("Falha ao alterar responsável para lead:", leadId, err);
+          success = false;
+        }
+      }
+
+      if (success) {
+        checkboxes.forEach((checkbox) => {
+          checkbox.checked = false;
+          checkbox.closest(".lead-card")?.classList.remove("selected");
+        });
+        updateBulkActionsBar();
+      }
+      respSelect.value = "";
+      await loadLeads();
+    } else {
+      respSelect.value = "";
+    }
+  });
+
+  const recoverBtn = document.getElementById("bulk-recover-btn");
+  recoverBtn?.addEventListener("click", async () => {
+    const checkboxes = document.querySelectorAll(".lead-select-checkbox:checked");
+    const leadIds = Array.from(checkboxes).map(cb => cb.closest(".lead-card")?.dataset.leadId).filter(Boolean);
+
+    if (leadIds.length === 0) return;
+
+    if (confirm(`Deseja reativar os ${leadIds.length} leads selecionados na etapa em que estavam antes da Lixeira?`)) {
+      setCalendarStatus("Reativando leads...");
+      let success = true;
+      for (const leadId of leadIds) {
+        try {
+          await productionRequest({ action: "recover_trash", lead_id: leadId });
+        } catch (err) {
+          console.error("Falha ao reativar lead:", leadId, err);
+          success = false;
+        }
+      }
+
+      if (success) {
+        checkboxes.forEach((checkbox) => {
+          checkbox.checked = false;
+          checkbox.closest(".lead-card")?.classList.remove("selected");
+        });
+        updateBulkActionsBar();
+      }
+      await loadLeads();
     }
   });
 

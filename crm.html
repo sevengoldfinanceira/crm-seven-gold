@@ -1300,7 +1300,7 @@
         <span id="bulk-selected-count">0</span> selecionados
       </div>
       <div class="bulk-actions">
-        <label class="bulk-move-label">
+        <label class="bulk-move-label" id="bulk-move-label">
           Mover para
           <select id="bulk-move-select">
             <option value="" disabled selected>Selecionar coluna...</option>
@@ -1313,6 +1313,15 @@
             <option value="cancelado">Cancelados</option>
           </select>
         </label>
+        <label class="bulk-move-label" id="bulk-responsible-label" style="display: none;">
+          Responsável
+          <select id="bulk-responsible-select">
+            <option value="">Alterar vendedor...</option>
+          </select>
+        </label>
+        <button type="button" class="bulk-action-btn recover" id="bulk-recover-btn" style="display: none;">
+          Reativar
+        </button>
         <button type="button" class="bulk-action-btn delete" id="bulk-delete-btn">
           Excluir
         </button>
@@ -1326,7 +1335,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=profile-access-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=production-locked-month-filter-v21"></script>
+    <script src="script.js?v=production-locked-month-filter-v22"></script>
     <script src="/searchable-select.js?v=responsible-select-fix-v1"></script>
     <script src="/pwa.js"></script>
   </body>

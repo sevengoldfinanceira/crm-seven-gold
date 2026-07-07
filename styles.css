@@ -1912,6 +1912,15 @@ body.theme-dark .theme-fab:hover {
   background: #b45309;
 }
 
+.bulk-action-btn.recover {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.bulk-action-btn.recover:hover {
+  background: #059669;
+}
+
 /* Mobile responsive styling for bulk action bar */
 @media (max-width: 768px) {
   .bulk-actions-bar {
