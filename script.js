@@ -4982,7 +4982,7 @@ const createLeadCard = (lead) => {
 
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
-  checkbox.className = "lead-checkbox";
+  checkbox.className = "lead-select-checkbox lead-checkbox";
   checkbox.addEventListener("change", (e) => {
     if (e.target.checked) {
       card.classList.add("selected");
