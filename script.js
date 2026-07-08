@@ -3351,6 +3351,100 @@ const fetchActiveCrmUsers = async () => {
   return data;
 };
 
+const openBulkTrashRecoverAssigneeModal = async (leadCount) => {
+  const users = await fetchActiveCrmUsers();
+  if (!users.length) {
+    alert("Não encontrei usuários ativos para receber os leads.");
+    return null;
+  }
+  const escapeHtml = (value) => String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+  return new Promise((resolve) => {
+    const dialog = document.createElement("dialog");
+    dialog.className = "trash-recover-modal";
+    dialog.innerHTML = `
+      <div class="trash-recover-panel">
+        <header class="trash-recover-header">
+          <div>
+            <span class="trash-recover-kicker">Recuperação em massa</span>
+            <h3>Escolha o vendedor</h3>
+            <p>Os leads originais continuarão na Lixeira. Serão criados novos leads para o vendedor escolhido.</p>
+          </div>
+          <button type="button" class="trash-recover-close" aria-label="Fechar">X</button>
+        </header>
+        <div class="trash-recover-lead">
+          <strong>Recuperando ${leadCount} leads selecionados</strong>
+        </div>
+        <label class="trash-recover-search">
+          <span>Buscar usuário</span>
+          <input type="search" placeholder="Nome, e-mail ou cargo..." autocomplete="off">
+        </label>
+        <div class="trash-recover-list">
+          <ul class="trash-recover-ul"></ul>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(dialog);
+    dialog.showModal();
+
+    const searchInput = dialog.querySelector("input");
+    const ul = dialog.querySelector("ul");
+    const closeBtn = dialog.querySelector(".trash-recover-close");
+
+    const renderList = (filterText = "") => {
+      ul.innerHTML = "";
+      const text = filterText.toLowerCase().trim();
+      const filtered = users.filter((u) => {
+        const n = String(u.nome || "").toLowerCase();
+        const e = String(u.email || "").toLowerCase();
+        const c = String(u.cargo || "").toLowerCase();
+        return n.includes(text) || e.includes(text) || c.includes(text);
+      });
+
+      if (!filtered.length) {
+        ul.innerHTML = '<li class="trash-recover-empty">Nenhum vendedor encontrado</li>';
+        return;
+      }
+
+      filtered.forEach((u) => {
+        const li = document.createElement("li");
+        li.className = "trash-recover-item";
+        const roleStr = u.cargo ? u.cargo.toUpperCase() : "VENDEDOR";
+        li.innerHTML = `
+          <div class="trash-recover-user-info">
+            <strong>${escapeHtml(u.nome)}</strong>
+            <span>${roleStr} • ${escapeHtml(u.email)}</span>
+          </div>
+          <button type="button" class="trash-recover-btn-select">Selecionar</button>
+        `;
+
+        li.querySelector(".trash-recover-btn-select").addEventListener("click", () => {
+          dialog.close();
+          dialog.remove();
+          resolve(u.email);
+        });
+
+        ul.appendChild(li);
+      });
+    };
+
+    searchInput.addEventListener("input", (e) => renderList(e.target.value));
+    closeBtn.addEventListener("click", () => {
+      dialog.close();
+      dialog.remove();
+      resolve(null);
+    });
+
+    renderList();
+  });
+};
+
 const openTrashRecoverAssigneeModal = async (lead) => {
   const users = await fetchActiveCrmUsers();
   const sourceEmail = String(lead?.assigned_to_email || "").trim().toLowerCase();
@@ -6075,15 +6169,18 @@ const updateBulkActionsBar = () => {
     const bulkMoveLabel = document.getElementById("bulk-move-label");
     const bulkRespLabel = document.getElementById("bulk-responsible-label");
     const bulkRecoverBtn = document.getElementById("bulk-recover-btn");
+    const bulkRecoverNewBtn = document.getElementById("bulk-recover-new-btn");
 
     if (hasOnlyTrashLeads) {
       if (bulkMoveLabel) bulkMoveLabel.style.display = "none";
       if (bulkRespLabel) bulkRespLabel.style.display = "none";
       if (bulkRecoverBtn) bulkRecoverBtn.style.display = "inline-flex";
+      if (bulkRecoverNewBtn) bulkRecoverNewBtn.style.display = "inline-flex";
     } else if (hasAnyTrashLeads) {
       if (bulkMoveLabel) bulkMoveLabel.style.display = "none";
       if (bulkRespLabel) bulkRespLabel.style.display = "none";
       if (bulkRecoverBtn) bulkRecoverBtn.style.display = "none";
+      if (bulkRecoverNewBtn) bulkRecoverNewBtn.style.display = "none";
     } else {
       if (bulkMoveLabel) bulkMoveLabel.style.display = "inline-flex";
 
@@ -6092,6 +6189,7 @@ const updateBulkActionsBar = () => {
       if (bulkRespLabel) bulkRespLabel.style.display = canAssign ? "inline-flex" : "none";
 
       if (bulkRecoverBtn) bulkRecoverBtn.style.display = "none";
+      if (bulkRecoverNewBtn) bulkRecoverNewBtn.style.display = "none";
     }
   } else {
     bar.style.display = "none";
@@ -6280,6 +6378,43 @@ const setupBulkActions = () => {
           await productionRequest({ action: "recover_trash", lead_id: leadId });
         } catch (err) {
           console.error("Falha ao reativar lead:", leadId, err);
+          success = false;
+        }
+      }
+
+      if (success) {
+        checkboxes.forEach((checkbox) => {
+          checkbox.checked = false;
+          checkbox.closest(".lead-card")?.classList.remove("selected");
+        });
+        updateBulkActionsBar();
+      }
+      await loadLeads();
+    }
+  });
+
+  const recoverNewBtn = document.getElementById("bulk-recover-new-btn");
+  recoverNewBtn?.addEventListener("click", async () => {
+    const checkboxes = document.querySelectorAll(".lead-select-checkbox:checked");
+    const leadIds = Array.from(checkboxes).map(cb => cb.closest(".lead-card")?.dataset.leadId).filter(Boolean);
+
+    if (leadIds.length === 0) return;
+
+    const targetEmail = await openBulkTrashRecoverAssigneeModal(leadIds.length);
+    if (!targetEmail) return;
+
+    if (confirm(`Deseja enviar os ${leadIds.length} leads selecionados como novos para o vendedor escolhido?`)) {
+      setCalendarStatus("Recuperando leads...");
+      let success = true;
+      for (const leadId of leadIds) {
+        try {
+          await productionRequest({
+            action: "recover_trash_as_new",
+            lead_id: leadId,
+            assigned_to_email: targetEmail,
+          });
+        } catch (err) {
+          console.error("Falha ao recuperar lead como novo:", leadId, err);
           success = false;
         }
       }
