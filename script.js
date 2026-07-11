@@ -1798,6 +1798,7 @@ const loadSalesUsers = async () => {
   const sellerSelects = [
     document.querySelector("[data-sales-seller-filter]"),
     salesForm?.querySelector("select[name='seller_id']"),
+    salesForm?.querySelector("select[name='attendant_id']"),
   ].filter(Boolean);
 
   sellerSelects.forEach((select) => {
@@ -1874,12 +1875,14 @@ const renderSalesList = () => {
     const closedDate = sale.closed_at ? new Date(sale.closed_at).toLocaleDateString("pt-BR", { timeZone: "UTC" }) : "--";
     const tableLabel = `Tabela ${sale.table_number || "-"}`;
     const parcels = `<strong>Integral:</strong> ${formatSalesCurrency(sale.full_installment_amount)}<br><strong>Reduzida:</strong> ${formatSalesCurrency(sale.reduced_installment_amount)}`;
+    const attendantName = getSalesSellerName(sale.attendant_id || sale.seller_id);
 
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${getSaleStatusControl(sale)}</td>
       <td><strong>${escapeHtml(sale.client_name)}</strong><small>${escapeHtml(sale.client_phone || "")}</small></td>
       <td>${escapeHtml(sellerName)}</td>
+      <td>${escapeHtml(attendantName)}</td>
       <td>${closedDate}</td>
       <td>${tableLabel}</td>
       <td>${formatSalesCurrency(sale.credit_amount)}</td>
@@ -1899,7 +1902,7 @@ const renderSalesList = () => {
     card.className = "sales-mobile-card";
     card.innerHTML = `
       <div>${getSaleStatusControl(sale)}<strong>${escapeHtml(sale.client_name)}</strong></div>
-      <p>${escapeHtml(sellerName)} • ${closedDate}</p>
+      <p>${escapeHtml(sellerName)} • Atendimento: ${escapeHtml(attendantName)} • ${closedDate}</p>
       <dl>
         <div><dt>Crédito</dt><dd>${formatSalesCurrency(sale.credit_amount)}</dd></div>
         <div><dt>Entrada</dt><dd>${formatSalesCurrency(sale.down_payment_amount)}</dd></div>
@@ -1935,7 +1938,7 @@ const loadSales = async () => {
     if (isSalesAdmin()) {
       if (filters.sellerId) query = query.eq("seller_id", filters.sellerId);
     } else {
-      query = query.eq("seller_id", currentUser.id);
+      query = query.or(`seller_id.eq.${currentUser.id},attendant_id.eq.${currentUser.id}`);
     }
 
     const { data, error } = await query.order("closed_at", { ascending: false }).order("created_at", { ascending: false });
@@ -1961,11 +1964,13 @@ const resetSalesForm = () => {
   const user = getSalesUser();
   const sellerField = salesForm.querySelector("[data-sales-seller-field]");
   const sellerSelect = salesForm.querySelector("select[name='seller_id']");
+  const attendantSelect = salesForm.querySelector("select[name='attendant_id']");
   if (sellerField) sellerField.hidden = !isSalesAdmin();
   if (sellerSelect) {
     sellerSelect.disabled = !isSalesAdmin();
     sellerSelect.value = isSalesAdmin() ? "" : user?.id || "";
   }
+  if (attendantSelect) attendantSelect.value = user?.id || "";
   salesForm.querySelector("[data-sales-detail-panel]")?.setAttribute("hidden", "");
   salesForm.querySelector("[data-sales-admin-actions]")?.setAttribute("hidden", "");
   salesForm.querySelector("button[type='submit']").hidden = false;
@@ -1994,6 +1999,7 @@ const openSalesModal = async (sale = null) => {
     salesForm.querySelector("input[name='client_name']").value = sale.client_name || "";
     salesForm.querySelector("input[name='client_phone']").value = sale.client_phone || "";
     salesForm.querySelector("select[name='seller_id']").value = sale.seller_id || "";
+    salesForm.querySelector("select[name='attendant_id']").value = sale.attendant_id || sale.seller_id || "";
     salesForm.querySelector("input[name='closed_date']").value = String(sale.closed_at || "").slice(0, 10);
     salesForm.querySelector("input[name='closed_time']").value = sale.closed_time || "";
     salesForm.querySelector("input[name='credit_amount']").value = formatSalesCurrency(sale.credit_amount);
@@ -2030,11 +2036,13 @@ const renderSalesDetail = async (sale) => {
   panel.hidden = false;
   adminActions.hidden = !isSalesAdmin();
   const sellerName = getSalesSellerName(sale.seller_id);
+  const attendantName = getSalesSellerName(sale.attendant_id || sale.seller_id);
   const creatorName = getSalesSellerName(sale.created_by);
   const checkerName = sale.checked_by ? getSalesSellerName(sale.checked_by) : "Não checado";
   grid.innerHTML = `
     <div><span>Status</span><strong>${SALES_STATUS_LABELS[sale.status] || sale.status}</strong></div>
     <div><span>Vendedor</span><strong>${escapeHtml(sellerName)}</strong></div>
+    <div><span>Atendimento</span><strong>${escapeHtml(attendantName)}</strong></div>
     <div><span>Cadastrado por</span><strong>${escapeHtml(creatorName)}</strong></div>
     <div><span>Cadastrado em</span><strong>${sale.created_at ? new Date(sale.created_at).toLocaleString("pt-BR") : "--"}</strong></div>
     <div><span>Checado por</span><strong>${escapeHtml(checkerName)}</strong></div>
@@ -2059,10 +2067,12 @@ const renderSalesDetail = async (sale) => {
 const buildSalesPayload = () => {
   const formData = new FormData(salesForm);
   const sellerId = isSalesAdmin() ? formData.get("seller_id") : getSalesUser()?.id;
+  const attendantId = formData.get("attendant_id") || sellerId;
   return {
     p_sale_id: formData.get("sale_id") || null,
     p_organization_id: SALES_ORG_ID,
     p_seller_id: sellerId || null,
+    p_attendant_id: attendantId || null,
     p_lead_id: null,
     p_client_name: String(formData.get("client_name") || "").trim(),
     p_client_phone: String(formData.get("client_phone") || "").trim() || null,
@@ -2096,7 +2106,7 @@ const saveSale = async (event) => {
   const client = getClient();
   if (!client) return;
   const payload = buildSalesPayload();
-  if (!payload.p_client_name || !payload.p_seller_id || !payload.p_closed_at || !payload.p_credit_amount || !payload.p_full_installment_amount || !payload.p_reduced_installment_amount || payload.p_table_number < 1 || payload.p_table_number > 7) {
+  if (!payload.p_client_name || !payload.p_seller_id || !payload.p_attendant_id || !payload.p_closed_at || !payload.p_credit_amount || !payload.p_full_installment_amount || !payload.p_reduced_installment_amount || payload.p_table_number < 1 || payload.p_table_number > 7) {
     setSalesFormStatus("Preencha os campos obrigatórios corretamente.", "error");
     return;
   }
