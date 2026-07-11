@@ -1881,9 +1881,9 @@ const renderSalesList = () => {
       <td><strong>${escapeHtml(sale.client_name)}</strong><small>${escapeHtml(sale.client_phone || "")}</small></td>
       <td>${escapeHtml(sellerName)}</td>
       <td>${closedDate}</td>
+      <td>${tableLabel}</td>
       <td>${formatSalesCurrency(sale.credit_amount)}</td>
       <td>${formatSalesCurrency(sale.down_payment_amount)}</td>
-      <td>${tableLabel}</td>
       <td>${parcels}</td>
       <td><button type="button" class="sales-action-button" data-sale-id="${sale.id}">Detalhes</button></td>
     `;
