@@ -195,17 +195,17 @@
     }
 
     const permissions = {
-      "diretor-ceo": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios", "financeiro", "marketing"],
-      vendedor: ["dashboard", "pipeline", "calendario"],
-      representante: ["dashboard", "pipeline", "calendario"],
-      "assistente-vendas": ["dashboard", "pipeline", "calendario"],
-      "home-office": ["dashboard", "pipeline", "calendario"],
-      "coordenador-comercial": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios"],
-      "supervisor-comercial": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios"],
-      "coordenador-posvenda": ["dashboard", "pipeline", "calendario", "tarefas", "feed", "cadastro", "relatorios"],
+      "diretor-ceo": ["dashboard", "pipeline", "calendario", "corrida", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios", "financeiro", "marketing"],
+      vendedor: ["dashboard", "pipeline", "calendario", "corrida"],
+      representante: ["dashboard", "pipeline", "calendario", "corrida"],
+      "assistente-vendas": ["dashboard", "pipeline", "calendario", "corrida"],
+      "home-office": ["dashboard", "pipeline", "calendario", "corrida"],
+      "coordenador-comercial": ["dashboard", "pipeline", "calendario", "corrida", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios"],
+      "supervisor-comercial": ["dashboard", "pipeline", "calendario", "corrida", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios"],
+      "coordenador-posvenda": ["dashboard", "pipeline", "calendario", "corrida", "tarefas", "feed", "cadastro", "relatorios"],
       "coordenador-adm": ["dashboard", "cadastro", "equipe", "organograma", "relatorios"],
-      "coordenador-financeiro": ["dashboard", "pipeline", "calendario", "cadastro", "financeiro", "relatorios"],
-      "coordenador-mkt": ["dashboard", "pipeline", "calendario", "cadastro", "marketing", "feed"],
+      "coordenador-financeiro": ["dashboard", "pipeline", "calendario", "corrida", "cadastro", "financeiro", "relatorios"],
+      "coordenador-mkt": ["dashboard", "pipeline", "calendario", "corrida", "cadastro", "marketing", "feed"],
       "coordenador-rh": ["dashboard", "equipe", "organograma", "relatorios"],
       "advogado-juridico": ["dashboard", "cadastro"]
     };

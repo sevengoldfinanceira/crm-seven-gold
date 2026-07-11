@@ -75,6 +75,12 @@
             </span>
             <span class="nav-label">Calendario</span>
           </a>
+          <a class="nav-item" href="#corrida" data-permission-key="corrida">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/><path d="M17 21H3"/></svg>
+            </span>
+            <span class="nav-label">Corrida</span>
+          </a>
           <a class="nav-item" href="#financeiro" data-permission-key="financeiro">
             <span class="nav-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -961,6 +967,102 @@
           </section>
         </section>
 
+        <!-- Corrida de Agendamentos -->
+        <section class="tab-content" data-tab="corrida" style="display:none;">
+          <section class="appointment-race" aria-labelledby="appointment-race-title">
+            <header class="appointment-race-hero">
+              <div class="appointment-race-title-group">
+                <span class="appointment-race-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 21V4"/>
+                    <path d="M5 4h11l-2 4 2 4H5"/>
+                    <path d="M17 21H3"/>
+                  </svg>
+                </span>
+                <div>
+                  <p class="appointment-race-kicker">Competição diária</p>
+                  <h1 id="appointment-race-title">Corrida de Agendamentos</h1>
+                  <p>Quem chega primeiro à meta de hoje?</p>
+                </div>
+              </div>
+              <div class="appointment-race-actions">
+                <button class="appointment-race-config-btn" type="button" data-race-open-settings hidden>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 8 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 8a1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 16 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9c.2.36.6.6 1 .6h.1a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1 .6Z"/></svg>
+                  Configurar
+                </button>
+              </div>
+            </header>
+
+            <div class="appointment-race-status" data-race-status aria-live="polite"></div>
+
+            <section class="appointment-race-summary" aria-label="Resumo da corrida">
+              <article class="appointment-race-stat">
+                <span>Meta diária</span>
+                <strong data-race-target>--</strong>
+                <small>agendamentos</small>
+              </article>
+              <article class="appointment-race-stat">
+                <span>Participantes</span>
+                <strong data-race-participants>--</strong>
+                <small>vendedores ativos</small>
+              </article>
+              <article class="appointment-race-stat">
+                <span>Tempo restante</span>
+                <strong data-race-time-left>--</strong>
+                <small>até meia-noite</small>
+              </article>
+              <article class="appointment-race-stat appointment-race-stat--winner">
+                <span>Vencedor</span>
+                <strong data-race-winner>--</strong>
+                <small data-race-winner-time>aguardando</small>
+              </article>
+            </section>
+
+            <section class="appointment-race-winner-banner" data-race-winner-banner hidden></section>
+
+            <div class="appointment-race-grid">
+              <section class="appointment-race-tracks" aria-label="Pistas dos vendedores">
+                <div class="appointment-race-empty" data-race-empty>
+                  <strong>Nenhuma corrida iniciada hoje.</strong>
+                  <span>Um administrador pode iniciar a corrida e definir a meta diária.</span>
+                </div>
+                <div class="appointment-race-track-list" data-race-track-list></div>
+              </section>
+
+              <aside class="appointment-race-ranking" aria-label="Ranking da corrida">
+                <div class="appointment-race-ranking-header">
+                  <span>Ranking</span>
+                  <strong data-race-ranking-count>0</strong>
+                </div>
+                <div class="appointment-race-ranking-list" data-race-ranking-list></div>
+              </aside>
+            </div>
+          </section>
+        </section>
+
+        <dialog class="appointment-race-modal" data-race-settings-modal>
+          <form method="dialog" class="appointment-race-settings-form" data-race-settings-form>
+            <header>
+              <div>
+                <p class="appointment-race-kicker">Configuração</p>
+                <h2>Corrida de Agendamentos</h2>
+                <span>Ajuste a meta e controle a corrida de hoje.</span>
+              </div>
+              <button type="button" class="modal-close-button" data-race-close-settings aria-label="Fechar">×</button>
+            </header>
+            <label>
+              <span>Meta diária de agendamentos</span>
+              <input type="number" min="1" step="1" value="10" data-race-target-input />
+            </label>
+            <p class="appointment-race-modal-status" data-race-modal-status></p>
+            <footer>
+              <button type="button" class="ghost-button" data-race-cancel>Encerrar corrida</button>
+              <button type="button" class="ghost-button" data-race-restart>Reiniciar corrida</button>
+              <button type="submit" class="primary-button">Salvar / iniciar</button>
+            </footer>
+          </form>
+        </dialog>
+
         <!-- Meu perfil -->
         <section class="tab-content crm-profile-tab" data-tab="perfil" style="display:none;">
           <header class="crm-profile-header">
@@ -1338,7 +1440,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=profile-access-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=production-locked-month-filter-v27"></script>
+    <script src="script.js?v=production-locked-month-filter-v28"></script>
     <script src="/searchable-select.js?v=responsible-select-fix-v1"></script>
     <script src="/pwa.js"></script>
   </body>

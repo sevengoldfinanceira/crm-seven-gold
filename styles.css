@@ -10090,3 +10090,606 @@ body.theme-dark #pipeline-search-input:focus {
   box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.15) !important;
 }
 
+/* Corrida de Agendamentos */
+.appointment-race {
+  padding: 28px;
+  min-height: calc(100vh - 44px);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(124, 58, 237, 0.12), transparent 32%),
+    linear-gradient(180deg, #f8faff 0%, #eef2ff 100%);
+  color: #0f172a;
+}
+
+.appointment-race-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  margin-bottom: 18px;
+}
+
+.appointment-race-title-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.appointment-race-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #6d4aff;
+  background: linear-gradient(135deg, #f0e7ff, #eef2ff);
+  box-shadow: 0 16px 36px rgba(109, 74, 255, 0.16);
+}
+
+.appointment-race-icon svg {
+  width: 31px;
+  height: 31px;
+}
+
+.appointment-race-kicker {
+  margin: 0 0 4px;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6d4aff;
+}
+
+.appointment-race h1 {
+  margin: 0;
+  font-size: clamp(2rem, 3.6vw, 3.25rem);
+  line-height: 0.98;
+  font-weight: 900;
+  color: #06112f;
+}
+
+.appointment-race-title-group p:last-child {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.appointment-race-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.appointment-race-config-btn,
+.appointment-race-settings-form .primary-button,
+.appointment-race-settings-form .ghost-button {
+  border: 0;
+  border-radius: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.appointment-race-config-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #6d4aff, #8b5cf6);
+  box-shadow: 0 18px 38px rgba(109, 74, 255, 0.28);
+}
+
+.appointment-race-config-btn:hover,
+.appointment-race-settings-form .primary-button:hover,
+.appointment-race-settings-form .ghost-button:hover {
+  transform: translateY(-1px);
+}
+
+.appointment-race-status {
+  min-height: 22px;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #64748b;
+}
+
+.appointment-race-status[data-type="error"],
+.appointment-race-modal-status[data-type="error"] {
+  color: #dc2626;
+}
+
+.appointment-race-status[data-type="success"],
+.appointment-race-modal-status[data-type="success"] {
+  color: #16a34a;
+}
+
+.appointment-race-summary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.appointment-race-stat {
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+}
+
+.appointment-race-stat span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.73rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.appointment-race-stat strong {
+  display: block;
+  font-size: 1.8rem;
+  line-height: 1;
+  font-weight: 950;
+  color: #111827;
+}
+
+.appointment-race-stat small {
+  display: block;
+  margin-top: 6px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.appointment-race-stat--winner {
+  border-color: rgba(34, 197, 94, 0.24);
+  background: linear-gradient(135deg, #ffffff, #ecfdf5);
+}
+
+.appointment-race-winner-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(234, 179, 8, 0.38);
+  border-radius: 24px;
+  background: linear-gradient(135deg, #fff7ed, #fef3c7);
+  box-shadow: 0 22px 54px rgba(202, 138, 4, 0.18);
+}
+
+.appointment-race-winner-banner span {
+  font-size: 2rem;
+}
+
+.appointment-race-winner-banner strong {
+  color: #78350f;
+  font-size: 1.1rem;
+}
+
+.appointment-race-winner-banner small {
+  color: #92400e;
+  font-weight: 800;
+}
+
+.appointment-race-winner-banner.is-new-winner {
+  animation: raceWinnerPulse 1.8s ease;
+}
+
+@keyframes raceWinnerPulse {
+  0%, 100% { transform: scale(1); }
+  35% { transform: scale(1.015); box-shadow: 0 28px 70px rgba(202, 138, 4, 0.28); }
+}
+
+.appointment-race-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 18px;
+}
+
+.appointment-race-tracks,
+.appointment-race-ranking {
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 22px 56px rgba(15, 23, 42, 0.09);
+}
+
+.appointment-race-tracks {
+  padding: 20px;
+}
+
+.appointment-race-empty {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  text-align: center;
+  color: #64748b;
+}
+
+.appointment-race-empty strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #111827;
+  font-size: 1.2rem;
+}
+
+.appointment-race-track-list {
+  display: grid;
+  gap: 14px;
+}
+
+.appointment-race-track {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 24px;
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+}
+
+.appointment-race-track.is-winner {
+  border-color: rgba(34, 197, 94, 0.32);
+  background: linear-gradient(135deg, #f0fdf4, #ffffff);
+}
+
+.appointment-race-track.is-bumped {
+  animation: raceTrackBoost 0.9s ease;
+}
+
+@keyframes raceTrackBoost {
+  0% { transform: translateX(0); }
+  35% { transform: translateX(8px); }
+  100% { transform: translateX(0); }
+}
+
+.appointment-race-seller {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.appointment-race-avatar {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 950;
+  color: #ffffff;
+  background: linear-gradient(135deg, #6d4aff, #22c55e);
+  box-shadow: 0 14px 26px rgba(109, 74, 255, 0.22);
+}
+
+.appointment-race-seller strong,
+.appointment-race-ranking-item strong {
+  display: block;
+  color: #0f172a;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.appointment-race-seller mark {
+  flex: 0 0 auto;
+  min-width: 42px;
+  height: 32px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #6d4aff;
+  background: #f0e7ff;
+  font-weight: 950;
+}
+
+.appointment-race-seller span,
+.appointment-race-ranking-item span {
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.appointment-race-progress-area {
+  min-width: 0;
+}
+
+.appointment-race-track-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
+  color: #475569;
+  font-weight: 850;
+}
+
+.appointment-race-lane {
+  position: relative;
+  height: 34px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #edf2ff;
+  border: 1px solid rgba(99, 102, 241, 0.12);
+}
+
+.appointment-race-lane-fill {
+  height: 100%;
+  min-width: 8px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6d4aff, #22c55e);
+  transition: width 0.45s ease;
+}
+
+.appointment-race-runner {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--progress, 0%) - 15px);
+  width: 30px;
+  height: 30px;
+  transform: translateY(-50%);
+  border: 3px solid #ffffff;
+  border-radius: 999px;
+  background: #111827;
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.2);
+  transition: left 0.45s ease;
+}
+
+.appointment-race-finish {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  font-size: 1rem;
+}
+
+.appointment-race-ranking {
+  padding: 18px;
+}
+
+.appointment-race-ranking-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.appointment-race-ranking-header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.2rem;
+}
+
+.appointment-race-ranking-header strong {
+  min-width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #6d4aff;
+  background: #f0e7ff;
+}
+
+.appointment-race-ranking-list {
+  display: grid;
+  gap: 10px;
+}
+
+.appointment-race-ranking-item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.appointment-race-ranking-item > span:first-child {
+  font-size: 1.25rem;
+}
+
+.appointment-race-ranking-item > strong:last-child {
+  color: #6d4aff;
+}
+
+.appointment-race-modal {
+  width: min(520px, calc(100vw - 32px));
+  border: 0;
+  border-radius: 28px;
+  padding: 0;
+  color: #0f172a;
+  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.35);
+}
+
+.appointment-race-modal::backdrop {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.appointment-race-settings-form {
+  padding: 26px;
+  background: #ffffff;
+}
+
+.appointment-race-settings-form label {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+  color: #334155;
+  font-weight: 850;
+}
+
+.appointment-race-settings-form input {
+  height: 52px;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 0 16px;
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.appointment-race-modal-status {
+  min-height: 20px;
+  margin: 0 0 16px;
+  font-weight: 800;
+}
+
+.appointment-race-settings-form header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.appointment-race-settings-form h2 {
+  margin: 2px 0 6px;
+  color: #0f172a;
+  font-size: 1.55rem;
+}
+
+.appointment-race-settings-form header span {
+  color: #64748b;
+  font-weight: 700;
+}
+
+.appointment-race-settings-form footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.appointment-race-settings-form .primary-button {
+  padding: 13px 18px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #6d4aff, #8b5cf6);
+}
+
+.appointment-race-settings-form .ghost-button {
+  padding: 13px 16px;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+body.theme-dark .appointment-race {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(124, 58, 237, 0.2), transparent 34%),
+    linear-gradient(180deg, #0f1117 0%, #161922 100%);
+  color: #f8fafc;
+}
+
+body.theme-dark .appointment-race h1,
+body.theme-dark .appointment-race-empty strong,
+body.theme-dark .appointment-race-ranking-header h2,
+body.theme-dark .appointment-race-seller strong,
+body.theme-dark .appointment-race-ranking-item strong {
+  color: #f8fafc;
+}
+
+body.theme-dark .appointment-race-title-group p:last-child,
+body.theme-dark .appointment-race-status,
+body.theme-dark .appointment-race-seller span,
+body.theme-dark .appointment-race-ranking-item span,
+body.theme-dark .appointment-race-track-meta {
+  color: #94a3b8;
+}
+
+body.theme-dark .appointment-race-stat,
+body.theme-dark .appointment-race-tracks,
+body.theme-dark .appointment-race-ranking,
+body.theme-dark .appointment-race-track,
+body.theme-dark .appointment-race-ranking-item {
+  background: rgba(15, 23, 42, 0.78);
+  border-color: rgba(148, 163, 184, 0.16);
+  box-shadow: 0 22px 56px rgba(0, 0, 0, 0.28);
+}
+
+body.theme-dark .appointment-race-stat strong {
+  color: #ffffff;
+}
+
+body.theme-dark .appointment-race-lane {
+  background: rgba(99, 102, 241, 0.16);
+  border-color: rgba(148, 163, 184, 0.18);
+}
+
+body.theme-dark .appointment-race-settings-form {
+  background: #111827;
+  color: #f8fafc;
+}
+
+body.theme-dark .appointment-race-settings-form label,
+body.theme-dark .appointment-race-settings-form h2 {
+  color: #e2e8f0;
+}
+
+body.theme-dark .appointment-race-settings-form input,
+body.theme-dark .appointment-race-settings-form .ghost-button {
+  background: #1f2937;
+  color: #f8fafc;
+  border-color: rgba(148, 163, 184, 0.22);
+}
+
+@media (max-width: 1100px) {
+  .appointment-race-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .appointment-race-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .appointment-race-ranking {
+    order: -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .appointment-race {
+    padding: 18px;
+  }
+
+  .appointment-race-hero,
+  .appointment-race-title-group {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .appointment-race-actions {
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .appointment-race-config-btn {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .appointment-race-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .appointment-race-track {
+    grid-template-columns: 1fr;
+  }
+
+  .appointment-race-settings-form .modal-actions {
+    flex-direction: column;
+  }
+}
+
