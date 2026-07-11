@@ -1747,6 +1747,43 @@ const getSalesSellerName = (id) => getSalesSellerById(id)?.nome || getSalesSelle
 
 const getSaleStatusBadge = (status) => `<span class="sales-status-badge sales-status-badge--${status || "pending_check"}">${SALES_STATUS_LABELS[status] || SALES_STATUS_LABELS.pending_check}</span>`;
 
+const getSaleStatusControl = (sale) => {
+  if (!isSalesAdmin() || sale.status !== "pending_check") return getSaleStatusBadge(sale.status);
+  return `
+    <div class="sales-status-menu">
+      <button type="button" class="sales-status-trigger sales-status-badge sales-status-badge--pending_check" data-sales-status-toggle>
+        ${SALES_STATUS_LABELS.pending_check}
+      </button>
+      <div class="sales-status-options" hidden>
+        <button type="button" data-sales-inline-status="checked">Marcar como checado</button>
+        <button type="button" data-sales-inline-status="cancelled">Marcar como cancelado</button>
+      </div>
+    </div>
+  `;
+};
+
+const bindSalesStatusControls = (container, sale) => {
+  const trigger = container.querySelector("[data-sales-status-toggle]");
+  const options = container.querySelector(".sales-status-options");
+  if (!trigger || !options) return;
+
+  trigger.addEventListener("click", (event) => {
+    event.stopPropagation();
+    document.querySelectorAll(".sales-status-options").forEach((menu) => {
+      if (menu !== options) menu.hidden = true;
+    });
+    options.hidden = !options.hidden;
+  });
+
+  options.querySelectorAll("[data-sales-inline-status]").forEach((button) => {
+    button.addEventListener("click", async (event) => {
+      event.stopPropagation();
+      options.hidden = true;
+      await updateSaleStatus(button.dataset.salesInlineStatus, sale);
+    });
+  });
+};
+
 const loadSalesUsers = async () => {
   const client = getClient();
   if (!client) return [];
@@ -1840,7 +1877,7 @@ const renderSalesList = () => {
 
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${getSaleStatusBadge(sale.status)}</td>
+      <td>${getSaleStatusControl(sale)}</td>
       <td><strong>${escapeHtml(sale.client_name)}</strong><small>${escapeHtml(sale.client_phone || "")}</small></td>
       <td>${escapeHtml(sellerName)}</td>
       <td>${closedDate}</td>
@@ -1854,13 +1891,14 @@ const renderSalesList = () => {
       if (event.target.closest("button")) return;
       openSalesModal(sale);
     });
-    row.querySelector("button")?.addEventListener("click", () => openSalesModal(sale));
+    row.querySelector(".sales-action-button")?.addEventListener("click", () => openSalesModal(sale));
+    bindSalesStatusControls(row, sale);
     salesTableBody?.append(row);
 
     const card = document.createElement("article");
     card.className = "sales-mobile-card";
     card.innerHTML = `
-      <div>${getSaleStatusBadge(sale.status)}<strong>${escapeHtml(sale.client_name)}</strong></div>
+      <div>${getSaleStatusControl(sale)}<strong>${escapeHtml(sale.client_name)}</strong></div>
       <p>${escapeHtml(sellerName)} • ${closedDate}</p>
       <dl>
         <div><dt>Crédito</dt><dd>${formatSalesCurrency(sale.credit_amount)}</dd></div>
@@ -1869,9 +1907,10 @@ const renderSalesList = () => {
         <div><dt>Integral</dt><dd>${formatSalesCurrency(sale.full_installment_amount)}</dd></div>
         <div><dt>Reduzida</dt><dd>${formatSalesCurrency(sale.reduced_installment_amount)}</dd></div>
       </dl>
-      <button type="button">Ver detalhes</button>
+      <button type="button" class="sales-action-button">Ver detalhes</button>
     `;
-    card.querySelector("button")?.addEventListener("click", () => openSalesModal(sale));
+    card.querySelector(".sales-action-button")?.addEventListener("click", () => openSalesModal(sale));
+    bindSalesStatusControls(card, sale);
     salesCardList?.append(card);
   });
 };
@@ -2089,8 +2128,9 @@ const saveSale = async (event) => {
   }
 };
 
-const updateSaleStatus = async (status) => {
-  if (!currentEditingSale || !isSalesAdmin()) return;
+const updateSaleStatus = async (status, saleOverride = null) => {
+  const targetSale = saleOverride || currentEditingSale;
+  if (!targetSale || !isSalesAdmin()) return;
   const client = getClient();
   let reason = null;
   if (status === "cancelled") {
@@ -2100,15 +2140,15 @@ const updateSaleStatus = async (status) => {
   try {
     setSalesFormStatus("Atualizando status...");
     const { error } = await client.rpc("update_sale_status", {
-      p_sale_id: currentEditingSale.id,
+      p_sale_id: targetSale.id,
       p_status: status,
       p_cancellation_reason: reason,
     });
     if (error) throw error;
     setSalesFormStatus("Status atualizado com sucesso.", "success");
     await loadSales();
-    const refreshed = salesRecords.find((sale) => String(sale.id) === String(currentEditingSale.id));
-    if (refreshed) {
+    const refreshed = salesRecords.find((sale) => String(sale.id) === String(targetSale.id));
+    if (refreshed && !saleOverride) {
       currentEditingSale = refreshed;
       await openSalesModal(refreshed);
     }
@@ -5326,6 +5366,12 @@ document.querySelector("[data-sales-mark-pending]")?.addEventListener("click", (
 document.querySelector("[data-sales-mark-checked]")?.addEventListener("click", () => updateSaleStatus("checked"));
 document.querySelector("[data-sales-mark-cancelled]")?.addEventListener("click", () => updateSaleStatus("cancelled"));
 document.querySelector("[data-sales-delete]")?.addEventListener("click", deleteSale);
+document.addEventListener("click", (event) => {
+  if (event.target.closest(".sales-status-menu")) return;
+  document.querySelectorAll(".sales-status-options").forEach((menu) => {
+    menu.hidden = true;
+  });
+});
 
 document.querySelector("[data-delete-appointment]")?.addEventListener("click", async () => {
   const appointmentId = appointmentForm?.elements.id.value;
