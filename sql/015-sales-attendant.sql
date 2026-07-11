@@ -37,7 +37,7 @@ returns public.sales
 language plpgsql
 security definer
 set search_path = public
-as $$
+as $sales_attendant_save_sale$
 declare
   v_user_id uuid := public.sales_current_user_id();
   v_is_admin boolean := public.sales_is_admin();
@@ -143,7 +143,7 @@ begin
   perform public.sales_log(v_saved.id, 'sale_updated', to_jsonb(v_existing), to_jsonb(v_saved));
   return v_saved;
 end;
-$$;
+$sales_attendant_save_sale$;
 
 drop policy if exists sales_select_own_or_admin on public.sales;
 create policy sales_select_own_or_admin
@@ -179,3 +179,5 @@ using (
 
 revoke all on function public.save_sale(uuid, text, uuid, uuid, uuid, text, text, date, time, numeric, numeric, integer, numeric, numeric, text) from public, anon;
 grant execute on function public.save_sale(uuid, text, uuid, uuid, uuid, text, text, date, time, numeric, numeric, integer, numeric, numeric, text) to authenticated;
+
+select 'sales attendant migration completed' as status;
