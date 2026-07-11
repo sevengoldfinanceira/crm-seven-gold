@@ -32,6 +32,13 @@ const appointmentRaceSettingsModal = document.querySelector("[data-race-settings
 const appointmentRaceSettingsForm = document.querySelector("[data-race-settings-form]");
 const appointmentRaceTargetInput = document.querySelector("[data-race-target-input]");
 const appointmentRaceModalStatus = document.querySelector("[data-race-modal-status]");
+const salesModal = document.querySelector("[data-sales-modal]");
+const salesForm = document.querySelector("[data-sales-form]");
+const salesStatusEl = document.querySelector("[data-sales-status]");
+const salesFormStatus = document.querySelector("[data-sales-form-status]");
+const salesTableBody = document.querySelector("[data-sales-table-body]");
+const salesCardList = document.querySelector("[data-sales-card-list]");
+const salesEmpty = document.querySelector("[data-sales-empty]");
 let draggedLeadId = null;
 let pointerDrag = null;
 let calendarWeekStart = null;
@@ -42,6 +49,10 @@ let appointmentRaceRealtimeChannel = null;
 let appointmentRaceLastCounts = new Map();
 let appointmentRaceTimer = null;
 let appointmentRaceWinnerSeenKey = sessionStorage.getItem("seven-gold-race-winner-seen") || "";
+let salesRecords = [];
+let salesUsers = [];
+let currentEditingSale = null;
+let salesLoadedOnce = false;
 let currentEditingLead = null;
 let deepLinkedLeadHandled = false;
 let commercialProductions = [];
@@ -1643,6 +1654,493 @@ const runAppointmentRaceAdminAction = async (action) => {
     console.error("[Corrida de Agendamentos] Erro na ação admin:", error);
     setAppointmentRaceModalStatus(error.message || "Não foi possível salvar.", "error");
   }
+};
+
+const SALES_ORG_ID = "seven_gold";
+const SALES_STATUS_LABELS = {
+  pending_check: "Aguardando checagem",
+  checked: "Checado",
+  cancelled: "Cancelado",
+};
+
+const getSalesUser = () => window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser || null;
+const isSalesAdmin = () => Boolean(getSalesUser() && isAdminRole(getSalesUser().cargo));
+
+const setSalesStatus = (message = "", type = "") => {
+  if (!salesStatusEl) return;
+  salesStatusEl.textContent = message;
+  salesStatusEl.dataset.type = type;
+};
+
+const setSalesFormStatus = (message = "", type = "") => {
+  if (!salesFormStatus) return;
+  salesFormStatus.textContent = message;
+  salesFormStatus.dataset.type = type;
+};
+
+const salesCurrencyFormatter = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+});
+
+const formatSalesCurrency = (value) => salesCurrencyFormatter.format(Number(value || 0));
+
+const parseSalesMoney = (value) => {
+  const raw = String(value || "").replace(/\s/g, "");
+  if (!raw) return null;
+  const normalized = raw
+    .replace(/[R$]/g, "")
+    .replace(/\./g, "")
+    .replace(",", ".")
+    .replace(/[^\d.-]/g, "");
+  const number = Number(normalized);
+  return Number.isFinite(number) ? Number(number.toFixed(2)) : null;
+};
+
+const formatSalesMoneyInput = (input) => {
+  if (!input) return;
+  const parsed = parseSalesMoney(input.value);
+  input.value = parsed === null ? "" : formatSalesCurrency(parsed);
+};
+
+const getSalesTodayISO = () => {
+  const now = new Date();
+  const sp = new Date(now.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+  return sp.toISOString().slice(0, 10);
+};
+
+const getSalesDateRange = () => {
+  const period = document.querySelector("[data-sales-period]")?.value || "month";
+  const now = new Date(`${getSalesTodayISO()}T12:00:00`);
+  let start = new Date(now);
+  let end = new Date(now);
+
+  if (period === "today") {
+    // already today
+  } else if (period === "week") {
+    const day = start.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    start.setDate(start.getDate() + diff);
+    end = new Date(start);
+    end.setDate(start.getDate() + 6);
+  } else if (period === "last_month") {
+    start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    end = new Date(now.getFullYear(), now.getMonth(), 0);
+  } else if (period === "custom") {
+    const startValue = document.querySelector("[data-sales-start-date]")?.value;
+    const endValue = document.querySelector("[data-sales-end-date]")?.value;
+    start = startValue ? new Date(`${startValue}T12:00:00`) : start;
+    end = endValue ? new Date(`${endValue}T12:00:00`) : end;
+  } else {
+    start = new Date(now.getFullYear(), now.getMonth(), 1);
+    end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  }
+
+  return {
+    start: start.toISOString().slice(0, 10),
+    end: end.toISOString().slice(0, 10),
+  };
+};
+
+const getSalesSellerById = (id) => salesUsers.find((user) => String(user.id) === String(id));
+const getSalesSellerName = (id) => getSalesSellerById(id)?.nome || getSalesSellerById(id)?.email || "Sem vendedor";
+
+const getSaleStatusBadge = (status) => `<span class="sales-status-badge sales-status-badge--${status || "pending_check"}">${SALES_STATUS_LABELS[status] || SALES_STATUS_LABELS.pending_check}</span>`;
+
+const loadSalesUsers = async () => {
+  const client = getClient();
+  if (!client) return [];
+  const { data, error } = await client
+    .from("crm_users")
+    .select("id,nome,email,cargo,ativo")
+    .eq("ativo", true)
+    .order("nome", { ascending: true });
+  if (error) throw error;
+  salesUsers = data || [];
+
+  const sellerSelects = [
+    document.querySelector("[data-sales-seller-filter]"),
+    salesForm?.querySelector("select[name='seller_id']"),
+  ].filter(Boolean);
+
+  sellerSelects.forEach((select) => {
+    const keepAllOption = select.hasAttribute("data-sales-seller-filter");
+    const previous = select.value;
+    select.innerHTML = keepAllOption ? '<option value="">Todos os vendedores</option>' : '<option value="">Selecione o vendedor</option>';
+    salesUsers.forEach((user) => {
+      const option = document.createElement("option");
+      option.value = user.id;
+      option.textContent = `${user.nome || user.email} (${String(user.cargo || "vendedor").toUpperCase()})`;
+      select.appendChild(option);
+    });
+    if (previous) select.value = previous;
+  });
+
+  return salesUsers;
+};
+
+const readSalesFilters = () => ({
+  sellerId: document.querySelector("[data-sales-seller-filter]")?.value || "",
+  status: document.querySelector("[data-sales-status-filter]")?.value || "",
+  tableNumber: document.querySelector("[data-sales-table-filter]")?.value || "",
+  client: (document.querySelector("[data-sales-client-filter]")?.value || "").trim().toLowerCase(),
+  sort: document.querySelector("[data-sales-sort]")?.value || "closed_at_desc",
+  ...getSalesDateRange(),
+});
+
+const applySalesClientSideFilters = (records) => {
+  const filters = readSalesFilters();
+  let filtered = [...records];
+  if (filters.client) {
+    filtered = filtered.filter((sale) => String(sale.client_name || "").toLowerCase().includes(filters.client));
+  }
+  filtered.sort((a, b) => {
+    if (filters.sort === "client_name_asc") return String(a.client_name || "").localeCompare(String(b.client_name || ""));
+    if (filters.sort === "seller_asc") return getSalesSellerName(a.seller_id).localeCompare(getSalesSellerName(b.seller_id));
+    if (filters.sort === "status_asc") return String(a.status || "").localeCompare(String(b.status || ""));
+    if (filters.sort === "credit_amount_desc") return Number(b.credit_amount || 0) - Number(a.credit_amount || 0);
+    if (filters.sort === "created_at_desc") return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+    return new Date(b.closed_at || 0) - new Date(a.closed_at || 0);
+  });
+  return filtered;
+};
+
+const renderSalesSummary = (records) => {
+  const total = records.length;
+  const pending = records.filter((sale) => sale.status === "pending_check").length;
+  const checked = records.filter((sale) => sale.status === "checked").length;
+  const cancelled = records.filter((sale) => sale.status === "cancelled").length;
+  const credit = records
+    .filter((sale) => sale.status === "checked")
+    .reduce((sum, sale) => sum + Number(sale.credit_amount || 0), 0);
+
+  document.querySelector("[data-sales-total]") && (document.querySelector("[data-sales-total]").textContent = total);
+  document.querySelector("[data-sales-pending]") && (document.querySelector("[data-sales-pending]").textContent = pending);
+  document.querySelector("[data-sales-checked]") && (document.querySelector("[data-sales-checked]").textContent = checked);
+  document.querySelector("[data-sales-cancelled]") && (document.querySelector("[data-sales-cancelled]").textContent = cancelled);
+  document.querySelector("[data-sales-credit]") && (document.querySelector("[data-sales-credit]").textContent = formatSalesCurrency(credit));
+};
+
+const renderSalesList = () => {
+  const records = applySalesClientSideFilters(salesRecords);
+  renderSalesSummary(records);
+  if (salesTableBody) salesTableBody.innerHTML = "";
+  if (salesCardList) salesCardList.innerHTML = "";
+
+  if (salesEmpty) {
+    salesEmpty.hidden = records.length > 0;
+    salesEmpty.querySelector("strong").textContent = salesRecords.length ? "Nenhum resultado encontrado." : "Nenhuma venda cadastrada.";
+  }
+
+  records.forEach((sale) => {
+    const sellerName = getSalesSellerName(sale.seller_id);
+    const closedDate = sale.closed_at ? new Date(sale.closed_at).toLocaleDateString("pt-BR", { timeZone: "UTC" }) : "--";
+    const tableLabel = `Tabela ${sale.table_number || "-"}`;
+    const parcels = `<strong>Integral:</strong> ${formatSalesCurrency(sale.full_installment_amount)}<br><strong>Reduzida:</strong> ${formatSalesCurrency(sale.reduced_installment_amount)}`;
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${getSaleStatusBadge(sale.status)}</td>
+      <td><strong>${escapeHtml(sale.client_name)}</strong><small>${escapeHtml(sale.client_phone || "")}</small></td>
+      <td>${escapeHtml(sellerName)}</td>
+      <td>${closedDate}</td>
+      <td>${formatSalesCurrency(sale.credit_amount)}</td>
+      <td>${formatSalesCurrency(sale.down_payment_amount)}</td>
+      <td>${tableLabel}</td>
+      <td>${parcels}</td>
+      <td><button type="button" class="sales-action-button" data-sale-id="${sale.id}">Detalhes</button></td>
+    `;
+    row.addEventListener("click", (event) => {
+      if (event.target.closest("button")) return;
+      openSalesModal(sale);
+    });
+    row.querySelector("button")?.addEventListener("click", () => openSalesModal(sale));
+    salesTableBody?.append(row);
+
+    const card = document.createElement("article");
+    card.className = "sales-mobile-card";
+    card.innerHTML = `
+      <div>${getSaleStatusBadge(sale.status)}<strong>${escapeHtml(sale.client_name)}</strong></div>
+      <p>${escapeHtml(sellerName)} • ${closedDate}</p>
+      <dl>
+        <div><dt>Crédito</dt><dd>${formatSalesCurrency(sale.credit_amount)}</dd></div>
+        <div><dt>Entrada</dt><dd>${formatSalesCurrency(sale.down_payment_amount)}</dd></div>
+        <div><dt>Tabela</dt><dd>${tableLabel}</dd></div>
+        <div><dt>Integral</dt><dd>${formatSalesCurrency(sale.full_installment_amount)}</dd></div>
+        <div><dt>Reduzida</dt><dd>${formatSalesCurrency(sale.reduced_installment_amount)}</dd></div>
+      </dl>
+      <button type="button">Ver detalhes</button>
+    `;
+    card.querySelector("button")?.addEventListener("click", () => openSalesModal(sale));
+    salesCardList?.append(card);
+  });
+};
+
+const loadSales = async () => {
+  const client = getClient();
+  const currentUser = getSalesUser();
+  if (!client || !currentUser) return;
+  try {
+    setSalesStatus("Carregando vendas...");
+    await loadSalesUsers();
+    const filters = readSalesFilters();
+    let query = client
+      .from("sales")
+      .select("*")
+      .eq("organization_id", SALES_ORG_ID)
+      .gte("closed_at", filters.start)
+      .lte("closed_at", filters.end);
+
+    if (filters.status) query = query.eq("status", filters.status);
+    if (filters.tableNumber) query = query.eq("table_number", Number(filters.tableNumber));
+    if (isSalesAdmin()) {
+      if (filters.sellerId) query = query.eq("seller_id", filters.sellerId);
+    } else {
+      query = query.eq("seller_id", currentUser.id);
+    }
+
+    const { data, error } = await query.order("closed_at", { ascending: false }).order("created_at", { ascending: false });
+    if (error) throw error;
+    salesRecords = data || [];
+    salesLoadedOnce = true;
+    renderSalesList();
+    setSalesStatus(salesRecords.length ? `${salesRecords.length} venda(s) no período.` : "");
+  } catch (error) {
+    console.error("[Vendas] Erro ao carregar:", error);
+    salesRecords = [];
+    renderSalesList();
+    setSalesStatus(error.message || "Erro ao carregar vendas.", "error");
+  }
+};
+
+const resetSalesForm = () => {
+  if (!salesForm) return;
+  salesForm.reset();
+  salesForm.querySelector("input[name='sale_id']").value = "";
+  const today = getSalesTodayISO();
+  salesForm.querySelector("input[name='closed_date']").value = today;
+  const user = getSalesUser();
+  const sellerField = salesForm.querySelector("[data-sales-seller-field]");
+  const sellerSelect = salesForm.querySelector("select[name='seller_id']");
+  if (sellerField) sellerField.hidden = !isSalesAdmin();
+  if (sellerSelect) {
+    sellerSelect.disabled = !isSalesAdmin();
+    sellerSelect.value = isSalesAdmin() ? "" : user?.id || "";
+  }
+  salesForm.querySelector("[data-sales-detail-panel]")?.setAttribute("hidden", "");
+  salesForm.querySelector("[data-sales-admin-actions]")?.setAttribute("hidden", "");
+  salesForm.querySelector("button[type='submit']").hidden = false;
+  currentEditingSale = null;
+  setSalesFormStatus("");
+};
+
+const openSalesModal = async (sale = null) => {
+  await loadSalesUsers();
+  resetSalesForm();
+  currentEditingSale = sale;
+  const isEdit = Boolean(sale);
+  const salesModalKicker = salesModal?.querySelector("[data-sales-modal-kicker]");
+  const salesModalTitle = salesModal?.querySelector("[data-sales-modal-title]");
+  const salesModalSubtitle = salesModal?.querySelector("[data-sales-modal-subtitle]");
+  if (salesModalKicker) salesModalKicker.textContent = isEdit ? "Detalhes da venda" : "Nova venda";
+  if (salesModalTitle) salesModalTitle.textContent = isEdit ? "Editar venda" : "Adicionar venda";
+  if (salesModalSubtitle) {
+    salesModalSubtitle.textContent = isEdit
+      ? "Confira os dados, status e histórico da venda."
+      : "As vendas entram automaticamente como Aguardando checagem.";
+  }
+
+  if (isEdit && salesForm) {
+    salesForm.querySelector("input[name='sale_id']").value = sale.id;
+    salesForm.querySelector("input[name='client_name']").value = sale.client_name || "";
+    salesForm.querySelector("input[name='client_phone']").value = sale.client_phone || "";
+    salesForm.querySelector("select[name='seller_id']").value = sale.seller_id || "";
+    salesForm.querySelector("input[name='closed_date']").value = String(sale.closed_at || "").slice(0, 10);
+    salesForm.querySelector("input[name='closed_time']").value = sale.closed_time || "";
+    salesForm.querySelector("input[name='credit_amount']").value = formatSalesCurrency(sale.credit_amount);
+    salesForm.querySelector("input[name='down_payment_amount']").value = sale.down_payment_amount ? formatSalesCurrency(sale.down_payment_amount) : "";
+    salesForm.querySelector("select[name='table_number']").value = sale.table_number || "";
+    salesForm.querySelector("input[name='full_installment_amount']").value = formatSalesCurrency(sale.full_installment_amount);
+    salesForm.querySelector("input[name='reduced_installment_amount']").value = formatSalesCurrency(sale.reduced_installment_amount);
+    salesForm.querySelector("textarea[name='notes']").value = sale.notes || "";
+
+    const canEdit = isSalesAdmin() || (sale.status === "pending_check" && String(sale.seller_id) === String(getSalesUser()?.id));
+    salesForm.querySelectorAll("input,select,textarea").forEach((field) => {
+      if (field.name === "sale_id") return;
+      field.disabled = !canEdit;
+    });
+    salesForm.querySelector("button[type='submit']").hidden = !canEdit;
+    await renderSalesDetail(sale);
+  }
+
+  if (salesModal && !salesModal.open && typeof salesModal.showModal === "function") {
+    salesModal.showModal();
+  }
+};
+
+const closeSalesModal = () => salesModal?.close();
+
+const renderSalesDetail = async (sale) => {
+  const client = getClient();
+  const panel = salesForm?.querySelector("[data-sales-detail-panel]");
+  const grid = salesForm?.querySelector("[data-sales-detail-grid]");
+  const historyList = salesForm?.querySelector("[data-sales-history-list]");
+  const adminActions = salesForm?.querySelector("[data-sales-admin-actions]");
+  if (!panel || !grid || !historyList || !client) return;
+
+  panel.hidden = false;
+  adminActions.hidden = !isSalesAdmin();
+  const sellerName = getSalesSellerName(sale.seller_id);
+  const creatorName = getSalesSellerName(sale.created_by);
+  const checkerName = sale.checked_by ? getSalesSellerName(sale.checked_by) : "Não checado";
+  grid.innerHTML = `
+    <div><span>Status</span><strong>${SALES_STATUS_LABELS[sale.status] || sale.status}</strong></div>
+    <div><span>Vendedor</span><strong>${escapeHtml(sellerName)}</strong></div>
+    <div><span>Cadastrado por</span><strong>${escapeHtml(creatorName)}</strong></div>
+    <div><span>Cadastrado em</span><strong>${sale.created_at ? new Date(sale.created_at).toLocaleString("pt-BR") : "--"}</strong></div>
+    <div><span>Checado por</span><strong>${escapeHtml(checkerName)}</strong></div>
+    <div><span>Checado em</span><strong>${sale.checked_at ? new Date(sale.checked_at).toLocaleString("pt-BR") : "--"}</strong></div>
+    <div><span>Motivo cancelamento</span><strong>${escapeHtml(sale.cancellation_reason || "--")}</strong></div>
+  `;
+
+  const { data, error } = await client
+    .from("sales_history")
+    .select("*")
+    .eq("sale_id", sale.id)
+    .order("created_at", { ascending: false });
+  if (error) {
+    historyList.innerHTML = `<p>Erro ao carregar histórico: ${escapeHtml(error.message)}</p>`;
+    return;
+  }
+  historyList.innerHTML = (data || []).length
+    ? (data || []).map((item) => `<article><strong>${escapeHtml(item.action)}</strong><span>${new Date(item.created_at).toLocaleString("pt-BR")}</span></article>`).join("")
+    : "<p>Nenhum histórico registrado.</p>";
+};
+
+const buildSalesPayload = () => {
+  const formData = new FormData(salesForm);
+  const sellerId = isSalesAdmin() ? formData.get("seller_id") : getSalesUser()?.id;
+  return {
+    p_sale_id: formData.get("sale_id") || null,
+    p_organization_id: SALES_ORG_ID,
+    p_seller_id: sellerId || null,
+    p_lead_id: null,
+    p_client_name: String(formData.get("client_name") || "").trim(),
+    p_client_phone: String(formData.get("client_phone") || "").trim() || null,
+    p_closed_at: formData.get("closed_date") || null,
+    p_closed_time: formData.get("closed_time") || null,
+    p_credit_amount: parseSalesMoney(formData.get("credit_amount")),
+    p_down_payment_amount: parseSalesMoney(formData.get("down_payment_amount")) || 0,
+    p_table_number: Number(formData.get("table_number")),
+    p_full_installment_amount: parseSalesMoney(formData.get("full_installment_amount")),
+    p_reduced_installment_amount: parseSalesMoney(formData.get("reduced_installment_amount")),
+    p_notes: String(formData.get("notes") || "").trim() || null,
+  };
+};
+
+const findPossibleDuplicateSale = (payload) => {
+  const normalizedPhone = String(payload.p_client_phone || "").replace(/\D/g, "");
+  const normalizedName = payload.p_client_name.toLowerCase().trim();
+  return salesRecords.find((sale) => {
+    if (payload.p_sale_id && String(sale.id) === String(payload.p_sale_id)) return false;
+    if (String(sale.seller_id) !== String(payload.p_seller_id)) return false;
+    if (String(sale.closed_at || "").slice(0, 10) !== payload.p_closed_at) return false;
+    const salePhone = String(sale.client_phone || "").replace(/\D/g, "");
+    const samePhone = normalizedPhone && salePhone && normalizedPhone === salePhone;
+    const sameName = normalizedName && String(sale.client_name || "").toLowerCase().trim() === normalizedName;
+    return samePhone || sameName;
+  });
+};
+
+const saveSale = async (event) => {
+  event.preventDefault();
+  const client = getClient();
+  if (!client) return;
+  const payload = buildSalesPayload();
+  if (!payload.p_client_name || !payload.p_seller_id || !payload.p_closed_at || !payload.p_credit_amount || !payload.p_full_installment_amount || !payload.p_reduced_installment_amount || payload.p_table_number < 1 || payload.p_table_number > 7) {
+    setSalesFormStatus("Preencha os campos obrigatórios corretamente.", "error");
+    return;
+  }
+
+  const duplicate = findPossibleDuplicateSale(payload);
+  if (duplicate) {
+    const message = "Encontramos uma venda parecida cadastrada. Deseja conferir antes de continuar?";
+    if (!isSalesAdmin()) {
+      setSalesFormStatus(message, "error");
+      return;
+    }
+    if (!confirm(`${message}\n\nConfirmar cadastro mesmo assim?`)) return;
+  }
+
+  try {
+    setSalesFormStatus("Salvando venda...");
+    const { data, error } = await client.rpc("save_sale", payload);
+    if (error) throw error;
+    setSalesFormStatus("Venda cadastrada com sucesso.", "success");
+    await loadSales();
+    const saved = salesRecords.find((sale) => String(sale.id) === String(data?.id || payload.p_sale_id));
+    setTimeout(() => {
+      if (saved) openSalesModal(saved);
+      else closeSalesModal();
+    }, 350);
+  } catch (error) {
+    console.error("[Vendas] Erro ao salvar:", error);
+    setSalesFormStatus(error.message || "Erro ao cadastrar.", "error");
+  }
+};
+
+const updateSaleStatus = async (status) => {
+  if (!currentEditingSale || !isSalesAdmin()) return;
+  const client = getClient();
+  let reason = null;
+  if (status === "cancelled") {
+    if (!confirm("Cancelar esta venda?")) return;
+    reason = prompt("Motivo do cancelamento (opcional):") || null;
+  }
+  try {
+    setSalesFormStatus("Atualizando status...");
+    const { error } = await client.rpc("update_sale_status", {
+      p_sale_id: currentEditingSale.id,
+      p_status: status,
+      p_cancellation_reason: reason,
+    });
+    if (error) throw error;
+    setSalesFormStatus("Status atualizado com sucesso.", "success");
+    await loadSales();
+    const refreshed = salesRecords.find((sale) => String(sale.id) === String(currentEditingSale.id));
+    if (refreshed) {
+      currentEditingSale = refreshed;
+      await openSalesModal(refreshed);
+    }
+  } catch (error) {
+    console.error("[Vendas] Erro ao atualizar status:", error);
+    setSalesFormStatus(error.message || "Erro ao atualizar.", "error");
+  }
+};
+
+const deleteSale = async () => {
+  if (!currentEditingSale || !isSalesAdmin()) return;
+  if (!confirm("Excluir esta venda definitivamente?")) return;
+  const client = getClient();
+  try {
+    setSalesFormStatus("Excluindo venda...");
+    const { error } = await client.rpc("delete_sale", { p_sale_id: currentEditingSale.id });
+    if (error) throw error;
+    await loadSales();
+    closeSalesModal();
+  } catch (error) {
+    console.error("[Vendas] Erro ao excluir:", error);
+    setSalesFormStatus(error.message || "Erro ao excluir.", "error");
+  }
+};
+
+const initSales = async () => {
+  const admin = isSalesAdmin();
+  document.querySelector("[data-sales-seller-filter-wrap]")?.toggleAttribute("hidden", !admin);
+  const period = document.querySelector("[data-sales-period]")?.value || "month";
+  document.querySelector("[data-sales-custom-start-wrap]")?.toggleAttribute("hidden", period !== "custom");
+  document.querySelector("[data-sales-custom-end-wrap]")?.toggleAttribute("hidden", period !== "custom");
+  await loadSales();
 };
 
 function isTeamCoordinatorRole(crmUser) {
@@ -4801,6 +5299,34 @@ document.querySelector("[data-race-cancel]")?.addEventListener("click", () => {
   );
 });
 
+document.querySelector("[data-sales-open-modal]")?.addEventListener("click", () => openSalesModal());
+document.querySelector("[data-sales-close-modal]")?.addEventListener("click", closeSalesModal);
+document.querySelector("[data-sales-cancel-modal]")?.addEventListener("click", closeSalesModal);
+salesModal?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeSalesModal();
+});
+salesForm?.addEventListener("submit", saveSale);
+salesForm?.querySelectorAll("[data-money-input]").forEach((input) => {
+  input.addEventListener("blur", () => formatSalesMoneyInput(input));
+});
+[
+  "[data-sales-period]",
+  "[data-sales-start-date]",
+  "[data-sales-end-date]",
+  "[data-sales-seller-filter]",
+  "[data-sales-status-filter]",
+  "[data-sales-table-filter]",
+  "[data-sales-sort]",
+].forEach((selector) => {
+  document.querySelector(selector)?.addEventListener("change", () => initSales());
+});
+document.querySelector("[data-sales-client-filter]")?.addEventListener("input", () => renderSalesList());
+document.querySelector("[data-sales-mark-pending]")?.addEventListener("click", () => updateSaleStatus("pending_check"));
+document.querySelector("[data-sales-mark-checked]")?.addEventListener("click", () => updateSaleStatus("checked"));
+document.querySelector("[data-sales-mark-cancelled]")?.addEventListener("click", () => updateSaleStatus("cancelled"));
+document.querySelector("[data-sales-delete]")?.addEventListener("click", deleteSale);
+
 document.querySelector("[data-delete-appointment]")?.addEventListener("click", async () => {
   const appointmentId = appointmentForm?.elements.id.value;
   if (!appointmentId || !confirm("Cancelar este agendamento?")) return;
@@ -6772,6 +7298,7 @@ const tabTitleMap = {
   feed: "Feed",
   calendario: "Calendario",
   corrida: "Corrida",
+  vendas: "Vendas",
   financeiro: "Financeiro",
   cadastro: "Cadastro rapido",
   equipe: "Minha equipe",
@@ -6780,7 +7307,7 @@ const tabTitleMap = {
 
 const switchTab = () => {
   const hash = window.location.hash.replace("#", "") || "pipeline";
-  const validTabs = ["dashboard", "pipeline", "tarefas", "feed", "calendario", "corrida", "financeiro", "cadastro", "equipe", "perfil"];
+  const validTabs = ["dashboard", "pipeline", "tarefas", "feed", "calendario", "corrida", "vendas", "financeiro", "cadastro", "equipe", "perfil"];
   const activeTab = validTabs.includes(hash) ? hash : "pipeline";
 
   const userRole = window.userRole || (window.sevenGoldCrmSession?.userRole);
@@ -6819,6 +7346,8 @@ const switchTab = () => {
     loadAppointments();
   } else if (activeTab === "corrida") {
     initAppointmentRace();
+  } else if (activeTab === "vendas") {
+    initSales();
   } else if (activeTab === "tarefas") {
     loadTasks();
   } else if (activeTab === "dashboard") {

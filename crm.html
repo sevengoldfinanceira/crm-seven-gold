@@ -81,6 +81,12 @@
             </span>
             <span class="nav-label">Corrida</span>
           </a>
+          <a class="nav-item" href="#vendas" data-permission-key="vendas">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/><path d="M14 6h6v6"/><path d="M3 21h18"/></svg>
+            </span>
+            <span class="nav-label">Vendas</span>
+          </a>
           <a class="nav-item" href="#financeiro" data-permission-key="financeiro">
             <span class="nav-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -1063,6 +1069,254 @@
           </form>
         </dialog>
 
+        <!-- Vendas -->
+        <section class="tab-content" data-tab="vendas" style="display:none;">
+          <section class="sales-page" aria-labelledby="sales-title">
+            <header class="sales-hero">
+              <div class="sales-title-group">
+                <span class="sales-title-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/><path d="M14 6h6v6"/><path d="M3 21h18"/></svg>
+                </span>
+                <div>
+                  <p class="sales-kicker">Checagem comercial</p>
+                  <h1 id="sales-title">Vendas</h1>
+                  <p>Cadastre, acompanhe e confira as vendas fechadas pelos vendedores.</p>
+                </div>
+              </div>
+              <button class="sales-add-button" type="button" data-sales-open-modal>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                Adicionar venda
+              </button>
+            </header>
+
+            <section class="sales-summary" aria-label="Resumo de vendas">
+              <article class="sales-summary-card">
+                <span>Total de vendas</span>
+                <strong data-sales-total>0</strong>
+                <small>no período</small>
+              </article>
+              <article class="sales-summary-card sales-summary-card--pending">
+                <span>Aguardando checagem</span>
+                <strong data-sales-pending>0</strong>
+                <small>pendentes</small>
+              </article>
+              <article class="sales-summary-card sales-summary-card--checked">
+                <span>Vendas checadas</span>
+                <strong data-sales-checked>0</strong>
+                <small>confirmadas</small>
+              </article>
+              <article class="sales-summary-card sales-summary-card--cancelled">
+                <span>Vendas canceladas</span>
+                <strong data-sales-cancelled>0</strong>
+                <small>canceladas</small>
+              </article>
+              <article class="sales-summary-card sales-summary-card--money">
+                <span>Crédito vendido</span>
+                <strong data-sales-credit>R$ 0,00</strong>
+                <small>somente checadas</small>
+              </article>
+            </section>
+
+            <section class="sales-filters" aria-label="Filtros de vendas">
+              <label>
+                <span>Período</span>
+                <select data-sales-period>
+                  <option value="month" selected>Este mês</option>
+                  <option value="today">Hoje</option>
+                  <option value="week">Esta semana</option>
+                  <option value="last_month">Mês anterior</option>
+                  <option value="custom">Período personalizado</option>
+                </select>
+              </label>
+              <label data-sales-custom-start-wrap hidden>
+                <span>Data inicial</span>
+                <input type="date" data-sales-start-date />
+              </label>
+              <label data-sales-custom-end-wrap hidden>
+                <span>Data final</span>
+                <input type="date" data-sales-end-date />
+              </label>
+              <label data-sales-seller-filter-wrap hidden>
+                <span>Vendedor</span>
+                <select data-sales-seller-filter>
+                  <option value="">Todos os vendedores</option>
+                </select>
+              </label>
+              <label>
+                <span>Status</span>
+                <select data-sales-status-filter>
+                  <option value="">Todos os status</option>
+                  <option value="pending_check">Aguardando checagem</option>
+                  <option value="checked">Checado</option>
+                  <option value="cancelled">Cancelado</option>
+                </select>
+              </label>
+              <label>
+                <span>Tabela</span>
+                <select data-sales-table-filter>
+                  <option value="">Todas as tabelas</option>
+                  <option value="1">Tabela 1</option>
+                  <option value="2">Tabela 2</option>
+                  <option value="3">Tabela 3</option>
+                  <option value="4">Tabela 4</option>
+                  <option value="5">Tabela 5</option>
+                  <option value="6">Tabela 6</option>
+                  <option value="7">Tabela 7</option>
+                </select>
+              </label>
+              <label class="sales-filter-client">
+                <span>Cliente</span>
+                <input type="search" data-sales-client-filter placeholder="Buscar cliente..." />
+              </label>
+              <label>
+                <span>Ordenar por</span>
+                <select data-sales-sort>
+                  <option value="closed_at_desc">Fechamento recente</option>
+                  <option value="created_at_desc">Cadastro recente</option>
+                  <option value="credit_amount_desc">Maior crédito</option>
+                  <option value="client_name_asc">Cliente A-Z</option>
+                  <option value="seller_asc">Vendedor A-Z</option>
+                  <option value="status_asc">Status</option>
+                </select>
+              </label>
+            </section>
+
+            <p class="sales-status" data-sales-status aria-live="polite"></p>
+
+            <section class="sales-list-card">
+              <div class="sales-table-wrap">
+                <table class="sales-table">
+                  <thead>
+                    <tr>
+                      <th>Status</th>
+                      <th>Cliente</th>
+                      <th>Vendedor</th>
+                      <th>Fechamento</th>
+                      <th>Crédito</th>
+                      <th>Entrada</th>
+                      <th>Tabela</th>
+                      <th>Parcelas</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody data-sales-table-body></tbody>
+                </table>
+              </div>
+              <div class="sales-card-list" data-sales-card-list></div>
+              <div class="sales-empty" data-sales-empty hidden>
+                <strong>Nenhuma venda encontrada.</strong>
+                <span>Cadastre uma venda ou ajuste os filtros para visualizar resultados.</span>
+              </div>
+            </section>
+          </section>
+        </section>
+
+        <dialog class="sales-modal" data-sales-modal>
+          <form method="dialog" class="sales-form" data-sales-form>
+            <header>
+              <div>
+                <p class="sales-kicker" data-sales-modal-kicker>Nova venda</p>
+                <h2 data-sales-modal-title>Adicionar venda</h2>
+                <span data-sales-modal-subtitle>As vendas entram como Aguardando checagem.</span>
+              </div>
+              <button type="button" class="modal-close-button" data-sales-close-modal aria-label="Fechar">×</button>
+            </header>
+
+            <input type="hidden" name="sale_id" />
+            <div class="sales-form-grid">
+              <fieldset>
+                <legend>Dados do cliente</legend>
+                <label>
+                  <span>Nome do cliente *</span>
+                  <input type="text" name="client_name" required />
+                </label>
+                <label>
+                  <span>Telefone</span>
+                  <input type="tel" name="client_phone" />
+                </label>
+                <label data-sales-seller-field hidden>
+                  <span>Vendedor responsável *</span>
+                  <select name="seller_id"></select>
+                </label>
+                <div class="sales-two-columns">
+                  <label>
+                    <span>Data do fechamento *</span>
+                    <input type="date" name="closed_date" required />
+                  </label>
+                  <label>
+                    <span>Horário</span>
+                    <input type="time" name="closed_time" />
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend>Dados da venda</legend>
+                <div class="sales-two-columns">
+                  <label>
+                    <span>Valor do crédito *</span>
+                    <input type="text" name="credit_amount" inputmode="decimal" required data-money-input />
+                  </label>
+                  <label>
+                    <span>Valor da entrada</span>
+                    <input type="text" name="down_payment_amount" inputmode="decimal" data-money-input />
+                  </label>
+                </div>
+                <label>
+                  <span>Tabela *</span>
+                  <select name="table_number" required>
+                    <option value="">Selecione</option>
+                    <option value="1">Tabela 1</option>
+                    <option value="2">Tabela 2</option>
+                    <option value="3">Tabela 3</option>
+                    <option value="4">Tabela 4</option>
+                    <option value="5">Tabela 5</option>
+                    <option value="6">Tabela 6</option>
+                    <option value="7">Tabela 7</option>
+                  </select>
+                </label>
+                <div class="sales-two-columns">
+                  <label>
+                    <span>Parcela integral *</span>
+                    <input type="text" name="full_installment_amount" inputmode="decimal" required data-money-input />
+                  </label>
+                  <label>
+                    <span>Parcela reduzida 50% *</span>
+                    <input type="text" name="reduced_installment_amount" inputmode="decimal" required data-money-input />
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset class="sales-notes-fieldset">
+                <legend>Informações adicionais</legend>
+                <label>
+                  <span>Observações</span>
+                  <textarea name="notes" rows="4" placeholder="Observações opcionais da venda"></textarea>
+                </label>
+              </fieldset>
+            </div>
+
+            <section class="sales-detail-panel" data-sales-detail-panel hidden>
+              <h3>Detalhes e auditoria</h3>
+              <div class="sales-detail-grid" data-sales-detail-grid></div>
+              <div class="sales-admin-actions" data-sales-admin-actions hidden>
+                <button type="button" data-sales-mark-pending>Retornar para aguardando</button>
+                <button type="button" data-sales-mark-checked>Marcar como checado</button>
+                <button type="button" data-sales-mark-cancelled>Marcar como cancelado</button>
+                <button type="button" data-sales-delete>Excluir venda</button>
+              </div>
+              <h4>Histórico</h4>
+              <div class="sales-history-list" data-sales-history-list></div>
+            </section>
+
+            <p class="sales-form-status" data-sales-form-status></p>
+            <footer>
+              <button type="button" class="ghost-button" data-sales-cancel-modal>Cancelar</button>
+              <button type="submit" class="primary-button">Salvar venda</button>
+            </footer>
+          </form>
+        </dialog>
+
         <!-- Meu perfil -->
         <section class="tab-content crm-profile-tab" data-tab="perfil" style="display:none;">
           <header class="crm-profile-header">
@@ -1438,9 +1692,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
-    <script src="auth.js?v=profile-access-v1"></script>
+    <script src="auth.js?v=sales-module-v1"></script>
     <script src="perfil.js?v=profile-access-v1"></script>
-    <script src="script.js?v=production-locked-month-filter-v28"></script>
+    <script src="script.js?v=sales-module-v1"></script>
     <script src="/searchable-select.js?v=responsible-select-fix-v1"></script>
     <script src="/pwa.js"></script>
   </body>
