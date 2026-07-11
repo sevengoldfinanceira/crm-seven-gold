@@ -16064,17 +16064,19 @@ body.theme-dark .modal-role-row {
 }
 
 .header-circle-avatar {
-  width: 50px !important;
-  height: 50px !important;
+  width: 96px !important;
+  height: 96px !important;
   border-radius: 50% !important;
-  border: 2px solid rgba(212, 175, 55, 0.65) !important;
+  border: 3px solid rgba(212, 175, 55, 0.82) !important;
   background-color: rgba(0, 0, 0, 0.3) !important;
   background-size: contain !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
-  margin: 0 auto 6px !important;
+  margin: 0 auto 12px !important;
   flex-shrink: 0;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.34),
+    0 0 30px rgba(212, 175, 55, 0.18) !important;
 }
 
 .header-title {
