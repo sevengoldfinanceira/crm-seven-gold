@@ -453,8 +453,10 @@
     // Hide Google login button and its divider to simplify the form
     const googleBtn = form.querySelector("[data-google-login]");
     const divider = form.querySelector(".login-divider");
+    const savedAccountDivider = form.querySelector(".active-session-card-wrapper .divider");
     if (googleBtn) googleBtn.style.display = "none";
     if (divider) divider.style.display = "none";
+    if (savedAccountDivider) savedAccountDivider.style.display = "none";
 
     // Update Header with user profile details
     const name = portalUser?.nome || data.session.user.user_metadata?.full_name || data.session.user.user_metadata?.name || data.session.user.email || "Usuário";
@@ -470,7 +472,7 @@
     // Update instructions text
     const instruction = form.querySelector("[data-login-instruction]");
     if (instruction) {
-      instruction.textContent = "Escolha uma conta salva ou use seu e-mail e senha para acessar.";
+      instruction.textContent = "Escolha uma conta salva ou entre com Google para acessar.";
     }
 
     // Show the active session card wrapper
