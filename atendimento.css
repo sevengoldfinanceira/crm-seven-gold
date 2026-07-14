@@ -1,6 +1,6 @@
 :root {
-  --purple: #150126;
-  --purple-soft: #241032;
+  --purple: #000000;
+  --purple-soft: #121212;
   --gold: #e3b632;
   --ink: #16131a;
   --muted: #6f6876;
@@ -13,7 +13,7 @@ html, body { min-height: 100%; margin: 0; }
 body { font-family: Inter, sans-serif; background: var(--page); color: var(--ink); }
 
 .service-shell { display: grid; grid-template-columns: 244px minmax(0, 1fr); min-height: 100vh; }
-.service-sidebar { position: sticky; top: 0; display: flex; flex-direction: column; height: 100vh; padding: 20px 16px; background: linear-gradient(180deg, var(--purple), #0d0118); color: #fff; }
+.service-sidebar { position: sticky; top: 0; display: flex; flex-direction: column; height: 100vh; padding: 20px 16px; background: linear-gradient(180deg, var(--purple), #050505); color: #fff; }
 .service-brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
 .service-brand img { width: 48px; height: 48px; border: 1px solid rgba(227,182,50,.35); border-radius: 14px; object-fit: cover; }
 .service-brand strong, .service-brand small { display: block; }

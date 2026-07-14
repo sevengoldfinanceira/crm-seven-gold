@@ -12,7 +12,7 @@ const STATIC_ASSETS = [
   "/admin-shell.js",
   "/pwa.js",
   "/supabase-config.js",
-  "/assets/icons/LOGO COPA.png",
+  "/assets/icons/seven-gold-g7.png",
   "/manifest.json",
   "/atendimento.html"
 ];

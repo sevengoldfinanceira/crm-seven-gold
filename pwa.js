@@ -18,7 +18,7 @@
     banner.style.bottom = "20px";
     banner.style.left = "50%";
     banner.style.transform = "translateX(-50%)";
-    banner.style.background = "#1e1b29";
+    banner.style.background = "#080808";
     banner.style.color = "#ffffff";
     banner.style.padding = "12px 20px";
     banner.style.borderRadius = "12px";
@@ -39,7 +39,7 @@
     btn.type = "button";
     btn.textContent = "Atualizar agora";
     btn.style.background = "#d4a017";
-    btn.style.color = "#150126";
+    btn.style.color = "#000000";
     btn.style.border = "none";
     btn.style.padding = "6px 12px";
     btn.style.borderRadius = "8px";

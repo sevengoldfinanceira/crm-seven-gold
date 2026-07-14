@@ -1016,8 +1016,8 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
             </span>
             ${task.status !== "done" && (shouldHighlight || isOverdue) ? `
               <div style="display: flex; gap: 6px; margin-top: 4px;">
-                <button class="task-action-done-btn" style="border: none; background: #22c55e; color: #150126; font-size: 0.7rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Concluir</button>
-                <button class="task-action-reschedule-btn" style="border: none; background: var(--gold); color: #150126; font-size: 0.7rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Reagendar</button>
+                <button class="task-action-done-btn" style="border: none; background: #22c55e; color: #000000; font-size: 0.7rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Concluir</button>
+                <button class="task-action-reschedule-btn" style="border: none; background: var(--gold); color: #000000; font-size: 0.7rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Reagendar</button>
               </div>
             ` : ""}
           </div>
@@ -1036,7 +1036,7 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
             </div>
             <div style="display: flex; gap: 8px; justify-content: flex-end;">
               <button class="reschedule-cancel-inline-btn" style="border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Cancelar</button>
-              <button class="reschedule-confirm-inline-btn" style="border: none; background: var(--gold); color: #150126; font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Confirmar</button>
+              <button class="reschedule-confirm-inline-btn" style="border: none; background: var(--gold); color: #000000; font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Confirmar</button>
             </div>
           </div>
         `;
@@ -3030,10 +3030,10 @@ const loadTasks = async () => {
                   Abrir lead
                 </button>
               ` : ""}
-              <button class="complete-task-btn" style="border: none; background: #22c55e; color: #150126; font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
+              <button class="complete-task-btn" style="border: none; background: #22c55e; color: #000000; font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
                 Concluir
               </button>
-              <button class="reschedule-task-btn" style="border: none; background: var(--gold); color: #150126; font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
+              <button class="reschedule-task-btn" style="border: none; background: var(--gold); color: #000000; font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
                 Reagendar
               </button>
             </div>
@@ -3056,7 +3056,7 @@ const loadTasks = async () => {
           </div>
           <div style="display: flex; gap: 8px; justify-content: flex-end;">
             <button class="reschedule-cancel-inline-btn" style="border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Cancelar</button>
-            <button class="reschedule-confirm-inline-btn" style="border: none; background: var(--gold); color: #150126; font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Confirmar</button>
+            <button class="reschedule-confirm-inline-btn" style="border: none; background: var(--gold); color: #000000; font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Confirmar</button>
           </div>
         </div>
       </div>
@@ -3880,7 +3880,7 @@ const loadDashboardMetrics = async () => {
               Atrasado desde ${formattedDate}
             </div>
           </div>
-          <button class="dash-task-open-btn" data-lead-id="${task.lead_id || ""}" data-task-id="${task.id}" style="border: none; background: var(--gold); color: #150126; font-size: 0.75rem; font-weight: 700; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;">
+          <button class="dash-task-open-btn" data-lead-id="${task.lead_id || ""}" data-task-id="${task.id}" style="border: none; background: var(--gold); color: #000000; font-size: 0.75rem; font-weight: 700; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;">
             Abrir lead
           </button>
         `;

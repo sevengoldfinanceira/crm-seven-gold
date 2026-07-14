@@ -77,23 +77,23 @@ body.theme-dark,
 .dark-mode {
   color-scheme: dark;
 
-  --sg-bg-main: #150126;
-  --sg-bg-page: #0e011a;
-  --sg-bg-elevated: #241032;
+  --sg-bg-main: #000000;
+  --sg-bg-page: #050505;
+  --sg-bg-elevated: #121212;
 
-  --sg-sidebar-bg: #180b20;
-  --sg-sidebar-card: #241032;
-  --sg-sidebar-hover: #2e133e;
+  --sg-sidebar-bg: #080808;
+  --sg-sidebar-card: #121212;
+  --sg-sidebar-hover: #181818;
 
-  --sg-card-bg: #241032;
-  --sg-card-bg-soft: #2e133e;
-  --sg-card-hover: #351648;
+  --sg-card-bg: #121212;
+  --sg-card-bg-soft: #181818;
+  --sg-card-hover: #202020;
 
-  --sg-bg-card: #241032;
-  --sg-bg-card-solid: #241032;
-  --sg-bg-card-hover: #351648;
+  --sg-bg-card: #121212;
+  --sg-bg-card-solid: #121212;
+  --sg-bg-card-hover: #202020;
 
-  --sg-header-bg: #180b20;
+  --sg-header-bg: #080808;
 
   --sg-text-main: #f7f7f8;
   --sg-text-secondary: #c5c8ce;
@@ -114,7 +114,7 @@ body.theme-dark,
   --sg-shadow-gold: 0 0 18px rgba(212, 175, 55, 0.12);
 
   --sg-page-gradient:
-    linear-gradient(180deg, #20023a 0%, #0e011a 48%, #20023a 100%);
+    linear-gradient(180deg, #0a0a0a 0%, #050505 48%, #0a0a0a 100%);
 
   /* retrocompatibilidade em Modo Escuro */
   --ink: var(--sg-text-main);
@@ -125,7 +125,7 @@ body.theme-dark,
   --shadow: var(--sg-shadow-card);
   --gold: var(--sg-gold);
   --gold-dark: var(--sg-gold-dark);
-  --brand-purple: #150126;
+  --brand-purple: #000000;
   --surface-soft: var(--sg-card-bg-soft);
 }
 
@@ -136,7 +136,7 @@ body.theme-dark,
 body[data-permission-area="crm"] .profile-dashboard-shell { visibility: hidden; }
 body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visibility: visible; }
 body[data-permission-area="crm"] .crm-access-denied { visibility: visible; }
-.crm-access-denied { display: grid; place-items: center; min-height: 100vh; padding: 24px; background: #150126; color: #fff; text-align: center; }
+.crm-access-denied { display: grid; place-items: center; min-height: 100vh; padding: 24px; background: #000000; color: #fff; text-align: center; }
 .crm-access-denied section { width: min(520px, 100%); padding: 34px; border: 1px solid rgba(227,182,50,.35); border-radius: 22px; }
 .crm-access-denied a { display: inline-flex; margin-top: 14px; padding: 11px 16px; border-radius: 10px; background: #e3b632; color: #17130a; font-weight: 800; text-decoration: none; }
 
@@ -225,10 +225,10 @@ body[data-unified-admin]>.unified-admin-shell {
   display: inline-flex;
   align-items: center;
   padding: 8px 12px;
-  border: 1px solid #150126;
+  border: 1px solid #000000;
   border-radius: 6px;
   background: #fff;
-  color: #150126;
+  color: #000000;
   font-size: 0.74rem;
   font-weight: 800;
   cursor: pointer;
@@ -248,7 +248,7 @@ body[data-unified-admin]>.unified-admin-shell {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
-  box-shadow: 0 12px 32px rgba(21, 1, 38, 0.1);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
 }
 
 .time-editor-panel h1,
@@ -282,7 +282,7 @@ body[data-unified-admin]>.unified-admin-shell {
   min-height: 44px;
   border: 0;
   border-radius: 6px;
-  background: #150126;
+  background: #000000;
   color: #fff;
   font-weight: 800;
   cursor: pointer;
@@ -294,10 +294,10 @@ body[data-unified-admin]>.unified-admin-shell {
   gap: 5px;
   padding: 12px 14px;
   border: 1px solid #cfc6d5;
-  border-top: 3px solid #150126;
+  border-top: 3px solid #000000;
   border-radius: 8px;
   background: #fff;
-  box-shadow: 0 8px 22px rgba(21, 1, 38, 0.07);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.07);
   text-align: center;
   cursor: grab;
   user-select: none;
@@ -322,7 +322,7 @@ body[data-unified-admin]>.unified-admin-shell {
 }
 
 .career-time-grid strong {
-  color: #150126;
+  color: #000000;
   font-size: 1rem;
   text-align: center;
 }
@@ -365,7 +365,7 @@ body[data-unified-admin]>.unified-admin-shell {
 }
 
 .crm-login-body {
-  background: #150126 !important;
+  background: #000000 !important;
 }
 
 .crm-login-body .login-copy,
@@ -411,7 +411,7 @@ body[data-unified-admin]>.unified-admin-shell {
   height: 64px;
   border-radius: 8px;
   background-color: var(--brand-purple);
-  background-image: url("assets/icons/LOGO COPA.png?v=1");
+  background-image: url("assets/icons/seven-gold-g7.png?v=20260714");
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -920,7 +920,7 @@ body[data-unified-admin]>.unified-admin-shell {
   background:
     radial-gradient(circle at top left, rgba(212, 175, 55, 0.08), transparent 30%),
     radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.08), transparent 35%),
-    linear-gradient(180deg, #150126 0%, #0a0012 100%);
+    linear-gradient(180deg, #000000 0%, #000000 100%);
   box-shadow: 12px 0 35px rgba(0, 0, 0, 0.35);
   overflow: hidden;
 }
@@ -1173,7 +1173,7 @@ body[data-unified-admin]>.unified-admin-shell {
 }
 
 .drag-clone {
-  background: #1b002b;
+  background: #080808;
   border: 1px solid rgba(212, 175, 55, 0.4);
   border-radius: 10px;
   padding: 10px 16px;
@@ -1947,7 +1947,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   border-color: #dedce0;
   border-top: 0;
   background: #fff;
-  box-shadow: 0 3px 10px rgba(21, 1, 38, 0.06);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
   text-align: left;
 }
 
@@ -1983,7 +1983,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   min-height: 66px;
   border-color: #dedce0;
   background: #fff;
-  box-shadow: 0 3px 10px rgba(21, 1, 38, 0.06);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
   text-align: center;
 }
 
@@ -2005,13 +2005,13 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
 }
 
 .history-dashboard-main .year-heading-row .featured-year-heading {
-  background: #150126;
+  background: #000000;
   color: #ffe22d;
 }
 
 .history-dashboard-main .owner-year-card {
   border-width: 1px;
-  box-shadow: 0 3px 12px rgba(21, 1, 38, 0.08);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
 }
 
 .history-dashboard-main .year-photo-gallery {
@@ -2040,13 +2040,13 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   min-height: 64px;
   border-color: #dedce0;
   background: #fff;
-  box-shadow: 0 3px 10px rgba(21, 1, 38, 0.06);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
   text-align: center;
 }
 
 .history-dashboard-main .year-detail {
   border-color: #d9d6dc;
-  box-shadow: 0 3px 10px rgba(21, 1, 38, 0.06);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
 }
 
 .history-dashboard-main .year-detail summary {
@@ -3122,11 +3122,11 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   min-height: 0;
   margin-inline: auto;
   overflow: hidden;
-  border: 2px solid rgba(21, 1, 38, 0.34);
+  border: 2px solid rgba(0, 0, 0, 0.34);
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.58);
-  box-shadow: 0 4px 12px rgba(21, 1, 38, 0.1);
-  color: #150126;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: #000000;
   font: inherit;
   font-size: 0.78rem;
   font-weight: 800;
@@ -3165,7 +3165,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   bottom: 8px;
   padding: 6px 9px;
   border-radius: 5px;
-  background: rgba(21, 1, 38, 0.88);
+  background: rgba(0, 0, 0, 0.88);
   color: #fff;
   pointer-events: none;
 }
@@ -3202,7 +3202,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 50%;
-  background: rgba(21, 1, 38, 0.88);
+  background: rgba(0, 0, 0, 0.88);
   color: #fff;
   font-size: 1.25rem;
   font-weight: 800;
@@ -3214,7 +3214,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
 
 .year-photo-change:hover {
   background: #d8ad3d;
-  color: #150126;
+  color: #000000;
 }
 
 .year-photo-drag {
@@ -3228,7 +3228,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 5px;
-  background: rgba(21, 1, 38, 0.88);
+  background: rgba(0, 0, 0, 0.88);
   color: #fff;
   font-size: 0.9rem;
   line-height: 1;
@@ -3282,10 +3282,10 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   place-items: center;
   min-height: 58px;
   border: 1px solid #cfc6d5;
-  border-bottom: 4px solid #150126;
+  border-bottom: 4px solid #000000;
   border-radius: 8px 8px 0 0;
   background: #f8f5fa;
-  color: #150126;
+  color: #000000;
   font-size: 1.55rem;
   font-weight: 900;
 }
@@ -3293,9 +3293,9 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
 .year-heading-row .featured-year-heading {
   border-color: #d8ad3d;
   border-bottom-width: 6px;
-  background: #150126;
+  background: #000000;
   color: #f2c94c;
-  box-shadow: 0 8px 22px rgba(21, 1, 38, 0.2);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
 }
 
 .year-gallery-toolbar button {
@@ -3305,17 +3305,17 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   z-index: 2;
   transform: translateY(-50%);
   padding: 8px 12px;
-  border: 1px solid #150126;
+  border: 1px solid #000000;
   border-radius: 6px;
   background: #fff;
-  color: #150126;
+  color: #000000;
   font-size: 0.74rem;
   font-weight: 800;
   cursor: pointer;
 }
 
 .year-gallery-toolbar button.is-active {
-  background: #150126;
+  background: #000000;
   color: #fff;
 }
 
@@ -3327,7 +3327,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 5px;
-  background: rgba(21, 1, 38, 0.88);
+  background: rgba(0, 0, 0, 0.88);
   color: #fff;
   font-size: 1.2rem;
   font-weight: 800;
@@ -3337,7 +3337,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
 
 .year-photo-zoom button:hover {
   background: #d8ad3d;
-  color: #150126;
+  color: #000000;
 }
 
 .owner-history-body .year-photo-change {
@@ -3610,9 +3610,9 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
 
 .edit-year-link {
   padding: 8px 12px;
-  border: 1px solid #150126;
+  border: 1px solid #000000;
   border-radius: 6px;
-  background: #150126;
+  background: #000000;
   color: #fff !important;
   font-size: 0.78rem;
   font-weight: 800;
@@ -3640,7 +3640,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   min-width: 0;
   border-collapse: collapse;
   table-layout: fixed;
-  border: 3px solid #150126;
+  border: 3px solid #000000;
   font-size: 0.64rem;
 }
 
@@ -3671,7 +3671,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
 }
 
 .owner-sheet-table thead th {
-  border: 2px solid #150126;
+  border: 2px solid #000000;
   background: #45b9d7;
   color: #100517;
   font-weight: 900;
@@ -3679,16 +3679,16 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
 }
 
 .owner-sheet-table thead th:first-child {
-  background: #150126;
+  background: #000000;
   color: transparent;
 }
 
 .owner-sheet-table tbody th {
   width: 92px;
   min-width: 0;
-  border-right: 2px solid #150126;
+  border-right: 2px solid #000000;
   background: #f7f5f8;
-  color: #150126;
+  color: #000000;
   font-weight: 900;
   line-height: 1.2;
   text-align: center;
@@ -3712,7 +3712,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
 .owner-sheet-table .average-cell {
   border: 2px solid #8a6815;
   background: #d8ad3d;
-  color: #150126;
+  color: #000000;
   font-weight: 900;
 }
 
@@ -3721,7 +3721,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   padding: 3px 2px;
   border: 2px solid #4c315b;
   background: #d9c7e4;
-  color: #150126;
+  color: #000000;
   font-size: 0.6rem;
   font-weight: 900;
   line-height: 1.2;
@@ -3736,8 +3736,8 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
 .owner-sheet-table .career-role-row th {
   height: 28px;
   padding: 3px 2px;
-  border: 2px solid #150126;
-  background: #150126;
+  border: 2px solid #000000;
+  background: #000000;
   color: #fff;
   font-size: 0.58rem;
   font-weight: 900;
@@ -3752,8 +3752,8 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   width: auto;
   min-width: 0;
   padding: 6px 4px;
-  border: 2px solid #150126;
-  background: #150126;
+  border: 2px solid #000000;
+  background: #000000;
   color: #fff;
   font-size: 0.7rem;
   font-weight: 900;
@@ -3810,8 +3810,8 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
 }
 
 .year-editor-table input:focus {
-  border-color: #150126;
-  outline: 2px solid rgba(21, 1, 38, 0.16);
+  border-color: #000000;
+  outline: 2px solid rgba(0, 0, 0, 0.16);
 }
 
 .year-editor-table .role-editor-cell {
@@ -3832,7 +3832,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   border: 1px solid #b8a9c2;
   border-radius: 4px;
   background: #fff;
-  color: #150126;
+  color: #000000;
   font: inherit;
   font-weight: 800;
 }
@@ -3858,7 +3858,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
 
 .year-editor-table .average-cell input {
   background: #f5df9a;
-  color: #150126;
+  color: #000000;
   font-weight: 800;
 }
 
@@ -3889,7 +3889,7 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   padding: 10px 16px;
   border: 0;
   border-radius: 6px;
-  background: #150126;
+  background: #000000;
   color: #fff;
   font-weight: 800;
   cursor: pointer;
@@ -7063,12 +7063,12 @@ body.theme-dark .reports-summary article:nth-child(8)>i {
    ========================================================================== */
 body.theme-dark {
   color-scheme: dark;
-  --page: #150126;
-  /* fundo roxo bem escuro (Seven Gold) */
-  --surface: #241032;
-  /* roxo de marca como superficie */
-  --surface-soft: #2e133e;
-  /* roxo mais claro */
+  --page: #000000;
+  /* fundo preto Seven Gold */
+  --surface: #121212;
+  /* preto de marca como superficie */
+  --surface-soft: #181818;
+  /* grafite mais claro */
   --ink: #fbfaf4;
   /* texto claro */
   --muted: #9f9baf;
@@ -8304,7 +8304,7 @@ body:not(.theme-dark) .menu-item.active {
 
 /* --- 19.1 Body e HTML --- */
 body.theme-dark:not(.entry-premium-body) {
-  background: linear-gradient(180deg, #20023a 0%, #05000a 100%) !important;
+  background: linear-gradient(180deg, #0a0a0a 0%, #05000a 100%) !important;
   color: #f7f7f8 !important;
 }
 
@@ -8385,7 +8385,7 @@ body.theme-dark .year-detail summary {
 
 /* --- 19.5 Sidebar --- */
 body.theme-dark .company-sidebar {
-  background: #180b20 !important;
+  background: #080808 !important;
   border-right: 1px solid rgba(212, 175, 55, 0.22) !important;
   color: #f7f7f8 !important;
 }
@@ -8526,7 +8526,7 @@ body.theme-dark.finance-body,
 body.theme-dark.commission-body,
 body.theme-dark.reports-body,
 body.theme-dark.profile-page-body {
-  background: linear-gradient(180deg, #20023a 0%, #05000a 100%) !important;
+  background: linear-gradient(180deg, #0a0a0a 0%, #05000a 100%) !important;
   color: #f7f7f8 !important;
 }
 
@@ -9502,8 +9502,8 @@ mark {
 
 body[data-unified-admin]:not(.theme-dark) {
   --company-page-bg: #ededeb;
-  --company-sidebar-bg: #150126;
-  --company-sidebar-bg-soft: #24023a;
+  --company-sidebar-bg: #000000;
+  --company-sidebar-bg-soft: #0b0b0b;
   --company-main-bg: #f5f6f8;
   --company-card-bg: #ffffff;
   --company-text: #111827;
@@ -9790,7 +9790,7 @@ body[data-unified-admin].theme-dark .company-sidebar,
 body[data-unified-admin].theme-dark .unified-admin-sidebar {
   background:
     radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.07), transparent 30%),
-    linear-gradient(180deg, #150126 0%, #0a0012 100%) !important;
+    linear-gradient(180deg, #000000 0%, #000000 100%) !important;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35) !important;
 }
 
@@ -10891,7 +10891,7 @@ body[data-unified-admin] .unified-admin-sidebar {
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
   border-radius: 30px !important;
   overflow: hidden !important;
-  background: linear-gradient(180deg, #150126 0%, #0a0012 100%) !important;
+  background: linear-gradient(180deg, #000000 0%, #000000 100%) !important;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22) !important;
   color: #e5e7eb !important;
   transition: width 0.25s ease, min-width 0.25s ease, max-width 0.25s ease, padding 0.25s ease !important;
@@ -10899,7 +10899,7 @@ body[data-unified-admin] .unified-admin-sidebar {
 
 body[data-unified-admin].theme-dark .company-sidebar,
 body[data-unified-admin].theme-dark .unified-admin-sidebar {
-  background: linear-gradient(180deg, #150126 0%, #0a0012 100%) !important;
+  background: linear-gradient(180deg, #000000 0%, #000000 100%) !important;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35) !important;
 }
 
@@ -11937,7 +11937,7 @@ body.theme-dark .company-module-grid>a:hover {
     margin: 4px 18px 0 18px;
     padding: 10px 18px;
     border-radius: 28px;
-    background: linear-gradient(135deg, #090012 0%, #150126 55%, #24023a 100%) !important;
+    background: linear-gradient(135deg, #000000 0%, #000000 55%, #0b0b0b 100%) !important;
     border: 1px solid rgba(212, 175, 55, 0.18) !important;
     box-shadow: 0 18px 45px rgba(8, 11, 24, 0.28) !important;
     position: sticky;
@@ -12278,7 +12278,7 @@ body.theme-dark .company-module-grid>a:hover {
    ============================================================ */
 body.theme-dark .empresa-topbar,
 [data-theme="dark"] .empresa-topbar {
-  background: linear-gradient(135deg, #090012 0%, #150126 55%, #24023a 100%) !important;
+  background: linear-gradient(135deg, #000000 0%, #000000 55%, #0b0b0b 100%) !important;
   border-color: rgba(212, 175, 55, 0.18) !important;
   box-shadow: 0 18px 45px rgba(8, 11, 24, 0.28) !important;
 }
@@ -12361,7 +12361,7 @@ body.theme-dark .empresa-topbar-user small,
    Modo Claro — Empresa Topbar (body[data-unified-admin] scope)
    ============================================================ */
 body[data-unified-admin]:not(.theme-dark) .empresa-topbar {
-  background: linear-gradient(135deg, #090012 0%, #150126 55%, #24023a 100%) !important;
+  background: linear-gradient(135deg, #000000 0%, #000000 55%, #0b0b0b 100%) !important;
   border-color: rgba(212, 175, 55, 0.18) !important;
   box-shadow: 0 18px 45px rgba(8, 11, 24, 0.28) !important;
 }
@@ -16022,7 +16022,7 @@ body.theme-dark .modal-role-row {
 
 /* Premium Login Page Enhancements */
 .login-page-body {
-  background: radial-gradient(circle at center, #240242 0%, #150126 50%, #040008 100%) !important;
+  background: radial-gradient(circle at center, #0b0b0b 0%, #000000 50%, #000000 100%) !important;
   min-height: 100vh;
 }
 

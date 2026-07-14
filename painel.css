@@ -1,14 +1,14 @@
 /* Variables for the theme */
 :root {
   --bg-dark: #050009;
-  --bg-card: rgba(22, 9, 35, 0.72);
+  --bg-card: rgba(8, 8, 8, 0.82);
   --border-gold: rgba(216, 160, 24, 0.22);
   --border-gold-hover: rgba(244, 215, 106, 0.45);
   --text-gold: #f4d76a;
   --text-light: #fff8e6;
-  --text-muted: #c8bdd6;
+  --text-muted: #d8d3c4;
   --gold-glow: rgba(216, 160, 24, 0.10);
-  --purple-glow: rgba(156, 55, 255, 0.15);
+  --purple-glow: rgba(0, 0, 0, 0.22);
 }
 
 .entry-premium-body {
@@ -18,11 +18,8 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: var(--text-light);
   background:
-    radial-gradient(circle at 10% 15%, rgba(156, 55, 255, 0.35), transparent 28%),
-    radial-gradient(circle at 18% 75%, rgba(120, 35, 200, 0.28), transparent 32%),
     radial-gradient(circle at 88% 48%, rgba(216, 160, 24, 0.18), transparent 30%),
-    radial-gradient(circle at 50% 50%, rgba(55, 18, 95, 0.32), transparent 42%),
-    linear-gradient(135deg, #06000d 0%, #130020 38%, #090011 70%, #050008 100%);
+    linear-gradient(135deg, #000000 0%, #050505 48%, #000000 100%);
   background-color: var(--bg-dark);
   background-attachment: fixed;
   overflow-x: hidden;
@@ -57,7 +54,7 @@
   left: -150px;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(156, 55, 255, 0.25) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.35) 0%, transparent 70%);
   filter: blur(90px);
   pointer-events: none;
   z-index: -2;
@@ -103,12 +100,12 @@
 }
 
 .brand-logo {
-  width: 130px !important;
-  height: 130px !important;
+  width: 150px !important;
+  height: 150px !important;
   border-radius: 26px !important;
-  object-fit: cover;
+  object-fit: contain;
   border: 1.5px solid rgba(244, 215, 106, 0.3) !important;
-  background: rgba(22, 9, 35, 0.6);
+  background: rgba(0, 0, 0, 0.72);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(244, 215, 106, 0.12) !important;
@@ -157,13 +154,13 @@
   padding: 5px 14px;
   border: 1px solid rgba(244, 215, 106, 0.28);
   border-radius: 100px;
-  background: rgba(120, 35, 200, 0.16);
+  background: rgba(0, 0, 0, 0.22);
   color: var(--text-gold);
   font-size: 0.65rem;
   font-weight: 800;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  box-shadow: 0 4px 12px rgba(120, 35, 200, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
 }
 
 .hero-title {
@@ -343,7 +340,7 @@
   font-size: 0.72rem;
   font-weight: 600;
   color: #c8bdd6 !important;
-  background: rgba(120, 35, 200, 0.08) !important;
+  background: rgba(0, 0, 0, 0.16) !important;
   padding: 4px 10px;
   border-radius: 8px;
   border: 1px solid rgba(156, 91, 240, 0.15) !important;
@@ -351,7 +348,7 @@
 }
 
 .premium-access-card:hover .tag {
-  background: rgba(120, 35, 200, 0.16) !important;
+  background: rgba(0, 0, 0, 0.24) !important;
   border-color: rgba(156, 91, 240, 0.3) !important;
   color: #ffffff !important;
 }

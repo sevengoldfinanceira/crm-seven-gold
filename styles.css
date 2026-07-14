@@ -1,7 +1,7 @@
 :root {
   color-scheme: light;
-  --sidebar: #150126;
-  --sidebar-soft: #241032;
+  --sidebar: #000000;
+  --sidebar-soft: #121212;
   --page: #f4f5f3;
   --surface: #ffffff;
   --surface-soft: #f8f8f6;
@@ -15,7 +15,7 @@
   --purple: #9c5bf0;
   --pink: #e847a4;
   --green: #28a65a;
-  --brand-purple: #150126;
+  --brand-purple: #000000;
   --shadow: 0 16px 38px rgba(18, 20, 18, 0.08);
 }
 
@@ -85,7 +85,7 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
   height: 42px;
   border-radius: 8px;
   background-color: var(--brand-purple);
-  background-image: url("assets/icons/LOGO COPA.png?v=1");
+  background-image: url("assets/icons/seven-gold-g7.png?v=20260714");
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -1642,9 +1642,9 @@ body.theme-dark .lead-trash-origin-badge--unknown {
    ========================================================================== */
 body.theme-dark {
   color-scheme: dark;
-  --page: #08010f; /* fundo roxo bem escuro (Seven Gold) */
-  --surface: #150126; /* roxo de marca como superficie */
-  --surface-soft: #241032; /* roxo mais claro */
+  --page: #050505; /* fundo preto Seven Gold */
+  --surface: #000000; /* preto de marca como superficie */
+  --surface-soft: #121212; /* grafite mais claro */
   --ink: #fbfaf4; /* texto claro */
   --muted: #9f9baf; /* texto secundario */
   --line: #2e1743; /* bordas roxas */
@@ -3501,7 +3501,7 @@ body.theme-dark .lead-card-tag-option {
 }
 
 body.theme-dark .lead-card-tag-option.is-selected .lead-card-tag-check {
-  box-shadow: inset 0 0 0 2px #1e1b29 !important;
+  box-shadow: inset 0 0 0 2px #080808 !important;
 }
 
 /* Modal Lead Metadata Display */
@@ -7510,7 +7510,7 @@ body.theme-dark .appointment-card-menu-btn:hover {
 }
 
 body.theme-dark .appointment-card-dropdown {
-  background: #1e1b29 !important;
+  background: #080808 !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
@@ -7618,7 +7618,7 @@ body.theme-dark .lead-card-menu-btn:hover {
 }
 
 body.theme-dark .lead-card-dropdown {
-  background: #1e1b29 !important;
+  background: #080808 !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
@@ -8249,7 +8249,7 @@ body.theme-dark .weekly-day-card.has-appointments {
 }
 
 body.theme-dark .appointment-card {
-  background: #1e1b29 !important;
+  background: #080808 !important;
   border-color: var(--day-color, #60a5fa) !important;
   border-left-color: var(--day-color, #60a5fa) !important;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3) !important;
@@ -8573,7 +8573,7 @@ body.theme-dark .appointment-info-text {
 }
 
 body.theme-dark .lead-card {
-  background: #1e1b29 !important;
+  background: #080808 !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
 }
@@ -9464,7 +9464,7 @@ body.theme-dark .calendar-today-subtitle {
 
 body.theme-dark .weekly-day-card.is-normal-day {
   border: 1px solid rgba(96, 165, 250, 0.22) !important;
-  background: #1e1b29 !important;
+  background: #080808 !important;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3) !important;
 }
 
@@ -9517,7 +9517,7 @@ body.theme-dark .weekly-day-card.is-least-busy {
 }
 
 body.theme-dark .appointment-status-dropdown {
-  background: #1e1b29 !important;
+  background: #080808 !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
 }
@@ -9992,7 +9992,7 @@ body.theme-dark .lead-tag-badge.lead-trash-origin-badge--agendamento {
 
 /* Dark mode support */
 body.theme-dark .lead-tag-dropdown-menu {
-  background: #1e1b29 !important;
+  background: #080808 !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4) !important;
 }
