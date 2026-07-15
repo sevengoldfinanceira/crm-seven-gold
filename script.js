@@ -6189,11 +6189,13 @@ const createLeadCard = (lead) => {
 
   // Optional Note
   const hasCustomNote = lead.note && lead.note.trim() !== "" && lead.note.trim().toLowerCase() !== "sem observacao cadastrada.";
-  let noteEl = null;
+  let noteTooltip = null;
   if (hasCustomNote) {
-    noteEl = document.createElement("p");
-    noteEl.className = "lead-card-note";
-    noteEl.textContent = lead.note;
+    card.classList.add("has-lead-comment");
+    noteTooltip = document.createElement("div");
+    noteTooltip.className = "lead-card-comment-tooltip";
+    noteTooltip.setAttribute("role", "tooltip");
+    noteTooltip.textContent = lead.note.trim();
   }
 
   // Separator before the action buttons
@@ -6328,8 +6330,8 @@ const createLeadCard = (lead) => {
     card.append(tagsContainer);
   }
   card.append(infoList);
-  if (noteEl) {
-    card.append(noteEl);
+  if (noteTooltip) {
+    card.append(noteTooltip);
   }
 
   // 3-dots actions menu
