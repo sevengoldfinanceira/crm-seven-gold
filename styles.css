@@ -3627,11 +3627,11 @@ body.theme-dark .responsible-change select {
 }
 
 body.theme-dark .crm-workspace {
-  background: linear-gradient(135deg, #090018 0%, #160033 100%) !important;
+  background: linear-gradient(135deg, #050505 0%, #0b0b0b 100%) !important;
 }
 
 .sidebar {
-  background: linear-gradient(180deg, #160033 0%, #090018 100%) !important;
+  background: linear-gradient(180deg, #050505 0%, #0b0b0b 54%, #020202 100%) !important;
   border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
