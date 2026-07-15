@@ -3113,6 +3113,80 @@ body[data-unified-admin] .history-dashboard-main .history-shell {
   padding: 9px;
 }
 
+.client-mural-section {
+  display: grid;
+  gap: 14px;
+  margin: 18px 0 22px;
+  padding: 18px;
+  border: 1px solid rgba(216, 173, 61, 0.26);
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 245, 238, 0.94));
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+}
+
+.client-mural-section header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.client-mural-section header span {
+  color: #a67305;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.client-mural-section header strong {
+  color: #111827;
+  font-size: clamp(1.1rem, 1.8vw, 1.55rem);
+  font-weight: 900;
+}
+
+.client-mural-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+}
+
+.client-mural-grid figure {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(216, 173, 61, 0.3);
+  border-radius: 22px;
+  background: #000000;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+}
+
+.client-mural-grid img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  transition: transform 220ms ease;
+}
+
+.client-mural-grid figure:hover img {
+  transform: scale(1.025);
+}
+
+body.theme-dark .client-mural-section {
+  border-color: rgba(216, 173, 61, 0.34);
+  background: linear-gradient(135deg, #050505, #111111);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+}
+
+body.theme-dark .client-mural-section header strong {
+  color: #f8fafc;
+}
+
+body.theme-dark .client-mural-section header span {
+  color: #f2c94c;
+}
+
 .year-photo-box {
   position: relative;
   display: grid;
