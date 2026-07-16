@@ -1,0 +1,38 @@
+/*
+ * Global icon/text alignment for interactive controls.
+ * Individual components keep their own sizing, spacing and horizontal layout.
+ */
+button:has(> svg),
+button:has(> i),
+button:has(> img),
+a:has(> svg),
+a:has(> i),
+a:has(> img),
+[role="button"]:has(> svg),
+[role="button"]:has(> i),
+[role="button"]:has(> img) {
+  display: inline-flex;
+  align-items: center !important;
+}
+
+button > svg,
+button > i,
+button > img,
+a > svg,
+a > i,
+a > img,
+[role="button"] > svg,
+[role="button"] > i,
+[role="button"] > img {
+  align-self: center !important;
+  flex: 0 0 auto;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  vertical-align: middle;
+}
+
+button > span,
+a > span,
+[role="button"] > span {
+  align-self: center;
+}

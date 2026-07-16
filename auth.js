@@ -1,4 +1,13 @@
 (function () {
+  const actionButtonStylesheetId = "seven-gold-action-button-alignment";
+  if (!document.getElementById(actionButtonStylesheetId)) {
+    const actionButtonStylesheet = document.createElement("link");
+    actionButtonStylesheet.id = actionButtonStylesheetId;
+    actionButtonStylesheet.rel = "stylesheet";
+    actionButtonStylesheet.href = "action-button-alignment.css?v=icon-text-center-v1";
+    document.head.appendChild(actionButtonStylesheet);
+  }
+
   const config = window.SEVEN_GOLD_SUPABASE;
 
   if (!config || !window.supabase) {
