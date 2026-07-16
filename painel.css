@@ -133,11 +133,9 @@
 
 /* Hero section columns layout */
 .hero-section {
-  display: grid;
-  grid-template-columns: 1fr 1.35fr;
-  gap: 80px;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  flex-grow: 1;
   padding: 0;
   width: 100%;
 }
@@ -196,6 +194,8 @@
   grid-template-columns: 1fr;
   gap: 24px;
   width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
 }
 
 .premium-access-card {
