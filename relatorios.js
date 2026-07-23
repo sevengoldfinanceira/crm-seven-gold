@@ -48,6 +48,20 @@
   const normalizeRole = (role) =>
     String(role || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[\s_]+/g, "-");
 
+  const formatCargoLabel = (cargo) => {
+    if (!cargo) return "";
+    return String(cargo)
+      .replace(/[-_]+/g, " ")
+      .trim()
+      .toLowerCase()
+      .split(/\s+/)
+      .map(word => {
+        if (word === "ceo") return "CEO";
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(" ");
+  };
+
   const canSeeAllCommercialRecords = (user) => {
     const role = normalizeRole(user?.cargo);
     return ["dono", "admin", "administrador", "coordenador", "supervisor", "coordenador-comercial", "supervisor-comercial", "diretor-ceo"].includes(role);
@@ -177,7 +191,7 @@
     const current = personFilter.value;
     personFilter.innerHTML = '<option value="todos">Todos os vendedores</option>';
     filteredUsers.forEach((u) => {
-      const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
+      const cargoLabel = u.cargo ? formatCargoLabel(u.cargo) : "";
       const option = document.createElement("option");
       option.value = u.email;
       option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
@@ -717,7 +731,7 @@
     selectEl.innerHTML = '<option value="">Selecionar Vendedor</option>';
     if (users) {
       users.forEach((u) => {
-        const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
+        const cargoLabel = u.cargo ? formatCargoLabel(u.cargo) : "";
         const option = document.createElement("option");
         option.value = u.email;
         option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
@@ -1051,7 +1065,7 @@
     }
 
     filteredData.forEach((item) => {
-      const cargoLabel = item.cargo ? item.cargo.toUpperCase() : "";
+      const cargoLabel = item.cargo ? formatCargoLabel(item.cargo) : "";
       const displayCargo = cargoLabel ? ` — ${cargoLabel}` : "";
       
       const tr = document.createElement("tr");

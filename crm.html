@@ -1596,8 +1596,14 @@
         </div>
  
         <p class="form-status" data-lead-form-status></p>
-        <div class="lead-modal-actions-row">
-          <button class="delete-lead-modal-btn" id="delete-lead-modal-btn" type="button" style="display: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; flex-shrink: 0;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>Excluir Lead</button>
+        <div class="lead-modal-actions-row" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="delete-lead-modal-btn" id="delete-lead-modal-btn" type="button" style="display: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; flex-shrink: 0;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>Excluir Lead</button>
+            <label id="delete-lead-history-label" style="display: none; align-items: center; gap: 6px; font-size: 0.78rem; color: #dc2626; font-weight: 600; cursor: pointer; user-select: none;">
+              <input type="checkbox" id="delete-lead-history-checkbox" style="accent-color: #dc2626; cursor: pointer;" />
+              Remover todo o histórico dele no sistema
+            </label>
+          </div>
           <button class="new-lead-button" type="submit">Salvar lead</button>
         </div>
       </form>

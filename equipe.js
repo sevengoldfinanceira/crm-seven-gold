@@ -474,6 +474,20 @@
     return 'vendedor';
   };
 
+  const formatCargoLabel = (cargo) => {
+    if (!cargo) return "";
+    return String(cargo)
+      .replace(/[-_]+/g, " ")
+      .trim()
+      .toLowerCase()
+      .split(/\s+/)
+      .map(word => {
+        if (word === "ceo") return "CEO";
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(" ");
+  };
+
   const getClient = () => window.sevenGoldAuth;
 
   const refreshIcons = () => {
@@ -573,7 +587,7 @@
     getCommercialCoordinators().forEach((profile) => {
       const option = document.createElement("option");
       option.value = profile.id;
-      option.textContent = `${profile.full_name} — ${getRoleKeyForProfile(profile.role).toUpperCase()}`;
+      option.textContent = `${profile.full_name} — ${formatCargoLabel(getRoleKeyForProfile(profile.role))}`;
       select.appendChild(option);
     });
   };
@@ -1256,7 +1270,7 @@
       coordinators.forEach((profile) => {
         const option = document.createElement("option");
         option.value = profile.id;
-        option.textContent = `${profile.full_name} — ${getRoleKeyForProfile(profile.role).toUpperCase()}`;
+        option.textContent = `${profile.full_name} — ${formatCargoLabel(getRoleKeyForProfile(profile.role))}`;
         option.selected = profile.id === team.coordinator_user_id;
         coordinatorSelect.appendChild(option);
       });
@@ -1305,7 +1319,7 @@
         const details = document.createElement("small");
         details.textContent = checkbox.disabled
           ? `${profile.email} — já pertence a outra equipe`
-          : `${profile.email} — ${getRoleKeyForProfile(profile.role).toUpperCase()}`;
+          : `${profile.email} — ${formatCargoLabel(getRoleKeyForProfile(profile.role))}`;
         description.appendChild(details);
         optionLabel.append(checkbox, description);
         membersBox.appendChild(optionLabel);
@@ -2069,13 +2083,11 @@
                 </div>
                 
                 <div class="role-functions">
-                  <ol style="margin: 0; padding-left: 16px; font-size: 0.8rem; color: #475569; line-height: 1.4;">
-                    ${funcList.map(item => `<li>${item}</li>`).join("")}
-                  </ol>
-                  <div style="margin-top: 10px; font-size: 0.72rem; color: #64748b; font-weight: 600; display: flex; align-items: center; gap: 4px;">
-                    <i data-lucide="users" style="width: 12px; height: 12px; color: #d4af37;"></i>
-                    <span>${membersText}</span>
-                  </div>
+                  <div class="role-functions-text">${funcList.join("\n")}</div>
+                </div>
+                <div class="job-card-colabs" style="margin-top: auto; font-size: 0.72rem; color: #64748b; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                  <i data-lucide="users" style="width: 12px; height: 12px; color: #d4af37;"></i>
+                  <span>${membersText}</span>
                 </div>
                 
                 <div class="role-editor" style="display: none; margin-top: 12px;">
@@ -2090,12 +2102,11 @@
                     </div>
                   </div>
                   <div style="display: flex; flex-direction: column; gap: 4px;">
-                    <span style="font-size: 0.72rem; font-weight: 700; color: #475569;">Responsabilidades (uma por linha)</span>
-                    <textarea rows="6" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.8rem; font-family: inherit; resize: vertical;">${funcList.map((item, index) => `${index + 1}. ${item}`).join("\n")}</textarea>
+                    <span style="font-size: 0.72rem; font-weight: 700; color: #475569;">Responsabilidades / Funções (texto livre)</span>
+                    <textarea rows="6" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.8rem; font-family: inherit; resize: vertical;">${funcList.join("\n")}</textarea>
                   </div>
                   <div class="role-editor-actions" style="display: flex; align-items: center; gap: 8px; margin-top: 8px; width: 100%;">
                     <button type="button" class="btn-save-funcs">Salvar alterações</button>
-                    <button type="button" class="btn-delete-func">Excluir responsabilidade</button>
                     ${sector.id !== "diretoria" && role.key !== "diretor-ceo" ? `<button type="button" class="btn-delete-role" style="background: #fef2f2 !important; border: 1.5px solid #fecaca !important; color: #dc2626 !important; margin-left: auto;">Excluir cargo</button>` : ""}
                   </div>
                   <span class="role-save-status" style="font-size: 0.7rem; margin-top: 4px; display: block;"></span>
@@ -2109,10 +2120,12 @@
       // Bind edit and save buttons inside card
       article.querySelectorAll(".job-card").forEach(card => {
         const roleKey = card.getAttribute("data-role-key");
+        const role = sectors.flatMap(s => s.roles).find(r => r.key === roleKey);
+        if (!role) return;
+
         const editBtn = card.querySelector(".btn-edit-funcs");
         const deleteBtn = card.querySelector(".eq-job-delete-role");
         const saveBtn = card.querySelector(".btn-save-funcs");
-        const deleteFuncBtn = card.querySelector(".btn-delete-func");
         const deleteRoleBtn = card.querySelector(".btn-delete-role");
         const editor = card.querySelector(".role-editor");
         const viewArea = card.querySelector(".role-functions");
@@ -2121,15 +2134,12 @@
 
         const parseFunctionsFromEditor = () => textarea.value
           .split("\n")
-          .map(item => item.replace(/^\s*\d+[\).\-\s]+/, "").trim())
-          .filter(Boolean);
+          .map(item => item.trim());
 
         const renderFunctionsPreview = (parsedFuncs) => {
           viewArea.innerHTML = `
-            <ol style="margin: 0; padding-left: 16px; font-size: 0.8rem; color: #475569; line-height: 1.4;">
-              ${parsedFuncs.map(item => `<li>${item}</li>`).join("")}
-            </ol>
-            ${parsedFuncs.length === 0 ? '<p style="margin: 8px 0 0; color: #94a3b8; font-size: 0.75rem;">Nenhuma função cadastrada.</p>' : ''}
+            <div class="role-functions-text">${parsedFuncs.join("\n")}</div>
+            ${parsedFuncs.filter(Boolean).length === 0 ? '<p style="margin: 8px 0 0; color: #94a3b8; font-size: 0.75rem;">Nenhuma função cadastrada.</p>' : ''}
           `;
         };
 
@@ -2242,17 +2252,27 @@
           });
         }
 
+        card.addEventListener("click", (e) => {
+          if (e.target.closest("button") || e.target.closest("a") || e.target.closest("input") || e.target.closest("textarea") || e.target.closest(".role-editor")) {
+            return;
+          }
+          card.classList.toggle("expanded");
+        });
+
         editBtn.addEventListener("click", () => {
           if (editor.style.display === "none") {
             editor.style.display = "block";
             viewArea.style.display = "none";
             editBtn.textContent = "Cancelar";
+            card.classList.add("editing");
+            card.classList.remove("expanded");
           } else {
             editor.style.display = "none";
             viewArea.style.display = "block";
             editBtn.textContent = "Editar";
+            card.classList.remove("editing");
             const list = state.functions.get(roleKey) || [];
-            textarea.value = list.map((item, index) => `${index + 1}. ${item}`).join("\n");
+            textarea.value = list.join("\n");
             
             const titleInput = card.querySelector(".edit-role-title");
             const subInput = card.querySelector(".edit-role-sub");
@@ -2267,77 +2287,7 @@
           removeRole(deleteBtn.dataset.roleDelete);
         });
 
-        deleteFuncBtn?.addEventListener("mousedown", (e) => {
-          e.preventDefault(); // Keep focus and selection in the textarea
-        });
 
-        deleteFuncBtn?.addEventListener("click", async () => {
-          const lines = textarea.value.split("\n");
-          const selStart = textarea.selectionStart;
-          const selEnd = textarea.selectionEnd;
-
-          // Find which lines are within the cursor selection range
-          let startLineIndex = -1;
-          let endLineIndex = -1;
-          let accum = 0;
-
-          for (let i = 0; i < lines.length; i++) {
-            const lineLen = lines[i].length;
-            const lineStart = accum;
-            const lineEnd = accum + lineLen;
-
-            if (selStart <= lineEnd && selEnd >= lineStart) {
-              if (startLineIndex === -1) {
-                startLineIndex = i;
-              }
-              endLineIndex = i;
-            }
-            accum += lineLen + 1;
-          }
-
-          // If no lines found, default to the last line containing text
-          if (startLineIndex === -1) {
-            let lastFilledIndex = -1;
-            for (let index = lines.length - 1; index >= 0; index -= 1) {
-              if (lines[index].trim()) {
-                lastFilledIndex = index;
-                break;
-              }
-            }
-            if (lastFilledIndex !== -1) {
-              startLineIndex = lastFilledIndex;
-              endLineIndex = lastFilledIndex;
-            }
-          }
-
-          if (startLineIndex !== -1 && startLineIndex < lines.length) {
-            const numLinesToRemove = endLineIndex - startLineIndex + 1;
-            lines.splice(startLineIndex, numLinesToRemove);
-            textarea.value = lines.join("\n").trim();
-          }
-
-          const parsedFuncs = parseFunctionsFromEditor();
-          textarea.value = parsedFuncs.map((item, index) => `${index + 1}. ${item}`).join("\n");
-          applyFunctionsUpdate(parsedFuncs);
-
-          deleteFuncBtn.disabled = true;
-          statusSpan.textContent = "Responsabilidade removida e atualizada.";
-          statusSpan.dataset.type = "";
-          statusSpan.style.color = "#dc2626";
-          textarea.focus();
-
-          const success = await persistRoleFunctions(parsedFuncs);
-          deleteFuncBtn.disabled = false;
-          if (!success) {
-            statusSpan.style.color = "red";
-            statusSpan.textContent = "Removida na tela, mas houve erro ao salvar no Supabase.";
-            return;
-          }
-
-          statusSpan.style.color = "green";
-          statusSpan.textContent = "Responsabilidade removida e salva.";
-          setTimeout(() => { statusSpan.textContent = ""; }, 2000);
-        });
 
         deleteRoleBtn?.addEventListener("click", (e) => {
           e.preventDefault();

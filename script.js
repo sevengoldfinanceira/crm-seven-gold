@@ -74,6 +74,20 @@ const syncPipelineMonthToProduction = () => {
 const isSelectedProductionClosed = () => selectedProduction?.status === "closed";
 const formatProductionDate = (value) => value ? new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`)) : "";
 
+const formatCargoLabel = (cargo) => {
+  if (!cargo) return "";
+  return String(cargo)
+    .replace(/[-_]+/g, " ")
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .map(word => {
+      if (word === "ceo") return "CEO";
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+};
+
 const productionRequest = async (body) => {
   const client = getClient();
   const { data: sessionData } = await client.auth.getSession();
@@ -827,6 +841,15 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
   if (submitButton) submitButton.textContent = "Salvar Alteracoes";
   if (deleteBtn) deleteBtn.style.display = "block";
 
+  const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+  const isCeo = currentCrmUser && ["diretor-ceo", "dono"].includes(normalizeRole(currentCrmUser.cargo));
+  const deleteHistoryLabel = document.getElementById("delete-lead-history-label");
+  const deleteHistoryCheckbox = document.getElementById("delete-lead-history-checkbox");
+  if (deleteHistoryCheckbox) deleteHistoryCheckbox.checked = false;
+  if (deleteHistoryLabel) {
+    deleteHistoryLabel.style.display = isCeo ? "flex" : "none";
+  }
+
   leadForm.dataset.mode = "edit";
   leadForm.dataset.leadId = lead.id;
   leadForm.dataset.originalStatus = lead.status || "lead_recebido";
@@ -1244,8 +1267,16 @@ document.getElementById("delete-lead-modal-btn")?.addEventListener("click", asyn
   const leadId = leadForm?.dataset.leadId;
   if (!leadId) return;
 
-  if (confirm("Tem certeza que deseja excluir este lead permanentemente?")) {
-    const success = await deleteLead(leadId);
+  const deleteHistoryCheckbox = document.getElementById("delete-lead-history-checkbox");
+  const deleteHistory = deleteHistoryCheckbox ? deleteHistoryCheckbox.checked : false;
+
+  let confirmMsg = "Tem certeza que deseja excluir este lead permanentemente?";
+  if (deleteHistory) {
+    confirmMsg = "ATENÇÃO: Isso removerá permanentemente este lead E todo o seu histórico no sistema (mensagens, tarefas, agendamentos, etc). Tem certeza?";
+  }
+
+  if (confirm(confirmMsg)) {
+    const success = await deleteLead(leadId, deleteHistory);
     if (success) {
       modal?.close();
       await loadLeads();
@@ -1808,7 +1839,7 @@ const loadSalesUsers = async () => {
     salesUsers.forEach((user) => {
       const option = document.createElement("option");
       option.value = user.id;
-      option.textContent = `${user.nome || user.email} (${String(user.cargo || "vendedor").toUpperCase()})`;
+      option.textContent = `${user.nome || user.email} (${formatCargoLabel(user.cargo || "vendedor")})`;
       select.appendChild(option);
     });
     if (previous) select.value = previous;
@@ -2353,7 +2384,7 @@ const refreshResponsibleFilterForTeam = async (selectEl, client, currentCrmUser,
 };
 
 const addResponsibleOption = (selectEl, user) => {
-  const cargoLabel = user.cargo ? user.cargo.toUpperCase() : "";
+  const cargoLabel = user.cargo ? formatCargoLabel(user.cargo) : "";
   const option = document.createElement("option");
   option.value = user.email || user.id || "";
   option.textContent = cargoLabel ? `${user.nome} — ${cargoLabel}` : user.nome;
@@ -2735,7 +2766,7 @@ const refreshCalendarResponsibleFilterForTeam = async (selectEl, client, current
     if (memberUserIds.length) {
       const filtered = users.filter((u) => memberUserIds.includes(u.id));
       filtered.forEach((u) => {
-        const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
+        const cargoLabel = u.cargo ? formatCargoLabel(u.cargo) : "";
         const option = document.createElement("option");
         option.value = u.id;
         option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
@@ -2746,7 +2777,7 @@ const refreshCalendarResponsibleFilterForTeam = async (selectEl, client, current
   }
 
   users.forEach((u) => {
-    const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
+    const cargoLabel = u.cargo ? formatCargoLabel(u.cargo) : "";
     const option = document.createElement("option");
     option.value = u.id;
     option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
@@ -3252,7 +3283,7 @@ const initDashResponsibleFilter = async (currentCrmUser) => {
 
   selectEl.innerHTML = '<option value="">Todos os vendedores</option>';
   users.forEach((u) => {
-    const cargoLabel = u.cargo ? u.cargo.toUpperCase() : "";
+    const cargoLabel = u.cargo ? formatCargoLabel(u.cargo) : "";
     const option = document.createElement("option");
     option.value = u.email;
     option.textContent = cargoLabel ? `${u.nome} — ${cargoLabel}` : u.nome;
@@ -4171,7 +4202,7 @@ const loadCrmUsersForSelect = async (selectElement, currentAssignedEmail) => {
   data.forEach((user) => {
     const option = document.createElement("option");
     option.value = user.email;
-    option.textContent = `${user.nome} (${(user.cargo || "").toUpperCase()})`;
+    option.textContent = `${user.nome} (${formatCargoLabel(user.cargo || "")})`;
     if (user.email === currentAssignedEmail) {
       option.selected = true;
     }
@@ -5486,7 +5517,7 @@ const formatDisplayPhone = (phoneStr) => {
   return phoneStr;
 };
 
-const deleteLead = async (leadId) => {
+const deleteLead = async (leadId, deleteHistory = false) => {
   if (!leadId) {
     return false;
   }
@@ -5499,7 +5530,7 @@ const deleteLead = async (leadId) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sessionData?.session?.access_token}`,
       },
-      body: JSON.stringify({ id: leadId }),
+      body: JSON.stringify({ id: leadId, delete_history: deleteHistory }),
     });
 
     const result = await response.json();
@@ -7443,23 +7474,32 @@ const initLeadModalTabs = () => {
         content.style.setProperty("display", "none", "important");
       });
 
+      const deleteHistoryLabel = document.getElementById("delete-lead-history-label");
+      const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
+      const isCeo = currentCrmUser && ["diretor-ceo", "dono"].includes(normalizeRole(currentCrmUser.cargo));
+
       // Map tabs to content divs
       if (targetTab === "dados") {
         const dadosContainer = document.getElementById("modal-lead-tab-dados");
         if (dadosContainer) dadosContainer.style.setProperty("display", "grid", "important");
         if (submitButton) submitButton.style.display = "block";
         const mode = leadForm?.dataset.mode;
-        if (deleteButton && mode === "edit") deleteButton.style.display = "block";
+        if (deleteButton && mode === "edit") {
+          deleteButton.style.display = "block";
+          if (deleteHistoryLabel) deleteHistoryLabel.style.display = isCeo ? "flex" : "none";
+        }
       } else if (targetTab === "tarefas") {
         const tasksContainer = document.getElementById("modal-lead-tasks-section");
         if (tasksContainer) tasksContainer.style.setProperty("display", "block", "important");
         if (submitButton) submitButton.style.display = "none";
         if (deleteButton) deleteButton.style.display = "none";
+        if (deleteHistoryLabel) deleteHistoryLabel.style.display = "none";
       } else if (targetTab === "historico") {
         const historyContainer = document.getElementById("modal-lead-history-section");
         if (historyContainer) historyContainer.style.setProperty("display", "block", "important");
         if (submitButton) submitButton.style.display = "none";
         if (deleteButton) deleteButton.style.display = "none";
+        if (deleteHistoryLabel) deleteHistoryLabel.style.display = "none";
       }
     });
   });

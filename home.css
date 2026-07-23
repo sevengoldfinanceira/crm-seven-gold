@@ -18796,6 +18796,7 @@ body.theme-dark .admin-btn-icon{border-color:rgba(255,255,255,.1);background:#21
 .team-role-board {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-flow: dense;
   gap: 14px;
   align-items: start;
 }
@@ -18816,4 +18817,59 @@ body.theme-dark .admin-btn-icon{border-color:rgba(255,255,255,.1);background:#21
   .team-role-board > .role-section {
     grid-column: span 1 !important;
   }
+}
+
+/* Custom Job Card styles for uniform layout and clicking to expand */
+.job-card {
+  display: flex !important;
+  flex-direction: column;
+  height: 200px;
+  box-sizing: border-box;
+  transition: height 0.25s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  background: #ffffff;
+}
+.job-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.job-card.expanded {
+  height: auto !important;
+}
+.job-card-head {
+  flex: 0 0 auto;
+}
+.role-functions {
+  flex: 1 1 auto;
+  overflow: hidden;
+  margin-bottom: 8px;
+  display: block !important;
+}
+.role-functions-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.8rem;
+  color: #475569;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.job-card.expanded .role-functions-text {
+  display: block !important;
+  overflow: visible !important;
+  -webkit-line-clamp: unset !important;
+}
+.job-card.editing {
+  height: auto !important;
+}
+.job-card.editing .role-functions-text {
+  display: block !important;
+  overflow: visible !important;
+  -webkit-line-clamp: unset !important;
+}
+.job-card-colabs {
+  flex: 0 0 auto;
+  margin-top: auto !important;
 }

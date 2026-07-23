@@ -20,6 +20,19 @@ module.exports = async (req, res) => {
       const mutable = await assertLeadMutable(lead.id);
       if (mutable.error) return send(res, mutable.status || 500, { ok: false, error: mutable.error });
     }
+    const deleteHistory = req.body?.delete_history === true;
+    if (deleteHistory) {
+      const userRole = auth.user?.cargo ? String(auth.user.cargo).toLowerCase().trim() : "";
+      const isCeo = ["diretor-ceo", "dono"].includes(userRole);
+      if (!isCeo) {
+        return send(res, 403, { ok: false, error: 'Apenas o CEO ou dono pode remover o histórico completo.' });
+      }
+      await supabase.from('appointments').delete().in('lead_id', ids);
+      await supabase.from('messages').delete().in('lead_id', ids);
+      await supabase.from('sales').delete().in('lead_id', ids);
+      await supabase.from('tasks').delete().in('lead_id', ids);
+      await supabase.from('lead_history').delete().in('lead_id', ids);
+    }
     const { data, error } = await supabase.from('leads').delete().in('id', ids).select('id');
     if (error) return send(res, 409, { ok: false, error: error.message });
     return send(res, 200, { ok: true, count: data?.length || 0 });
