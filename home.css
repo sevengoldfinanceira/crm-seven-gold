@@ -4323,15 +4323,9 @@ body.theme-dark .client-mural-section header span {
 
 .team-role-board {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
   align-items: start;
-}
-
-@media (max-width: 1100px) {
-  .team-role-board {
-    grid-template-columns: 1fr;
-  }
 }
 
 .role-section {
@@ -18793,18 +18787,26 @@ body.theme-dark .admin-btn-icon{border-color:rgba(255,255,255,.1);background:#21
 
 /* Cargos e funções: elimina lacunas causadas por linhas de alturas diferentes */
 .team-role-board {
-  display: block;
-  columns: 2;
-  column-gap: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
 }
 .team-role-board > .role-section {
-  display: inline-grid;
+  display: grid;
   width: 100%;
-  margin: 0 0 14px;
-  break-inside: avoid;
-  page-break-inside: avoid;
-  vertical-align: top;
+  margin: 0;
 }
-@media (max-width: 1100px) {
-  .team-role-board { columns: 1; }
+@media (max-width: 1200px) {
+  .team-role-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 768px) {
+  .team-role-board {
+    grid-template-columns: 1fr;
+  }
+  .team-role-board > .role-section {
+    grid-column: span 1 !important;
+  }
 }

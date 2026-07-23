@@ -2035,6 +2035,9 @@
       article.className = "role-section";
       article.id = `functions-${sector.id}`;
 
+      const spanCols = sector.roles.length === 1 ? 1 : 2;
+      article.style.gridColumn = `span ${spanCols}`;
+
       article.innerHTML = `
         <header style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
           <span style="font-weight: 800; background: #d4af37; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">
@@ -2045,7 +2048,7 @@
             <p style="font-size: 0.8rem; color: #64748b; margin: 2px 0 0 0;">${sector.description}</p>
           </div>
         </header>
-        <div class="job-grid" style="display: grid; grid-template-columns: ${sector.roles.length === 1 ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(280px, 1fr))'}; gap: 16px;">
+        <div class="job-grid" style="display: grid; grid-template-columns: repeat(${spanCols}, 1fr); gap: 16px;">
           ${sector.roles.map(role => {
             const funcList = state.functions.get(role.key) || [];
             const roleMembers = getProfilesForRole(role.key);
