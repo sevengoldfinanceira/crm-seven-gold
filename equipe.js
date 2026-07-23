@@ -2045,7 +2045,7 @@
             <p style="font-size: 0.8rem; color: #64748b; margin: 2px 0 0 0;">${sector.description}</p>
           </div>
         </header>
-        <div class="job-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+        <div class="job-grid" style="display: grid; grid-template-columns: ${sector.roles.length === 1 ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(280px, 1fr))'}; gap: 16px;">
           ${sector.roles.map(role => {
             const funcList = state.functions.get(role.key) || [];
             const roleMembers = getProfilesForRole(role.key);
