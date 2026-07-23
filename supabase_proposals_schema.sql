@@ -1,19 +1,17 @@
--- =========================================================
--- MIGRATION: SIMULADOR DE PROPOSTAS - CRM SEVEN GOLD
--- PostgreSQL Schema for Supabase
--- =========================================================
+-- Habilitar extensão de UUID (se não habilitada)
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- 1. Tabela de Importações de Tabelas Comerciais (PDF / Drive)
 CREATE TABLE IF NOT EXISTS proposal_imports (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    source_type VARCHAR(50) NOT NULL DEFAULT 'UPLOAD', -- UPLOAD, GOOGLE_DRIVE
+    source_type VARCHAR(50) NOT NULL DEFAULT 'UPLOAD',
     source_file_name VARCHAR(255) NOT NULL,
     source_drive_file_id VARCHAR(255),
     source_drive_folder_id VARCHAR(255),
     file_hash VARCHAR(64) NOT NULL,
     file_size BIGINT NOT NULL DEFAULT 0,
     page_count INT NOT NULL DEFAULT 1,
-    status VARCHAR(50) NOT NULL DEFAULT 'PENDING_REVIEW', -- PROCESSING, PENDING_REVIEW, VALIDATED, ACTIVE, REJECTED, ARCHIVED, FAILED
+    status VARCHAR(50) NOT NULL DEFAULT 'PENDING_REVIEW',
     version VARCHAR(50) NOT NULL,
     valid_tables_count INT NOT NULL DEFAULT 0,
     proposal_rows_count INT NOT NULL DEFAULT 0,
@@ -42,7 +40,7 @@ CREATE TABLE IF NOT EXISTS proposal_tables (
     total_term_months INT NOT NULL,
     administration_fee_percentage NUMERIC(8, 4) DEFAULT 0,
     anticipation_percentage NUMERIC(8, 4) DEFAULT 0,
-    status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE', -- ACTIVE, INACTIVE, ARCHIVED, EXPIRED
+    status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -100,7 +98,7 @@ CREATE TABLE IF NOT EXISTS proposal_simulations (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- INDICES DE DESEMPENHO E BUSCA RAPIDA
+-- Índices de busca rápida
 CREATE INDEX IF NOT EXISTS idx_proposal_options_credit ON proposal_options(credit_value);
 CREATE INDEX IF NOT EXISTS idx_proposal_options_first_inst ON proposal_options(first_installment);
 CREATE INDEX IF NOT EXISTS idx_proposal_options_temp_inst ON proposal_options(temporary_installment_value);
