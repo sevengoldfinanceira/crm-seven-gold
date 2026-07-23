@@ -869,7 +869,6 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
   const responsibleChange = modal.querySelector("#modal-lead-responsible-change");
   const responsibleSelect = modal.querySelector("#modal-lead-responsible-select");
 
-  const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
   const canViewResponsible = Boolean(currentCrmUser) && shouldSeeAllLeads(currentCrmUser);
 
   if (responsibleSection) {
