@@ -78,8 +78,8 @@
               <h2 class="simulador-filters-title"><i data-lucide="sliders-horizontal" style="color:#d4af37; width:18px;"></i> Limites do Cliente</h2>
               
               <div class="simulador-form-group">
-                <label for="sim-desired-credit">Crédito Desejado <span class="req">*</span></label>
-                <input type="text" id="sim-desired-credit" class="simulador-input brl-mask" placeholder="R$ 250.000,00" required />
+                <label for="sim-desired-credit">Crédito Desejado</label>
+                <input type="text" id="sim-desired-credit" class="simulador-input brl-mask" placeholder="R$ 250.000,00" />
               </div>
 
               <div class="simulador-form-group">
