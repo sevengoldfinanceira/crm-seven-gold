@@ -2079,9 +2079,22 @@
                 </div>
                 
                 <div class="role-editor" style="display: none; margin-top: 12px;">
-                  <textarea rows="6" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.8rem; font-family: inherit; resize: vertical;">${funcList.map((item, index) => `${index + 1}. ${item}`).join("\n")}</textarea>
+                  <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                      <span style="font-size: 0.72rem; font-weight: 700; color: #475569;">Nome do cargo</span>
+                      <input type="text" class="edit-role-title" value="${role.title}" style="padding: 6px 8px; font-size: 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px; width: 100%; box-sizing: border-box; background: #fff; color: #0f172a;" />
+                    </div>
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                      <span style="font-size: 0.72rem; font-weight: 700; color: #475569;">Subtítulo</span>
+                      <input type="text" class="edit-role-sub" value="${role.sub || ''}" style="padding: 6px 8px; font-size: 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px; width: 100%; box-sizing: border-box; background: #fff; color: #0f172a;" />
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <span style="font-size: 0.72rem; font-weight: 700; color: #475569;">Responsabilidades (uma por linha)</span>
+                    <textarea rows="6" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.8rem; font-family: inherit; resize: vertical;">${funcList.map((item, index) => `${index + 1}. ${item}`).join("\n")}</textarea>
+                  </div>
                   <div class="role-editor-actions" style="display: flex; align-items: center; gap: 8px; margin-top: 8px; width: 100%;">
-                    <button type="button" class="btn-save-funcs">Salvar funções</button>
+                    <button type="button" class="btn-save-funcs">Salvar alterações</button>
                     <button type="button" class="btn-delete-func">Excluir responsabilidade</button>
                     ${sector.id !== "diretoria" && role.key !== "diretor-ceo" ? `<button type="button" class="btn-delete-role" style="background: #fef2f2 !important; border: 1.5px solid #fecaca !important; color: #dc2626 !important; margin-left: auto;">Excluir cargo</button>` : ""}
                   </div>
@@ -2240,6 +2253,11 @@
             editBtn.textContent = "Editar";
             const list = state.functions.get(roleKey) || [];
             textarea.value = list.map((item, index) => `${index + 1}. ${item}`).join("\n");
+            
+            const titleInput = card.querySelector(".edit-role-title");
+            const subInput = card.querySelector(".edit-role-sub");
+            if (titleInput) titleInput.value = role.title;
+            if (subInput) subInput.value = role.sub || "";
           }
         });
 
@@ -2332,12 +2350,23 @@
           saveBtn.textContent = "Salvando...";
           statusSpan.textContent = "";
 
+          const titleInput = card.querySelector(".edit-role-title");
+          const subInput = card.querySelector(".edit-role-sub");
+          if (titleInput) {
+            const val = titleInput.value.trim();
+            if (val) role.title = val;
+          }
+          if (subInput) {
+            role.sub = subInput.value.trim();
+          }
+          saveRolesSnapshotToLocalStorage();
+
           const parsedFuncs = parseFunctionsFromEditor();
           applyFunctionsUpdate(parsedFuncs);
           const success = await persistRoleFunctions(parsedFuncs);
 
           saveBtn.disabled = false;
-          saveBtn.textContent = "Salvar funções";
+          saveBtn.textContent = "Salvar alterações";
 
           if (success) {
             editor.style.display = "none";
@@ -2346,6 +2375,9 @@
             statusSpan.style.color = "green";
             statusSpan.textContent = "Salvo!";
             setTimeout(() => { statusSpan.textContent = ""; }, 2000);
+            
+            renderOrganograma();
+            renderRolesAndFunctions();
           } else {
             statusSpan.style.color = "red";
             statusSpan.textContent = "Erro ao salvar no Supabase.";
@@ -2408,6 +2440,9 @@
     role: 'todos',
     status: 'todos',
   };
+
+  let currentSortField = ""; // "colaborador" | "funcoes" | "status" | "documentos"
+  let currentSortDirection = "asc"; // "asc" | "desc"
 
   const populateFilterCargos = (sectorId = 'todos') => {
     const cargoSelect = document.getElementById("filter-role");
@@ -2481,8 +2516,61 @@
       return matchesSearch && matchesSector && matchesRole && matchesStatus;
     });
 
+    if (currentSortField) {
+      filtered.sort((a, b) => {
+        let valA = "";
+        let valB = "";
+
+        if (currentSortField === "colaborador") {
+          valA = a.full_name || "";
+          valB = b.full_name || "";
+        } else if (currentSortField === "funcoes") {
+          const funcsA = getEmployeeFunctions(a);
+          const funcsB = getEmployeeFunctions(b);
+          const primaryA = funcsA.find(f => f.primary) || funcsA[0];
+          const primaryB = funcsB.find(f => f.primary) || funcsB[0];
+          const secObjA = sectors.find(s => s.id === primaryA?.sectorId);
+          const roleObjA = secObjA?.roles.find(r => r.key === primaryA?.roleKey);
+          const secObjB = sectors.find(s => s.id === primaryB?.sectorId);
+          const roleObjB = secObjB?.roles.find(r => r.key === primaryB?.roleKey);
+          valA = roleObjA?.title || "";
+          valB = roleObjB?.title || "";
+        } else if (currentSortField === "status") {
+          valA = a.status || "";
+          valB = b.status || "";
+        } else if (currentSortField === "documentos") {
+          valA = hasDocuments(a) ? 1 : 0;
+          valB = hasDocuments(b) ? 1 : 0;
+        }
+
+        if (typeof valA === "string" && typeof valB === "string") {
+          return currentSortDirection === "asc"
+            ? valA.localeCompare(valB, "pt", { sensitivity: "base" })
+            : valB.localeCompare(valA, "pt", { sensitivity: "base" });
+        } else {
+          return currentSortDirection === "asc" ? valA - valB : valB - valA;
+        }
+      });
+    }
+
     renderListView(filtered);
     updateListSummary(filtered);
+  };
+
+  const updateSortHeadersUI = () => {
+    document.querySelectorAll(".sortable-header").forEach(header => {
+      const field = header.getAttribute("data-sort-field");
+      const iconSpan = header.querySelector(".sort-icon");
+      if (!iconSpan) return;
+
+      if (currentSortField === field) {
+        iconSpan.textContent = currentSortDirection === "asc" ? " ▲" : " ▼";
+        header.style.color = "#d4af37";
+      } else {
+        iconSpan.textContent = "";
+        header.style.color = "";
+      }
+    });
   };
 
   // Render list view of users (Aba 3)
@@ -3773,6 +3861,21 @@
 
   // Bind initial page load
   const init = async () => {
+    // Setup list sorting headers
+    document.querySelectorAll(".sortable-header").forEach(header => {
+      header.addEventListener("click", () => {
+        const field = header.getAttribute("data-sort-field");
+        if (currentSortField === field) {
+          currentSortDirection = currentSortDirection === "asc" ? "desc" : "asc";
+        } else {
+          currentSortField = field;
+          currentSortDirection = "asc";
+        }
+        updateSortHeadersUI();
+        applyListFilters();
+      });
+    });
+
     // Organogram edit mode toggle
     document.getElementById("eq-organogram-edit-toggle")?.addEventListener("click", () => {
       organogramEditMode = !organogramEditMode;

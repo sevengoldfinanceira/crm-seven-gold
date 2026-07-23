@@ -15067,6 +15067,13 @@ body.theme-dark .eq-seller-conversion { background: rgba(37, 99, 235, .12); }
   color: #475569;
   font-size: 0.85rem;
 }
+.eq-table th.sortable-header {
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.eq-table th.sortable-header:hover {
+  color: #d4af37;
+  background-color: rgba(212, 175, 55, 0.05);
+}
 .eq-table td {
   padding: 14px 16px;
   border-bottom: 1px solid #f1f5f9;
