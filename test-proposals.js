@@ -55,8 +55,7 @@ const mockOptions = [
 const searchParams = {
   desired_credit: "R$ 250.000,00",
   maximum_first_installment: "R$ 24.000,00",
-  maximum_temporary_installment: "R$ 1.850,00",
-  maximum_final_installment: "R$ 1.850,00",
+  maximum_installment: "R$ 1.850,00",
   ranking_priority: "CREDITO_PROXIMO"
 };
 

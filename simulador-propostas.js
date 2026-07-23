@@ -72,13 +72,8 @@
               </div>
 
               <div class="simulador-form-group">
-                <label for="sim-max-temp-inst">Parcela Temporária Máxima <span class="req">*</span></label>
-                <input type="text" id="sim-max-temp-inst" class="simulador-input brl-mask" placeholder="R$ 1.850,00" required />
-              </div>
-
-              <div class="simulador-form-group">
-                <label for="sim-max-final-inst">Parcela Posterior Máxima <span class="req">*</span></label>
-                <input type="text" id="sim-max-final-inst" class="simulador-input brl-mask" placeholder="R$ 1.850,00" required />
+                <label for="sim-max-inst">Valor de Parcela Máxima <span class="req">*</span></label>
+                <input type="text" id="sim-max-inst" class="simulador-input brl-mask" placeholder="R$ 1.850,00" required />
               </div>
 
               <!-- Optional Filters Toggle -->
@@ -399,8 +394,7 @@
     const payload = {
       desired_credit: document.getElementById('sim-desired-credit').value,
       maximum_first_installment: document.getElementById('sim-max-first-inst').value,
-      maximum_temporary_installment: document.getElementById('sim-max-temp-inst').value,
-      maximum_final_installment: document.getElementById('sim-max-final-inst').value,
+      maximum_installment: document.getElementById('sim-max-inst').value,
       minimum_credit: document.getElementById('sim-min-credit')?.value || '',
       maximum_credit: document.getElementById('sim-max-credit')?.value || '',
       ranking_priority: document.getElementById('sim-priority').value,
@@ -422,7 +416,7 @@
           <div style="text-align:center; color:#fca5a5; padding:40px; background:rgba(239,68,68,0.04); border:1px solid rgba(239,68,68,0.2); border-radius:16px;">
             <i data-lucide="alert-triangle" style="width:36px; height:36px; color:#ef4444; margin-bottom:12px;"></i>
             <h3 style="margin:0 0 6px; font-size:1rem; color:#fff;">Nenhuma proposta encontrada</h3>
-            <p style="margin:0; font-size:0.84rem;">Tente aumentar ligeiramente o limite da 1ª parcela ou parcelas temporárias.</p>
+            <p style="margin:0; font-size:0.84rem;">Tente aumentar ligeiramente o limite da 1ª parcela ou parcelas.</p>
           </div>
         `;
         if (window.lucide) window.lucide.createIcons();
