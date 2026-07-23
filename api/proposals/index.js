@@ -4,7 +4,6 @@
  */
 
 const crypto = require('crypto');
-const pdfParse = require('pdf-parse');
 const { getActiveProposalOptions, checkDuplicateHash, createImportRecord, activateImport, getProposalSettings, updateProposalSettings, inMemoryStore } = require('../../lib/server/proposals/store');
 const { rankProposals } = require('../../lib/server/proposals/ranking');
 const { parseProposalPdfText } = require('../../lib/server/proposals/pdf-parser');
@@ -18,51 +17,57 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
-    res.writeHead(200);
+    res.writeHead(204);
     return res.end();
   }
 
-  const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-  const pathname = url.pathname;
-
   try {
-    // 1. Simulation query endpoint
-    if (pathname.includes('/simulate') || pathname.endsWith('/proposals')) {
-      const params = req.method === 'POST' ? (req.body || {}) : Object.fromEntries(url.searchParams);
+    const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    const pathname = url.pathname;
+
+    // 1. Simulate / Search proposals endpoint
+    if (pathname.includes('/simulate') || pathname.includes('/search')) {
+      const body = req.body || {};
       const allOptions = await getActiveProposalOptions();
-      const rankingResults = rankProposals(allOptions, params);
+      const results = rankProposals(allOptions, body);
 
       res.writeHead(200);
       return res.end(JSON.stringify({
         success: true,
-        summary: {
-          total_evaluated: rankingResults.totalEvaluated,
-          valid_count: rankingResults.validCount,
-          near_matches_count: rankingResults.nearMatches.length,
-          priority_used: params.ranking_priority || 'EQUILIBRIO',
-        },
-        valid_proposals: rankingResults.validProposals,
-        near_matches: rankingResults.nearMatches,
+        valid_proposals: results.validProposals,
+        near_matches: results.nearMatches,
+        total_evaluated: results.totalEvaluated,
+        valid_count: results.validCount,
       }));
     }
 
-    // 2. Active commercial tables list endpoint
-    if (pathname.includes('/tables')) {
-      const options = await getActiveProposalOptions();
+    // 2. List active tables endpoint
+    if (pathname.includes('/tables') && !pathname.includes('/imports')) {
+      const allOptions = await getActiveProposalOptions();
+      const uniqueTables = {};
+      allOptions.forEach(opt => {
+        if (!uniqueTables[opt.table_number]) {
+          uniqueTables[opt.table_number] = {
+            table_number: opt.table_number,
+            product_name: opt.product_name,
+            administrator_name: opt.administrator_name,
+            total_term_months: opt.total_term_months,
+            valid_until: opt.valid_until,
+            status: opt.status,
+          };
+        }
+      });
       res.writeHead(200);
       return res.end(JSON.stringify({
-        success: true,
-        count: options.length,
-        tables: options,
+        tables: Object.values(uniqueTables),
       }));
     }
 
-    // 3. Imports history & audit logs endpoint
-    if (pathname.includes('/imports') && req.method === 'GET') {
+    // 3. Import audit history
+    if (pathname.includes('/imports/history') || pathname.includes('/imports/audit')) {
       res.writeHead(200);
       return res.end(JSON.stringify({
-        success: true,
-        imports: inMemoryStore.imports,
+        imports: inMemoryStore.imports.slice(0, 50),
       }));
     }
 
@@ -93,14 +98,17 @@ module.exports = async (req, res) => {
         }));
       }
 
-      // Extract text from PDF binary using pdf-parse
+      // Extract text from PDF binary
+      // Use internal path to avoid pdf-parse test file loading bug on Vercel
       let rawText = '';
       let pageCount = 1;
       try {
+        const pdfParse = require('pdf-parse/lib/pdf-parse.js');
         const pdfData = await pdfParse(pdfBuffer);
         rawText = pdfData.text || '';
         pageCount = pdfData.numpages || 1;
       } catch (pdfErr) {
+        console.error('PDF parse error:', pdfErr);
         res.writeHead(400);
         return res.end(JSON.stringify({
           error: 'Não foi possível ler o PDF. Verifique se o arquivo não está corrompido ou protegido por senha.',
@@ -110,7 +118,7 @@ module.exports = async (req, res) => {
 
       // Parse extracted text
       const parsed = parseProposalPdfText(rawText, fileName);
-      parsed.extractedText = rawText; // Send back for debug visibility
+      parsed.extractedText = rawText;
 
       // Create pending import record
       const importRecord = await createImportRecord({
@@ -138,41 +146,47 @@ module.exports = async (req, res) => {
 
     // 5. Activate version endpoint
     if (pathname.includes('/activate')) {
-      const importId = pathname.split('/').slice(-2)[0] || req.body.import_id;
-      const result = await activateImport(importId);
+      const importIdMatch = pathname.match(/imports\/([^/]+)\/activate/);
+      const importId = importIdMatch ? importIdMatch[1] : (req.body?.import_id || '');
+      const result = await activateImport(importId, req.body?.activated_by || 'Administrador');
+
       res.writeHead(200);
-      return res.end(JSON.stringify({
-        success: true,
-        message: 'Versão de tabela comercial ativada com sucesso.',
-        result,
-      }));
+      return res.end(JSON.stringify(result));
     }
 
-    // 6. Google Drive sync endpoint
-    if (pathname.includes('/drive/sync')) {
-      const syncResult = await syncGoogleDriveFolder();
-      res.writeHead(200);
-      return res.end(JSON.stringify(syncResult));
-    }
-
-    // 7. Settings endpoints
+    // 6. Settings
     if (pathname.includes('/settings')) {
-      if (req.method === 'PUT' || req.method === 'POST') {
+      if (req.method === 'GET') {
+        res.writeHead(200);
+        return res.end(JSON.stringify(getProposalSettings()));
+      }
+      if (req.method === 'POST' || req.method === 'PUT') {
         const updated = updateProposalSettings(req.body || {});
         res.writeHead(200);
-        return res.end(JSON.stringify({ success: true, settings: updated }));
+        return res.end(JSON.stringify(updated));
       }
-      res.writeHead(200);
-      return res.end(JSON.stringify({ success: true, settings: getProposalSettings() }));
     }
 
-    // Fallback 404
+    // 7. Google Drive Sync
+    if (pathname.includes('/drive/sync')) {
+      const settings = getProposalSettings();
+      const result = await syncGoogleDriveFolder(settings.drive_folder_id);
+      res.writeHead(200);
+      return res.end(JSON.stringify(result));
+    }
+
+    // Default: not found
     res.writeHead(404);
-    return res.end(JSON.stringify({ error: 'Endpoint não encontrado no módulo de propostas.' }));
+    return res.end(JSON.stringify({ error: 'Endpoint não encontrado.' }));
 
   } catch (err) {
-    console.error("Erro na API de propostas:", err);
-    res.writeHead(500);
-    return res.end(JSON.stringify({ error: `Erro interno: ${err.message}` }));
+    console.error('Proposal API unhandled error:', err);
+    if (!res.headersSent) {
+      res.writeHead(500);
+    }
+    return res.end(JSON.stringify({
+      error: 'Erro interno do servidor.',
+      details: err.message
+    }));
   }
 };
