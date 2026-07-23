@@ -2243,13 +2243,36 @@
           removeRole(deleteBtn.dataset.roleDelete);
         });
 
+        deleteFuncBtn?.addEventListener("mousedown", (e) => {
+          e.preventDefault(); // Keep focus and selection in the textarea
+        });
+
         deleteFuncBtn?.addEventListener("click", async () => {
           const lines = textarea.value.split("\n");
-          const selectedText = textarea.value.slice(textarea.selectionStart, textarea.selectionEnd).trim();
+          const selStart = textarea.selectionStart;
+          const selEnd = textarea.selectionEnd;
 
-          if (selectedText) {
-            textarea.setRangeText("", textarea.selectionStart, textarea.selectionEnd, "start");
-          } else {
+          // Find which lines are within the cursor selection range
+          let startLineIndex = -1;
+          let endLineIndex = -1;
+          let accum = 0;
+
+          for (let i = 0; i < lines.length; i++) {
+            const lineLen = lines[i].length;
+            const lineStart = accum;
+            const lineEnd = accum + lineLen;
+
+            if (selStart <= lineEnd && selEnd >= lineStart) {
+              if (startLineIndex === -1) {
+                startLineIndex = i;
+              }
+              endLineIndex = i;
+            }
+            accum += lineLen + 1;
+          }
+
+          // If no lines found, default to the last line containing text
+          if (startLineIndex === -1) {
             let lastFilledIndex = -1;
             for (let index = lines.length - 1; index >= 0; index -= 1) {
               if (lines[index].trim()) {
@@ -2257,8 +2280,15 @@
                 break;
               }
             }
-            if (lastFilledIndex === -1) return;
-            lines.splice(lastFilledIndex, 1);
+            if (lastFilledIndex !== -1) {
+              startLineIndex = lastFilledIndex;
+              endLineIndex = lastFilledIndex;
+            }
+          }
+
+          if (startLineIndex !== -1 && startLineIndex < lines.length) {
+            const numLinesToRemove = endLineIndex - startLineIndex + 1;
+            lines.splice(startLineIndex, numLinesToRemove);
             textarea.value = lines.join("\n").trim();
           }
 
@@ -2351,6 +2381,7 @@
 
       roleBoard.appendChild(article);
     });
+    refreshIcons();
   };
 
   // Helper to determine if collaborator has documents
@@ -2538,6 +2569,7 @@
 
       listTableBody.appendChild(tr);
     });
+    refreshIcons();
   };
 
   // Perform search / filtering on the active view

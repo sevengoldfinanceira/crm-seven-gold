@@ -5893,6 +5893,7 @@ body.theme-dark .reports-summary article:nth-child(8)>i {
 .profile-save-button {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
   gap: 8px;
   margin-left: auto;
   padding: 12px 28px;
@@ -5902,6 +5903,7 @@ body.theme-dark .reports-summary article:nth-child(8)>i {
   color: #fff;
   font-size: .85rem;
   font-weight: 700;
+  white-space: nowrap;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(109, 76, 255, .3);
   transition: transform .18s, box-shadow .18s;
