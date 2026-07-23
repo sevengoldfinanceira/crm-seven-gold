@@ -25,6 +25,37 @@
     });
   }
 
+  async function readApiPayload(response) {
+    const text = await response.text();
+    if (!text) return {};
+
+    try {
+      return JSON.parse(text);
+    } catch (error) {
+      const cleaned = String(text).replace(/\s+/g, ' ').trim();
+      return {
+        success: false,
+        error: cleaned
+          ? (cleaned.length > 220 ? `${cleaned.slice(0, 220)}...` : cleaned)
+          : 'Resposta invalida do servidor.',
+        rawResponse: text,
+        parseError: error.message,
+      };
+    }
+  }
+
+  function getApiErrorMessage(response, payload, fallback) {
+    if (payload && (payload.error || payload.message || payload.details)) {
+      return payload.error || payload.message || payload.details;
+    }
+
+    if (response && !response.ok) {
+      return `${fallback} Status ${response.status}.`;
+    }
+
+    return fallback;
+  }
+
   let selectedProposal = null;
 
   // Render Simulator UI inside [data-tab="simulador"]
@@ -323,7 +354,10 @@
               pdf_base64: base64Data,
             }),
           });
-          const data = await resp.json();
+          const data = await readApiPayload(resp);
+          if (!resp.ok) {
+            throw new Error(getApiErrorMessage(resp, data, 'Erro ao enviar arquivo.'));
+          }
 
           if (data.success && data.preview) {
             const p = data.preview;
@@ -386,7 +420,10 @@
 
       try {
         const resp = await fetch('/api/attendance/proposals/drive/sync', { method: 'POST' });
-        const resData = await resp.json();
+        const resData = await readApiPayload(resp);
+        if (!resp.ok || resData.success === false) {
+          throw new Error(getApiErrorMessage(resp, resData, 'Erro ao sincronizar Drive.'));
+        }
         alert(resData.message || "Sincronização concluída.");
       } catch (err) {
         alert("Erro na sincronização: " + err.message);
@@ -430,7 +467,13 @@
         body: JSON.stringify(payload),
       });
 
-      const data = await resp.json();
+      const data = await readApiPayload(resp);
+      if (!resp.ok) {
+        throw new Error(getApiErrorMessage(resp, data, 'Erro ao simular proposta.'));
+      }
+
+      data.valid_proposals = data.valid_proposals || [];
+      data.near_matches = data.near_matches || [];
 
       if (!data.success || (!data.valid_proposals.length && !data.near_matches.length)) {
         countTextEl.innerHTML = `Nenhuma proposta encontrada dentro dos limites informados.`;
@@ -565,7 +608,10 @@
 
     try {
       const resp = await fetch('/api/attendance/proposals/tables');
-      const data = await resp.json();
+      const data = await readApiPayload(resp);
+      if (!resp.ok) {
+        throw new Error(getApiErrorMessage(resp, data, 'Erro ao carregar tabelas.'));
+      }
 
       if (data.tables && data.tables.length > 0) {
         tableBody.innerHTML = data.tables.map(t => `
@@ -593,7 +639,10 @@
 
     try {
       const resp = await fetch('/api/attendance/proposals/imports');
-      const data = await resp.json();
+      const data = await readApiPayload(resp);
+      if (!resp.ok) {
+        throw new Error(getApiErrorMessage(resp, data, 'Erro ao carregar historico.'));
+      }
 
       if (data.imports && data.imports.length > 0) {
         tableBody.innerHTML = data.imports.map(i => `
