@@ -28,14 +28,30 @@
   let selectedProposal = null;
 
   // Render Simulator UI inside [data-tab="simulador"]
-  function renderSimulatorShell() {
+  async function renderSimulatorShell() {
     const container = document.querySelector('[data-service-tab-content="simulador"]');
     if (!container) return;
 
-    // Check user role for administrative permissions
-    const userRoleEl = document.querySelector('[data-user-role]');
-    const userRole = userRoleEl ? userRoleEl.textContent.trim().toLowerCase() : '';
-    const isAdminOrManager = ['dono', 'administrador', 'diretor-ceo', 'gestor', 'coordenador'].some(r => userRole.includes(r));
+    let isAdminOrManager = false;
+    try {
+      const client = getClient();
+      if (client) {
+        const { data: { session } } = await client.auth.getSession();
+        if (session && session.user) {
+          const { data: crmUser } = await client
+            .from('crm_users')
+            .select('cargo')
+            .eq('email', session.user.email)
+            .maybeSingle();
+          if (crmUser) {
+            const role = String(crmUser.cargo || '').toLowerCase().trim();
+            isAdminOrManager = ['dono', 'administrador', 'diretor-ceo', 'gestor', 'coordenador'].some(r => role.includes(r));
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Erro ao resolver permissão:", err);
+    }
 
     container.innerHTML = `
       <div class="simulador-container">
