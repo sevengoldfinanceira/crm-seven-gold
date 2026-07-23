@@ -1377,11 +1377,817 @@
 
         <!-- Financeiro -->
         <section class="tab-content" data-tab="financeiro" style="display:none;">
-          <div class="empty-tab-state">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-bottom: 16px;"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            <h2>Financeiro</h2>
-            <p>Em breve.</p>
-          </div>
+          <style>
+            /* Copied style block from financeiro.html */
+            .finance-tab-nav {
+              display: flex;
+              gap: 4px;
+              margin-bottom: 20px;
+              border-bottom: 1.5px solid rgba(255, 255, 255, 0.08);
+              padding-bottom: 8px;
+            }
+            .finance-tab-btn {
+              background: none;
+              border: none;
+              color: #94a3b8;
+              font-size: 0.88rem;
+              font-weight: 700;
+              padding: 8px 16px;
+              cursor: pointer;
+              border-radius: 6px;
+              transition: all 0.2s ease;
+            }
+            .finance-tab-btn:hover {
+              color: #ffffff;
+              background: rgba(255, 255, 255, 0.04);
+            }
+            .finance-tab-btn.active {
+              color: #d4af37;
+              background: rgba(212, 175, 55, 0.08);
+              border-bottom: 2.5px solid #d4af37;
+              border-radius: 6px 6px 0 0;
+            }
+            .theme-dark .finance-tab-btn.active {
+              color: #f59e0b;
+              background: rgba(245, 158, 11, 0.08);
+              border-bottom-color: #f59e0b;
+            }
+
+            /* Borderô Dashboard layouts */
+            .bordero-toolbar {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 20px;
+              gap: 12px;
+              flex-wrap: wrap;
+            }
+            .bordero-actions-top {
+              display: flex;
+              gap: 8px;
+            }
+            .bordero-btn-primary {
+              background: #d4af37;
+              color: #000;
+              border: none;
+              padding: 9px 16px;
+              font-weight: 700;
+              border-radius: 8px;
+              font-size: 0.82rem;
+              cursor: pointer;
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              transition: opacity 0.2s;
+            }
+            .bordero-btn-primary:hover {
+              opacity: 0.9;
+            }
+            .bordero-btn-secondary {
+              background: rgba(255, 255, 255, 0.08);
+              color: #fff;
+              border: 1px solid rgba(255, 255, 255, 0.15);
+              padding: 9px 16px;
+              font-weight: 600;
+              border-radius: 8px;
+              font-size: 0.82rem;
+              cursor: pointer;
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              transition: background 0.2s;
+            }
+            .bordero-btn-secondary:hover {
+              background: rgba(255, 255, 255, 0.12);
+            }
+            
+            .status-badge {
+              display: inline-flex;
+              align-items: center;
+              padding: 3px 8px;
+              border-radius: 9999px;
+              font-size: 0.72rem;
+              font-weight: 700;
+              text-transform: uppercase;
+            }
+            .status-badge.draft { background: #cbd5e1; color: #1e293b; }
+            .status-badge.pending_check { background: #fef3c7; color: #d97706; }
+            .status-badge.approved { background: #dbeafe; color: #2563eb; }
+            .status-badge.pending_signature { background: #fae8ff; color: #c084fc; }
+            .status-badge.signed { background: #e0f2fe; color: #0284c7; }
+            .status-badge.paid { background: #dcfce7; color: #16a34a; }
+            .status-badge.cancelled { background: #fee2e2; color: #dc2626; }
+
+            /* Details view & printing style */
+            .bordero-sheet {
+              background: #ffffff;
+              color: #1e293b;
+              border-radius: 12px;
+              padding: 32px;
+              box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+              border: 1px solid #e2e8f0;
+              font-family: 'Inter', Arial, sans-serif;
+            }
+            .bordero-sheet-header {
+              display: flex;
+              justify-content: space-between;
+              border-bottom: 2px solid #e2e8f0;
+              padding-bottom: 20px;
+              margin-bottom: 20px;
+            }
+            .bordero-company-info h2 {
+              font-size: 1.15rem;
+              font-weight: 800;
+              margin: 0 0 6px;
+              color: #0f172a;
+            }
+            .bordero-company-info p {
+              font-size: 0.76rem;
+              margin: 2px 0;
+              color: #64748b;
+            }
+            .bordero-sheet-title-block {
+              text-align: right;
+            }
+            .bordero-sheet-title-block h1 {
+              font-size: 1.3rem;
+              font-weight: 800;
+              color: #0f172a;
+              margin: 0 0 6px;
+            }
+            .bordero-sheet-title-block span {
+              font-size: 0.72rem;
+              font-weight: 700;
+              color: #64748b;
+              text-transform: uppercase;
+            }
+            
+            .bordero-colab-details {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+              gap: 16px;
+              background: #f8fafc;
+              border-radius: 8px;
+              padding: 16px;
+              margin-bottom: 24px;
+              border: 1px solid #f1f5f9;
+            }
+            .bordero-colab-field span {
+              font-size: 0.72rem;
+              color: #64748b;
+              font-weight: 600;
+              text-transform: uppercase;
+              display: block;
+              margin-bottom: 4px;
+            }
+            .bordero-colab-field strong {
+              font-size: 0.86rem;
+              color: #0f172a;
+              font-weight: 700;
+            }
+
+            .bordero-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 24px;
+            }
+            .bordero-table th {
+              background: #f1f5f9;
+              color: #475569;
+              font-size: 0.72rem;
+              font-weight: 700;
+              text-transform: uppercase;
+              text-align: left;
+              padding: 8px 12px;
+              border-bottom: 1.5px solid #e2e8f0;
+            }
+            .bordero-table td {
+              padding: 10px 12px;
+              font-size: 0.78rem;
+              border-bottom: 1px solid #f1f5f9;
+              color: #334155;
+            }
+            .bordero-table tbody tr:hover td {
+              background: #f8fafc;
+            }
+
+            .bordero-summary-block {
+              display: flex;
+              justify-content: flex-end;
+              margin-bottom: 28px;
+            }
+            .bordero-summary-table {
+              width: 320px;
+              font-size: 0.8rem;
+            }
+            .bordero-summary-table td {
+              padding: 6px 12px;
+            }
+            .bordero-summary-table tr.total-row {
+              background: #f8fafc;
+              font-size: 1rem;
+              font-weight: 800;
+              border-top: 2px solid #e2e8f0;
+            }
+            .bordero-summary-table tr.total-row td {
+              padding: 12px;
+              color: #0f172a;
+            }
+
+            /* Signature pad styling */
+            .signature-box {
+              border: 1.5px dashed #cbd5e1;
+              border-radius: 8px;
+              background: #f8fafc;
+              position: relative;
+              overflow: hidden;
+            }
+            .signature-canvas {
+              display: block;
+              width: 100%;
+              height: 120px;
+              cursor: crosshair;
+            }
+            .signature-actions-clear {
+              position: absolute;
+              top: 6px;
+              right: 6px;
+              background: rgba(15, 23, 42, 0.08);
+              border: none;
+              color: #475569;
+              font-size: 0.65rem;
+              font-weight: 700;
+              padding: 3px 8px;
+              border-radius: 4px;
+              cursor: pointer;
+            }
+            .signature-actions-clear:hover {
+              background: rgba(15, 23, 42, 0.15);
+            }
+            .signed-display {
+              border: 1px solid #e2e8f0;
+              border-radius: 8px;
+              padding: 12px;
+              background: #f8fafc;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 8px;
+            }
+            .signed-display img {
+              max-height: 80px;
+              object-fit: contain;
+            }
+            .signed-display-meta {
+              font-size: 0.68rem;
+              color: #64748b;
+              text-align: center;
+              line-height: 1.4;
+            }
+
+            /* Audit timeline */
+            .timeline-logs {
+              margin-top: 20px;
+              border-top: 1.5px solid #e2e8f0;
+              padding-top: 16px;
+            }
+            .timeline-logs h4 {
+              font-size: 0.8rem;
+              font-weight: 700;
+              margin: 0 0 10px;
+              color: #0f172a;
+              text-transform: uppercase;
+            }
+            .timeline-item {
+              font-size: 0.72rem;
+              padding: 4px 0;
+              border-left: 2px solid #cbd5e1;
+              padding-left: 10px;
+              margin-left: 6px;
+              color: #475569;
+            }
+            .timeline-item strong {
+              color: #0f172a;
+            }
+            .timeline-item span {
+              color: #94a3b8;
+              font-size: 0.66rem;
+            }
+
+            /* Settings Modal override */
+            .bordero-settings-dialog {
+              background: #111827;
+              border: 1px solid #374151;
+              border-radius: 16px;
+              padding: 24px;
+              color: #f3f4f6;
+              width: 100%;
+              max-width: 480px;
+              box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+              margin: auto;
+            }
+            .bordero-settings-dialog::backdrop {
+              background: rgba(0, 0, 0, 0.7);
+              backdrop-filter: blur(4px);
+            }
+            .bordero-settings-dialog h3 {
+              margin: 0 0 16px;
+              font-size: 1.1rem;
+              font-weight: 700;
+              color: #fff;
+            }
+            .bordero-settings-form label {
+              display: flex;
+              flex-direction: column;
+              gap: 6px;
+              font-size: 0.8rem;
+              font-weight: 600;
+              color: #9ca3af;
+              margin-bottom: 12px;
+            }
+            .bordero-settings-form input {
+              background: #1f2937;
+              border: 1px solid #374151;
+              border-radius: 8px;
+              padding: 8px 12px;
+              color: #fff;
+              font-size: 0.84rem;
+            }
+            .bordero-settings-actions {
+              display: flex;
+              justify-content: flex-end;
+              gap: 8px;
+              margin-top: 20px;
+            }
+          </style>
+
+          <main class="finance-shell" style="padding:0; background:transparent; box-shadow:none;">
+            <!-- Navigation Tabs -->
+            <nav class="finance-tab-nav" aria-label="Navegação do módulo financeiro">
+              <button type="button" class="finance-tab-btn active" data-finance-tab="transactions"><i data-lucide="wallet" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> Movimentações</button>
+              <button type="button" class="finance-tab-btn" data-finance-tab="borderos"><i data-lucide="file-check" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> Borderô de Comissões</button>
+            </nav>
+
+            <!-- TAB 1: Transactions -->
+            <div id="finance-transactions-tab-content">
+              <section class="finance-toolbar" aria-label="Resumo financeiro" style="margin-top: 10px;">
+                <div class="eq-header-left">
+                  <div class="eq-header-icon-box" style="background: rgba(16, 185, 129, 0.1); color: #10b981; border-color: rgba(16, 185, 129, 0.28); flex-shrink: 0;">
+                    <i data-lucide="wallet"></i>
+                  </div>
+                  <div class="eq-header-title">
+                    <h1 style="color:#fff; font-size:1.5rem; margin:0;">Financeiro</h1>
+                    <p style="color:#94a3b8; font-size:0.84rem; margin:2px 0 0;">Entradas, saídas, pendências e saldo da empresa.</p>
+                  </div>
+                </div>
+                <div class="finance-period">
+                  <label style="color:#94a3b8; font-weight:600; font-size:0.8rem;">
+                    Periodo
+                    <select data-finance-period style="background:#1f2937; color:#fff; border:1px solid #374151; padding:6px 12px; border-radius:6px; margin-left:6px;">
+                      <option value="mes">Este mes</option>
+                      <option value="ano">Este ano</option>
+                      <option value="todos">Todos</option>
+                    </select>
+                  </label>
+                </div>
+              </section>
+
+              <section class="finance-summary" aria-label="Totais financeiros" style="margin-top:20px;">
+                <article>
+                  <span>Entradas</span>
+                  <strong data-total-income>R$ 0,00</strong>
+                  <i data-lucide="trending-up"></i>
+                </article>
+                <article>
+                  <span>Saidas</span>
+                  <strong data-total-expense>R$ 0,00</strong>
+                  <i data-lucide="trending-down"></i>
+                </article>
+                <article>
+                  <span>Saldo</span>
+                  <strong data-total-balance>R$ 0,00</strong>
+                  <i data-lucide="wallet"></i>
+                </article>
+                <article>
+                  <span>Pendente</span>
+                  <strong data-total-pending>R$ 0,00</strong>
+                  <i data-lucide="clock"></i>
+                </article>
+              </section>
+
+              <section class="finance-layout" style="margin-top:20px;">
+                <section class="finance-table-panel" aria-label="Movimentacoes financeiras">
+                  <div class="finance-filters">
+                    <input type="search" placeholder="Buscar por descricao ou categoria" data-finance-search />
+                    <select data-finance-type>
+                      <option value="todos">Todos os tipos</option>
+                      <option value="entrada">Entradas</option>
+                      <option value="saida">Saidas</option>
+                    </select>
+                    <select data-finance-status>
+                      <option value="todos">Todos os status</option>
+                      <option value="pago">Pago</option>
+                      <option value="pendente">Pendente</option>
+                    </select>
+                  </div>
+
+                  <div class="finance-table-wrap">
+                    <table class="finance-table">
+                      <thead>
+                        <tr>
+                          <th>Data</th>
+                          <th>Descricao</th>
+                          <th>Categoria</th>
+                          <th>Tipo</th>
+                          <th>Status</th>
+                          <th>Valor</th>
+                        </tr>
+                      </thead>
+                      <tbody data-finance-table>
+                        <tr>
+                          <td colspan="6">Carregando movimentacoes...</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <form class="finance-form" data-finance-form>
+                  <h2>Novo lancamento</h2>
+                  <label>
+                    Descricao
+                    <input name="description" type="text" placeholder="Ex: Repasse de consorcio" required />
+                  </label>
+                  <label>
+                    Valor
+                    <input name="amount" type="number" min="0" step="0.01" placeholder="0,00" required />
+                  </label>
+                  <label>
+                    Tipo
+                    <select name="type">
+                      <option value="entrada">Entrada</option>
+                      <option value="saida">Saida</option>
+                    </select>
+                  </label>
+                  <label>
+                    Categoria
+                    <select name="category">
+                      <option>Venda</option>
+                      <option>Comissao</option>
+                      <option>Despesa fixa</option>
+                      <option>Marketing</option>
+                      <option>Salario</option>
+                      <option>Imposto</option>
+                      <option>Outros</option>
+                    </select>
+                  </label>
+                  <label>
+                    Status
+                    <select name="status">
+                      <option value="pago">Pago</option>
+                      <option value="pendente">Pendente</option>
+                    </select>
+                  </label>
+                  <label>
+                    Data
+                    <input name="movement_date" type="date" required />
+                  </label>
+                  <p class="finance-form-status" data-finance-message></p>
+                  <button type="submit">Salvar lancamento</button>
+                </form>
+              </section>
+            </div>
+
+            <!-- TAB 2: Borderô de Comissões -->
+            <div id="finance-borderos-tab-content" style="display: none;">
+              <section class="bordero-toolbar" aria-label="Toolbar de borderô" style="margin-top: 10px;">
+                <div class="eq-header-left">
+                  <div class="eq-header-icon-box" style="background: rgba(212, 175, 55, 0.1); color: #d4af37; border-color: rgba(212, 175, 55, 0.28); flex-shrink: 0;">
+                    <i data-lucide="file-check"></i>
+                  </div>
+                  <div class="eq-header-title">
+                    <h1 style="color:#fff; font-size:1.5rem; margin:0;">Borderô de Comissões</h1>
+                    <p style="color:#94a3b8; font-size:0.84rem; margin:2px 0 0;">Gerenciamento e emissão de holerites comerciais.</p>
+                  </div>
+                </div>
+                <div class="bordero-actions-top">
+                  <button type="button" class="bordero-btn-secondary" id="bordero-settings-btn" style="display: none;"><i data-lucide="settings"></i> Empresa</button>
+                  <button type="button" class="bordero-btn-primary" id="bordero-btn-new-modal" style="display: none;"><i data-lucide="plus"></i> Novo Borderô</button>
+                </div>
+              </section>
+
+              <!-- Summary stats -->
+              <section class="finance-summary" aria-label="Totais do borderô" style="margin-top:20px;">
+                <article>
+                  <span>Total Gerados</span>
+                  <strong id="bordero-stat-total">0</strong>
+                  <i data-lucide="folders"></i>
+                </article>
+                <article>
+                  <span>Aprovados</span>
+                  <strong id="bordero-stat-approved">R$ 0,00</strong>
+                  <i data-lucide="shield-check"></i>
+                </article>
+                <article>
+                  <span>Pagos</span>
+                  <strong id="bordero-stat-paid">R$ 0,00</strong>
+                  <i data-lucide="check-circle-2"></i>
+                </article>
+                <article>
+                  <span>Pendentes</span>
+                  <strong id="bordero-stat-pending">R$ 0,00</strong>
+                  <i data-lucide="alert-circle"></i>
+                </article>
+              </section>
+
+              <section class="finance-layout" style="margin-top:20px;">
+                <!-- Left list panel -->
+                <section class="finance-table-panel" aria-label="Lista de borderôs">
+                  <div class="finance-filters" style="display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;">
+                    <select id="bordero-filter-seller" class="filter-control" style="flex: 1; min-width: 150px; background: #1f2937; border: 1px solid #374151; color: #fff; padding: 8px 12px; border-radius: 8px;">
+                      <option value="">Filtrar Colaborador</option>
+                    </select>
+                    <select id="bordero-filter-status" class="filter-control" style="background: #1f2937; border: 1px solid #374151; color: #fff; padding: 8px 12px; border-radius: 8px; width: 150px;">
+                      <option value="">Filtrar Status</option>
+                      <option value="draft">Elaboração</option>
+                      <option value="pending_check">Conferência</option>
+                      <option value="approved">Aprovado</option>
+                      <option value="signed">Assinado</option>
+                      <option value="paid">Pago</option>
+                      <option value="cancelled">Cancelado</option>
+                    </select>
+                  </div>
+
+                  <div class="finance-table-wrap" style="max-height: 520px; overflow-y: auto;">
+                    <table class="finance-table">
+                      <thead>
+                        <tr>
+                          <th>Nº</th>
+                          <th>Colaborador</th>
+                          <th>Cargo</th>
+                          <th>Período</th>
+                          <th>Líquido</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody id="bordero-list-table-body">
+                        <tr>
+                          <td colspan="6">Carregando borderôs...</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <!-- Right details panel -->
+                <section class="finance-form" id="bordero-details-container" style="max-width: 100%; width: 100%; flex: 1.4; display: flex; flex-direction: column; gap: 16px; min-height: 500px;">
+                  <div id="bordero-empty-state" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: #94a3b8; padding: 40px 20px;">
+                    <i data-lucide="file-text" style="width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.5;"></i>
+                    <h3 style="font-size: 0.95rem; font-weight: 700; margin: 0 0 4px; color: #fff;">Nenhum borderô selecionado</h3>
+                    <p style="font-size: 0.78rem; margin: 0;">Selecione um borderô na lista ao lado ou gere um novo.</p>
+                  </div>
+
+                  <!-- Detail viewer (Dynamic) -->
+                  <div id="bordero-viewer" style="display: none;">
+                    <!-- Borderô A4 sheet -->
+                    <div class="bordero-sheet" id="bordero-print-area">
+                      <div class="bordero-sheet-header">
+                        <div class="bordero-company-info">
+                          <h2 id="bordero-company-name">Seven Gold Financeira</h2>
+                          <p id="bordero-company-razao">Seven Gold Negócios e Assessoria Financeira Ltda</p>
+                          <p>CNPJ: <span id="bordero-company-cnpj">12.345.678/0001-90</span></p>
+                          <p id="bordero-company-address">Av. Paulista, 1000 - São Paulo/SP</p>
+                          <p>Tel: <span id="bordero-company-phone">(11) 98765-4321</span></p>
+                        </div>
+                        <div class="bordero-sheet-title-block">
+                          <h1>DEMONSTRATIVO FINANCEIRO</h1>
+                          <span>BORDERÔ Nº <strong id="bordero-detail-number">000000</strong></span>
+                        </div>
+                      </div>
+
+                      <div class="bordero-colab-details">
+                        <div class="bordero-colab-field">
+                          <span>Colaborador</span>
+                          <strong id="bordero-detail-name">Nome do Colaborador</strong>
+                        </div>
+                        <div class="bordero-colab-field">
+                          <span>Cargo</span>
+                          <strong id="bordero-detail-cargo">Cargo</strong>
+                        </div>
+                        <div class="bordero-colab-field">
+                          <span>Referência</span>
+                          <strong id="bordero-detail-period">01/01/2026 - 31/01/2026</strong>
+                        </div>
+                        <div class="bordero-colab-field">
+                          <span>Emissão</span>
+                          <strong id="bordero-detail-emitted">23/07/2026</strong>
+                        </div>
+                        <div class="bordero-colab-field">
+                          <span>Status</span>
+                          <div><span class="status-badge" id="bordero-detail-status-badge">Rascunho</span></div>
+                        </div>
+                      </div>
+
+                      <!-- Sales detailed table -->
+                      <table class="bordero-table">
+                        <thead>
+                          <tr>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Crédito</th>
+                            <th>Tab</th>
+                            <th>Cargo/Regra Aplicada</th>
+                            <th style="text-align: right;">Comissão</th>
+                          </tr>
+                        </thead>
+                        <tbody id="bordero-detail-sales-rows">
+                        </tbody>
+                      </table>
+
+                      <!-- Summary totals -->
+                      <div class="bordero-summary-block">
+                        <table class="bordero-summary-table">
+                          <tr>
+                            <td>Vendas Totais:</td>
+                            <td style="text-align: right;" id="bordero-summary-sales-count">0</td>
+                          </tr>
+                          <tr>
+                            <td>Crédito Vendido:</td>
+                            <td style="text-align: right;" id="bordero-summary-credit-total">R$ 0,00</td>
+                          </tr>
+                          <tr>
+                            <td>Comissão Aprovada:</td>
+                            <td style="text-align: right;" id="bordero-summary-commission-approved">R$ 0,00</td>
+                          </tr>
+                          <tr>
+                            <td>Comissão Pendente:</td>
+                            <td style="text-align: right; color: #d97706; font-weight: 600;" id="bordero-summary-commission-pending">R$ 0,00</td>
+                          </tr>
+                          <!-- Adjustments details -->
+                          <tbody id="bordero-summary-adjusts-rows">
+                          </tbody>
+                          <tr class="total-row">
+                            <td>LÍQUIDO A PAGAR:</td>
+                            <td style="text-align: right; font-weight: 800;" id="bordero-summary-net-amount">R$ 0,00</td>
+                          </tr>
+                        </table>
+                      </div>
+
+                      <!-- Signature display or canvas sheet -->
+                      <div id="bordero-signature-section" style="margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                        <!-- Pending Signature form -->
+                        <div id="bordero-signature-pending" style="display: none;">
+                          <h3 style="font-size: 0.82rem; font-weight: 800; color: #0f172a; margin: 0 0 12px; text-transform: uppercase;">Assinatura Eletrônica Simples</h3>
+                          
+                          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                            <div>
+                              <label style="font-size: 0.72rem; color: #64748b; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 4px;">Nome Completo</label>
+                              <input type="text" id="signature-input-name" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; background: #fff;" />
+                            </div>
+                            <div>
+                              <label style="font-size: 0.72rem; color: #64748b; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 4px;">Confirmar CPF</label>
+                              <input type="text" id="signature-input-cpf" placeholder="000.000.000-00" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; background: #fff;" />
+                            </div>
+                          </div>
+
+                          <div style="margin-bottom: 12px;">
+                            <label style="font-size: 0.72rem; color: #64748b; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 4px;">Desenhe sua assinatura no quadro abaixo</label>
+                            <div class="signature-box">
+                              <button type="button" class="signature-actions-clear" id="signature-canvas-clear">Limpar quadro</button>
+                              <canvas class="signature-canvas" id="signature-canvas"></canvas>
+                            </div>
+                          </div>
+
+                          <label style="display: flex; align-items: start; gap: 8px; font-size: 0.74rem; color: #475569; font-weight: 600; cursor: pointer; user-select: none; margin-bottom: 16px;">
+                            <input type="checkbox" id="signature-checkbox-agree" style="margin-top: 2px; cursor: pointer;" />
+                            <span>Declaro que conferi e estou de acordo com as informações de comissões apresentadas neste borderô.</span>
+                          </label>
+
+                          <button type="button" class="bordero-btn-primary" id="bordero-sign-submit" style="width: 100%; justify-content: center;"><i data-lucide="pen-tool"></i> Registrar Assinatura Eletrônica</button>
+                        </div>
+
+                        <!-- Signed displaying metadata -->
+                        <div id="bordero-signature-signed" style="display: none;" class="signed-display">
+                          <img id="bordero-signed-img" src="" alt="Assinatura" />
+                          <div class="signed-display-meta">
+                            Assinado eletronicamente por <strong id="bordero-signed-name">Nome</strong> (CPF: <strong id="bordero-signed-cpf">000.000.000-00</strong>)<br/>
+                            IP de Registro: <span id="bordero-signed-ip">0.0.0.0</span> · Horário: <span id="bordero-signed-date">01/01/2026 12:00:00</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Audit timeline logs -->
+                      <div class="timeline-logs" id="bordero-detail-logs-block" style="display: none;">
+                        <h4>Histórico e Auditoria</h4>
+                        <div id="bordero-detail-logs-list">
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div id="bordero-view-actions" style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+                      <button type="button" class="bordero-btn-secondary" id="bordero-action-approve" style="display: none;"><i data-lucide="thumbs-up"></i> Aprovar Borderô</button>
+                      <button type="button" class="bordero-btn-secondary" id="bordero-action-pay" style="display: none; background: #15803d !important; border-color: #166534 !important;"><i data-lucide="dollar-sign"></i> Pagar Borderô</button>
+                      <button type="button" class="bordero-btn-secondary" id="bordero-action-adjust" style="display: none;"><i data-lucide="plus-circle"></i> Lançar Ajuste</button>
+                      <button type="button" class="bordero-btn-secondary" id="bordero-action-cancel" style="display: none; background: #991b1b !important; border-color: #7f1d1d !important;"><i data-lucide="x-circle"></i> Cancelar</button>
+                      <button type="button" class="bordero-btn-primary" id="bordero-action-pdf"><i data-lucide="file-down"></i> Exportar PDF</button>
+                    </div>
+                  </div>
+                </section>
+              </section>
+            </div>
+          </main>
+
+          <!-- Modal 1: Generate New Statement (Bordero) -->
+          <dialog class="bordero-settings-dialog" id="bordero-generate-dialog">
+            <h3>Gerar Novo Borderô</h3>
+            <form class="bordero-settings-form" id="bordero-generate-form">
+              <label>
+                Colaborador
+                <select id="generate-select-seller" required style="width:100%; background:#1f2937; color:#fff; border:1px solid #374151; padding:8px; border-radius:8px;">
+                  <option value="">Selecione o Colaborador</option>
+                </select>
+              </label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <label>
+                  Período Início
+                  <input type="date" id="generate-date-start" required />
+                </label>
+                <label>
+                  Período Fim
+                  <input type="date" id="generate-date-end" required />
+                </label>
+              </div>
+              <p id="generate-error-msg" style="color: #ef4444; font-size: 0.76rem; font-weight: 600; margin: 8px 0 0; display: none;"></p>
+              <div class="bordero-settings-actions">
+                <button type="button" class="bordero-btn-secondary" id="bordero-generate-cancel">Cancelar</button>
+                <button type="submit" class="bordero-btn-primary" id="bordero-generate-submit">Gerar e Visualizar</button>
+              </div>
+            </form>
+          </dialog>
+
+          <!-- Modal 2: Edit Company Settings -->
+          <dialog class="bordero-settings-dialog" id="company-settings-dialog">
+            <h3>Configurações da Empresa</h3>
+            <form class="bordero-settings-form" id="company-settings-form">
+              <label>
+                Nome Fantasia
+                <input type="text" name="nome_fantasia" required />
+              </label>
+              <label>
+                Razão Social
+                <input type="text" name="razao_social" required />
+              </label>
+              <label>
+                CNPJ
+                <input type="text" name="cnpj" required placeholder="00.000.000/0001-00" />
+              </label>
+              <label>
+                Endereço
+                <input type="text" name="endereco" />
+              </label>
+              <label>
+                Telefone
+                <input type="text" name="telefone" />
+              </label>
+              <p id="company-settings-status" style="font-size:0.75rem; margin-top:6px; display:block; font-weight:700;"></p>
+              <div class="bordero-settings-actions">
+                <button type="button" class="bordero-btn-secondary" id="company-settings-cancel">Cancelar</button>
+                <button type="submit" class="bordero-btn-primary">Salvar Alterações</button>
+              </div>
+            </form>
+          </dialog>
+
+          <!-- Modal 3: Manual Adjustment -->
+          <dialog class="bordero-settings-dialog" id="bordero-adjust-dialog">
+            <h3>Lançar Ajuste Manual</h3>
+            <form class="bordero-settings-form" id="bordero-adjust-form">
+              <label>
+                Tipo de Ajuste
+                <select id="adjust-type" required style="width:100%; background:#1f2937; color:#fff; border:1px solid #374151; padding:8px; border-radius:8px;">
+                  <option value="bonus">Bônus (Crédito)</option>
+                  <option value="advance">Adiantamento (Dedução)</option>
+                  <option value="discount">Desconto (Dedução)</option>
+                  <option value="chargeback">Estorno (Dedução)</option>
+                  <option value="positive">Ajuste Positivo (Crédito)</option>
+                  <option value="negative">Ajuste Negativo (Dedução)</option>
+                </select>
+              </label>
+              <label>
+                Valor (R$)
+                <input type="number" id="adjust-amount" step="0.01" min="0.01" required placeholder="0,00" />
+              </label>
+              <label>
+                Justificativa / Motivo
+                <input type="text" id="adjust-reason" required placeholder="Ex: Batimento de meta individual do mês" />
+              </label>
+              <p id="adjust-error-msg" style="color: #ef4444; font-size: 0.76rem; font-weight: 600; margin: 8px 0 0; display: none;"></p>
+              <div class="bordero-settings-actions">
+                <button type="button" class="bordero-btn-secondary" id="bordero-adjust-cancel">Cancelar</button>
+                <button type="submit" class="bordero-btn-primary">Salvar Ajuste</button>
+              </div>
+            </form>
+          </dialog>
         </section>
 
         <!-- Cadastro rapido -->
@@ -1700,6 +2506,9 @@
     <script src="auth.js?v=mrxjdqiu"></script>
     <script src="perfil.js?v=mrxjdqiu"></script>
     <script src="script.js?v=mrxjdqiu"></script>
+    <!-- html2pdf.js for professional PDF exports -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="financeiro.js?v=mrxjdqiu"></script>
     <script src="/searchable-select.js?v=mrxjdqiu"></script>
     <script src="/pwa.js"></script>
   </body>

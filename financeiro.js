@@ -1000,12 +1000,17 @@
   document.getElementById("bordero-filter-status")?.addEventListener("change", loadBorderosList);
 
   // Initialize
-  document.addEventListener("DOMContentLoaded", () => {
+  const initFinanceModule = () => {
     setupTabNavigation();
-    
     if (form?.elements.movement_date) {
       form.elements.movement_date.valueAsDate = new Date();
     }
     loadMovements();
-  });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initFinanceModule);
+  } else {
+    initFinanceModule();
+  }
 })();
