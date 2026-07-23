@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" style="background-color: #000000;">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Faculdade</title>
+    <link rel="icon" href="assets/icons/seven-gold-g7.png?v=mrxst69d" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="home.css?v=mrxst69d" />
+    <link rel="stylesheet" href="faculdade.css?v=mrxst69d" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Seven Gold" />
+    <link rel="apple-touch-icon" href="/assets/icons/seven-gold-g7.png?v=mrxst69d" />
+  </head>
+  <body class="entry-premium-body theme-dark" data-require-auth data-page="faculdade" data-login-page="index.html">
+    <script>
+      (function() {
+        document.body.classList.add("theme-dark");
+      })();
+    </script>
+    
+    <!-- Shell containing the LMS rendered dashboard -->
+    <main class="premium-entry-shell" style="min-height: auto; padding: 24px; max-width: 1140px; display: block;">
+      <section data-tab="faculdade">
+        <div style="text-align: center; color: #94a3b8; padding: 60px 20px;">
+          <i data-lucide="loader-2" class="animate-spin" style="width: 32px; height: 32px; margin-bottom: 12px; stroke: #d4af37;"></i>
+          <p style="font-size: 0.86rem; margin: 0;">Carregando Faculdade Seven Gold...</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js?v=mrxst69d"></script>
+    <!-- html2pdf.js for professional certificate PDF downloads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="faculdade.js?v=mrxst69d"></script>
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script>
+      lucide.createIcons();
+    </script>
+    <script src="/pwa.js"></script>
+  </body>
+</html>

@@ -194,7 +194,7 @@
     lmsTab.innerHTML = `
       <div class="faculdade-container">
         <!-- Header -->
-        <header class="faculdade-header">
+        <header class="faculdade-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
           <div class="eq-header-left">
             <div class="eq-header-icon-box" style="background: rgba(212, 175, 55, 0.1); color: #d4af37; border-color: rgba(212, 175, 55, 0.28); flex-shrink: 0;">
               <i data-lucide="graduation-cap"></i>
@@ -204,6 +204,7 @@
               <p style="color:#94a3b8; font-size:0.84rem; margin:2px 0 0;">Plataforma de capacitação, onboarding e certificação de colaboradores.</p>
             </div>
           </div>
+          <a href="painel.html" class="bordero-btn-secondary" style="height: fit-content; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;"><i data-lucide="home"></i> Voltar ao Painel</a>
         </header>
 
         <!-- Stats Grid -->
@@ -609,12 +610,15 @@
 
   // Run on startup
   const initLmsModule = async () => {
-    // 1. Listen for sidebar nav clicks to render
-    const lmsTabBtn = document.querySelector('[data-finance-tab="faculdade"]') || document.querySelector('[href="#faculdade"]');
-    
-    // We register the custom handler for #faculdade tab rendering
-    // In crm.html, tab switching is managed by navigation clicks.
-    // Let's hook into the click event on the #faculdade nav item
+    // Check if we are running in the standalone page
+    const isStandalone = document.body.dataset.page === "faculdade";
+    if (isStandalone) {
+      await loadProgress();
+      renderDashboard();
+      return;
+    }
+
+    // Otherwise, we are in the CRM SPA: hook tab switches
     const faculdadeLink = document.querySelector('a[href="#faculdade"]');
     if (faculdadeLink) {
       faculdadeLink.addEventListener('click', async () => {
@@ -623,7 +627,6 @@
       });
     }
 
-    // Support loading directly via URL hash
     if (window.location.hash === "#faculdade") {
       await loadProgress();
       renderDashboard();
