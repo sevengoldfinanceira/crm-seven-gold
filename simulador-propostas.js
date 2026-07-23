@@ -309,17 +309,18 @@
       `;
       if (window.lucide) window.lucide.createIcons();
 
-      // Read file and send to backend
+      // Read file as base64 and send to backend for real PDF parsing
       const reader = new FileReader();
       reader.onload = async (evt) => {
-        const textContent = evt.target.result || '';
+        const dataUrl = evt.target.result || '';
+        const base64Data = dataUrl.split(',')[1] || '';
         try {
           const resp = await fetch('/api/attendance/proposals/imports/upload', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               file_name: file.name,
-              pdf_text: textContent,
+              pdf_base64: base64Data,
             }),
           });
           const data = await resp.json();
@@ -329,16 +330,22 @@
             previewArea.innerHTML = `
               <div style="padding:20px; background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.25); border-radius:12px; display:flex; flex-direction:column; gap:12px;">
                 <h3 style="color:#10b981; font-size:0.95rem; margin:0; font-weight:800;">✓ PDF Processado com Sucesso!</h3>
-                <div style="font-size:0.82rem; color:#d1d5db; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div style="font-size:0.82rem; color:#374151; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                   <div><strong>Planos encontrados:</strong> ${p.tablesCount}</div>
                   <div><strong>Total de Propostas:</strong> ${p.proposalRowsCount}</div>
                   <div><strong>Avisos:</strong> ${p.warnings.length}</div>
                   <div><strong>Erros:</strong> ${p.errors.length}</div>
                 </div>
                 ${p.warnings.length > 0 ? `
-                  <div style="font-size:0.78rem; color:#fcd34d; background:rgba(252,211,77,0.1); padding:8px 12px; border-radius:6px;">
+                  <div style="font-size:0.78rem; color:#92400e; background:rgba(252,211,77,0.15); padding:8px 12px; border-radius:6px;">
                     ${p.warnings.join('<br>')}
                   </div>
+                ` : ''}
+                ${p.extractedText ? `
+                  <details style="font-size:0.75rem; color:#6b7280;">
+                    <summary style="cursor:pointer; font-weight:600;">Ver texto extraído do PDF</summary>
+                    <pre style="max-height:200px; overflow:auto; background:#f9fafb; padding:8px; border-radius:6px; margin-top:6px; white-space:pre-wrap; word-break:break-word;">${p.extractedText.substring(0, 3000)}</pre>
+                  </details>
                 ` : ''}
                 <button type="button" class="bordero-btn-primary" id="sim-activate-import-btn" data-import-id="${data.import_id}">
                   <i data-lucide="check"></i> Confirmar e Ativar Tabela
@@ -356,7 +363,7 @@
 
           } else {
             previewArea.innerHTML = `
-              <div style="padding:16px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:10px; color:#fca5a5; font-size:0.84rem;">
+              <div style="padding:16px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:10px; color:#991b1b; font-size:0.84rem;">
                 <strong>Erro ao processar PDF:</strong> ${data.error || 'Falha na validação das faixas de parcelas.'}
               </div>
             `;
@@ -367,7 +374,7 @@
           previewArea.innerHTML = `<div style="color:#ef4444;">Erro de comunicação: ${err.message}</div>`;
         }
       };
-      reader.readAsText(file);
+      reader.readAsDataURL(file);
     });
 
     // Drive Sync Button

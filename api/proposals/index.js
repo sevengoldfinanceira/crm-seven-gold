@@ -4,6 +4,7 @@
  */
 
 const crypto = require('crypto');
+const pdfParse = require('pdf-parse');
 const { getActiveProposalOptions, checkDuplicateHash, createImportRecord, activateImport, getProposalSettings, updateProposalSettings, inMemoryStore } = require('../../lib/server/proposals/store');
 const { rankProposals } = require('../../lib/server/proposals/ranking');
 const { parseProposalPdfText } = require('../../lib/server/proposals/pdf-parser');
@@ -69,10 +70,18 @@ module.exports = async (req, res) => {
     if (pathname.includes('/imports/upload')) {
       const body = req.body || {};
       const fileName = body.file_name || 'tabela_comercial.pdf';
-      const rawText = body.pdf_text || '';
-      
-      // Calculate SHA-256 hash
-      const hash = crypto.createHash('sha256').update(rawText || fileName + Date.now()).digest('hex');
+      const pdfBase64 = body.pdf_base64 || '';
+
+      if (!pdfBase64) {
+        res.writeHead(400);
+        return res.end(JSON.stringify({ error: 'Nenhum arquivo PDF foi enviado.' }));
+      }
+
+      // Decode base64 to buffer
+      const pdfBuffer = Buffer.from(pdfBase64, 'base64');
+
+      // Calculate SHA-256 hash from the actual PDF binary
+      const hash = crypto.createHash('sha256').update(pdfBuffer).digest('hex');
 
       // Check SHA-256 duplicate
       const duplicate = await checkDuplicateHash(hash);
@@ -84,16 +93,32 @@ module.exports = async (req, res) => {
         }));
       }
 
-      // Parse text
+      // Extract text from PDF binary using pdf-parse
+      let rawText = '';
+      let pageCount = 1;
+      try {
+        const pdfData = await pdfParse(pdfBuffer);
+        rawText = pdfData.text || '';
+        pageCount = pdfData.numpages || 1;
+      } catch (pdfErr) {
+        res.writeHead(400);
+        return res.end(JSON.stringify({
+          error: 'Não foi possível ler o PDF. Verifique se o arquivo não está corrompido ou protegido por senha.',
+          details: pdfErr.message,
+        }));
+      }
+
+      // Parse extracted text
       const parsed = parseProposalPdfText(rawText, fileName);
+      parsed.extractedText = rawText; // Send back for debug visibility
 
       // Create pending import record
       const importRecord = await createImportRecord({
         source_type: 'UPLOAD',
         source_file_name: fileName,
         file_hash: hash,
-        file_size: rawText.length * 2,
-        page_count: Math.ceil(rawText.length / 1000) || 1,
+        file_size: pdfBuffer.length,
+        page_count: pageCount,
         status: parsed.errors.length > 0 ? 'FAILED' : 'PENDING_REVIEW',
         valid_tables_count: parsed.tablesCount,
         proposal_rows_count: parsed.proposalRowsCount,
