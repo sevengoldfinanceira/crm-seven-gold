@@ -28,6 +28,12 @@ loadRoute("/api/tasks/create", "./api/tasks");
 loadRoute("/api/tasks/update", "./api/tasks");
 loadRoute("/api/productions/manage", "./api/productions/manage");
 loadRoute("/api/permissions/save", "./api/permissions/save");
+loadRoute("/api/finance/company-settings", "./api/finance/company-settings");
+loadRoute("/api/finance/borderos/generate", "./api/finance/borderos/generate");
+loadRoute("/api/finance/borderos/list", "./api/finance/borderos/list");
+loadRoute("/api/finance/borderos/update-status", "./api/finance/borderos/update-status");
+loadRoute("/api/finance/borderos/adjust", "./api/finance/borderos/adjust");
+loadRoute("/api/finance/borderos/sign", "./api/finance/borderos/sign");
 
 const port = 3000;
 const root = __dirname;
