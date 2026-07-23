@@ -15,12 +15,12 @@ function loadRoute(routePath, filePath) {
 }
 
 loadRoute("/api/whatsapp/webhook", "./api/whatsapp/webhook");
-loadRoute("/api/leads/from-whatsapp-extension", "./api/leads/from-whatsapp-extension");
-loadRoute("/api/leads/delete", "./api/leads/delete");
-loadRoute("/api/leads/by-phone", "./api/leads/by-phone");
-loadRoute("/api/leads/create", "./api/leads/create");
-loadRoute("/api/leads/update-stage", "./api/leads/update-stage");
-loadRoute("/api/leads/assignees", "./api/leads/assignees");
+loadRoute("/api/leads/from-whatsapp-extension", "./api/leads");
+loadRoute("/api/leads/delete", "./api/leads");
+loadRoute("/api/leads/by-phone", "./api/leads");
+loadRoute("/api/leads/create", "./api/leads");
+loadRoute("/api/leads/update-stage", "./api/leads");
+loadRoute("/api/leads/assignees", "./api/leads");
 loadRoute("/api/appointments/list", "./api/appointments");
 loadRoute("/api/appointments/create", "./api/appointments");
 loadRoute("/api/tasks/list", "./api/tasks");

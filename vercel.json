@@ -11,6 +11,7 @@
     { "source": "/api/appointments/list", "destination": "/api/appointments" },
     { "source": "/api/appointments/create", "destination": "/api/appointments" },
     { "source": "/api/finance/:path*", "destination": "/api/finance" },
-    { "source": "/api/attendance/proposals/:path*", "destination": "/api/proposals" }
+    { "source": "/api/attendance/proposals/:path*", "destination": "/api/proposals" },
+    { "source": "/api/leads/:path*", "destination": "/api/leads" }
   ]
 }
