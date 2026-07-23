@@ -34,6 +34,12 @@ loadRoute("/api/finance/borderos/list", "./api/finance");
 loadRoute("/api/finance/borderos/update-status", "./api/finance");
 loadRoute("/api/finance/borderos/adjust", "./api/finance");
 loadRoute("/api/finance/borderos/sign", "./api/finance");
+loadRoute("/api/attendance/proposals/simulate", "./api/proposals");
+loadRoute("/api/attendance/proposals/tables", "./api/proposals");
+loadRoute("/api/attendance/proposals/imports", "./api/proposals");
+loadRoute("/api/attendance/proposals/imports/upload", "./api/proposals");
+loadRoute("/api/attendance/proposals/drive/sync", "./api/proposals");
+loadRoute("/api/attendance/proposals/settings", "./api/proposals");
 
 const port = 3000;
 const root = __dirname;

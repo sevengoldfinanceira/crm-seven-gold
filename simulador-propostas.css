@@ -1,0 +1,336 @@
+/* CSS for Simulador de Propostas - Painel de Atendimento */
+
+.simulador-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: #f3f4f6;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Internal Sub-Tabs Navigation */
+.simulador-tabs-nav {
+  display: flex;
+  gap: 12px;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 12px;
+}
+.simulador-tab-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #9ca3af;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+.simulador-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+.simulador-tab-btn.active {
+  background: rgba(212, 175, 55, 0.12);
+  border-color: rgba(212, 175, 55, 0.35);
+  color: #d4af37;
+}
+
+/* Simulation Layout (Grid Filters + Results) */
+.simulador-main-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+}
+@media (max-width: 1024px) {
+  .simulador-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Filters Card Sidebar */
+.simulador-filters-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: fit-content;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+.simulador-filters-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.simulador-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.simulador-form-group label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #d1d5db;
+  display: flex;
+  justify-content: space-between;
+}
+.simulador-form-group label span.req {
+  color: #d4af37;
+}
+.simulador-input {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.simulador-input:focus {
+  border-color: #d4af37;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
+}
+
+/* Priority Selector */
+.priority-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Action buttons */
+.simulador-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* Results Container */
+.simulador-results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.simulador-results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 14px 20px;
+}
+.simulador-results-count {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+}
+.simulador-results-count strong {
+  color: #d4af37;
+}
+
+/* Cards Grid for Proposal Cards */
+.proposals-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.proposal-item-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+.proposal-item-card:hover {
+  border-color: rgba(212, 175, 55, 0.35);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 0 15px rgba(212, 175, 55, 0.05);
+}
+.proposal-item-card.near-match {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.02);
+}
+
+/* Badges */
+.proposal-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(212, 175, 55, 0.15);
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+.proposal-badge.near {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Card Header */
+.proposal-card-header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.proposal-rank-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+}
+.proposal-title-meta h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+}
+.proposal-title-meta p {
+  font-size: 0.76rem;
+  color: #9ca3af;
+  margin: 2px 0 0;
+}
+
+/* Proposal Grid Metric Specs */
+.proposal-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 14px;
+}
+.proposal-spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.proposal-spec-item span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+.proposal-spec-item strong {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+}
+.proposal-spec-item strong.highlight {
+  color: #d4af37;
+}
+
+/* Excess warning banner for near matches */
+.near-match-warning {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fca5a5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Footer Actions */
+.proposal-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 12px;
+}
+.proposal-card-meta-text {
+  font-size: 0.72rem;
+  color: #9ca3af;
+}
+
+/* Administrative Tab & Table Styling */
+.admin-proposals-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.admin-card-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Upload dropzone */
+.pdf-upload-dropzone {
+  border: 2px dashed rgba(212, 175, 55, 0.3);
+  background: rgba(212, 175, 55, 0.02);
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.pdf-upload-dropzone:hover {
+  background: rgba(212, 175, 55, 0.06);
+  border-color: #d4af37;
+}
+
+/* Table styling for available commercial tables */
+.proposals-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  text-align: left;
+}
+.proposals-data-table th {
+  background: rgba(255, 255, 255, 0.04);
+  color: #d4af37;
+  font-weight: 700;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.proposals-data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: #e5e7eb;
+}
+.proposals-data-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}

@@ -10,6 +10,7 @@
     { "source": "/api/tasks/update", "destination": "/api/tasks" },
     { "source": "/api/appointments/list", "destination": "/api/appointments" },
     { "source": "/api/appointments/create", "destination": "/api/appointments" },
-    { "source": "/api/finance/:path*", "destination": "/api/finance" }
+    { "source": "/api/finance/:path*", "destination": "/api/finance" },
+    { "source": "/api/attendance/proposals/:path*", "destination": "/api/proposals" }
   ]
 }

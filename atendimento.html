@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="atendimento.css?v=mrxt7cvk" />
+    <link rel="stylesheet" href="simulador-propostas.css?v=mrxt7cvk" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#000000" />
   </head>
@@ -22,9 +23,13 @@
 
         <nav class="service-nav" aria-label="Menu do atendimento">
           <p>ATENDIMENTO</p>
-          <a class="active" href="atendimento.html">
+          <a class="active" href="#visao-geral" data-service-tab="visao-geral">
             <i data-lucide="layout-dashboard"></i>
             <span>Visão geral</span>
+          </a>
+          <a href="#simulador" data-service-tab="simulador">
+            <i data-lucide="calculator"></i>
+            <span>Simulador de Propostas</span>
           </a>
         </nav>
 
@@ -60,13 +65,15 @@
           <a href="painel.html">Voltar aos painéis</a>
         </header>
 
-        <section class="service-welcome">
+        <section class="service-welcome" data-service-tab-content="visao-geral">
           <span class="service-welcome-icon"><i data-lucide="headset"></i></span>
           <div>
             <h2>Área pronta para começar</h2>
-            <p>As próximas sub-abas e ferramentas de atendimento serão adicionadas aqui.</p>
+            <p>Levantamento de necessidades, simulações de propostas e atendimento ao cliente.</p>
           </div>
         </section>
+
+        <section class="service-tab-content" data-service-tab-content="simulador" style="display:none;"></section>
       </main>
     </div>
 
@@ -74,7 +81,23 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=mrxt7cvk"></script>
-    <script>lucide.createIcons();</script>
+    <script src="simulador-propostas.js?v=mrxt7cvk"></script>
+    <script>
+      (function() {
+        const tabs = document.querySelectorAll('[data-service-tab]');
+        tabs.forEach(tab => {
+          tab.addEventListener('click', (e) => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const target = tab.dataset.serviceTab;
+            document.querySelectorAll('[data-service-tab-content]').forEach(c => {
+              c.style.display = c.dataset.serviceTabContent === target ? 'block' : 'none';
+            });
+          });
+        });
+        if (window.lucide) lucide.createIcons();
+      })();
+    </script>
     <script src="/pwa.js"></script>
   </body>
 </html>
