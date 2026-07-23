@@ -507,12 +507,12 @@
 
             <div class="proposal-spec-item">
               <span>Parcelas ${p.temporary_installment_start} a ${p.temporary_installment_end} (Temporária)</span>
-              <strong style="color:#60a5fa;">${formatCurrency(p.temporary_installment_value)}</strong>
+              <strong style="color:#1d4ed8;">${formatCurrency(p.temporary_installment_value)} <span style="font-size:0.75rem; font-weight:600; color:#059669;">(Meia: ${formatCurrency(p.temporary_installment_value * 0.5)})</span></strong>
             </div>
 
             <div class="proposal-spec-item">
               <span>Parcelas ${p.final_installment_start} a ${p.final_installment_end} (Posterior)</span>
-              <strong>${formatCurrency(p.final_installment_value)}</strong>
+              <strong>${formatCurrency(p.final_installment_value)} <span style="font-size:0.75rem; font-weight:600; color:#059669;">(Meia: ${formatCurrency(p.final_installment_value * 0.5)})</span></strong>
             </div>
 
             <div class="proposal-spec-item">
