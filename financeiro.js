@@ -211,7 +211,7 @@
   const setupTabNavigation = () => {
     document.querySelectorAll("[data-finance-tab]").forEach(tabBtn => {
       tabBtn.addEventListener("click", () => {
-        const targetTab = tabBtn.dataset.finance-tab;
+        const targetTab = tabBtn.dataset.financeTab;
         activeBorderoTab = targetTab;
         
         document.querySelectorAll("[data-finance-tab]").forEach(b => b.classList.remove("active"));
