@@ -100,6 +100,7 @@ module.exports = async (req, res) => {
         warning_count: parsed.warnings.length,
         error_count: parsed.errors.length,
         error_details: parsed.errors,
+        raw_metadata: parsed,
       });
 
       res.writeHead(200);
