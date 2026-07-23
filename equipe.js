@@ -2077,11 +2077,12 @@
                 
                 <div class="role-editor" style="display: none; margin-top: 12px;">
                   <textarea rows="6" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.8rem; font-family: inherit; resize: vertical;">${funcList.map((item, index) => `${index + 1}. ${item}`).join("\n")}</textarea>
-                  <div class="role-editor-actions">
+                  <div class="role-editor-actions" style="display: flex; align-items: center; gap: 8px; margin-top: 8px; width: 100%;">
                     <button type="button" class="btn-save-funcs">Salvar funções</button>
-                    <button type="button" class="btn-delete-func">Excluir função</button>
+                    <button type="button" class="btn-delete-func">Excluir responsabilidade</button>
+                    ${sector.id !== "diretoria" && role.key !== "diretor-ceo" ? `<button type="button" class="btn-delete-role" style="background: #fef2f2 !important; border: 1.5px solid #fecaca !important; color: #dc2626 !important; margin-left: auto;">Excluir cargo</button>` : ""}
                   </div>
-                  <span class="role-save-status" style="font-size: 0.7rem; margin-left: 8px;"></span>
+                  <span class="role-save-status" style="font-size: 0.7rem; margin-top: 4px; display: block;"></span>
                 </div>
               </div>
             `;
@@ -2096,6 +2097,7 @@
         const deleteBtn = card.querySelector(".eq-job-delete-role");
         const saveBtn = card.querySelector(".btn-save-funcs");
         const deleteFuncBtn = card.querySelector(".btn-delete-func");
+        const deleteRoleBtn = card.querySelector(".btn-delete-role");
         const editor = card.querySelector(".role-editor");
         const viewArea = card.querySelector(".role-functions");
         const textarea = card.querySelector("textarea");
@@ -2298,7 +2300,7 @@
           applyFunctionsUpdate(parsedFuncs);
 
           deleteFuncBtn.disabled = true;
-          statusSpan.textContent = "Função removida e atualizada.";
+          statusSpan.textContent = "Responsabilidade removida e atualizada.";
           statusSpan.dataset.type = "";
           statusSpan.style.color = "#dc2626";
           textarea.focus();
@@ -2312,8 +2314,14 @@
           }
 
           statusSpan.style.color = "green";
-          statusSpan.textContent = "Função removida e salva.";
+          statusSpan.textContent = "Responsabilidade removida e salva.";
           setTimeout(() => { statusSpan.textContent = ""; }, 2000);
+        });
+
+        deleteRoleBtn?.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          removeRole(roleKey);
         });
 
         saveBtn.addEventListener("click", async () => {
