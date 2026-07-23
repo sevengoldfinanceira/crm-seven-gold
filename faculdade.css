@@ -624,3 +624,56 @@
   color: #888;
   margin-top: 24px;
 }
+
+.faculty-topic-list {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding-left: 20px;
+  color: #475569;
+}
+
+.faculty-topic-list li::marker {
+  color: #c99318;
+}
+
+.faculty-video-plan {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid rgba(201, 147, 24, 0.28);
+  border-radius: 14px;
+  background: rgba(201, 147, 24, 0.08);
+}
+
+.faculty-video-plan strong {
+  color: #1e293b;
+  font-size: 0.9rem;
+}
+
+.faculty-video-pending {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border: 1px solid rgba(201, 147, 24, 0.35);
+  border-radius: 999px;
+  background: #fff7dd;
+  color: #9a6a00;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .faculty-video-plan {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

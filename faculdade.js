@@ -111,6 +111,10 @@
     }
   };
 
+  if (window.SEVEN_GOLD_CURRICULUM) {
+    Object.assign(COURSES_DATA, window.SEVEN_GOLD_CURRICULUM);
+  }
+
   let userProgress = {};
   let activeCourseId = null;
   let activeModuleId = null;
