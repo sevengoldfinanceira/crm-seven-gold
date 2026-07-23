@@ -1,4 +1,4 @@
-const CACHE_VERSION = "seven-gold-vmrxtmwep";
+const CACHE_VERSION = "seven-gold-vmrxtwxrr";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
