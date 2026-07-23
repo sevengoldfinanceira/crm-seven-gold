@@ -1620,11 +1620,12 @@
     return result;
   };
 
-  const saveProfiles = async () => {
+  const saveProfiles = async (targetProfile = null) => {
     if (!getClient()) return false;
 
     try {
-      for (const profile of state.profiles) {
+      const profilesToSave = targetProfile ? [targetProfile] : state.profiles;
+      for (const profile of profilesToSave) {
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id);
         const previousId = profile.id;
         const result = await callCrmUserApi({
@@ -3000,7 +3001,7 @@
             }));
             
             saveEmployeeFunctions(profile.id, updatedFuncs);
-            saveProfiles();
+            saveProfiles(profile);
             renderOrganograma();
             renderListView();
             renderSidebarDetails();
@@ -3021,7 +3022,7 @@
             }
             
             saveEmployeeFunctions(profile.id, updatedFuncs);
-            saveProfiles();
+            saveProfiles(profile);
             renderOrganograma();
             renderListView();
             renderSidebarDetails();
@@ -3490,90 +3491,106 @@
     // Form submission
     formEl.onsubmit = async (e) => {
       e.preventDefault();
-      
-      const idVal = formEl.elements.colabId.value;
-      const nameVal = formEl.elements.colabName.value.trim();
-      const emailVal = formEl.elements.colabEmail.value.trim();
-      const statusVal = formEl.elements.colabStatus.value;
-      
-      if (tempRolesList.length === 0) {
-        alert("O colaborador deve possuir pelo menos uma função vinculada.");
-        return;
+
+      const submitBtn = formEl.querySelector("button[type='submit']");
+      const originalText = submitBtn ? submitBtn.textContent : "Salvar colaborador";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Salvando...";
       }
-      
-      const seenCombinations = new Set();
-      let hasDuplicates = false;
-      tempRolesList.forEach(r => {
-        const key = `${r.sectorId}-${r.roleKey}`;
-        if (seenCombinations.has(key)) {
-          hasDuplicates = true;
+
+      try {
+        const idVal = formEl.elements.colabId.value;
+        const nameVal = formEl.elements.colabName.value.trim();
+        const emailVal = formEl.elements.colabEmail.value.trim();
+        const statusVal = formEl.elements.colabStatus.value;
+        
+        if (tempRolesList.length === 0) {
+          alert("O colaborador deve possuir pelo menos uma função vinculada.");
+          return;
         }
-        seenCombinations.add(key);
-      });
-      
-      if (hasDuplicates) {
-        alert("Não é permitido adicionar a mesma combinação de setor e cargo duas vezes.");
-        return;
-      }
-      
-      const primaryCount = tempRolesList.filter(r => r.primary).length;
-      if (primaryCount === 0 && tempRolesList.length > 0) {
-        tempRolesList[0].primary = true;
-      } else if (primaryCount > 1) {
-        let foundFirst = false;
+        
+        const seenCombinations = new Set();
+        let hasDuplicates = false;
         tempRolesList.forEach(r => {
-          if (r.primary) {
-            if (foundFirst) r.primary = false;
-            foundFirst = true;
+          const key = `${r.sectorId}-${r.roleKey}`;
+          if (seenCombinations.has(key)) {
+            hasDuplicates = true;
           }
+          seenCombinations.add(key);
         });
-      }
-      
-      if (idVal) {
-        // Edit Mode saving
-        const profile = state.profiles.find(p => p.id === idVal);
-        if (profile) {
-          profile.full_name = nameVal;
-          profile.email = emailVal;
-          profile.status = statusVal;
-          
-          saveEmployeeFunctions(profile.id, tempRolesList);
+        
+        if (hasDuplicates) {
+          alert("Não é permitido adicionar a mesma combinação de setor e cargo duas vezes.");
+          return;
         }
-      } else {
-        // Add Mode saving
-        const newId = `colab-${Date.now()}`;
-        const newProfile = {
-          id: newId,
-          full_name: nameVal,
-          email: emailVal,
-          status: statusVal,
-          role: tempRolesList.find(r => r.primary)?.roleKey || "vendedor"
-        };
-        state.profiles.push(newProfile);
-        saveEmployeeFunctions(newId, tempRolesList);
+        
+        const primaryCount = tempRolesList.filter(r => r.primary).length;
+        if (primaryCount === 0 && tempRolesList.length > 0) {
+          tempRolesList[0].primary = true;
+        } else if (primaryCount > 1) {
+          let foundFirst = false;
+          tempRolesList.forEach(r => {
+            if (r.primary) {
+              if (foundFirst) r.primary = false;
+              foundFirst = true;
+            }
+          });
+        }
+        
+        let targetProfile = null;
+        if (idVal) {
+          // Edit Mode saving
+          targetProfile = state.profiles.find(p => p.id === idVal);
+          if (targetProfile) {
+            targetProfile.full_name = nameVal;
+            targetProfile.email = emailVal;
+            targetProfile.status = statusVal;
+            targetProfile.role = tempRolesList.find(r => r.primary)?.roleKey || "vendedor";
+            
+            saveEmployeeFunctions(targetProfile.id, tempRolesList);
+          }
+        } else {
+          // Add Mode saving
+          const newId = `colab-${Date.now()}`;
+          targetProfile = {
+            id: newId,
+            full_name: nameVal,
+            email: emailVal,
+            status: statusVal,
+            role: tempRolesList.find(r => r.primary)?.roleKey || "vendedor"
+          };
+          state.profiles.push(targetProfile);
+          saveEmployeeFunctions(newId, tempRolesList);
+        }
+        
+        const saved = await saveProfiles(targetProfile);
+        if (!saved) {
+          await loadProfiles();
+          alert("Não foi possível salvar o colaborador no Supabase. Nenhuma alteração foi confirmada.");
+          return;
+        }
+        modal.style.display = "none";
+        
+        // Refresh UI
+        renderSummaryCards();
+        if (state.activeTab === 'hierarquia') renderOrganograma();
+        else if (state.activeTab === 'lista') {
+          populateFilterCargos('todos');
+          applyListFilters();
+        }
+        
+        if (state.selectedItem) {
+          renderSidebarDetails();
+        }
+        
+        alert(idVal ? "Colaborador atualizado com sucesso!" : "Colaborador criado com sucesso!");
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
       }
-      
-      const saved = await saveProfiles();
-      if (!saved) {
-        await loadProfiles();
-        alert("Não foi possível salvar o colaborador no Supabase. Nenhuma alteração foi confirmada.");
-        return;
-      }
-      modal.style.display = "none";
-      
-      // Refresh UI
-      renderSummaryCards();
-      if (state.activeTab === 'hierarquia') renderOrganograma();
-      else if (state.activeTab === 'lista') {
-        populateFilterCargos('todos');
-        applyListFilters();
-      }
-      
-      if (state.selectedItem) {
-        renderSidebarDetails();
-      }
-      
-      alert(idVal ? "Colaborador atualizado com sucesso!" : "Colaborador criado com sucesso!");
     };
     
     document.getElementById("btn-close-colab-modal").onclick = () => {
@@ -3622,44 +3639,59 @@
     
     formEl.onsubmit = async (e) => {
       e.preventDefault();
-      const sectorId = secSelect.value;
-      const roleKey = roleSelect.value;
-      const isPrimary = formEl.elements.quickPrimary.checked;
-      
-      const profile = state.profiles.find(p => p.id === profileId);
-      if (!profile) return;
-      
-      const funcs = getEmployeeFunctions(profile);
-      
-      const duplicate = funcs.some(f => f.sectorId === sectorId && f.roleKey === roleKey);
-      if (duplicate) {
-        alert("Este colaborador já possui esta função vinculada.");
-        return;
+
+      const submitBtn = formEl.querySelector("button[type='submit']");
+      const originalText = submitBtn ? submitBtn.textContent : "Adicionar função";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Salvando...";
       }
-      
-      let updatedFuncs = [...funcs];
-      if (isPrimary) {
-        updatedFuncs = updatedFuncs.map(f => ({ ...f, primary: false }));
+
+      try {
+        const sectorId = secSelect.value;
+        const roleKey = roleSelect.value;
+        const isPrimary = formEl.elements.quickPrimary.checked;
+        
+        const profile = state.profiles.find(p => p.id === profileId);
+        if (!profile) return;
+        
+        const funcs = getEmployeeFunctions(profile);
+        
+        const duplicate = funcs.some(f => f.sectorId === sectorId && f.roleKey === roleKey);
+        if (duplicate) {
+          alert("Este colaborador já possui esta função vinculada.");
+          return;
+        }
+        
+        let updatedFuncs = [...funcs];
+        if (isPrimary) {
+          updatedFuncs = updatedFuncs.map(f => ({ ...f, primary: false }));
+        }
+        
+        updatedFuncs.push({
+          sectorId,
+          roleKey,
+          primary: isPrimary || updatedFuncs.length === 0
+        });
+        
+        saveEmployeeFunctions(profile.id, updatedFuncs);
+        const saved = await saveProfiles(profile);
+        if (!saved) {
+          await loadProfiles();
+          alert("Não foi possível salvar a função principal no Supabase.");
+          return;
+        }
+        
+        modal.style.display = "none";
+        renderOrganograma();
+        renderListView();
+        renderSidebarDetails();
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
       }
-      
-      updatedFuncs.push({
-        sectorId,
-        roleKey,
-        primary: isPrimary || updatedFuncs.length === 0
-      });
-      
-      saveEmployeeFunctions(profile.id, updatedFuncs);
-      const saved = await saveProfiles();
-      if (!saved) {
-        await loadProfiles();
-        alert("Não foi possível salvar a função principal no Supabase.");
-        return;
-      }
-      
-      modal.style.display = "none";
-      renderOrganograma();
-      renderListView();
-      renderSidebarDetails();
     };
     
     document.getElementById("btn-close-quick-role").onclick = () => {
@@ -3859,7 +3891,7 @@
           }
         ];
         saveEmployeeFunctions(profile.id, updatedFuncs);
-        saveProfiles();
+        saveProfiles(profile);
 
         alert(`Colaborador ${profile.full_name} transferido para ${targetRole}!`);
         renderOrganograma();
