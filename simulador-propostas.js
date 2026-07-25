@@ -117,7 +117,7 @@
 
 
               <div class="simulador-form-group">
-                <label for="sim-max-first-inst">Entrada / 1ª Parcela Máxima <span class="req">*</span></label>
+                <label for="sim-max-first-inst">Entrada Máxima <span class="req">*</span></label>
                 <input type="text" id="sim-max-first-inst" class="simulador-input brl-mask" placeholder="R$ 24.000,00" required />
               </div>
 
@@ -129,7 +129,7 @@
               <div class="simulador-form-group" style="margin-top:4px; margin-bottom:6px;">
                 <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.82rem; color:#374151; font-weight:600;">
                   <input type="checkbox" id="sim-use-half-inst" style="width:16px; height:16px; accent-color:#d4af37; cursor:pointer;" />
-                  Considerar 50% da Parcela (Meia Parcela / Filho)
+                  Considerar 50% da Parcela (Meia Parcela)
                 </label>
               </div>
 
