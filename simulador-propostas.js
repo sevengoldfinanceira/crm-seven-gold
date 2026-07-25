@@ -780,7 +780,7 @@
               <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:0.85rem;">
                 <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
                   <span style="color:#6f6878; font-size:0.72rem; display:block;">ADMINISTRADORA</span>
-                  <strong style="color:#150126;">Seven Gold Financeira - Alpha Administradora de Consórcio Ltda.</strong>
+                  <strong style="color:#150126;">Alpha Administradora de Consórcio Ltda.</strong>
                 </div>
                 <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
                   <span style="color:#6f6878; font-size:0.72rem; display:block;">PLANO / TABELA</span>
@@ -964,7 +964,7 @@
                     <span>Administradora</span>
                   </div>
                 </td>
-                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:700; color:#17111F;">Seven Gold Financeira - Alpha Administradora de Consórcio Ltda.</td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:700; color:#17111F;">Alpha Administradora de Consórcio Ltda.</td>
               </tr>
               <tr>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
