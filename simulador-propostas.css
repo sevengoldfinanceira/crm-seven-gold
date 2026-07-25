@@ -579,14 +579,17 @@ select.simulador-input option {
   button,
   nav,
   aside,
-  header {
+  header,
+  .pf-left-panel {
     display: none !important;
   }
 
   .service-shell,
   .service-content,
   #proposta-final-container,
-  .pf-wrapper {
+  .pf-wrapper,
+  .pf-content-grid,
+  .pf-right-panel {
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
@@ -594,6 +597,8 @@ select.simulador-input option {
     box-shadow: none !important;
     width: 100% !important;
     max-width: 100% !important;
+    display: block !important;
+    position: static !important;
   }
 
   .proposta-final-print-sheet {
@@ -608,6 +613,15 @@ select.simulador-input option {
     background: #ffffff !important;
     color: #000000 !important;
     page-break-after: avoid;
+  }
+}
+
+@media (max-width: 1024px) {
+  .pf-content-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .pf-right-panel {
+    position: static !important;
   }
 }
 

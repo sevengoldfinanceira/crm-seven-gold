@@ -676,113 +676,118 @@
           </div>
         </div>
 
-        <div class="pf-content-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
-          <!-- Left Column: Complementary Form -->
-          <div class="pf-form-card" style="background:#ffffff; border:1px solid #e7e1eb; border-radius:16px; padding:24px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
-            <h3 style="margin:0 0 16px; font-size:1.1rem; color:#150126; display:flex; align-items:center; gap:8px;"><i data-lucide="user-check" style="color:#e8b138; width:20px;"></i> Dados do Cliente & Lance</h3>
+        <div class="pf-content-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; align-items:start;">
+          <!-- Left Column: Form + Summary Stacked -->
+          <div class="pf-left-panel" style="display:flex; flex-direction:column; gap:20px;">
+            <!-- Card 1: Complementary Form -->
+            <div class="pf-form-card" style="background:#ffffff; border:1px solid #e7e1eb; border-radius:16px; padding:24px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
+              <h3 style="margin:0 0 16px; font-size:1.1rem; color:#150126; display:flex; align-items:center; gap:8px;"><i data-lucide="user-check" style="color:#e8b138; width:20px;"></i> Dados do Cliente & Lance</h3>
 
-            <form id="pf-complementary-form" style="display:flex; flex-direction:column; gap:14px;">
-              <div class="simulador-form-group">
-                <label for="pf-client-name">Nome Completo do Cliente <span class="req">*</span></label>
-                <input type="text" id="pf-client-name" class="simulador-input" placeholder="Ex: João da Silva" required />
-              </div>
+              <form id="pf-complementary-form" style="display:flex; flex-direction:column; gap:14px;">
+                <div class="simulador-form-group">
+                  <label for="pf-client-name">Nome Completo do Cliente <span class="req">*</span></label>
+                  <input type="text" id="pf-client-name" class="simulador-input" placeholder="Ex: João da Silva" required />
+                </div>
 
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                <div class="simulador-form-group">
-                  <label for="pf-client-cpf">CPF do Cliente</label>
-                  <input type="text" id="pf-client-cpf" class="simulador-input" placeholder="000.000.000-00" />
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                  <div class="simulador-form-group">
+                    <label for="pf-client-cpf">CPF do Cliente</label>
+                    <input type="text" id="pf-client-cpf" class="simulador-input" placeholder="000.000.000-00" />
+                  </div>
+                  <div class="simulador-form-group">
+                    <label for="pf-client-phone">Telefone / WhatsApp</label>
+                    <input type="text" id="pf-client-phone" class="simulador-input" placeholder="(00) 90000-0000" />
+                  </div>
                 </div>
-                <div class="simulador-form-group">
-                  <label for="pf-client-phone">Telefone / WhatsApp</label>
-                  <input type="text" id="pf-client-phone" class="simulador-input" placeholder="(00) 90000-0000" />
-                </div>
-              </div>
 
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                <div class="simulador-form-group">
-                  <label for="pf-property-type">Tipo de Bem</label>
-                  <select id="pf-property-type" class="simulador-input">
-                    <option value="Imóvel Residencial">Imóvel Residencial</option>
-                    <option value="Imóvel Comercial">Imóvel Comercial</option>
-                    <option value="Terreno / Construção">Terreno / Construção</option>
-                    <option value="Automóvel / Veículo">Automóvel / Veículo</option>
-                    <option value="Maquinário / Pesados">Maquinário / Pesados</option>
-                  </select>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                  <div class="simulador-form-group">
+                    <label for="pf-property-type">Tipo de Bem</label>
+                    <select id="pf-property-type" class="simulador-input">
+                      <option value="Imóvel Residencial">Imóvel Residencial</option>
+                      <option value="Imóvel Comercial">Imóvel Comercial</option>
+                      <option value="Terreno / Construção">Terreno / Construção</option>
+                      <option value="Automóvel / Veículo">Automóvel / Veículo</option>
+                      <option value="Maquinário / Pesados">Maquinário / Pesados</option>
+                    </select>
+                  </div>
+                  <div class="simulador-form-group">
+                    <label for="pf-bid-amount">Valor de Lance Pretendido (R$)</label>
+                    <input type="text" id="pf-bid-amount" class="simulador-input brl-mask" placeholder="R$ 0,00" />
+                  </div>
                 </div>
-                <div class="simulador-form-group">
-                  <label for="pf-bid-amount">Valor de Lance Pretendido (R$)</label>
-                  <input type="text" id="pf-bid-amount" class="simulador-input brl-mask" placeholder="R$ 0,00" />
-                </div>
-              </div>
 
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                <div class="simulador-form-group">
-                  <label for="pf-embedded-bid">Lance Embutido (%)</label>
-                  <input type="text" id="pf-embedded-bid" class="simulador-input" placeholder="Ex: 30%" value="${proposal.fixed_bid_percentage || 30}%" />
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                  <div class="simulador-form-group">
+                    <label for="pf-embedded-bid">Lance Embutido (%)</label>
+                    <input type="text" id="pf-embedded-bid" class="simulador-input" placeholder="Ex: 30%" value="${proposal.fixed_bid_percentage || 30}%" />
+                  </div>
+                  <div class="simulador-form-group">
+                    <label for="pf-validity">Validade da Proposta</label>
+                    <input type="date" id="pf-validity" class="simulador-input" value="${validityDefault}" />
+                  </div>
                 </div>
+
                 <div class="simulador-form-group">
-                  <label for="pf-validity">Validade da Proposta</label>
-                  <input type="date" id="pf-validity" class="simulador-input" value="${validityDefault}" />
+                  <label for="pf-notes">Observações / Condições Especiais</label>
+                  <textarea id="pf-notes" class="simulador-input" rows="3" placeholder="Insira observações relevantes sobre o atendimento ou regras de contemplação..."></textarea>
                 </div>
-              </div>
-
-              <div class="simulador-form-group">
-                <label for="pf-notes">Observações / Condições Especiais</label>
-                <textarea id="pf-notes" class="simulador-input" rows="3" placeholder="Insira observações relevantes sobre o atendimento ou regras de contemplação..."></textarea>
-              </div>
-            </form>
-          </div>
-
-          <!-- Right Column: Live Summary & Proposal Details -->
-          <div class="pf-summary-card" style="background:#ffffff; border:1px solid #e7e1eb; border-radius:16px; padding:24px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
-            <h3 style="margin:0 0 16px; font-size:1.1rem; color:#150126; display:flex; align-items:center; gap:8px;"><i data-lucide="file-badge" style="color:#e8b138; width:20px;"></i> Resumo Automático da Cota</h3>
-            
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:0.85rem;">
-              <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                <span style="color:#6f6878; font-size:0.72rem; display:block;">ADMINISTRADORA</span>
-                <strong style="color:#150126;">${proposal.administrator_name || 'Seven Gold'}</strong>
-              </div>
-              <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                <span style="color:#6f6878; font-size:0.72rem; display:block;">PLANO / TABELA</span>
-                <strong style="color:#150126;">${proposal.product_name || 'AUTOCON PRIME'}</strong>
-              </div>
-              <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                <span style="color:#6f6878; font-size:0.72rem; display:block;">CRÉDITO / BEM</span>
-                <strong style="color:#150126; font-size:1rem; font-weight:800;">${creditFormatted}</strong>
-              </div>
-              <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                <span style="color:#6f6878; font-size:0.72rem; display:block;">ENTRADA / 1ª PARCELA</span>
-                <strong style="color:#150126;">${firstInstFormatted}</strong>
-              </div>
-              <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                <span style="color:#6f6878; font-size:0.72rem; display:block;">PARCELA INTEGRAL (100%)</span>
-                <strong style="color:#1d4ed8;">${finalInstFormatted}</strong>
-              </div>
-              <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                <span style="color:#6f6878; font-size:0.72rem; display:block;">PARCELA REDUZIDA (50%)</span>
-                <strong style="color:#059669;">${halfInstFormatted}</strong>
-              </div>
-              <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                <span style="color:#6f6878; font-size:0.72rem; display:block;">PRAZO TOTAL</span>
-                <strong style="color:#150126;">${proposal.total_term_months} Meses</strong>
-              </div>
-              <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                <span style="color:#6f6878; font-size:0.72rem; display:block;">TAXA ADMINISTRATIVA</span>
-                <strong style="color:#150126;">${proposal.administration_fee_percentage}%</strong>
-              </div>
+              </form>
             </div>
 
-            <div style="margin-top:16px; background:rgba(232,177,56,0.1); border:1px solid rgba(232,177,56,0.3); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:6px;">
-              <span style="font-size:0.75rem; font-weight:800; color:#150126; text-transform:uppercase;">CONSULTOR RESPONSÁVEL</span>
-              <strong style="color:#150126; font-size:0.95rem;">${consultantName}</strong>
-              <span style="color:#6f6878; font-size:0.8rem;">${consultantEmail} • ${consultantRole}</span>
+            <!-- Card 2: Live Summary -->
+            <div class="pf-summary-card" style="background:#ffffff; border:1px solid #e7e1eb; border-radius:16px; padding:24px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
+              <h3 style="margin:0 0 16px; font-size:1.1rem; color:#150126; display:flex; align-items:center; gap:8px;"><i data-lucide="file-badge" style="color:#e8b138; width:20px;"></i> Resumo Automático da Cota</h3>
+              
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:0.85rem;">
+                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
+                  <span style="color:#6f6878; font-size:0.72rem; display:block;">ADMINISTRADORA</span>
+                  <strong style="color:#150126;">${proposal.administrator_name || 'Seven Gold'}</strong>
+                </div>
+                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
+                  <span style="color:#6f6878; font-size:0.72rem; display:block;">PLANO / TABELA</span>
+                  <strong style="color:#150126;">${proposal.product_name || 'AUTOCON PRIME'}</strong>
+                </div>
+                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
+                  <span style="color:#6f6878; font-size:0.72rem; display:block;">CRÉDITO / BEM</span>
+                  <strong style="color:#150126; font-size:1rem; font-weight:800;">${creditFormatted}</strong>
+                </div>
+                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
+                  <span style="color:#6f6878; font-size:0.72rem; display:block;">ENTRADA / 1ª PARCELA</span>
+                  <strong style="color:#150126;">${firstInstFormatted}</strong>
+                </div>
+                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
+                  <span style="color:#6f6878; font-size:0.72rem; display:block;">PARCELA INTEGRAL (100%)</span>
+                  <strong style="color:#1d4ed8;">${finalInstFormatted}</strong>
+                </div>
+                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
+                  <span style="color:#6f6878; font-size:0.72rem; display:block;">PARCELA REDUZIDA (50%)</span>
+                  <strong style="color:#059669;">${halfInstFormatted}</strong>
+                </div>
+                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
+                  <span style="color:#6f6878; font-size:0.72rem; display:block;">PRAZO TOTAL</span>
+                  <strong style="color:#150126;">${proposal.total_term_months} Meses</strong>
+                </div>
+                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
+                  <span style="color:#6f6878; font-size:0.72rem; display:block;">TAXA ADMINISTRATIVA</span>
+                  <strong style="color:#150126;">${proposal.administration_fee_percentage}%</strong>
+                </div>
+              </div>
+
+              <div style="margin-top:16px; background:rgba(232,177,56,0.1); border:1px solid rgba(232,177,56,0.3); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:6px;">
+                <span style="font-size:0.75rem; font-weight:800; color:#150126; text-transform:uppercase;">CONSULTOR RESPONSÁVEL</span>
+                <strong style="color:#150126; font-size:0.95rem;">${consultantName}</strong>
+                <span style="color:#6f6878; font-size:0.8rem;">${consultantEmail} • ${consultantRole}</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- A4 Printable Sheet Section -->
-        <div id="proposta-final-a4-sheet" class="proposta-final-print-sheet" style="margin-top:32px; background:#ffffff; border:1px solid #e7e1eb; border-radius:8px; padding:40px; color:#15121a; max-width:800px; margin-left:auto; margin-right:auto; box-shadow:0 8px 30px rgba(0,0,0,0.08);">
-          <!-- Dynamic A4 content updated live -->
+          <!-- Right Column: Live Printable Sheet Preview -->
+          <div class="pf-right-panel" style="position:sticky; top:20px;">
+            <div id="proposta-final-a4-sheet" class="proposta-final-print-sheet" style="background:#ffffff; border:1px solid #e7e1eb; border-radius:12px; padding:32px; color:#15121a; box-shadow:0 8px 30px rgba(0,0,0,0.08);">
+              <!-- Dynamic A4 content updated live -->
+            </div>
+          </div>
         </div>
       </div>
     `;
