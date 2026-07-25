@@ -557,8 +557,27 @@
           </div>
         </form>
       </div>
+    <!-- Modal: Documentos Obrigatorios do Vendedor/Colaborador -->
+    <div id="colab-docs-modal" class="eq-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1200; align-items: center; justify-content: center;">
+      <div style="background: #fff; border-radius: 16px; padding: 28px 32px; max-width: 620px; width: 92vw; max-height: 88vh; overflow-y: auto; position: relative; box-shadow: 0 24px 48px rgba(0,0,0,0.18);">
+        <button type="button" id="btn-close-colab-docs-modal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #94a3b8;"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
+        
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+          <div style="background:rgba(212,175,55,0.1); color:#d4af37; border:1px solid rgba(212,175,55,0.3); width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <i data-lucide="folder-check" style="width:22px; height:22px;"></i>
+          </div>
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0;">Documentos Obrigatórios do Colaborador</h2>
+            <p id="colab-docs-subtitle" style="margin: 2px 0 0; font-size: 0.82rem; color: #64748b;">RG e CPF, Comprovante de Residência, Contrato de Trabalho e Direito de Imagem</p>
+          </div>
+        </div>
+
+        <div id="colab-docs-modal-body">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
     </div>
-    
+
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
