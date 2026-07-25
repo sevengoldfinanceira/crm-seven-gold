@@ -660,9 +660,9 @@
     const consultantEmail = (userEmailEl && userEmailEl.textContent.trim() !== '...') ? userEmailEl.textContent.trim() : 'atendimento@sevengoldfinanceira.com.br';
     const consultantRole = (userRoleEl && userRoleEl.textContent.trim() !== '...') ? userRoleEl.textContent.trim() : 'Consultor Comercial';
 
-    // Generate Protocol: SG-YYYYMMDD-NNN (ex: SG-20260725-247)
+    // Generate Protocol: SG-YYYY.MM.DD-NNN (ex: SG-2026.07.25-247)
     const now = new Date();
-    const dateStr = now.toISOString().slice(0,10).replace(/-/g,'');
+    const dateStr = now.toISOString().slice(0,10).replace(/-/g,'.');
     const randomSeq = Math.floor(Math.random() * 900) + 100; // 100–999
     const protocolNumber = `SG-${dateStr}-${randomSeq}`;
     
