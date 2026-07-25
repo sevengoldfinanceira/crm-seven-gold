@@ -876,8 +876,7 @@
 
         <div style="border:1px solid #e7e1eb; border-radius:10px; padding:12px; background:#fafafa; margin-bottom:20px; font-size:0.8rem;">
           <strong style="color:#150126; display:block; margin-bottom:4px; font-size:0.8rem; text-transform:uppercase;">OBSERVAÇÕES E CONDIÇÕES COMERCIAIS</strong>
-          <p style="margin:0 0 6px; color:#374151;">${notesVal}</p>
-          <p style="margin:0; font-size:0.72rem; color:#6f6878; font-style:italic;">* A contemplação ocorre por sorteio ou lance nas assembleias mensais conforme o regulamento da administradora. Os valores e parcelas podem sofrer reajuste anual pelo INCC ou IPCA.</p>
+          <p style="margin:0; color:#374151;">${notesVal}</p>
         </div>
 
         <div class="pf-a4-footer" style="border-top:1.5px solid #e8b138; padding-top:12px; display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#6f6878;">
