@@ -45,9 +45,9 @@ const mockOptions = [
     valid_until: "2026-12-31",
     total_term_months: 180,
     credit_value: 248263.77,
-    first_installment: 30000.00, // Exceeds max first inst of 24.000
-    temporary_installment_value: 2000.00, // Exceeds max temp inst of 1.850
-    final_installment_value: 2000.00,
+    first_installment: 26000.00, // Exceeds max first inst of 24.000 by R$2.000 (within R$5.000 tolerance)
+    temporary_installment_value: 2100.00,
+    final_installment_value: 2100.00, // meia = R$1.050 (within R$1.850 limit). Entrada excede R$2.000 (within R$5.000 tolerance)
     source_file_name: "Tabela.pdf"
   }
 ];
