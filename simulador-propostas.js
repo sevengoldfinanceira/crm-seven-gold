@@ -426,6 +426,37 @@
 
       let currentActiveList = validList.length > 0 ? validList : nearList;
       let currentIsNear = validList.length === 0;
+      let currentSortBy = 'credit-desc';
+
+      // Reusable sort function - applies the active sort to any list in-place
+      function applySortToList(list, sortBy) {
+        if (sortBy === 'credit-desc') {
+          list.sort((a, b) => {
+            if (b.credit_value !== a.credit_value) return b.credit_value - a.credit_value;
+            const aPrimeMatch = /(?:PRIME|COD)\s*(\d+)/i.exec(a.product_name || '');
+            const bPrimeMatch = /(?:PRIME|COD)\s*(\d+)/i.exec(b.product_name || '');
+            if (aPrimeMatch && bPrimeMatch) {
+              const aNum = parseInt(aPrimeMatch[1], 10);
+              const bNum = parseInt(bPrimeMatch[1], 10);
+              if (bNum !== aNum) return bNum - aNum;
+            }
+            const aTempMonths = (a.temporary_installment_end - a.temporary_installment_start + 1) || 0;
+            const bTempMonths = (b.temporary_installment_end - b.temporary_installment_start + 1) || 0;
+            if (bTempMonths !== aTempMonths) return bTempMonths - aTempMonths;
+            if (b.first_installment !== a.first_installment) return b.first_installment - a.first_installment;
+            return a.final_installment_value - b.final_installment_value;
+          });
+        } else if (sortBy === 'inst-desc') {
+          list.sort((a, b) => b.final_installment_value - a.final_installment_value);
+        } else if (sortBy === 'inst-asc') {
+          list.sort((a, b) => a.final_installment_value - b.final_installment_value);
+        } else if (sortBy === 'first-desc') {
+          list.sort((a, b) => b.first_installment - a.first_installment);
+        } else if (sortBy === 'first-asc') {
+          list.sort((a, b) => a.first_installment - b.first_installment);
+        }
+      }
+
 
       if (validList.length > 0) {
         countTextEl.innerHTML = `Encontradas <strong>${validList.length}</strong> propostas ideais dentro dos limites do cliente.`;
@@ -459,33 +490,8 @@
             btn.style.fontWeight = '800';
 
             const sortBy = btn.dataset.sortBy;
-            if (sortBy === 'credit-desc') {
-              currentActiveList.sort((a, b) => {
-                if (b.credit_value !== a.credit_value) return b.credit_value - a.credit_value;
-
-                const aPrimeMatch = /(?:PRIME|COD)\s*(\d+)/i.exec(a.product_name || '');
-                const bPrimeMatch = /(?:PRIME|COD)\s*(\d+)/i.exec(b.product_name || '');
-                if (aPrimeMatch && bPrimeMatch) {
-                  const aNum = parseInt(aPrimeMatch[1], 10);
-                  const bNum = parseInt(bPrimeMatch[1], 10);
-                  if (bNum !== aNum) return bNum - aNum;
-                }
-
-                const aTempMonths = (a.temporary_installment_end - a.temporary_installment_start + 1) || 0;
-                const bTempMonths = (b.temporary_installment_end - b.temporary_installment_start + 1) || 0;
-                if (bTempMonths !== aTempMonths) return bTempMonths - aTempMonths;
-                if (b.first_installment !== a.first_installment) return b.first_installment - a.first_installment;
-                return a.final_installment_value - b.final_installment_value;
-              });
-            } else if (sortBy === 'inst-desc') {
-              currentActiveList.sort((a, b) => b.final_installment_value - a.final_installment_value);
-            } else if (sortBy === 'inst-asc') {
-              currentActiveList.sort((a, b) => a.final_installment_value - b.final_installment_value);
-            } else if (sortBy === 'first-desc') {
-              currentActiveList.sort((a, b) => b.first_installment - a.first_installment);
-            } else if (sortBy === 'first-asc') {
-              currentActiveList.sort((a, b) => a.first_installment - b.first_installment);
-            }
+            currentSortBy = sortBy;
+            applySortToList(currentActiveList, sortBy);
 
             renderProposalCards(currentActiveList, currentIsNear);
           };
@@ -499,18 +505,19 @@
           if (nearShown) {
             // Remove near matches — go back to only ideal proposals
             nearShown = false;
-            currentActiveList = validList;
+            currentActiveList = [...validList];
             currentIsNear = false;
-            renderProposalCards(validList);
+            applySortToList(currentActiveList, currentSortBy);
+            renderProposalCards(currentActiveList);
             countTextEl.innerHTML = `Encontradas <strong>${validList.length}</strong> propostas ideais dentro dos limites do cliente.`;
             toggleNearBtn.innerHTML = `<i data-lucide="eye"></i> Mostrar Opções Próximas`;
           } else {
-            // Merge near matches into the current sorted list
+            // Merge near matches into the current sorted list and re-sort together
             nearShown = true;
             currentIsNear = false;
-            // Tag near proposals so renderProposalCards can badge them individually
             const taggedNear = nearList.map(p => ({ ...p, _isNear: true }));
-            const combined = [...currentActiveList, ...taggedNear];
+            const combined = [...validList, ...taggedNear];
+            applySortToList(combined, currentSortBy);
             currentActiveList = combined;
             renderProposalCards(combined);
             countTextEl.innerHTML = `Exibindo <strong>${validList.length}</strong> propostas ideais + <strong>${nearList.length}</strong> opções próximas.`;
