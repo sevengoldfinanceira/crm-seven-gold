@@ -566,7 +566,6 @@
             <div class="proposal-rank-num">${idx + 1}</div>
             <div class="proposal-title-meta">
               <h3>${cleanTitle}</h3>
-              <p>${p.administrator_name} • Validade até <strong>${new Date(p.valid_until).toLocaleDateString('pt-BR')}</strong></p>
             </div>
           </div>
 
