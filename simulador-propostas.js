@@ -1141,8 +1141,48 @@
       });
     }
 
+    // Live Formatters for CPF/CNPJ and Phone/WhatsApp
+    const formatCpfCnpj = (val) => {
+      const digits = String(val).replace(/\D/g, '').slice(0, 14);
+      if (!digits) return '';
+      if (digits.length <= 11) {
+        if (digits.length <= 3) return digits;
+        if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+        if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+        return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+      } else {
+        if (digits.length <= 12) return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8)}`;
+        return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-${digits.slice(12)}`;
+      }
+    };
+
+    const formatPhone = (val) => {
+      const digits = String(val).replace(/\D/g, '').slice(0, 11);
+      if (!digits) return '';
+      if (digits.length <= 2) return `(${digits}`;
+      if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+      if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    };
+
+    const cpfInputEl = document.getElementById('pf-client-cpf');
+    if (cpfInputEl) {
+      cpfInputEl.addEventListener('input', (e) => {
+        e.target.value = formatCpfCnpj(e.target.value);
+        updateA4Sheet();
+      });
+    }
+
+    const phoneInputEl = document.getElementById('pf-client-phone');
+    if (phoneInputEl) {
+      phoneInputEl.addEventListener('input', (e) => {
+        e.target.value = formatPhone(e.target.value);
+        updateA4Sheet();
+      });
+    }
+
     // Attach listeners for live update of A4 sheet
-    ['pf-client-name', 'pf-client-cpf', 'pf-client-phone', 'pf-property-type', 'pf-bid-amount', 'pf-embedded-bid', 'pf-show-percentage-toggle', 'pf-validity', 'pf-notes'].forEach(id => {
+    ['pf-client-name', 'pf-property-type', 'pf-bid-amount', 'pf-embedded-bid', 'pf-show-percentage-toggle', 'pf-validity', 'pf-notes'].forEach(id => {
       const inputEl = document.getElementById(id);
       if (inputEl) {
         inputEl.addEventListener('input', updateA4Sheet);
