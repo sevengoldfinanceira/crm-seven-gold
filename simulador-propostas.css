@@ -69,7 +69,7 @@
   }
 }
 
-/* Filters Card Sidebar */
+/* Filters Card Sidebar (Sticky on Scroll) */
 .simulador-filters-card {
   background: var(--seven-card-bg);
   border: 1px solid var(--seven-border);
@@ -79,7 +79,21 @@
   flex-direction: column;
   gap: 18px;
   height: fit-content;
+  position: sticky;
+  top: 24px;
+  align-self: flex-start;
+  z-index: 10;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
   box-shadow: 0 4px 16px rgba(21, 1, 38, 0.04);
+}
+
+@media (max-width: 1024px) {
+  .simulador-filters-card {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
 }
 
 .simulador-filters-title {
@@ -112,21 +126,31 @@
 }
 
 .simulador-input {
-  background: var(--seven-card-bg);
+  background: #ffffff !important;
+  background-color: #ffffff !important;
   border: 1px solid var(--seven-border);
   border-radius: 8px;
   padding: 10px 12px;
-  color: var(--seven-text-main);
+  color: var(--seven-text-main) !important;
   font-size: 0.86rem;
   font-weight: 600;
   outline: none;
   transition: all 0.2s ease;
 }
 
+.simulador-input:-webkit-autofill,
+.simulador-input:-webkit-autofill:hover, 
+.simulador-input:-webkit-autofill:focus, 
+.simulador-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: var(--seven-text-main) !important;
+}
+
 .simulador-input:focus {
   border-color: var(--seven-gold-main);
   box-shadow: 0 0 0 3px rgba(232, 177, 56, 0.15);
-  background: var(--seven-card-bg);
+  background: #ffffff !important;
+  background-color: #ffffff !important;
 }
 
 select.simulador-input {
