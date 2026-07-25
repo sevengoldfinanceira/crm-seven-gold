@@ -154,7 +154,7 @@ body { font-family: Inter, sans-serif; background: var(--page); color: var(--ink
 
 .service-content { min-width: 0; padding: 28px; background: #F7F6F8; min-height: 100vh; }
 
-/* Seven Gold Premium Header */
+/* Seven Gold Premium Header (Black & Gold Theme) */
 .service-header {
   display: flex;
   align-items: center;
@@ -162,9 +162,9 @@ body { font-family: Inter, sans-serif; background: var(--page); color: var(--ink
   gap: 24px;
   padding: 24px 30px;
   border-radius: 16px;
-  background: linear-gradient(135deg, #150126 0%, #2A0742 100%);
-  border: 1px solid rgba(232, 177, 56, 0.25);
-  box-shadow: 0 10px 30px rgba(21, 1, 38, 0.15);
+  background: linear-gradient(135deg, #000000 0%, #121017 100%);
+  border: 1px solid rgba(232, 177, 56, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   color: #FFFFFF;
 }
 
