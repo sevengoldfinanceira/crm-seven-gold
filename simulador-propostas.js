@@ -961,7 +961,7 @@
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:8px;">
                     <i data-lucide="building-2" style="width:14px; height:14px; color:#B98220;"></i>
-                    <span>Administradora</span>
+                    <span style="white-space:nowrap;">Institui&ccedil;&atilde;o Financeira/Administradora</span>
                   </div>
                 </td>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:700; color:#17111F;">Alpha Administradora de Consórcio Ltda.</td>
