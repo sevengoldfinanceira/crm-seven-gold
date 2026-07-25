@@ -843,6 +843,11 @@
         lanceText += ` (${embeddedBid})`;
       }
 
+      // Valor líquido para o imóvel = crédito - lance
+      const bidNumeric = parseFloat(String(bidAmount).replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+      const netPropertyValue = Math.max((proposal.credit_value || 0) - bidNumeric, 0);
+      const netPropertyFormatted = formatCurrency(netPropertyValue);
+
       const sheetEl = document.getElementById('proposta-final-a4-sheet');
       if (!sheetEl) return;
 
@@ -969,6 +974,15 @@
                   </div>
                 </td>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#B98220; font-size:0.9rem;">${creditFormatted}</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="home" style="width:14px; height:14px; color:#B98220;"></i>
+                    <span>Valor para o Imóvel (Crédito − Lance)</span>
+                  </div>
+                </td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#059669; font-size:0.9rem;">${netPropertyFormatted}</td>
               </tr>
               <tr>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
