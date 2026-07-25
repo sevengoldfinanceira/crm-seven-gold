@@ -129,7 +129,7 @@
               <div class="simulador-form-group" style="margin-top:4px; margin-bottom:6px;">
                 <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.82rem; color:#374151; font-weight:600;">
                   <input type="checkbox" id="sim-use-half-inst" style="width:16px; height:16px; accent-color:#d4af37; cursor:pointer;" />
-                  Considerar 50% da Parcela (Meia Parcela)
+                  Considerar Parcela Integral (100%)
                 </label>
               </div>
 
@@ -401,7 +401,7 @@
       minimum_credit: document.getElementById('sim-min-credit')?.value || '',
       maximum_credit: document.getElementById('sim-max-credit')?.value || '',
       ranking_priority: document.getElementById('sim-priority').value,
-      use_half_installment: document.getElementById('sim-use-half-inst')?.checked || false,
+      use_half_installment: !(document.getElementById('sim-use-half-inst')?.checked || false),
     };
 
     try {
