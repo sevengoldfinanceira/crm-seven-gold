@@ -25,6 +25,28 @@
     });
   }
 
+  function formatTermMonthsYears(months) {
+    const m = parseInt(months, 10);
+    if (isNaN(m) || m <= 0) return `${months || 0} Meses`;
+    
+    const years = Math.floor(m / 12);
+    const remMonths = m % 12;
+
+    let yearStr = "";
+    if (years > 0) {
+      yearStr += `${years} ${years === 1 ? 'ano' : 'anos'}`;
+    }
+    if (remMonths > 0) {
+      if (yearStr) yearStr += " e ";
+      yearStr += `${remMonths} ${remMonths === 1 ? 'mês' : 'meses'}`;
+    }
+
+    if (yearStr) {
+      return `${m} Meses (${yearStr})`;
+    }
+    return `${m} Meses`;
+  }
+
   async function readApiPayload(response) {
     const text = await response.text();
     if (!text) return {};
@@ -590,7 +612,7 @@
 
             <div class="proposal-spec-item">
               <span>Prazo Total</span>
-              <strong>${p.total_term_months} Meses</strong>
+              <strong>${formatTermMonthsYears(p.total_term_months)}</strong>
             </div>
 
             <div class="proposal-spec-item">
@@ -766,7 +788,7 @@
                 </div>
                 <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
                   <span style="color:#6f6878; font-size:0.72rem; display:block;">PRAZO TOTAL</span>
-                  <strong style="color:#150126;">${proposal.total_term_months} Meses</strong>
+                  <strong style="color:#150126;">${formatTermMonthsYears(proposal.total_term_months)}</strong>
                 </div>
               </div>
 
@@ -865,7 +887,7 @@
             </tr>
             <tr>
               <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Prazo Total do Grupo</td>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">${proposal.total_term_months} Meses</td>
+              <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">${formatTermMonthsYears(proposal.total_term_months)}</td>
             </tr>
             <tr>
               <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Lance Pretendido / Lance Fixo (%)</td>
