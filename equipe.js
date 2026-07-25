@@ -2378,10 +2378,50 @@
     refreshIcons();
   };
 
+  // 4 Required Seller / Collaborator Documents
+  const REQUIRED_SELLER_DOCS = [
+    { id: 'rg_cpf', name: 'RG e CPF', icon: 'shield-check', desc: 'Documento de Identificação Oficial' },
+    { id: 'comprovante_residencia', name: 'Comprovante de Residência', icon: 'home', desc: 'Conta recente (Água, Luz ou Telefone)' },
+    { id: 'contrato_trabalho', name: 'Contrato de Trabalho', icon: 'file-signature', desc: 'Termo / Contrato Comercial assinado' },
+    { id: 'direito_imagem', name: 'Direito de Imagem', icon: 'camera', desc: 'Termo de Autorização de Uso de Imagem' }
+  ];
+
+  const getColabDocsData = (colabId) => {
+    try {
+      const raw = localStorage.getItem(`seven_gold_colab_docs_${colabId}`);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {
+      console.error("Error reading colab docs:", e);
+    }
+    return {
+      rg_cpf: { attached: false },
+      comprovante_residencia: { attached: false },
+      contrato_trabalho: { attached: false },
+      direito_imagem: { attached: false }
+    };
+  };
+
+  const saveColabDocStatus = (colabId, docId, docInfo) => {
+    const current = getColabDocsData(colabId);
+    current[docId] = docInfo;
+    localStorage.setItem(`seven_gold_colab_docs_${colabId}`, JSON.stringify(current));
+  };
+
+  const getColabDocsProgress = (profileId) => {
+    const docsData = getColabDocsData(profileId);
+    const count = REQUIRED_SELLER_DOCS.filter(d => docsData[d.id] && docsData[d.id].attached).length;
+    return {
+      attachedCount: count,
+      totalCount: REQUIRED_SELLER_DOCS.length,
+      isComplete: count === REQUIRED_SELLER_DOCS.length,
+      percentage: Math.round((count / REQUIRED_SELLER_DOCS.length) * 100)
+    };
+  };
+
   // Helper to determine if collaborator has documents
   const hasDocuments = (profile) => {
-    // Simulated rule: profiles with IDs '1', '2', '4', '8' have documents
-    return ['1', '2', '4', '8'].includes(profile.id);
+    const prog = getColabDocsProgress(profile.id);
+    return prog.attachedCount > 0;
   };
 
   const listFilters = {
@@ -2539,10 +2579,22 @@
         ? `<span class="eq-status-badge eq-status-active" style="background: rgba(16, 185, 129, 0.08); color: #10b981; padding: 4px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 600;">Ativo</span>`
         : `<span class="eq-status-badge eq-status-inactive" style="background: rgba(239, 68, 68, 0.08); color: #ef4444; padding: 4px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 600;">Inativo</span>`;
 
-      const hasDocs = hasDocuments(p);
-      const docHtml = hasDocs 
-        ? `<a href="documentos.html?colaborador=${encodeURIComponent(p.full_name)}" style="color: #d4af37; font-weight: 600; text-decoration: none; font-size: 0.8rem;">Ver documentos (8)</a>`
-        : `<span style="color: #94a3b8; font-weight: 500; font-size: 0.8rem;">Sem documentos</span>`;
+      const docProg = getColabDocsProgress(p.id);
+      let docBadgeColor = "#ef4444";
+      let docBadgeBg = "rgba(239, 68, 68, 0.08)";
+      if (docProg.isComplete) {
+        docBadgeColor = "#10b981";
+        docBadgeBg = "rgba(16, 185, 129, 0.08)";
+      } else if (docProg.attachedCount > 0) {
+        docBadgeColor = "#d4af37";
+        docBadgeBg = "rgba(212, 175, 55, 0.1)";
+      }
+
+      const docHtml = `
+        <button type="button" class="btn-open-colab-docs" data-colab-id="${p.id}" style="background: ${docBadgeBg}; color: ${docBadgeColor}; border: 1px solid ${docBadgeColor}; padding: 4px 10px; border-radius: 8px; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+          <i data-lucide="folder-check" style="width: 14px; height: 14px;"></i> ${docProg.attachedCount}/${docProg.totalCount} Documentos (${docProg.percentage}%)
+        </button>
+      `;
 
       tr.innerHTML = `
         <td>
@@ -2576,6 +2628,15 @@
         if (e.target.closest("button") || e.target.closest("a") || e.target.closest(".eq-context-menu")) return;
         selectItem('colaborador', p.id);
       });
+
+      // Open Colab Docs modal
+      const openDocsBtn = tr.querySelector(".btn-open-colab-docs");
+      if (openDocsBtn) {
+        openDocsBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openColabDocsModal(p.id);
+        });
+      }
 
       // Edit click opens modal
       tr.querySelector(".btn-edit-colab").addEventListener("click", (e) => {
@@ -3083,14 +3144,51 @@
         };
 
       } else {
+        const sideProg = getColabDocsProgress(profile.id);
+        const docsData = getColabDocsData(profile.id);
+
         pane.innerHTML = `
-          <h4 class="eq-side-section-title" style="margin: 0 0 10px 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569;">Documentação</h4>
-          <p style="font-size: 0.78rem; line-height: 1.4; margin-bottom: 12px; color: #475569;">Visualizar todos os documentos vinculados ao colaborador.</p>
+          <h4 class="eq-side-section-title" style="margin: 0 0 8px 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569;">Documentação Obrigatória</h4>
+          <p style="font-size: 0.78rem; line-height: 1.4; margin-bottom: 12px; color: #475569;">Gerenciamento dos 4 documentos obrigatórios do vendedor/colaborador.</p>
           
-          <a href="documentos.html?colaborador=${encodeURIComponent(profile.full_name)}" class="eq-btn-side-outline" style="text-decoration: none; width: 100%; box-sizing: border-box; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; border: 1.5px solid #cbd5e1; color: #475569; background: #fff;">
-            <i data-lucide="file-text"></i> Ver todos os documentos (${hasDocuments(profile) ? '8' : '0'})
-          </a>
+          <div style="background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.25); border-radius: 10px; padding: 12px; margin-bottom: 14px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.76rem; font-weight: 700; margin-bottom: 6px;">
+              <span>Progresso</span>
+              <span style="color: ${sideProg.isComplete ? '#10b981' : '#d4af37'};">${sideProg.attachedCount}/4 (${sideProg.percentage}%)</span>
+            </div>
+            <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
+              <div style="width: ${sideProg.percentage}%; height: 100%; background: ${sideProg.isComplete ? '#10b981' : '#d4af37'}; transition: width 0.3s ease;"></div>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+            ${REQUIRED_SELLER_DOCS.map(doc => {
+              const info = docsData[doc.id] || { attached: false };
+              return `
+                <div style="background: #f8fafc; border: 1px solid ${info.attached ? '#cbd5e1' : '#fecaca'}; border-radius: 8px; padding: 10px; display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="${doc.icon}" style="width: 16px; height: 16px; color: ${info.attached ? '#10b981' : '#ef4444'};"></i>
+                    <div>
+                      <strong style="font-size: 0.78rem; display: block; color: #0f172a;">${doc.name}</strong>
+                      <span style="font-size: 0.7rem; color: ${info.attached ? '#10b981' : '#ef4444'}; font-weight: 600;">${info.attached ? 'Anexado' : 'Pendente'}</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <button type="button" id="side-btn-manage-colab-docs" style="width: 100%; padding: 10px; background: #0f172a; color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+            <i data-lucide="folder-check" style="width: 16px; height: 16px;"></i> Gerenciar Documentos (RG, CPF...)
+          </button>
         `;
+
+        const sideManageBtn = pane.querySelector("#side-btn-manage-colab-docs");
+        if (sideManageBtn) {
+          sideManageBtn.onclick = () => {
+            openColabDocsModal(profile.id);
+          };
+        }
       }
 
       activeContent.querySelector("#btn-close-sidebar").onclick = () => {
@@ -4196,6 +4294,127 @@
     } catch (err) {
       statusEl.innerHTML = `<span style="color: #dc2626;">${err.message}</span>`;
     }
+  };
+
+  // Open Document Management Modal for Seller / Collaborator
+  const openColabDocsModal = (profileId) => {
+    const profile = state.profiles.find(p => p.id === profileId);
+    if (!profile) return;
+
+    const modal = document.getElementById("colab-docs-modal");
+    const body = document.getElementById("colab-docs-modal-body");
+    const subtitle = document.getElementById("colab-docs-subtitle");
+    if (!modal || !body) return;
+
+    if (subtitle) {
+      subtitle.textContent = `${profile.full_name} • Documentos do Vendedor / Colaborador`;
+    }
+
+    const docsData = getColabDocsData(profileId);
+    const prog = getColabDocsProgress(profileId);
+
+    body.innerHTML = `
+      <div style="background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.25); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 0.82rem; font-weight: 700; color: #0f172a;">Progresso da Documentação Obrigatória</span>
+          <span style="font-size: 0.82rem; font-weight: 800; color: ${prog.isComplete ? '#10b981' : '#d4af37'};">${prog.attachedCount} de ${prog.totalCount} Anexados (${prog.percentage}%)</span>
+        </div>
+        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+          <div style="width: ${prog.percentage}%; height: 100%; background: ${prog.isComplete ? '#10b981' : 'linear-gradient(90deg, #d4af37, #9b59b6)'}; border-radius: 4px; transition: width 0.3s ease;"></div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        ${REQUIRED_SELLER_DOCS.map(doc => {
+          const info = docsData[doc.id] || { attached: false };
+          return `
+            <div style="background: #fafafa; border: 1px solid ${info.attached ? '#cbd5e1' : '#fecaca'}; border-radius: 12px; padding: 16px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+              <div style="display: flex; align-items: flex-start; gap: 12px; flex: 1; min-width: 240px;">
+                <div style="background: ${info.attached ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.08)'}; color: ${info.attached ? '#10b981' : '#ef4444'}; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <i data-lucide="${doc.icon}" style="width: 20px; height: 20px;"></i>
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <strong style="font-size: 0.92rem; color: #0f172a;">${doc.name}</strong>
+                    ${info.attached ? `
+                      <span style="background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid #10b981; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px;">Anexado em ${info.attachedAt || 'Hoje'}</span>
+                    ` : `
+                      <span style="background: rgba(239,68,68,0.08); color: #ef4444; border: 1px solid #ef4444; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px;">Pendente (Obrigatório)</span>
+                    `}
+                  </div>
+                  <p style="margin: 3px 0 0; font-size: 0.78rem; color: #64748b;">${doc.desc}</p>
+                  ${info.attached && info.fileName ? `
+                    <span style="display: block; margin-top: 4px; font-size: 0.74rem; color: #334155; font-weight: 600;">📄 ${info.fileName}</span>
+                  ` : ''}
+                </div>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <label style="cursor: pointer; background: ${info.attached ? '#f1f5f9' : '#0f172a'}; color: ${info.attached ? '#334155' : '#ffffff'}; font-size: 0.78rem; font-weight: 700; padding: 8px 14px; border-radius: 8px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease;">
+                  <i data-lucide="${info.attached ? 'file-text' : 'upload'}" style="width: 14px; height: 14px;"></i>
+                  ${info.attached ? 'Substituir' : 'Anexar Arquivo'}
+                  <input type="file" class="input-upload-colab-doc" data-colab-id="${profileId}" data-doc-id="${doc.id}" style="display: none;" accept=".pdf,.png,.jpg,.jpeg" />
+                </label>
+                ${info.attached ? `
+                  <button type="button" class="btn-remove-colab-doc" data-colab-id="${profileId}" data-doc-id="${doc.id}" style="background: #fff; color: #ef4444; border: 1px solid #fecaca; padding: 8px; border-radius: 8px; cursor: pointer;" title="Remover Documento">
+                    <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <div style="margin-top: 24px; text-align: right; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+        <button type="button" class="btn-close-colab-docs-modal-action" style="padding: 10px 20px; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 700; background: #0f172a; color: #fff; cursor: pointer;">Concluir</button>
+      </div>
+    `;
+
+    modal.style.display = "flex";
+    modal.setAttribute("aria-hidden", "false");
+
+    // Add file input change listeners
+    body.querySelectorAll(".input-upload-colab-doc").forEach(fileInput => {
+      fileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const dId = fileInput.dataset.docId;
+        const cId = fileInput.dataset.colabId;
+        const nowStr = new Date().toLocaleDateString('pt-BR');
+        saveColabDocStatus(cId, dId, {
+          attached: true,
+          fileName: file.name,
+          fileSize: file.size,
+          attachedAt: nowStr
+        });
+        openColabDocsModal(cId);
+        renderListView();
+        if (state.activeTab === 'hierarquia') renderOrganograma();
+      });
+    });
+
+    body.querySelectorAll(".btn-remove-colab-doc").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const dId = btn.dataset.docId;
+        const cId = btn.dataset.colabId;
+        saveColabDocStatus(cId, dId, { attached: false });
+        openColabDocsModal(cId);
+        renderListView();
+        if (state.activeTab === 'hierarquia') renderOrganograma();
+      });
+    });
+
+    const closeBtn = document.getElementById("btn-close-colab-docs-modal");
+    const closeActionBtn = body.querySelector(".btn-close-colab-docs-modal-action");
+    const closeModal = () => {
+      modal.style.display = "none";
+      modal.setAttribute("aria-hidden", "true");
+    };
+    if (closeBtn) closeBtn.onclick = closeModal;
+    if (closeActionBtn) closeActionBtn.onclick = closeModal;
+
+    if (window.lucide) window.lucide.createIcons();
   };
 
   const deleteTeamGoal = async () => {
