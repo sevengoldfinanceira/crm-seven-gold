@@ -506,22 +506,28 @@
       }
 
       if (toggleNearBtn) {
+        let nearShown = false;
         toggleNearBtn.innerHTML = `<i data-lucide="eye"></i> Mostrar Opções Próximas`;
         toggleNearBtn.onclick = () => {
-          if (currentIsNear) {
-            // Switch back to valid proposals list
+          if (nearShown) {
+            // Remove near matches — go back to only ideal proposals
+            nearShown = false;
             currentActiveList = validList;
             currentIsNear = false;
-            renderProposalCards(validList, false);
+            renderProposalCards(validList);
             countTextEl.innerHTML = `Encontradas <strong>${validList.length}</strong> propostas ideais dentro dos limites do cliente.`;
             toggleNearBtn.innerHTML = `<i data-lucide="eye"></i> Mostrar Opções Próximas`;
           } else {
-            // Switch to near matches list
-            currentActiveList = nearList;
-            currentIsNear = true;
-            renderProposalCards(nearList, true);
-            countTextEl.innerHTML = `Exibindo <strong>${nearList.length}</strong> opções próximas que ultrapassam ligeiramente os limites.`;
-            toggleNearBtn.innerHTML = `<i data-lucide="eye"></i> Mostrar Propostas Ideais`;
+            // Merge near matches into the current sorted list
+            nearShown = true;
+            currentIsNear = false;
+            // Tag near proposals so renderProposalCards can badge them individually
+            const taggedNear = nearList.map(p => ({ ...p, _isNear: true }));
+            const combined = [...currentActiveList, ...taggedNear];
+            currentActiveList = combined;
+            renderProposalCards(combined);
+            countTextEl.innerHTML = `Exibindo <strong>${validList.length}</strong> propostas ideais + <strong>${nearList.length}</strong> opções próximas.`;
+            toggleNearBtn.innerHTML = `<i data-lucide="eye-off"></i> Ocultar Opções Próximas`;
           }
           if (window.lucide) window.lucide.createIcons();
         };
@@ -533,13 +539,15 @@
   }
 
   // Render cards list HTML
+  // Each proposal can have _isNear=true to be individually badged as near match
   function renderProposalCards(proposals, isNearMatch = false) {
     const listEl = document.getElementById('sim-proposals-list');
     if (!listEl) return;
 
     listEl.innerHTML = proposals.map((p, idx) => {
-      const badgeText = isNearMatch ? "Opção Próxima" : (p.badge || `Rank #${idx + 1}`);
-      const badgeClass = isNearMatch ? "near" : "";
+      const nearItem = isNearMatch || p._isNear;
+      const badgeText = nearItem ? "Opção Próxima" : (p.badge || `Rank #${idx + 1}`);
+      const badgeClass = nearItem ? "near" : "";
 
       const rawTitle = p.product_name || 'AUTOCON PRIME';
       const cleanTitle = rawTitle
@@ -548,7 +556,7 @@
         .trim();
 
       return `
-        <article class="proposal-item-card ${isNearMatch ? 'near-match' : ''}">
+        <article class="proposal-item-card ${nearItem ? 'near-match' : ''}">
           <span class="proposal-badge ${badgeClass}">${badgeText}</span>
           
           <div class="proposal-card-header">
