@@ -768,10 +768,6 @@
                   <span style="color:#6f6878; font-size:0.72rem; display:block;">PRAZO TOTAL</span>
                   <strong style="color:#150126;">${proposal.total_term_months} Meses</strong>
                 </div>
-                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                  <span style="color:#6f6878; font-size:0.72rem; display:block;">TAXA ADMINISTRATIVA</span>
-                  <strong style="color:#150126;">${proposal.administration_fee_percentage}%</strong>
-                </div>
               </div>
 
               <div style="margin-top:16px; background:rgba(232,177,56,0.1); border:1px solid rgba(232,177,56,0.3); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:6px;">
@@ -870,10 +866,6 @@
             <tr>
               <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Prazo Total do Grupo</td>
               <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">${proposal.total_term_months} Meses</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Taxa de Administração (%)</td>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">${proposal.administration_fee_percentage}%</td>
             </tr>
             <tr>
               <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Lance Pretendido / Lance Fixo (%)</td>
