@@ -1024,7 +1024,7 @@
                 <td style="padding:10px 16px; background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:8px;">
                     <i data-lucide="gavel" style="width:14px; height:14px; color:#B98220;"></i>
-                    <span>Lance Embutido</span>
+                    <span>Lance Embutido <span style="font-size:0.75em; font-weight:400; color:#9ca3af;">(Adiantamento de Parcelas)</span></span>
                   </div>
                 </td>
                 <td style="padding:10px 16px; font-weight:700; color:#17111F;">${lanceText}</td>
