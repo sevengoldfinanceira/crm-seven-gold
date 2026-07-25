@@ -888,7 +888,7 @@
           </thead>
           <tbody>
             <tr>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Administradora & Tabela</td>
+              <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Administradora</td>
               <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">${proposal.administrator_name || 'Seven Gold'} — ${proposal.product_name || 'AUTOCON PRIME'}</td>
             </tr>
             <tr>
