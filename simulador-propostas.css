@@ -237,13 +237,14 @@ select.simulador-input option {
 /* Sticky Top Bar for Results Summary & Sorting Bar */
 .simulador-sticky-top-bar {
   position: sticky;
-  top: 24px;
-  z-index: 9;
+  top: 0;
+  z-index: 20;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: var(--seven-bg-general);
-  padding-bottom: 6px;
+  background: #ffffff;
+  padding-bottom: 8px;
+  padding-top: 4px;
 }
 
 @media (max-width: 1024px) {
