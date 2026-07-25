@@ -972,21 +972,11 @@
 
   // Initialize
   const initSimulador = () => {
-    // Check if we are in atendimento.html
-    const hasServiceShell = document.querySelector('.service-shell');
-    if (!hasServiceShell) return;
+    const hasSimulatorContainer = document.querySelector('[data-service-tab-content="simulador"]') || document.querySelector('.service-shell');
+    if (!hasSimulatorContainer) return;
 
-    // Listen for tab click in atendimento.html
-    const simNavBtn = document.querySelector('[data-service-tab="simulador"]');
-    if (simNavBtn) {
-      simNavBtn.addEventListener('click', () => {
-        renderSimulatorShell();
-      });
-    }
-
-    if (window.location.hash === '#simulador') {
-      renderSimulatorShell();
-    }
+    // Render simulator UI directly on page load
+    renderSimulatorShell();
   };
 
   if (document.readyState === "loading") {
