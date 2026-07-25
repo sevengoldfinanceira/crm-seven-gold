@@ -838,9 +838,9 @@
       const validityVal = document.getElementById('pf-validity')?.value ? new Date(document.getElementById('pf-validity').value + 'T00:00:00').toLocaleDateString('pt-BR') : '15 dias';
       const notesVal = document.getElementById('pf-notes')?.value || 'Sem observações adicionais.';
 
-      let lanceText = `Lance: ${bidAmount}`;
+      let lanceText = `${bidAmount}`;
       if (showPct) {
-        lanceText += ` (Fixo: ${proposal.fixed_bid_percentage || 30}% | Embutido: ${embeddedBid})`;
+        lanceText += ` (${embeddedBid})`;
       }
 
       const sheetEl = document.getElementById('proposta-final-a4-sheet');
@@ -912,7 +912,7 @@
               <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">${formatTermMonthsYears(proposal.total_term_months)}</td>
             </tr>
             <tr>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Lance Pretendido / Embutido</td>
+              <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Lance Embutido</td>
               <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">${lanceText}</td>
             </tr>
           </tbody>
