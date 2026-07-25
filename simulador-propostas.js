@@ -657,7 +657,7 @@
     const userRoleEl = document.querySelector('[data-user-role]');
     
     const consultantName = (userNameEl && userNameEl.textContent.trim() !== 'Carregando...') ? userNameEl.textContent.trim() : 'Consultor Seven Gold';
-    const consultantEmail = (userEmailEl && userEmailEl.textContent.trim() !== '...') ? userEmailEl.textContent.trim() : 'atendimento@sevengold.com.br';
+    const consultantEmail = (userEmailEl && userEmailEl.textContent.trim() !== '...') ? userEmailEl.textContent.trim() : 'atendimento@sevengoldfinanceira.com.br';
     const consultantRole = (userRoleEl && userRoleEl.textContent.trim() !== '...') ? userRoleEl.textContent.trim() : 'Consultor Comercial';
 
     // Generate Protocol: SG-YYYYMMDD-NNN (ex: SG-20260725-247)
@@ -1071,7 +1071,7 @@
               </div>
               <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
                 <i data-lucide="globe" style="width:12px; height:12px; color:#C9A84C;"></i>
-                <span>www.sevengold.com.br</span>
+                <span>www.sevengoldfinanceira.com.br</span>
               </div>
               <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
                 <i data-lucide="building" style="width:12px; height:12px; color:#B98220;"></i>
