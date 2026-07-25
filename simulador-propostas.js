@@ -106,9 +106,15 @@
               <h2 class="simulador-filters-title"><i data-lucide="sliders-horizontal" style="color:#d4af37; width:18px;"></i> Limites do Cliente</h2>
               
               <div class="simulador-form-group">
-                <label for="sim-desired-credit">Crédito Desejado</label>
-                <input type="text" id="sim-desired-credit" class="simulador-input brl-mask" placeholder="R$ 250.000,00" />
+                <label for="sim-min-credit">Crédito Mínimo</label>
+                <input type="text" id="sim-min-credit" class="simulador-input brl-mask" placeholder="R$ 200.000,00" />
               </div>
+
+              <div class="simulador-form-group">
+                <label for="sim-max-credit">Crédito Máximo</label>
+                <input type="text" id="sim-max-credit" class="simulador-input brl-mask" placeholder="R$ 300.000,00" />
+              </div>
+
 
               <div class="simulador-form-group">
                 <label for="sim-max-first-inst">Entrada / 1ª Parcela Máxima <span class="req">*</span></label>
@@ -126,23 +132,6 @@
                   Considerar 50% da Parcela (Meia Parcela / Filho)
                 </label>
               </div>
-
-              <!-- Optional Filters Toggle -->
-              <details style="margin-top:4px;">
-                <summary style="font-size:0.76rem; font-weight:700; color:#d4af37; cursor:pointer; user-select:none;">
-                  Filtros Opcionais de Margem
-                </summary>
-                <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
-                  <div class="simulador-form-group">
-                    <label for="sim-min-credit">Crédito Mínimo Aceitável</label>
-                    <input type="text" id="sim-min-credit" class="simulador-input brl-mask" placeholder="R$ 200.000,00" />
-                  </div>
-                  <div class="simulador-form-group">
-                    <label for="sim-max-credit">Crédito Máximo Aceitável</label>
-                    <input type="text" id="sim-max-credit" class="simulador-input brl-mask" placeholder="R$ 300.000,00" />
-                  </div>
-                </div>
-              </details>
 
               <div class="simulador-form-group priority-selector" style="margin-top:6px;">
                 <label for="sim-priority">Prioridade da Busca</label>
@@ -406,7 +395,7 @@
     if (window.lucide) window.lucide.createIcons();
 
     const payload = {
-      desired_credit: document.getElementById('sim-desired-credit').value,
+      desired_credit: document.getElementById('sim-min-credit')?.value || '',
       maximum_first_installment: document.getElementById('sim-max-first-inst').value,
       maximum_installment: document.getElementById('sim-max-inst').value,
       minimum_credit: document.getElementById('sim-min-credit')?.value || '',
