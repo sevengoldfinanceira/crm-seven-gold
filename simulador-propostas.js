@@ -759,6 +759,11 @@
                       <input type="text" id="pf-bid-amount" class="simulador-input brl-mask" style="font-weight:800; color:#150126;" placeholder="R$ 0,00" value="${formatCurrency(proposal.credit_value * ((proposal.fixed_bid_percentage || 30) / 100))}" />
                     </div>
                   </div>
+
+                  <label style="display:flex; align-items:center; gap:8px; margin-top:12px; font-size:0.78rem; color:#475569; font-weight:600; cursor:pointer; background:#fff; border:1px solid #cbd5e1; padding:8px 12px; border-radius:8px;">
+                    <input type="checkbox" id="pf-show-percentage-toggle" style="width:16px; height:16px; accent-color:#d4af37; cursor:pointer;" />
+                    <span>Exibir porcentagens (%) do lance na proposta final impressa</span>
+                  </label>
                 </div>
 
                 <div class="simulador-form-group">
@@ -827,10 +832,16 @@
       const clientCpf = document.getElementById('pf-client-cpf')?.value || '***.***.***-**';
       const clientPhone = document.getElementById('pf-client-phone')?.value || '(00) 00000-0000';
       const propType = document.getElementById('pf-property-type')?.value || 'Imóvel';
+      const showPct = document.getElementById('pf-show-percentage-toggle')?.checked || false;
       const bidAmount = document.getElementById('pf-bid-amount')?.value || 'R$ 0,00';
       const embeddedBid = document.getElementById('pf-embedded-bid')?.value || '30%';
       const validityVal = document.getElementById('pf-validity')?.value ? new Date(document.getElementById('pf-validity').value + 'T00:00:00').toLocaleDateString('pt-BR') : '15 dias';
       const notesVal = document.getElementById('pf-notes')?.value || 'Sem observações adicionais.';
+
+      let lanceText = `Lance: ${bidAmount}`;
+      if (showPct) {
+        lanceText += ` (Fixo: ${proposal.fixed_bid_percentage || 30}% | Embutido: ${embeddedBid})`;
+      }
 
       const sheetEl = document.getElementById('proposta-final-a4-sheet');
       if (!sheetEl) return;
@@ -901,8 +912,8 @@
               <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">${formatTermMonthsYears(proposal.total_term_months)}</td>
             </tr>
             <tr>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Lance Pretendido / Lance Fixo (%)</td>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">Lance: ${bidAmount} (Fixo: ${proposal.fixed_bid_percentage || 30}% | Embutido: ${embeddedBid})</td>
+              <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Lance Pretendido / Embutido</td>
+              <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">${lanceText}</td>
             </tr>
           </tbody>
         </table>
@@ -977,7 +988,7 @@
     }
 
     // Attach listeners for live update of A4 sheet
-    ['pf-client-name', 'pf-client-cpf', 'pf-client-phone', 'pf-property-type', 'pf-bid-amount', 'pf-embedded-bid', 'pf-validity', 'pf-notes'].forEach(id => {
+    ['pf-client-name', 'pf-client-cpf', 'pf-client-phone', 'pf-property-type', 'pf-bid-amount', 'pf-embedded-bid', 'pf-show-percentage-toggle', 'pf-validity', 'pf-notes'].forEach(id => {
       const inputEl = document.getElementById(id);
       if (inputEl) {
         inputEl.addEventListener('input', updateA4Sheet);
