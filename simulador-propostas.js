@@ -747,7 +747,7 @@
                     <span id="pf-embedded-bid-badge" style="background:#150126; color:#e8b138; font-weight:800; font-size:0.85rem; padding:3px 10px; border-radius:6px;">${proposal.fixed_bid_percentage || 30}%</span>
                   </div>
 
-                  <input type="range" id="pf-embedded-bid-range" min="0" max="70" step="1" value="${proposal.fixed_bid_percentage || 30}" style="width:100%; accent-color:#d4af37; cursor:pointer; height:6px; margin-bottom:12px;" />
+                  <input type="range" id="pf-embedded-bid-range" min="0" max="100" step="0.5" value="${proposal.fixed_bid_percentage || 30}" style="width:100%; accent-color:#d4af37; cursor:pointer; height:6px; margin-bottom:12px;" />
 
                   <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                     <div>
@@ -947,43 +947,64 @@
     const moneyInput = document.getElementById('pf-bid-amount');
     const creditVal = proposal.credit_value || 0;
 
-    const syncFromPercentage = (pct) => {
+    const formatPctDisplay = (num) => {
+      const roundNum = Math.round(num * 100) / 100;
+      return `${roundNum}%`;
+    };
+
+    // Sync from Percentage
+    const syncFromPercentage = (pct, source) => {
       const clampedPct = Math.min(Math.max(parseFloat(pct) || 0, 0), 100);
-      if (rangeSlider) rangeSlider.value = clampedPct;
-      if (badgeEl) badgeEl.textContent = `${clampedPct}%`;
-      if (pctInput && document.activeElement !== pctInput) pctInput.value = `${clampedPct}%`;
-      if (moneyInput && creditVal > 0 && document.activeElement !== moneyInput) {
+      const displayPct = formatPctDisplay(clampedPct);
+
+      if (rangeSlider && source !== 'slider') rangeSlider.value = clampedPct;
+      if (badgeEl) badgeEl.textContent = displayPct;
+      if (pctInput && source !== 'pctInput') pctInput.value = displayPct;
+
+      if (moneyInput && creditVal > 0 && source !== 'moneyInput') {
         const calculatedBrl = creditVal * (clampedPct / 100);
         moneyInput.value = formatCurrency(calculatedBrl);
       }
       updateA4Sheet();
     };
 
+    // Sync from Money
+    const syncFromMoney = (rawVal) => {
+      const digits = String(rawVal).replace(/\D/g, '');
+      if (!digits) {
+        syncFromPercentage(0, 'moneyInput');
+        return;
+      }
+      const valMoney = parseFloat(digits) / 100;
+      if (moneyInput) {
+        moneyInput.value = formatCurrency(valMoney);
+      }
+
+      if (creditVal > 0) {
+        const calcPct = Math.min(Math.max((valMoney / creditVal) * 100, 0), 100);
+        syncFromPercentage(calcPct, 'moneyInput');
+      } else {
+        updateA4Sheet();
+      }
+    };
+
     if (rangeSlider) {
       rangeSlider.addEventListener('input', (e) => {
-        syncFromPercentage(e.target.value);
+        syncFromPercentage(e.target.value, 'slider');
       });
     }
 
     if (pctInput) {
       pctInput.addEventListener('input', (e) => {
-        const raw = e.target.value.replace(/\D/g, '');
+        const raw = e.target.value.replace(/,/g, '.').replace(/[^\d.]/g, '');
         const val = parseFloat(raw) || 0;
-        syncFromPercentage(val);
+        syncFromPercentage(val, 'pctInput');
       });
     }
 
     if (moneyInput) {
       moneyInput.addEventListener('input', (e) => {
-        const raw = e.target.value.replace(/\D/g, '');
-        const valMoney = (parseFloat(raw) || 0) / 100;
-        if (creditVal > 0) {
-          const calcPct = Math.round((valMoney / creditVal) * 100);
-          if (rangeSlider) rangeSlider.value = calcPct;
-          if (badgeEl) badgeEl.textContent = `${calcPct}%`;
-          if (pctInput) pctInput.value = `${calcPct}%`;
-        }
-        updateA4Sheet();
+        syncFromMoney(e.target.value);
       });
     }
 
