@@ -560,7 +560,7 @@
             </div>
           </div>
 
-          ${isNearMatch && p.excess_reason ? `
+          ${nearItem && p.excess_reason ? `
             <div class="near-match-warning">
               <i data-lucide="info" style="width:16px; height:16px; flex-shrink:0;"></i>
               <span>${p.excess_reason}</span>
