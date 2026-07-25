@@ -147,9 +147,9 @@
               <div class="simulador-form-group priority-selector" style="margin-top:6px;">
                 <label for="sim-priority">Prioridade da Busca</label>
                 <select id="sim-priority" class="simulador-input" style="cursor:pointer;">
+                  <option value="MAIOR_CREDITO" selected>Maior Crédito para o Menor (Padrão)</option>
                   <option value="EQUILIBRIO">Melhor Equilíbrio (Recomendado)</option>
                   <option value="CREDITO_PROXIMO">Crédito mais próximo do desejado</option>
-                  <option value="MAIOR_CREDITO">Maior crédito possível</option>
                   <option value="MENOR_ENTRADA">Menor entrada / 1ª parcela</option>
                   <option value="MENOR_TEMPORARIA">Menor parcela temporária</option>
                   <option value="MENOR_POSTERIOR">Menor parcela posterior</option>
@@ -175,6 +175,26 @@
                 </span>
                 <button type="button" class="bordero-btn-secondary" id="sim-toggle-near-btn" style="display:none;">
                   <i data-lucide="eye"></i> Mostrar Opções Próximas
+                </button>
+              </div>
+
+              <!-- Quick Sorting Bar -->
+              <div class="simulador-sort-bar" id="sim-sort-bar" style="display:none; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; margin-bottom:12px; gap:8px; flex-wrap:wrap; align-items:center;">
+                <span style="font-size:0.78rem; font-weight:700; color:#d4af37; margin-right:4px;">Ordenar por:</span>
+                <button type="button" class="sim-sort-btn active" data-sort-by="credit-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#d4af37; color:#000; border:none; font-weight:700;">
+                  💳 Crédito (Maior → Menor)
+                </button>
+                <button type="button" class="sim-sort-btn" data-sort-by="inst-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.12); font-weight:600;">
+                  📊 Parcela (Maior → Menor)
+                </button>
+                <button type="button" class="sim-sort-btn" data-sort-by="inst-asc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.12); font-weight:600;">
+                  📉 Parcela (Menor → Maior)
+                </button>
+                <button type="button" class="sim-sort-btn" data-sort-by="first-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.12); font-weight:600;">
+                  💰 Entrada (Maior → Menor)
+                </button>
+                <button type="button" class="sim-sort-btn" data-sort-by="first-asc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.12); font-weight:600;">
+                  🏷️ Entrada (Menor → Maior)
                 </button>
               </div>
 
@@ -424,20 +444,64 @@
 
       const validList = data.valid_proposals || [];
       const nearList = data.near_matches || [];
+      const sortBar = document.getElementById('sim-sort-bar');
+
+      let currentActiveList = validList.length > 0 ? validList : nearList;
+      let currentIsNear = validList.length === 0;
 
       if (validList.length > 0) {
-        countTextEl.innerHTML = `Encontradas <strong>${validList.length}</strong> propostas ideais dentro dos limites rígidos do cliente.`;
+        countTextEl.innerHTML = `Encontradas <strong>${validList.length}</strong> propostas ideais dentro dos limites do cliente.`;
         toggleNearBtn.style.display = nearList.length > 0 ? 'inline-flex' : 'none';
+        if (sortBar) sortBar.style.display = 'flex';
         renderProposalCards(validList, false);
       } else {
         // No strict valid matches, show near matches automatically with clear excess notice
         countTextEl.innerHTML = `Nenhuma proposta exata dentro do limite. Exibindo <strong>${nearList.length}</strong> opções próximas.`;
         toggleNearBtn.style.display = 'none';
+        if (sortBar) sortBar.style.display = 'flex';
         renderProposalCards(nearList, true);
+      }
+
+      // Attach client-side sorting handlers for quick sorting buttons
+      if (sortBar) {
+        sortBar.querySelectorAll('.sim-sort-btn').forEach(btn => {
+          btn.onclick = () => {
+            sortBar.querySelectorAll('.sim-sort-btn').forEach(b => {
+              b.classList.remove('active');
+              b.style.background = 'rgba(255,255,255,0.06)';
+              b.style.color = '#fff';
+              b.style.border = '1px solid rgba(255,255,255,0.12)';
+              b.style.fontWeight = '600';
+            });
+
+            btn.classList.add('active');
+            btn.style.background = '#d4af37';
+            btn.style.color = '#000';
+            btn.style.border = 'none';
+            btn.style.fontWeight = '700';
+
+            const sortBy = btn.dataset.sortBy;
+            if (sortBy === 'credit-desc') {
+              currentActiveList.sort((a, b) => b.credit_value - a.credit_value);
+            } else if (sortBy === 'inst-desc') {
+              currentActiveList.sort((a, b) => b.final_installment_value - a.final_installment_value);
+            } else if (sortBy === 'inst-asc') {
+              currentActiveList.sort((a, b) => a.final_installment_value - b.final_installment_value);
+            } else if (sortBy === 'first-desc') {
+              currentActiveList.sort((a, b) => b.first_installment - a.first_installment);
+            } else if (sortBy === 'first-asc') {
+              currentActiveList.sort((a, b) => a.first_installment - b.first_installment);
+            }
+
+            renderProposalCards(currentActiveList, currentIsNear);
+          };
+        });
       }
 
       if (toggleNearBtn) {
         toggleNearBtn.onclick = () => {
+          currentActiveList = nearList;
+          currentIsNear = true;
           renderProposalCards(nearList, true);
           countTextEl.innerHTML = `Exibindo <strong>${nearList.length}</strong> opções próximas que ultrapassam ligeiramente os limites.`;
         };
