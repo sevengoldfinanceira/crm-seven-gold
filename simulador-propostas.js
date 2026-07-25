@@ -831,7 +831,7 @@
       const clientName = document.getElementById('pf-client-name')?.value || 'Cliente Especial';
       const clientCpf = document.getElementById('pf-client-cpf')?.value || '***.***.***-**';
       const clientPhone = document.getElementById('pf-client-phone')?.value || '(00) 00000-0000';
-      const propType = document.getElementById('pf-property-type')?.value || 'Imóvel';
+      const propType = document.getElementById('pf-property-type')?.value || 'Imóvel Residencial';
       const showPct = document.getElementById('pf-show-percentage-toggle')?.checked || false;
       const bidAmount = document.getElementById('pf-bid-amount')?.value || 'R$ 0,00';
       const embeddedBid = document.getElementById('pf-embedded-bid')?.value || '30%';
@@ -847,97 +847,230 @@
       if (!sheetEl) return;
 
       sheetEl.innerHTML = `
-        <div class="pf-a4-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e8b138; padding-bottom:16px; margin-bottom:20px;">
-          <div style="display:flex; align-items:center; gap:14px;">
-            <img src="assets/icons/seven-gold-g7.png" alt="Seven Gold" style="width:52px; height:52px; object-fit:contain;" />
-            <div>
-              <h2 style="margin:0; font-size:1.3rem; color:#150126; font-weight:800; letter-spacing:0.02em;">SEVEN GOLD FINANCEIRA</h2>
-              <span style="font-size:0.75rem; color:#6f6878; font-weight:600; text-transform:uppercase;">PROPOSTA COMERCIAL DE CONSÓRCIO</span>
+        <div class="pf-a4-header" style="background:linear-gradient(135deg, #150126 0%, #2A0742 100%); padding:20px 24px 18px; color:#ffffff; position:relative; overflow:hidden; border-radius:12px 12px 0 0;">
+          <div style="display:flex; justify-content:space-between; align-items:center; position:relative; z-index:2;">
+            <div style="display:flex; align-items:center; gap:16px;">
+              <img src="assets/icons/seven-gold-g7.png" alt="Seven Gold" style="width:48px; height:48px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));" />
+              <div style="width:1.5px; height:36px; background:#E8B138;"></div>
+              <div>
+                <h2 style="margin:0; font-size:1.25rem; color:#E8B138; font-weight:800; letter-spacing:0.04em; line-height:1.2;">SEVEN GOLD FINANCEIRA</h2>
+                <span style="font-size:0.72rem; color:#ffffff; font-weight:600; letter-spacing:0.05em; display:block; margin-top:2px;">PROPOSTA COMERCIAL DE CONSÓRCIO</span>
+              </div>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; gap:4px; text-align:right; font-size:0.78rem;">
+              <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px;">
+                <i data-lucide="file-text" style="width:14px; height:14px; color:#ffffff; opacity:0.9;"></i>
+                <span style="color:rgba(255,255,255,0.9); font-weight:500;">Protocolo:</span>
+                <strong style="color:#ffffff; font-weight:700; font-family:monospace; letter-spacing:0.02em;">${protocolNumber}</strong>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px;">
+                <i data-lucide="calendar" style="width:14px; height:14px; color:#ffffff; opacity:0.9;"></i>
+                <span style="color:rgba(255,255,255,0.9); font-weight:500;">Data:</span>
+                <span style="color:#ffffff; font-weight:600;">${new Date().toLocaleDateString('pt-BR')}</span>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px;">
+                <i data-lucide="shield-check" style="width:14px; height:14px; color:#E8B138;"></i>
+                <span style="color:#E8B138; font-weight:600;">Validade:</span>
+                <strong style="color:#E8B138; font-weight:700;">${validityVal}</strong>
+              </div>
             </div>
           </div>
-          <div style="text-align:right;">
-            <span style="display:block; font-size:0.8rem; font-weight:800; color:#150126;">Protocolo: ${protocolNumber}</span>
-            <span style="display:block; font-size:0.75rem; color:#6f6878;">Data: ${new Date().toLocaleDateString('pt-BR')}</span>
-            <span style="display:block; font-size:0.75rem; color:#d4af37; font-weight:700;">Validade: ${validityVal}</span>
-          </div>
+
+          <div style="position:absolute; bottom:0; left:0; right:0; height:6px; background:#E8B138;"></div>
+          <div style="position:absolute; bottom:0; right:40px; border-style:solid; border-width:0 0 14px 18px; border-color:transparent transparent #E8B138 transparent;"></div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; font-size:0.85rem;">
-          <div style="border:1px solid #e7e1eb; border-radius:10px; padding:12px; background:#fafafa;">
-            <strong style="color:#150126; display:block; margin-bottom:6px; font-size:0.8rem; text-transform:uppercase; border-bottom:1px solid #eee; padding-bottom:4px;">DADOS DO CONSULTOR</strong>
-            <div><strong>Nome:</strong> ${consultantName}</div>
-            <div><strong>E-mail:</strong> ${consultantEmail}</div>
-            <div><strong>Cargo:</strong> ${consultantRole}</div>
+        <div class="pf-a4-body" style="padding:24px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
+            <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:12px; padding:16px 18px;">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; padding-bottom:8px; border-bottom:2px solid #E8B138;">
+                <div style="width:28px; height:28px; border-radius:50%; background:#150126; display:flex; align-items:center; justify-content:center; color:#E8B138; flex-shrink:0;">
+                  <i data-lucide="user" style="width:15px; height:15px;"></i>
+                </div>
+                <strong style="color:#150126; font-size:0.82rem; letter-spacing:0.04em; text-transform:uppercase;">DADOS DO CONSULTOR</strong>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem; color:#706A78;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="user-check" style="width:14px; height:14px; color:#B98220; flex-shrink:0;"></i>
+                  <span><strong style="color:#17111F;">Nome:</strong> ${consultantName}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="mail" style="width:14px; height:14px; color:#B98220; flex-shrink:0;"></i>
+                  <span><strong style="color:#17111F;">E-mail:</strong> ${consultantEmail}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="briefcase" style="width:14px; height:14px; color:#B98220; flex-shrink:0;"></i>
+                  <span><strong style="color:#17111F;">Cargo:</strong> ${consultantRole}</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:12px; padding:16px 18px;">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; padding-bottom:8px; border-bottom:2px solid #E8B138;">
+                <div style="width:28px; height:28px; border-radius:50%; background:#150126; display:flex; align-items:center; justify-content:center; color:#E8B138; flex-shrink:0;">
+                  <i data-lucide="users" style="width:15px; height:15px;"></i>
+                </div>
+                <strong style="color:#150126; font-size:0.82rem; letter-spacing:0.04em; text-transform:uppercase;">DADOS DO CLIENTE</strong>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem; color:#706A78;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="contact" style="width:14px; height:14px; color:#B98220; flex-shrink:0;"></i>
+                  <span><strong style="color:#17111F;">Nome:</strong> ${clientName}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="credit-card" style="width:14px; height:14px; color:#B98220; flex-shrink:0;"></i>
+                  <span><strong style="color:#17111F;">CPF:</strong> ${clientCpf}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="phone" style="width:14px; height:14px; color:#B98220; flex-shrink:0;"></i>
+                  <span><strong style="color:#17111F;">Telefone:</strong> ${clientPhone}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="home" style="width:14px; height:14px; color:#B98220; flex-shrink:0;"></i>
+                  <span><strong style="color:#17111F;">Tipo de Bem:</strong> ${propType}</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div style="border:1px solid #e7e1eb; border-radius:10px; padding:12px; background:#fafafa;">
-            <strong style="color:#150126; display:block; margin-bottom:6px; font-size:0.8rem; text-transform:uppercase; border-bottom:1px solid #eee; padding-bottom:4px;">DADOS DO CLIENTE</strong>
-            <div><strong>Nome:</strong> ${clientName}</div>
-            <div><strong>CPF:</strong> ${clientCpf}</div>
-            <div><strong>Telefone:</strong> ${clientPhone}</div>
-            <div><strong>Tipo de Bem:</strong> ${propType}</div>
-          </div>
-        </div>
+          <table style="width:100%; border-collapse:separate; border-spacing:0; margin-bottom:20px; font-size:0.84rem; border:1px solid #E4DEE8; border-radius:12px; overflow:hidden;">
+            <thead>
+              <tr style="background:#150126; color:#ffffff; text-align:left;">
+                <th style="padding:12px 16px; width:50%; font-weight:700; font-size:0.82rem; letter-spacing:0.03em;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="file-text" style="width:16px; height:16px; color:#E8B138;"></i>
+                    <span>ESPECIFICAÇÃO FINANCEIRA</span>
+                  </div>
+                </th>
+                <th style="padding:12px 16px; width:50%; font-weight:700; font-size:0.82rem; letter-spacing:0.03em;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="dollar-sign" style="width:16px; height:16px; color:#E8B138;"></i>
+                    <span>VALOR / DETALHE</span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="building-2" style="width:14px; height:14px; color:#B98220;"></i>
+                    <span>Administradora</span>
+                  </div>
+                </td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:700; color:#17111F;">Seven Gold Financeira - Alpha Administradora de Consórcio Ltda.</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="credit-card" style="width:14px; height:14px; color:#B98220;"></i>
+                    <span>Valor da Carta de Crédito / Bem</span>
+                  </div>
+                </td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#B98220; font-size:1.05rem;">${creditFormatted}</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="coins" style="width:14px; height:14px; color:#B98220;"></i>
+                    <span>Entrada / 1ª Parcela (Adesão)</span>
+                  </div>
+                </td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:700; color:#17111F;">${firstInstFormatted}</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="trending-up" style="width:14px; height:14px; color:#1769E0;"></i>
+                    <span>Valor da Parcela Integral (100%)</span>
+                  </div>
+                </td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#1769E0; font-size:0.95rem;">${finalInstFormatted}</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="percent" style="width:14px; height:14px; color:#059669;"></i>
+                    <span>Valor da Parcela Reduzida (50% Meia Parcela)</span>
+                  </div>
+                </td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#059669; font-size:0.95rem;">${halfInstFormatted}</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="calendar" style="width:14px; height:14px; color:#B98220;"></i>
+                    <span>Prazo Total do Grupo</span>
+                  </div>
+                </td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:700; color:#17111F;">${formatTermMonthsYears(proposal.total_term_months)}</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 16px; background:#FAF9FB; color:#706A78; font-weight:500;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="gavel" style="width:14px; height:14px; color:#B98220;"></i>
+                    <span>Lance Embutido</span>
+                  </div>
+                </td>
+                <td style="padding:10px 16px; font-weight:700; color:#17111F;">${lanceText}</td>
+              </tr>
+            </tbody>
+          </table>
 
-        <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:0.85rem; border:1px solid #e7e1eb;">
-          <thead>
-            <tr style="background:#150126; color:#ffffff; text-align:left;">
-              <th style="padding:10px; border:1px solid #2a0742;">ESPECIFICAÇÃO FINANCEIRA</th>
-              <th style="padding:10px; border:1px solid #2a0742;">VALOR / DETALHE</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Administradora</td>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">Seven Gold Financeira - Alpha Administradora de Consórcio Ltda.</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Valor da Carta de Crédito / Bem</td>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:800; color:#150126; font-size:0.95rem;">${creditFormatted}</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Entrada / 1ª Parcela (Adesão)</td>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">${firstInstFormatted}</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Valor da Parcela Integral (100%)</td>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700; color:#1d4ed8;">${finalInstFormatted}</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Valor da Parcela Reduzida (50% Meia Parcela)</td>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700; color:#059669;">${halfInstFormatted}</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Prazo Total do Grupo</td>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">${formatTermMonthsYears(proposal.total_term_months)}</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Lance Embutido</td>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">${lanceText}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div style="border:1px solid #e7e1eb; border-radius:10px; padding:12px; background:#fafafa; margin-bottom:20px; font-size:0.8rem;">
-          <strong style="color:#150126; display:block; margin-bottom:4px; font-size:0.8rem; text-transform:uppercase;">OBSERVAÇÕES E CONDIÇÕES COMERCIAIS</strong>
-          <p style="margin:0 0 8px; color:#374151;">${notesVal}</p>
-          <div style="margin-top:8px; padding-top:8px; border-top:1px dashed #e7e1eb; font-size:0.73rem; color:#6f6878; font-weight:600; line-height:1.4;">
-            <div>** Sujeito a análise e aprovação de crédito.</div>
-            <div>** Esta proposta é uma simulação, não garantindo qualquer espécie de obrigação entre as partes.</div>
+          <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:12px; padding:16px 20px; margin-bottom:20px; font-size:0.8rem;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+              <div style="width:26px; height:26px; border-radius:50%; background:#150126; display:flex; align-items:center; justify-content:center; color:#E8B138; flex-shrink:0;">
+                <i data-lucide="file-check" style="width:14px; height:14px;"></i>
+              </div>
+              <strong style="color:#150126; font-size:0.82rem; letter-spacing:0.03em; text-transform:uppercase;">OBSERVAÇÕES E CONDIÇÕES COMERCIAIS</strong>
+            </div>
+            
+            <p style="margin:0 0 10px; color:#17111F; font-size:0.82rem;">${notesVal}</p>
+            
+            <div style="margin-top:10px; padding-top:10px; border-top:1px dashed #E4DEE8; font-size:0.73rem; color:#706A78; font-weight:600; line-height:1.5;">
+              <div>** Sujeito a análise e aprovação de crédito.</div>
+              <div>** Esta proposta é uma simulação, não garantindo qualquer espécie de obrigação entre as partes.</div>
+            </div>
           </div>
-        </div>
 
-        <div class="pf-a4-footer" style="border-top:1.5px solid #e8b138; padding-top:12px; display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#6f6878;">
-          <div>
-            <strong>Seven Gold Financeira</strong><br />
-            Instagram: @sevengoldfinanceira
-          </div>
-          <div style="text-align:right;">
-            Atendimento Oficial • Todos os Direitos Reservados<br />
-            www.sevengold.com.br
+          <div class="pf-a4-footer" style="border-top:1.5px solid #E8B138; padding-top:14px; display:grid; grid-template-columns:1fr 1px 1fr; gap:16px; align-items:center; font-size:0.75rem; color:#706A78;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:36px; height:36px; border-radius:50%; background:#150126; display:flex; align-items:center; justify-content:center; border:1px solid #E8B138; flex-shrink:0;">
+                <img src="assets/icons/seven-gold-g7.png" alt="Seven Gold" style="width:24px; height:24px; object-fit:contain;" />
+              </div>
+              <div>
+                <strong style="color:#B98220; font-size:0.82rem; display:block;">Seven Gold Financeira</strong>
+                <div style="display:flex; align-items:center; gap:4px; color:#706A78; font-size:0.74rem;">
+                  <i data-lucide="instagram" style="width:12px; height:12px; color:#B98220;"></i>
+                  <span>Instagram: @sevengoldfinanceira</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:#E4DEE8; height:36px;"></div>
+
+            <div style="text-align:right; font-size:0.73rem; color:#706A78; display:flex; flex-direction:column; gap:2px;">
+              <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
+                <i data-lucide="headphones" style="width:12px; height:12px; color:#B98220;"></i>
+                <span>Atendimento Oficial • Todos os Direitos Reservados</span>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
+                <i data-lucide="globe" style="width:12px; height:12px; color:#B98220;"></i>
+                <span>www.sevengold.com.br</span>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
+                <i data-lucide="building" style="width:12px; height:12px; color:#B98220;"></i>
+                <span>CNPJ 66.347.779/0001-24</span>
+              </div>
+            </div>
           </div>
         </div>
       `;
+
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
     }
 
     // Bidirectional Range Slider <-> Percentage Input <-> Money Value Input

@@ -6,11 +6,13 @@
   --seven-gold-main: #E8B138;
   --seven-gold-dark: #B98220;
   --seven-gold-light: #F5D874;
-  --seven-bg-general: #F7F6F8;
-  --seven-card-bg: #FFFFFF;
-  --seven-text-main: #15121A;
-  --seven-text-sec: #6F6878;
-  --seven-border: #E7E1EB;
+  --seven-bg-white: #FFFFFF;
+  --seven-bg-sec: #FAF9FB;
+  --seven-text-main: #17111F;
+  --seven-text-sec: #706A78;
+  --seven-border: #E4DEE8;
+  --seven-blue-integral: #1769E0;
+  --seven-green-half: #059669;
 }
 
 .simulador-container {
@@ -561,12 +563,19 @@ select.simulador-input option {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm;
+    margin: 0;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   body {
+    margin: 0 !important;
+    padding: 0 !important;
     background: #ffffff !important;
-    color: #000000 !important;
+    color: #17111F !important;
   }
 
   /* Hide CRM shell elements during print */
@@ -574,7 +583,6 @@ select.simulador-input option {
   .service-header,
   .service-nav,
   .pf-header-bar,
-  .pf-content-grid,
   .user-box,
   button,
   nav,
@@ -605,14 +613,25 @@ select.simulador-input option {
     display: block !important;
     position: static !important;
     width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
+    max-width: 210mm !important;
+    margin: 0 auto !important;
     padding: 0 !important;
     border: none !important;
+    border-radius: 0 !important;
     box-shadow: none !important;
     background: #ffffff !important;
-    color: #000000 !important;
+    color: #17111F !important;
     page-break-after: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .proposta-final-print-sheet table,
+  .proposta-final-print-sheet tr,
+  .proposta-final-print-sheet td,
+  .proposta-final-print-sheet div {
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 }
 
