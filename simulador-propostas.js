@@ -734,19 +734,30 @@
                     </select>
                   </div>
                   <div class="simulador-form-group">
-                    <label for="pf-bid-amount">Valor de Lance Pretendido (R$)</label>
-                    <input type="text" id="pf-bid-amount" class="simulador-input brl-mask" placeholder="R$ 0,00" />
+                    <label for="pf-validity">Validade da Proposta</label>
+                    <input type="date" id="pf-validity" class="simulador-input" value="${validityDefault}" />
                   </div>
                 </div>
 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                  <div class="simulador-form-group">
-                    <label for="pf-embedded-bid">Lance Embutido (%)</label>
-                    <input type="text" id="pf-embedded-bid" class="simulador-input" placeholder="Ex: 30%" value="${proposal.fixed_bid_percentage || 30}%" />
+                <div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:12px; padding:14px; margin-bottom:12px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <label for="pf-embedded-bid-range" style="font-weight:700; color:#0f172a; font-size:0.85rem; margin:0;">
+                      <i data-lucide="sliders" style="width:14px; height:14px; color:#d4af37; vertical-align:middle;"></i> Lance Embutido / Pretendido (%)
+                    </label>
+                    <span id="pf-embedded-bid-badge" style="background:#150126; color:#e8b138; font-weight:800; font-size:0.85rem; padding:3px 10px; border-radius:6px;">${proposal.fixed_bid_percentage || 30}%</span>
                   </div>
-                  <div class="simulador-form-group">
-                    <label for="pf-validity">Validade da Proposta</label>
-                    <input type="date" id="pf-validity" class="simulador-input" value="${validityDefault}" />
+
+                  <input type="range" id="pf-embedded-bid-range" min="0" max="70" step="1" value="${proposal.fixed_bid_percentage || 30}" style="width:100%; accent-color:#d4af37; cursor:pointer; height:6px; margin-bottom:12px;" />
+
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div>
+                      <label for="pf-embedded-bid" style="font-size:0.75rem; color:#64748b; font-weight:600;">Porcentagem (%)</label>
+                      <input type="text" id="pf-embedded-bid" class="simulador-input" style="font-weight:700; text-align:center;" value="${proposal.fixed_bid_percentage || 30}%" />
+                    </div>
+                    <div>
+                      <label for="pf-bid-amount" style="font-size:0.75rem; color:#64748b; font-weight:600;">Valor em R$ (Calculado)</label>
+                      <input type="text" id="pf-bid-amount" class="simulador-input brl-mask" style="font-weight:800; color:#150126;" placeholder="R$ 0,00" value="${formatCurrency(proposal.credit_value * ((proposal.fixed_bid_percentage || 30) / 100))}" />
+                    </div>
                   </div>
                 </div>
 
@@ -916,6 +927,53 @@
           </div>
         </div>
       `;
+    }
+
+    // Bidirectional Range Slider <-> Percentage Input <-> Money Value Input
+    const rangeSlider = document.getElementById('pf-embedded-bid-range');
+    const badgeEl = document.getElementById('pf-embedded-bid-badge');
+    const pctInput = document.getElementById('pf-embedded-bid');
+    const moneyInput = document.getElementById('pf-bid-amount');
+    const creditVal = proposal.credit_value || 0;
+
+    const syncFromPercentage = (pct) => {
+      const clampedPct = Math.min(Math.max(parseFloat(pct) || 0, 0), 100);
+      if (rangeSlider) rangeSlider.value = clampedPct;
+      if (badgeEl) badgeEl.textContent = `${clampedPct}%`;
+      if (pctInput && document.activeElement !== pctInput) pctInput.value = `${clampedPct}%`;
+      if (moneyInput && creditVal > 0 && document.activeElement !== moneyInput) {
+        const calculatedBrl = creditVal * (clampedPct / 100);
+        moneyInput.value = formatCurrency(calculatedBrl);
+      }
+      updateA4Sheet();
+    };
+
+    if (rangeSlider) {
+      rangeSlider.addEventListener('input', (e) => {
+        syncFromPercentage(e.target.value);
+      });
+    }
+
+    if (pctInput) {
+      pctInput.addEventListener('input', (e) => {
+        const raw = e.target.value.replace(/\D/g, '');
+        const val = parseFloat(raw) || 0;
+        syncFromPercentage(val);
+      });
+    }
+
+    if (moneyInput) {
+      moneyInput.addEventListener('input', (e) => {
+        const raw = e.target.value.replace(/\D/g, '');
+        const valMoney = (parseFloat(raw) || 0) / 100;
+        if (creditVal > 0) {
+          const calcPct = Math.round((valMoney / creditVal) * 100);
+          if (rangeSlider) rangeSlider.value = calcPct;
+          if (badgeEl) badgeEl.textContent = `${calcPct}%`;
+          if (pctInput) pctInput.value = `${calcPct}%`;
+        }
+        updateA4Sheet();
+      });
     }
 
     // Attach listeners for live update of A4 sheet
