@@ -1,27 +1,41 @@
-/* CSS for Simulador de Propostas - Painel de Atendimento (Ajustado para Light Mode do CRM) */
+/* CSS for Simulador de Propostas - Painel de Atendimento (Seven Gold Premium Design Tokens) */
+
+:root {
+  --seven-purple-dark: #150126;
+  --seven-purple-sec: #2A0742;
+  --seven-gold-main: #E8B138;
+  --seven-gold-dark: #B98220;
+  --seven-gold-light: #F5D874;
+  --seven-bg-general: #F7F6F8;
+  --seven-card-bg: #FFFFFF;
+  --seven-text-main: #15121A;
+  --seven-text-sec: #6F6878;
+  --seven-border: #E7E1EB;
+}
 
 .simulador-container {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  color: var(--ink);
-  font-family: 'Inter', sans-serif;
+  color: var(--seven-text-main);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Internal Sub-Tabs Navigation */
 .simulador-tabs-nav {
   display: flex;
   gap: 12px;
-  border-bottom: 1.5px solid var(--line);
+  border-bottom: 1.5px solid var(--seven-border);
   padding-bottom: 12px;
 }
+
 .simulador-tab-btn {
-  background: #ffffff;
-  border: 1px solid var(--line);
-  color: var(--muted);
+  background: var(--seven-card-bg);
+  border: 1px solid var(--seven-border);
+  color: var(--seven-purple-dark);
   font-size: 0.84rem;
   font-weight: 700;
-  padding: 10px 18px;
+  padding: 10px 20px;
   border-radius: 10px;
   cursor: pointer;
   display: flex;
@@ -29,14 +43,17 @@
   gap: 8px;
   transition: all 0.2s ease;
 }
+
 .simulador-tab-btn:hover {
-  background: #f9fafb;
-  color: var(--ink);
+  background: var(--seven-bg-general);
+  color: var(--seven-purple-sec);
 }
+
 .simulador-tab-btn.active {
-  background: rgba(227, 182, 50, 0.12);
-  border-color: var(--gold);
-  color: #ac7c00;
+  background: var(--seven-purple-dark);
+  border-color: var(--seven-purple-dark);
+  color: var(--seven-gold-main);
+  box-shadow: 0 4px 14px rgba(21, 1, 38, 0.2);
 }
 
 /* Simulation Layout (Grid Filters + Results) */
@@ -45,6 +62,7 @@
   grid-template-columns: 340px 1fr;
   gap: 24px;
 }
+
 @media (max-width: 1024px) {
   .simulador-main-grid {
     grid-template-columns: 1fr;
@@ -53,68 +71,77 @@
 
 /* Filters Card Sidebar */
 .simulador-filters-card {
-  background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 18px;
+  background: var(--seven-card-bg);
+  border: 1px solid var(--seven-border);
+  border-radius: 16px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 18px;
   height: fit-content;
-  box-shadow: 0 10px 30px rgba(31, 22, 37, 0.03);
+  box-shadow: 0 4px 16px rgba(21, 1, 38, 0.04);
 }
+
 .simulador-filters-title {
   font-size: 1.05rem;
   font-weight: 800;
-  color: var(--ink);
+  color: var(--seven-purple-dark);
   margin: 0;
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
 .simulador-form-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
+
 .simulador-form-group label {
   font-size: 0.78rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--seven-text-sec);
   display: flex;
   justify-content: space-between;
 }
+
 .simulador-form-group label span.req {
-  color: #ac7c00;
+  color: var(--seven-gold-main);
+  font-weight: 800;
 }
+
 .simulador-input {
-  background: #ffffff;
-  border: 1px solid var(--line);
+  background: var(--seven-card-bg);
+  border: 1px solid var(--seven-border);
   border-radius: 8px;
   padding: 10px 12px;
-  color: var(--ink);
+  color: var(--seven-text-main);
   font-size: 0.86rem;
   font-weight: 600;
   outline: none;
   transition: all 0.2s ease;
 }
+
 .simulador-input:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 8px rgba(227, 182, 50, 0.2);
-  background: #fff;
+  border-color: var(--seven-gold-main);
+  box-shadow: 0 0 0 3px rgba(232, 177, 56, 0.15);
+  background: var(--seven-card-bg);
 }
+
 select.simulador-input {
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f6876' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23150126' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 14px;
   padding-right: 32px;
 }
+
 select.simulador-input option {
-  color: #111827;
-  background-color: #ffffff;
+  color: var(--seven-text-main);
+  background-color: var(--seven-card-bg);
 }
 
 /* Action buttons */
@@ -126,11 +153,11 @@ select.simulador-input option {
 }
 
 .bordero-btn-primary {
-  background: var(--gold);
-  border: 1px solid #d4a61d;
-  color: #16131a;
-  font-size: 0.82rem;
-  font-weight: 750;
+  background: var(--seven-purple-dark);
+  border: 1px solid var(--seven-purple-dark);
+  color: #FFFFFF;
+  font-size: 0.84rem;
+  font-weight: 800;
   padding: 11px 20px;
   border-radius: 10px;
   cursor: pointer;
@@ -139,15 +166,20 @@ select.simulador-input option {
   gap: 8px;
   justify-content: center;
   transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(21, 1, 38, 0.15);
 }
+
 .bordero-btn-primary:hover {
-  background: #f4cf5d;
+  background: var(--seven-purple-sec);
+  border-color: var(--seven-purple-sec);
+  color: #FFFFFF;
   transform: translateY(-1px);
 }
+
 .bordero-btn-secondary {
-  background: #ffffff;
-  border: 1px solid var(--line);
-  color: var(--ink);
+  background: var(--seven-card-bg);
+  border: 1px solid var(--seven-border);
+  color: var(--seven-text-main);
   font-size: 0.82rem;
   font-weight: 700;
   padding: 11px 20px;
@@ -159,34 +191,78 @@ select.simulador-input option {
   justify-content: center;
   transition: all 0.2s ease;
 }
+
 .bordero-btn-secondary:hover {
-  background: #f9fafb;
-  border-color: #cbd5e1;
+  background: var(--seven-bg-general);
+  border-color: #D1C9D6;
 }
 
 /* Results Container */
 .simulador-results-container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
+
 .simulador-results-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #ffffff;
-  border: 1px solid var(--line);
+  background: var(--seven-card-bg);
+  border: 1px solid var(--seven-border);
   border-radius: 14px;
-  padding: 14px 20px;
-  box-shadow: 0 4px 20px rgba(31, 22, 37, 0.01);
+  padding: 16px 20px;
+  box-shadow: 0 4px 16px rgba(21, 1, 38, 0.03);
 }
+
 .simulador-results-count {
   font-size: 0.88rem;
   font-weight: 700;
-  color: var(--ink);
+  color: var(--seven-text-main);
 }
+
 .simulador-results-count strong {
-  color: #ac7c00;
+  color: var(--seven-gold-dark);
+  font-weight: 800;
+}
+
+/* Quick Sorting Bar */
+.simulador-sort-bar {
+  background: var(--seven-card-bg) !important;
+  border: 1px solid var(--seven-border) !important;
+  border-radius: 12px !important;
+  padding: 10px 16px !important;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(21, 1, 38, 0.02);
+}
+
+.sim-sort-btn {
+  background: var(--seven-bg-general) !important;
+  color: var(--seven-text-sec) !important;
+  border: 1px solid var(--seven-border) !important;
+  font-weight: 600 !important;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  transition: all 0.18s ease;
+  cursor: pointer;
+}
+
+.sim-sort-btn:hover {
+  background: var(--seven-border) !important;
+  color: var(--seven-purple-dark) !important;
+}
+
+.sim-sort-btn.active {
+  background: var(--seven-gold-main) !important;
+  color: var(--seven-text-main) !important;
+  border: none !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 8px rgba(232, 177, 56, 0.3);
 }
 
 /* Cards Grid for Proposal Cards */
@@ -195,41 +271,49 @@ select.simulador-input option {
   flex-direction: column;
   gap: 16px;
 }
+
 .proposal-item-card {
-  background: #ffffff;
-  border: 1px solid var(--line);
+  background: var(--seven-card-bg);
+  border: 1px solid var(--seven-border);
+  border-left: 4px solid var(--seven-gold-main);
   border-radius: 16px;
-  padding: 20px;
+  padding: 22px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   position: relative;
   transition: all 0.22s ease;
-  box-shadow: 0 6px 22px rgba(31, 22, 37, 0.02);
+  box-shadow: 0 4px 16px rgba(21, 1, 38, 0.04);
 }
+
 .proposal-item-card:hover {
-  border-color: rgba(227, 182, 50, 0.4);
-  box-shadow: 0 10px 30px rgba(31, 22, 37, 0.06);
+  border-color: var(--seven-border);
+  border-left-color: var(--seven-gold-dark);
+  box-shadow: 0 8px 24px rgba(21, 1, 38, 0.08);
+  transform: translateY(-1px);
 }
+
 .proposal-item-card.near-match {
-  border-color: rgba(239, 68, 68, 0.25);
-  background: rgba(239, 68, 68, 0.01);
+  border-left-color: #ef4444;
+  background: #fffdfd;
 }
 
 /* Badges */
 .proposal-badge {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  background: rgba(227, 182, 50, 0.12);
-  color: #ac7c00;
-  border: 1px solid rgba(227, 182, 50, 0.3);
+  top: 18px;
+  right: 18px;
+  background: var(--seven-purple-dark);
+  color: var(--seven-gold-main);
+  border: 1px solid var(--seven-gold-main);
   font-size: 0.68rem;
   font-weight: 800;
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 20px;
   text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
+
 .proposal-badge.near {
   background: rgba(239, 68, 68, 0.1);
   color: #dc2626;
@@ -242,59 +326,68 @@ select.simulador-input option {
   gap: 16px;
   align-items: center;
 }
+
 .proposal-rank-num {
   width: 36px;
   height: 36px;
-  border-radius: 10px;
-  background: rgba(227, 182, 50, 0.08);
-  color: #ac7c00;
-  border: 1px solid rgba(227, 182, 50, 0.2);
+  border-radius: 8px;
+  background: var(--seven-purple-dark);
+  color: var(--seven-gold-main);
+  border: 1px solid var(--seven-gold-main);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  flex-shrink: 0;
 }
+
 .proposal-title-meta h3 {
   font-size: 1.1rem;
   font-weight: 800;
-  color: var(--ink);
+  color: var(--seven-text-main);
   margin: 0;
 }
+
 .proposal-title-meta p {
   font-size: 0.76rem;
-  color: var(--muted);
+  color: var(--seven-text-sec);
   margin: 2px 0 0;
 }
 
 /* Proposal Grid Metric Specs */
 .proposal-specs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-  background: #faf9fb;
-  border: 1px solid var(--line);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  background: var(--seven-bg-general);
+  border: 1px solid var(--seven-border);
   border-radius: 12px;
-  padding: 14px;
+  padding: 14px 18px;
 }
+
 .proposal-spec-item {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
+
 .proposal-spec-item span {
   font-size: 0.68rem;
   font-weight: 700;
-  color: var(--muted);
+  color: var(--seven-text-sec);
   text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
+
 .proposal-spec-item strong {
   font-size: 0.95rem;
   font-weight: 800;
-  color: var(--ink);
+  color: var(--seven-purple-dark);
 }
+
 .proposal-spec-item strong.highlight {
-  color: #ac7c00;
+  color: var(--seven-gold-dark);
 }
 
 /* Excess warning banner for near matches */
@@ -316,12 +409,34 @@ select.simulador-input option {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid var(--line);
-  padding-top: 12px;
+  border-top: 1px solid var(--seven-border);
+  padding-top: 14px;
 }
+
 .proposal-card-meta-text {
-  font-size: 0.72rem;
-  color: var(--muted);
+  font-size: 0.74rem;
+  color: var(--seven-text-sec);
+}
+
+.proposal-card-footer [data-action-select-proposal] {
+  background: var(--seven-gold-main) !important;
+  border: 1px solid var(--seven-gold-dark) !important;
+  color: var(--seven-text-main) !important;
+  font-size: 0.8rem !important;
+  font-weight: 800 !important;
+  padding: 9px 18px !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.proposal-card-footer [data-action-select-proposal]:hover {
+  background: var(--seven-gold-light) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(232, 177, 56, 0.3);
 }
 
 /* Administrative Tab & Table Styling */
@@ -330,21 +445,22 @@ select.simulador-input option {
   flex-direction: column;
   gap: 20px;
 }
+
 .admin-card-box {
-  background: #ffffff;
-  border: 1px solid var(--line);
+  background: var(--seven-card-bg);
+  border: 1px solid var(--seven-border);
   border-radius: 16px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: 0 10px 30px rgba(31, 22, 37, 0.03);
+  box-shadow: 0 4px 16px rgba(21, 1, 38, 0.04);
 }
 
 /* Upload dropzone */
 .pdf-upload-dropzone {
-  border: 2px dashed rgba(227, 182, 50, 0.4);
-  background: rgba(227, 182, 50, 0.01);
+  border: 2px dashed rgba(232, 177, 56, 0.4);
+  background: rgba(232, 177, 56, 0.02);
   border-radius: 12px;
   padding: 30px;
   text-align: center;
@@ -355,12 +471,14 @@ select.simulador-input option {
   align-items: center;
   gap: 10px;
 }
+
 .pdf-upload-dropzone:hover {
-  background: rgba(227, 182, 50, 0.05);
-  border-color: var(--gold);
+  background: rgba(232, 177, 56, 0.06);
+  border-color: var(--seven-gold-main);
 }
+
 .pdf-upload-dropzone p {
-  color: var(--ink);
+  color: var(--seven-text-main);
 }
 
 /* Table styling for available commercial tables */
@@ -370,18 +488,21 @@ select.simulador-input option {
   font-size: 0.82rem;
   text-align: left;
 }
+
 .proposals-data-table th {
-  background: #f9fafb;
-  color: #ac7c00;
-  font-weight: 700;
+  background: var(--seven-bg-general);
+  color: var(--seven-purple-dark);
+  font-weight: 800;
   padding: 12px 14px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--seven-border);
 }
+
 .proposals-data-table td {
   padding: 12px 14px;
-  border-bottom: 1px solid #f3f4f6;
-  color: var(--ink);
+  border-bottom: 1px solid var(--seven-border);
+  color: var(--seven-text-main);
 }
+
 .proposals-data-table tr:hover td {
-  background: #f9fafb;
+  background: var(--seven-bg-general);
 }

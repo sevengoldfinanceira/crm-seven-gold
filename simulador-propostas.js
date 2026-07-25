@@ -179,21 +179,21 @@
               </div>
 
               <!-- Quick Sorting Bar -->
-              <div class="simulador-sort-bar" id="sim-sort-bar" style="display:none; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; margin-bottom:12px; gap:8px; flex-wrap:wrap; align-items:center;">
-                <span style="font-size:0.78rem; font-weight:700; color:#d4af37; margin-right:4px;">Ordenar por:</span>
-                <button type="button" class="sim-sort-btn active" data-sort-by="credit-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#d4af37; color:#000; border:none; font-weight:700;">
+              <div class="simulador-sort-bar" id="sim-sort-bar" style="display:none; padding:10px 16px; background:#ffffff; border:1px solid #e7e1eb; border-radius:12px; margin-bottom:12px; gap:8px; flex-wrap:wrap; align-items:center;">
+                <span style="font-size:0.78rem; font-weight:800; color:#150126; margin-right:4px;">Ordenar por:</span>
+                <button type="button" class="sim-sort-btn active" data-sort-by="credit-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#e8b138; color:#15121a; border:none; font-weight:800;">
                   💳 Crédito (Maior → Menor)
                 </button>
-                <button type="button" class="sim-sort-btn" data-sort-by="inst-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.12); font-weight:600;">
+                <button type="button" class="sim-sort-btn" data-sort-by="inst-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#f7f6f8; color:#6f6878; border:1px solid #e7e1eb; font-weight:600;">
                   📊 Parcela (Maior → Menor)
                 </button>
-                <button type="button" class="sim-sort-btn" data-sort-by="inst-asc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.12); font-weight:600;">
+                <button type="button" class="sim-sort-btn" data-sort-by="inst-asc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#f7f6f8; color:#6f6878; border:1px solid #e7e1eb; font-weight:600;">
                   📉 Parcela (Menor → Maior)
                 </button>
-                <button type="button" class="sim-sort-btn" data-sort-by="first-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.12); font-weight:600;">
+                <button type="button" class="sim-sort-btn" data-sort-by="first-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#f7f6f8; color:#6f6878; border:1px solid #e7e1eb; font-weight:600;">
                   💰 Entrada (Maior → Menor)
                 </button>
-                <button type="button" class="sim-sort-btn" data-sort-by="first-asc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.12); font-weight:600;">
+                <button type="button" class="sim-sort-btn" data-sort-by="first-asc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#f7f6f8; color:#6f6878; border:1px solid #e7e1eb; font-weight:600;">
                   🏷️ Entrada (Menor → Maior)
                 </button>
               </div>
@@ -468,17 +468,17 @@
           btn.onclick = () => {
             sortBar.querySelectorAll('.sim-sort-btn').forEach(b => {
               b.classList.remove('active');
-              b.style.background = 'rgba(255,255,255,0.06)';
-              b.style.color = '#fff';
-              b.style.border = '1px solid rgba(255,255,255,0.12)';
+              b.style.background = '#f7f6f8';
+              b.style.color = '#6f6878';
+              b.style.border = '1px solid #e7e1eb';
               b.style.fontWeight = '600';
             });
 
             btn.classList.add('active');
-            btn.style.background = '#d4af37';
-            btn.style.color = '#000';
+            btn.style.background = '#e8b138';
+            btn.style.color = '#15121a';
             btn.style.border = 'none';
-            btn.style.fontWeight = '700';
+            btn.style.fontWeight = '800';
 
             const sortBy = btn.dataset.sortBy;
             if (sortBy === 'credit-desc') {
