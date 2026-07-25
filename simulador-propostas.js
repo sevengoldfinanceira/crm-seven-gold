@@ -120,6 +120,13 @@
                 <input type="text" id="sim-max-inst" class="simulador-input brl-mask" placeholder="R$ 1.850,00" required />
               </div>
 
+              <div class="simulador-form-group" style="margin-top:4px; margin-bottom:6px;">
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.82rem; color:#374151; font-weight:600;">
+                  <input type="checkbox" id="sim-use-half-inst" style="width:16px; height:16px; accent-color:#d4af37; cursor:pointer;" />
+                  Considerar 50% da Parcela (Meia Parcela / Filho)
+                </label>
+              </div>
+
               <!-- Optional Filters Toggle -->
               <details style="margin-top:4px;">
                 <summary style="font-size:0.76rem; font-weight:700; color:#d4af37; cursor:pointer; user-select:none;">
@@ -383,6 +390,7 @@
       minimum_credit: document.getElementById('sim-min-credit')?.value || '',
       maximum_credit: document.getElementById('sim-max-credit')?.value || '',
       ranking_priority: document.getElementById('sim-priority').value,
+      use_half_installment: document.getElementById('sim-use-half-inst')?.checked || false,
     };
 
     try {
