@@ -133,19 +133,6 @@
                 </label>
               </div>
 
-              <div class="simulador-form-group priority-selector" style="margin-top:6px;">
-                <label for="sim-priority">Prioridade da Busca</label>
-                <select id="sim-priority" class="simulador-input" style="cursor:pointer;">
-                  <option value="MAIOR_CREDITO" selected>Maior Crédito para o Menor (Padrão)</option>
-                  <option value="EQUILIBRIO">Melhor Equilíbrio (Recomendado)</option>
-                  <option value="CREDITO_PROXIMO">Crédito mais próximo do desejado</option>
-                  <option value="MENOR_ENTRADA">Menor entrada / 1ª parcela</option>
-                  <option value="MENOR_TEMPORARIA">Menor parcela temporária</option>
-                  <option value="MENOR_POSTERIOR">Menor parcela posterior</option>
-                  <option value="MAIS_MESES_REDUZIDOS">Mais meses com parcela temporária reduzida</option>
-                </select>
-              </div>
-
               <div class="simulador-actions">
                 <button type="submit" class="bordero-btn-primary" style="width:100%; justify-content:center;">
                   <i data-lucide="search"></i> Buscar Propostas
@@ -400,7 +387,7 @@
       maximum_installment: document.getElementById('sim-max-inst').value,
       minimum_credit: document.getElementById('sim-min-credit')?.value || '',
       maximum_credit: document.getElementById('sim-max-credit')?.value || '',
-      ranking_priority: document.getElementById('sim-priority').value,
+      ranking_priority: 'MAIOR_CREDITO',
       use_half_installment: !(document.getElementById('sim-use-half-inst')?.checked || false),
     };
 
