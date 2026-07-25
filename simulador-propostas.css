@@ -652,12 +652,12 @@ select.simulador-input option {
   position: sticky !important;
   top: 0 !important;
   z-index: 100 !important;
-  background: rgba(247, 246, 248, 0.96) !important;
+  background: rgba(0, 0, 0, 0.97) !important;
   backdrop-filter: blur(10px);
   padding: 14px 0 !important;
   margin-bottom: 24px !important;
-  border-bottom: 1.5px solid #e7e1eb !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  border-bottom: 2px solid #C9A84C !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .pf-action-buttons button {
