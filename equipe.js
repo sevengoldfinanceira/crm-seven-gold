@@ -3197,25 +3197,50 @@
           <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
             ${REQUIRED_SELLER_DOCS.map(doc => {
               const info = docsData[doc.id] || { attached: false };
-              return `
-                <label style="cursor: pointer; background: #fafafa; border: 1.5px solid ${info.attached ? '#cbd5e1' : '#fecaca'}; border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease; position: relative;">
-                  <input type="file" class="input-sidebar-colab-doc" data-colab-id="${profile.id}" data-doc-id="${doc.id}" style="display: none;" accept=".pdf,.png,.jpg,.jpeg" />
-                  <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="background: ${info.attached ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.08)'}; color: ${info.attached ? '#10b981' : '#ef4444'}; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                      <i data-lucide="${doc.icon}" style="width: 18px; height: 18px;"></i>
+              if (info.attached) {
+                return `
+                  <div style="cursor: pointer; background: #fafafa; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease; position: relative;"
+                    class="doc-card-attached" data-colab-id="${profile.id}" data-doc-id="${doc.id}" data-doc-url="${info.url || ''}" title="Clique para abrir o documento">
+                    <div style="display: flex; align-items: center; gap: 10px; flex:1; min-width:0;">
+                      <div style="background: rgba(16,185,129,0.1); color: #10b981; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i data-lucide="${doc.icon}" style="width: 18px; height: 18px;"></i>
+                      </div>
+                      <div style="min-width:0;">
+                        <strong style="font-size: 0.82rem; display: block; color: #0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${doc.name}</strong>
+                        <span class="doc-status-text" style="font-size: 0.72rem; color: #10b981; font-weight: 700;">
+                          ✓ Anexado ${info.attachedAt ? '(' + info.attachedAt + ')' : ''}
+                        </span>
+                      </div>
                     </div>
-                    <div>
-                      <strong style="font-size: 0.82rem; display: block; color: #0f172a;">${doc.name}</strong>
-                      <span class="doc-status-text" style="font-size: 0.72rem; color: ${info.attached ? '#10b981' : '#ef4444'}; font-weight: 700;">
-                        ${info.attached ? `✓ Anexado ${info.attachedAt ? '(' + info.attachedAt + ')' : ''}` : '• Pendente (Clique para anexar)'}
+                    <label style="cursor: pointer; flex-shrink: 0; margin-left: 8px;" title="Substituir documento">
+                      <input type="file" class="input-sidebar-colab-doc" data-colab-id="${profile.id}" data-doc-id="${doc.id}" style="display: none;" accept=".pdf,.png,.jpg,.jpeg" />
+                      <span style="font-size: 0.72rem; font-weight: 700; color: #64748b; background: #fff; border: 1px solid #cbd5e1; padding: 4px 8px; border-radius: 6px; display:inline-block; pointer-events:none;">
+                        Substituir
                       </span>
-                    </div>
+                    </label>
                   </div>
-                  <span style="font-size: 0.72rem; font-weight: 700; color: #64748b; background: #fff; border: 1px solid #cbd5e1; padding: 4px 8px; border-radius: 6px; flex-shrink: 0;">
-                    ${info.attached ? 'Substituir' : 'Anexar'}
-                  </span>
-                </label>
-              `;
+                `;
+              } else {
+                return `
+                  <label style="cursor: pointer; background: #fafafa; border: 1.5px solid #fecaca; border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease; position: relative;">
+                    <input type="file" class="input-sidebar-colab-doc" data-colab-id="${profile.id}" data-doc-id="${doc.id}" style="display: none;" accept=".pdf,.png,.jpg,.jpeg" />
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <div style="background: rgba(239,68,68,0.08); color: #ef4444; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i data-lucide="${doc.icon}" style="width: 18px; height: 18px;"></i>
+                      </div>
+                      <div>
+                        <strong style="font-size: 0.82rem; display: block; color: #0f172a;">${doc.name}</strong>
+                        <span class="doc-status-text" style="font-size: 0.72rem; color: #ef4444; font-weight: 700;">
+                          • Pendente (Clique para anexar)
+                        </span>
+                      </div>
+                    </div>
+                    <span style="font-size: 0.72rem; font-weight: 700; color: #64748b; background: #fff; border: 1px solid #cbd5e1; padding: 4px 8px; border-radius: 6px; flex-shrink: 0;">
+                      Anexar
+                    </span>
+                  </label>
+                `;
+              }
             }).join('')}
           </div>
 
@@ -3223,6 +3248,20 @@
             <i data-lucide="folder-check" style="width: 16px; height: 16px;"></i> Gerenciar Todos os Documentos
           </button>
         `;
+
+        // Click on attached doc card → open document in new tab
+        pane.querySelectorAll(".doc-card-attached").forEach(card => {
+          card.addEventListener("click", (e) => {
+            // If click came from inside the Substituir label, ignore it
+            if (e.target.closest("label")) return;
+            const url = card.dataset.docUrl;
+            if (url) {
+              window.open(url, "_blank");
+            } else {
+              alert("URL do documento não disponível. Faça o upload novamente para obter o link.");
+            }
+          });
+        });
 
         // Direct file upload listener in sidebar
         pane.querySelectorAll(".input-sidebar-colab-doc").forEach(fileInput => {
