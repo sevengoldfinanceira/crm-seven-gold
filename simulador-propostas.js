@@ -690,11 +690,11 @@
             <span class="eyebrow" style="font-weight:700; color:#d4af37; font-size:0.75rem; text-transform:uppercase;">Montagem da Proposta Comercial</span>
             <h2 style="margin:4px 0 0; font-size:1.4rem; color:#150126; font-weight:800;">Proposta Final — Protocolo ${protocolNumber}</h2>
           </div>
-          <div class="pf-action-buttons" style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button type="button" id="pf-btn-back" class="bordero-btn-secondary"><i data-lucide="arrow-left"></i> Voltar à Simulação</button>
-            <button type="button" id="pf-btn-draft" class="bordero-btn-secondary"><i data-lucide="save"></i> Salvar Rascunho</button>
-            <button type="button" id="pf-btn-pdf" class="bordero-btn-primary" style="background:#150126; color:#fff;"><i data-lucide="file-text"></i> Gerar PDF</button>
-            <button type="button" id="pf-btn-print" class="bordero-btn-primary" style="background:#e8b138; color:#15121a; font-weight:800;"><i data-lucide="printer"></i> Imprimir Proposta</button>
+          <div class="pf-action-buttons" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <button type="button" id="pf-btn-back" class="bordero-btn-secondary" style="padding:6px 12px; font-size:0.76rem; font-weight:700; border-radius:8px; display:inline-flex; align-items:center; gap:6px;"><i data-lucide="arrow-left" style="width:14px; height:14px;"></i> Voltar à Simulação</button>
+            <button type="button" id="pf-btn-draft" class="bordero-btn-secondary" style="padding:6px 12px; font-size:0.76rem; font-weight:700; border-radius:8px; display:inline-flex; align-items:center; gap:6px;"><i data-lucide="save" style="width:14px; height:14px;"></i> Salvar Rascunho</button>
+            <button type="button" id="pf-btn-pdf" class="bordero-btn-primary" style="padding:6px 12px; font-size:0.76rem; font-weight:700; border-radius:8px; background:#150126; color:#fff; display:inline-flex; align-items:center; gap:6px;"><i data-lucide="file-text" style="width:14px; height:14px;"></i> Gerar PDF</button>
+            <button type="button" id="pf-btn-print" class="bordero-btn-primary" style="padding:6px 12px; font-size:0.76rem; font-weight:800; border-radius:8px; background:#e8b138; color:#15121a; display:inline-flex; align-items:center; gap:6px;"><i data-lucide="printer" style="width:14px; height:14px;"></i> Imprimir Proposta</button>
           </div>
         </div>
 
