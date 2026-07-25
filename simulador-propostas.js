@@ -862,7 +862,7 @@
               <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px;">
                 <i data-lucide="file-text" style="width:14px; height:14px; color:#ffffff; opacity:0.9;"></i>
                 <span style="color:rgba(255,255,255,0.9); font-weight:500;">Protocolo:</span>
-                <strong style="color:#ffffff; font-weight:700; font-family:monospace; letter-spacing:0.02em;">${protocolNumber}</strong>
+                <strong style="color:#ffffff; font-weight:700; font-family:monospace; letter-spacing:0.02em; white-space:nowrap;">${protocolNumber}</strong>
               </div>
               <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px;">
                 <i data-lucide="calendar" style="width:14px; height:14px; color:#ffffff; opacity:0.9;"></i>
