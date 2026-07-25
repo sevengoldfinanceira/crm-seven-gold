@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Seven Gold | Painel de Atendimento</title>
-    <link rel="icon" href="assets/icons/seven-gold-g7.png?v=ms0t8clq" />
+    <link rel="icon" href="assets/icons/seven-gold-g7.png?v=ms0tbz5o" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="atendimento.css?v=ms0t8clq" />
-    <link rel="stylesheet" href="simulador-propostas.css?v=ms0t8clq" />
+    <link rel="stylesheet" href="atendimento.css?v=ms0tbz5o" />
+    <link rel="stylesheet" href="simulador-propostas.css?v=ms0tbz5o" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#000000" />
   </head>
@@ -17,7 +17,7 @@
     <div class="service-shell">
       <aside class="service-sidebar">
         <a class="service-brand" href="painel.html">
-          <img src="assets/icons/seven-gold-g7.png?v=ms0t8clq" alt="Seven Gold" />
+          <img src="assets/icons/seven-gold-g7.png?v=ms0tbz5o" alt="Seven Gold" />
           <span><strong>Seven Gold</strong><small>Atendimento</small></span>
         </a>
 
@@ -30,6 +30,10 @@
           <a href="#simulador" data-service-tab="simulador">
             <i data-lucide="calculator"></i>
             <span>Simulador de Propostas</span>
+          </a>
+          <a href="#proposta-final" data-service-tab="proposta-final" id="nav-item-proposta-final">
+            <i data-lucide="file-check"></i>
+            <span>Montar Proposta Final</span>
           </a>
         </nav>
 
@@ -58,7 +62,11 @@
       <main class="service-content">
         <header class="service-header">
           <div class="service-header-brand">
+<<<<<<< HEAD
             <img src="assets/icons/seven-gold-g7.png?v=ms0t8clq" alt="Seven Gold" class="service-header-logo" />
+=======
+            <img src="assets/icons/seven-gold-g7.png?v=ms0tbz5o" alt="Seven Gold" class="service-header-logo" />
+>>>>>>> 2ddb9ed (feat: implement Montar Proposta Final flow with A4 PDF preview & print, course search bar in Faculdade Seven Gold, and inline excess warning badges)
             <div class="service-header-vdivider"></div>
             <div class="service-header-titles">
               <p class="eyebrow">PAINEL DE ATENDIMENTO</p>
@@ -77,14 +85,22 @@
         </section>
 
         <section class="service-tab-content" data-service-tab-content="simulador" style="display:none;"></section>
+        <section class="service-tab-content" data-service-tab-content="proposta-final" style="display:none;" id="proposta-final-container"></section>
       </main>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
+<<<<<<< HEAD
     <script src="auth.js?v=ms0t8clq"></script>
     <script src="simulador-propostas.js?v=ms0t8clq"></script>
+=======
+    <script src="auth.js?v=ms0tbz5o"></script>
+    <script src="simulador-propostas.js?v=ms0tbz5o"></script>
+>>>>>>> 2ddb9ed (feat: implement Montar Proposta Final flow with A4 PDF preview & print, course search bar in Faculdade Seven Gold, and inline excess warning badges)
     <script>
       (function() {
         const tabs = document.querySelectorAll('[data-service-tab]');
@@ -102,6 +118,10 @@
       })();
     </script>
     <script src="/pwa.js"></script>
+<<<<<<< HEAD
   <script src="activation-table-guard.js?v=ms0t8clq"></script></body>
+=======
+  <script src="activation-table-guard.js?v=ms0tbz5o"></script></body>
+>>>>>>> 2ddb9ed (feat: implement Montar Proposta Final flow with A4 PDF preview & print, course search bar in Faculdade Seven Gold, and inline excess warning badges)
 </html>
 

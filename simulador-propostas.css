@@ -549,3 +549,65 @@ select.simulador-input option {
 .proposals-data-table tr:hover td {
   background: var(--seven-bg-general);
 }
+
+/* Montar Proposta Final - A4 Printable Sheet & Print Styles */
+.proposta-final-print-sheet {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #15121a;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Hide CRM shell elements during print */
+  .service-sidebar,
+  .service-header,
+  .service-nav,
+  .pf-header-bar,
+  .pf-content-grid,
+  .user-box,
+  button,
+  nav,
+  aside,
+  header {
+    display: none !important;
+  }
+
+  .service-shell,
+  .service-content,
+  #proposta-final-container,
+  .pf-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .proposta-final-print-sheet {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    page-break-after: avoid;
+  }
+}
+

@@ -170,6 +170,7 @@
   };
 
   let currentLmsSubTab = 'cursos';
+  let currentCourseSearchQuery = '';
 
   const renderDashboard = () => {
     const lmsTab = document.querySelector('[data-tab="faculdade"]');
@@ -206,54 +207,75 @@
       }
     });
 
+    // Filter courses based on search query
+    const filteredCourseIds = Object.keys(COURSES_DATA).filter(cId => {
+      if (!currentCourseSearchQuery.trim()) return true;
+      const q = currentCourseSearchQuery.trim().toLowerCase();
+      const c = COURSES_DATA[cId];
+      const matchTitle = (c.title || '').toLowerCase().includes(q);
+      const matchDesc = (c.description || '').toLowerCase().includes(q);
+      const matchBadge = (c.badge || '').toLowerCase().includes(q);
+      const matchModule = (c.modules || []).some(m => (m.title || '').toLowerCase().includes(q));
+      return matchTitle || matchDesc || matchBadge || matchModule;
+    });
+
     let tabContentHTML = '';
 
     if (currentLmsSubTab === 'cursos') {
       tabContentHTML = `
         <h2 class="faculdade-courses-title"><i data-lucide="library" style="color:#d4af37; width:20px;"></i> Cursos Disponíveis</h2>
-        <section class="faculdade-courses-grid">
-          ${Object.keys(COURSES_DATA).map(cId => {
-            const course = COURSES_DATA[cId];
-            const pct = calculateCourseProgress(cId);
-            return `
-              <article class="course-card">
-                <span class="course-badge">${course.badge}</span>
-                <div class="course-card-banner">
-                  <div class="course-card-banner-icon"><i data-lucide="${course.icon}"></i></div>
-                </div>
-                <div class="course-card-content">
-                  <h3 class="course-card-title">${course.title}</h3>
-                  <p class="course-card-desc">${course.description}</p>
-                  
-                  <div class="course-meta">
-                    <span><i data-lucide="book" style="width:12px; height:12px;"></i> ${course.modules.length} Aulas</span>
-                    <span><i data-lucide="clock" style="width:12px; height:12px;"></i> ~${course.modules.length * 8} min</span>
+        ${filteredCourseIds.length === 0 ? `
+          <div style="background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.1); border-radius: 16px; padding: 40px; text-align: center; color: #94a3b8;">
+            <i data-lucide="search-x" style="width:40px; height:40px; color:#d4af37; margin-bottom:12px;"></i>
+            <h3 style="margin:0; font-size:1.1rem; color:#fff;">Nenhum curso encontrado para "${currentCourseSearchQuery}"</h3>
+            <p style="margin:6px 0 16px; font-size:0.86rem;">Tente pesquisar com outros termos ou limpe o campo de busca.</p>
+            <button type="button" id="faculdade-clear-search-btn" class="bordero-btn-secondary" style="padding: 8px 16px;">Limpar Pesquisa</button>
+          </div>
+        ` : `
+          <section class="faculdade-courses-grid">
+            ${filteredCourseIds.map(cId => {
+              const course = COURSES_DATA[cId];
+              const pct = calculateCourseProgress(cId);
+              return `
+                <article class="course-card">
+                  <span class="course-badge">${course.badge}</span>
+                  <div class="course-card-banner">
+                    <div class="course-card-banner-icon"><i data-lucide="${course.icon}"></i></div>
                   </div>
+                  <div class="course-card-content">
+                    <h3 class="course-card-title">${course.title}</h3>
+                    <p class="course-card-desc">${course.description}</p>
+                    
+                    <div class="course-meta">
+                      <span><i data-lucide="book" style="width:12px; height:12px;"></i> ${course.modules.length} Aulas</span>
+                      <span><i data-lucide="clock" style="width:12px; height:12px;"></i> ~${course.modules.length * 8} min</span>
+                    </div>
 
-                  <div class="course-progress-container">
-                    <div class="course-progress-header">
-                      <span>Progresso</span>
-                      <span>${pct}%</span>
+                    <div class="course-progress-container">
+                      <div class="course-progress-header">
+                        <span>Progresso</span>
+                        <span>${pct}%</span>
+                      </div>
+                      <div class="course-progress-bar-bg">
+                        <div class="course-progress-bar-fill" style="width: ${pct}%"></div>
+                      </div>
                     </div>
-                    <div class="course-progress-bar-bg">
-                      <div class="course-progress-bar-fill" style="width: ${pct}%"></div>
-                    </div>
+
+                    <button type="button" class="course-card-btn" data-action-course="${cId}">
+                      ${pct === 100 ? "Rever Aulas" : pct > 0 ? "Continuar Curso" : "Iniciar Curso"}
+                    </button>
                   </div>
-
-                  <button type="button" class="course-card-btn" data-action-course="${cId}">
-                    ${pct === 100 ? "Rever Aulas" : pct > 0 ? "Continuar Curso" : "Iniciar Curso"}
-                  </button>
-                </div>
-              </article>
-            `;
-          }).join('')}
-        </section>
+                </article>
+              `;
+            }).join('')}
+          </section>
+        `}
       `;
     } else if (currentLmsSubTab === 'certificados') {
       tabContentHTML = `
         <h2 class="faculdade-courses-title"><i data-lucide="award" style="color:#d4af37; width:20px;"></i> Meus Certificados e Conquistas</h2>
         <section class="faculdade-courses-grid">
-          ${Object.keys(COURSES_DATA).map(cId => {
+          ${filteredCourseIds.map(cId => {
             const course = COURSES_DATA[cId];
             const pct = calculateCourseProgress(cId);
             const isCompleted = pct === 100;
@@ -336,18 +358,25 @@
           <a href="painel.html" class="bordero-btn-secondary" style="height: fit-content; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;"><i data-lucide="home"></i> Voltar ao Painel</a>
         </header>
 
-        <!-- Top Sub-Tabs Bar -->
-        <nav class="faculdade-subtabs-nav">
-          <button type="button" class="faculdade-tab-btn ${currentLmsSubTab === 'cursos' ? 'active' : ''}" data-faculdade-tab="cursos">
-            <i data-lucide="book-open"></i> Cursos
-          </button>
-          <button type="button" class="faculdade-tab-btn ${currentLmsSubTab === 'certificados' ? 'active' : ''}" data-faculdade-tab="certificados">
-            <i data-lucide="award"></i> Certificados <span class="badge">${unlockedCertificates}</span>
-          </button>
-          <button type="button" class="faculdade-tab-btn ${currentLmsSubTab === 'pendencias' ? 'active' : ''}" data-faculdade-tab="pendencias">
-            <i data-lucide="clock"></i> Pendências <span class="badge">${pendingModulesList.length}</span>
-          </button>
-        </nav>
+        <!-- Top Sub-Tabs Bar & Search Box -->
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 6px; margin-bottom: 14px; border-bottom: 1.5px solid rgba(255, 255, 255, 0.08); padding-bottom: 14px;">
+          <nav class="faculdade-subtabs-nav" style="border: none; padding: 0; margin: 0;">
+            <button type="button" class="faculdade-tab-btn ${currentLmsSubTab === 'cursos' ? 'active' : ''}" data-faculdade-tab="cursos">
+              <i data-lucide="book-open"></i> Cursos
+            </button>
+            <button type="button" class="faculdade-tab-btn ${currentLmsSubTab === 'certificados' ? 'active' : ''}" data-faculdade-tab="certificados">
+              <i data-lucide="award"></i> Certificados <span class="badge">${unlockedCertificates}</span>
+            </button>
+            <button type="button" class="faculdade-tab-btn ${currentLmsSubTab === 'pendencias' ? 'active' : ''}" data-faculdade-tab="pendencias">
+              <i data-lucide="clock"></i> Pendências <span class="badge">${pendingModulesList.length}</span>
+            </button>
+          </nav>
+
+          <div class="faculdade-search-box" style="position: relative; min-width: 260px; max-width: 380px; flex: 1;">
+            <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #94a3b8;"></i>
+            <input type="text" id="faculdade-course-search" placeholder="Pesquisar curso por nome ou tema..." value="${currentCourseSearchQuery}" style="width: 100%; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 9px 12px 9px 36px; color: #ffffff; font-size: 0.85rem; font-family: inherit; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);" />
+          </div>
+        </div>
 
         <!-- Stats Grid -->
         <section class="faculdade-stats" aria-label="Estatísticas de estudo">
@@ -378,6 +407,28 @@
         ${tabContentHTML}
       </div>
     `;
+
+    // Add event listener for course search input
+    const searchInput = document.getElementById('faculdade-course-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        currentCourseSearchQuery = e.target.value;
+        renderDashboard();
+        const updatedInput = document.getElementById('faculdade-course-search');
+        if (updatedInput) {
+          updatedInput.focus();
+          updatedInput.setSelectionRange(updatedInput.value.length, updatedInput.value.length);
+        }
+      });
+    }
+
+    const clearSearchBtn = document.getElementById('faculdade-clear-search-btn');
+    if (clearSearchBtn) {
+      clearSearchBtn.addEventListener('click', () => {
+        currentCourseSearchQuery = '';
+        renderDashboard();
+      });
+    }
 
     // Add event listeners for top sub-tabs
     document.querySelectorAll('[data-faculdade-tab]').forEach(btn => {
