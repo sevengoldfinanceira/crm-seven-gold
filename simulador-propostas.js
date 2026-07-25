@@ -517,11 +517,24 @@
       }
 
       if (toggleNearBtn) {
+        toggleNearBtn.innerHTML = `<i data-lucide="eye"></i> Mostrar Opções Próximas`;
         toggleNearBtn.onclick = () => {
-          currentActiveList = nearList;
-          currentIsNear = true;
-          renderProposalCards(nearList, true);
-          countTextEl.innerHTML = `Exibindo <strong>${nearList.length}</strong> opções próximas que ultrapassam ligeiramente os limites.`;
+          if (currentIsNear) {
+            // Switch back to valid proposals list
+            currentActiveList = validList;
+            currentIsNear = false;
+            renderProposalCards(validList, false);
+            countTextEl.innerHTML = `Encontradas <strong>${validList.length}</strong> propostas ideais dentro dos limites do cliente.`;
+            toggleNearBtn.innerHTML = `<i data-lucide="eye"></i> Mostrar Opções Próximas`;
+          } else {
+            // Switch to near matches list
+            currentActiveList = nearList;
+            currentIsNear = true;
+            renderProposalCards(nearList, true);
+            countTextEl.innerHTML = `Exibindo <strong>${nearList.length}</strong> opções próximas que ultrapassam ligeiramente os limites.`;
+            toggleNearBtn.innerHTML = `<i data-lucide="eye"></i> Mostrar Propostas Ideais`;
+          }
+          if (window.lucide) window.lucide.createIcons();
         };
       }
 
