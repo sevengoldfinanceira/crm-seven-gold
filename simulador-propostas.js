@@ -780,7 +780,7 @@
               <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:0.85rem;">
                 <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
                   <span style="color:#6f6878; font-size:0.72rem; display:block;">ADMINISTRADORA</span>
-                  <strong style="color:#150126;">${proposal.administrator_name || 'Seven Gold'}</strong>
+                  <strong style="color:#150126;">Seven Gold Financeira - Alpha Administradora de Consórcio Ltda.</strong>
                 </div>
                 <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
                   <span style="color:#6f6878; font-size:0.72rem; display:block;">PLANO / TABELA</span>
@@ -889,7 +889,7 @@
           <tbody>
             <tr>
               <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Administradora</td>
-              <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">${proposal.administrator_name || 'Seven Gold'} — ${proposal.product_name || 'AUTOCON PRIME'}</td>
+              <td style="padding:8px 10px; border:1px solid #e7e1eb; font-weight:700;">Seven Gold Financeira - Alpha Administradora de Consórcio Ltda.</td>
             </tr>
             <tr>
               <td style="padding:8px 10px; border:1px solid #e7e1eb; background:#fcfcfc;">Valor da Carta de Crédito / Bem</td>
