@@ -625,6 +625,18 @@ select.simulador-input option {
   }
 }
 
+.pf-header-bar {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  background: rgba(247, 246, 248, 0.96) !important;
+  backdrop-filter: blur(10px);
+  padding: 14px 0 !important;
+  margin-bottom: 24px !important;
+  border-bottom: 1.5px solid #e7e1eb !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
 .pf-action-buttons button {
   padding: 6px 12px !important;
   font-size: 0.76rem !important;

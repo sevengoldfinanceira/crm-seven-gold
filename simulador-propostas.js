@@ -685,7 +685,7 @@
 
     container.innerHTML = `
       <div class="pf-wrapper">
-        <div class="pf-header-bar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #e7e1eb;">
+        <div class="pf-header-bar" style="position:sticky; top:0; z-index:100; background:rgba(247,246,248,0.95); backdrop-filter:blur(10px); padding:16px 0; margin-bottom:24px; border-bottom:1.5px solid #e7e1eb; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
           <div>
             <span class="eyebrow" style="font-weight:700; color:#d4af37; font-size:0.75rem; text-transform:uppercase;">Montagem da Proposta Comercial</span>
             <h2 style="margin:4px 0 0; font-size:1.4rem; color:#150126; font-weight:800;">Proposta Final — Protocolo ${protocolNumber}</h2>
@@ -817,7 +817,7 @@
           </div>
 
           <!-- Right Column: Live Printable Sheet Preview -->
-          <div class="pf-right-panel" style="position:sticky; top:20px;">
+          <div class="pf-right-panel" style="position:sticky; top:80px;">
             <div id="proposta-final-a4-sheet" class="proposta-final-print-sheet" style="background:#ffffff; border:1px solid #e7e1eb; border-radius:12px; padding:32px; color:#15121a; box-shadow:0 8px 30px rgba(0,0,0,0.08);">
               <!-- Dynamic A4 content updated live -->
             </div>
