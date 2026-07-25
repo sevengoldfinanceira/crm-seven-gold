@@ -1,18 +1,22 @@
 /* CSS for Simulador de Propostas - Painel de Atendimento (Seven Gold Premium Design Tokens) */
 
 :root {
-  --seven-purple-dark: #150126;
-  --seven-purple-sec: #2A0742;
-  --seven-gold-main: #E8B138;
-  --seven-gold-dark: #B98220;
-  --seven-gold-light: #F5D874;
+  --seven-brand-black: #000000;
+  --seven-brand-black-sec: #111111;
+  --seven-gold-main: #C9A84C;
+  --seven-gold-dark: #8B6914;
+  --seven-gold-light: #E8C96B;
+  --seven-gold-bright: #F5D48A;
   --seven-bg-white: #FFFFFF;
   --seven-bg-sec: #FAF9FB;
-  --seven-text-main: #17111F;
+  --seven-text-main: #0A0A0A;
   --seven-text-sec: #706A78;
   --seven-border: #E4DEE8;
   --seven-blue-integral: #1769E0;
   --seven-green-half: #059669;
+  /* Legacy aliases kept for compatibility */
+  --seven-purple-dark: #000000;
+  --seven-purple-sec: #111111;
 }
 
 .simulador-container {

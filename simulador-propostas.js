@@ -744,7 +744,7 @@
                     <label for="pf-embedded-bid-range" style="font-weight:700; color:#0f172a; font-size:0.85rem; margin:0;">
                       <i data-lucide="sliders" style="width:14px; height:14px; color:#d4af37; vertical-align:middle;"></i> Lance Embutido / Pretendido (%)
                     </label>
-                    <span id="pf-embedded-bid-badge" style="background:#150126; color:#e8b138; font-weight:800; font-size:0.85rem; padding:3px 10px; border-radius:6px;">${proposal.fixed_bid_percentage || 30}%</span>
+                    <span id="pf-embedded-bid-badge" style="background:#000000; color:#C9A84C; font-weight:800; font-size:0.85rem; padding:3px 10px; border-radius:6px;">${proposal.fixed_bid_percentage || 30}%</span>
                   </div>
 
                   <input type="range" id="pf-embedded-bid-range" min="0" max="100" step="0.5" value="${proposal.fixed_bid_percentage || 30}" style="width:100%; accent-color:#d4af37; cursor:pointer; height:6px; margin-bottom:12px;" />
@@ -756,7 +756,7 @@
                     </div>
                     <div>
                       <label for="pf-bid-amount" style="font-size:0.75rem; color:#64748b; font-weight:600;">Valor em R$ (Calculado)</label>
-                      <input type="text" id="pf-bid-amount" class="simulador-input brl-mask" style="font-weight:800; color:#150126;" placeholder="R$ 0,00" value="${formatCurrency(proposal.credit_value * ((proposal.fixed_bid_percentage || 30) / 100))}" />
+                      <input type="text" id="pf-bid-amount" class="simulador-input brl-mask" style="font-weight:800; color:#0A0A0A;" placeholder="R$ 0,00" value="${formatCurrency(proposal.credit_value * ((proposal.fixed_bid_percentage || 30) / 100))}" />
                     </div>
                   </div>
 
@@ -847,7 +847,7 @@
       if (!sheetEl) return;
 
       sheetEl.innerHTML = `
-        <div class="pf-a4-header" style="background:linear-gradient(135deg, #150126 0%, #2A0742 100%); padding:20px 24px 18px; color:#ffffff; position:relative; overflow:hidden; border-radius:12px 12px 0 0;">
+        <div class="pf-a4-header" style="background:linear-gradient(135deg, #000000 0%, #111111 60%, #0A0A0A 100%); padding:20px 24px 18px; color:#ffffff; position:relative; overflow:hidden; border-radius:12px 12px 0 0;">
           <div style="display:flex; justify-content:space-between; align-items:center; position:relative; z-index:2;">
             <div style="display:flex; align-items:center; gap:16px;">
               <img src="assets/icons/seven-gold-g7.png" alt="Seven Gold" style="width:48px; height:48px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));" />
@@ -885,10 +885,10 @@
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
             <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:12px; padding:16px 18px;">
               <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; padding-bottom:8px; border-bottom:2px solid #E8B138;">
-                <div style="width:28px; height:28px; border-radius:50%; background:#150126; display:flex; align-items:center; justify-content:center; color:#E8B138; flex-shrink:0;">
+                <div style="width:28px; height:28px; border-radius:50%; background:#0A0A0A; display:flex; align-items:center; justify-content:center; color:#C9A84C; flex-shrink:0;">
                   <i data-lucide="user" style="width:15px; height:15px;"></i>
                 </div>
-                <strong style="color:#150126; font-size:0.82rem; letter-spacing:0.04em; text-transform:uppercase;">DADOS DO CONSULTOR</strong>
+                <strong style="color:#0A0A0A; font-size:0.82rem; letter-spacing:0.04em; text-transform:uppercase;">DADOS DO CONSULTOR</strong>
               </div>
               <div style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem; color:#706A78;">
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -908,10 +908,10 @@
 
             <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:12px; padding:16px 18px;">
               <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; padding-bottom:8px; border-bottom:2px solid #E8B138;">
-                <div style="width:28px; height:28px; border-radius:50%; background:#150126; display:flex; align-items:center; justify-content:center; color:#E8B138; flex-shrink:0;">
+                <div style="width:28px; height:28px; border-radius:50%; background:#0A0A0A; display:flex; align-items:center; justify-content:center; color:#C9A84C; flex-shrink:0;">
                   <i data-lucide="users" style="width:15px; height:15px;"></i>
                 </div>
-                <strong style="color:#150126; font-size:0.82rem; letter-spacing:0.04em; text-transform:uppercase;">DADOS DO CLIENTE</strong>
+                <strong style="color:#0A0A0A; font-size:0.82rem; letter-spacing:0.04em; text-transform:uppercase;">DADOS DO CLIENTE</strong>
               </div>
               <div style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem; color:#706A78;">
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -936,7 +936,7 @@
 
           <table style="width:100%; border-collapse:separate; border-spacing:0; margin-bottom:20px; font-size:0.84rem; border:1px solid #E4DEE8; border-radius:12px; overflow:hidden;">
             <thead>
-              <tr style="background:#150126; color:#ffffff; text-align:left;">
+              <tr style="background:#000000; color:#ffffff; text-align:left;">
                 <th style="padding:12px 16px; width:50%; font-weight:700; font-size:0.82rem; letter-spacing:0.03em;">
                   <div style="display:flex; align-items:center; gap:8px;">
                     <i data-lucide="file-text" style="width:16px; height:16px; color:#E8B138;"></i>
@@ -1020,10 +1020,10 @@
 
           <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:12px; padding:16px 20px; margin-bottom:20px; font-size:0.8rem;">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-              <div style="width:26px; height:26px; border-radius:50%; background:#150126; display:flex; align-items:center; justify-content:center; color:#E8B138; flex-shrink:0;">
+              <div style="width:26px; height:26px; border-radius:50%; background:#0A0A0A; display:flex; align-items:center; justify-content:center; color:#C9A84C; flex-shrink:0;">
                 <i data-lucide="file-check" style="width:14px; height:14px;"></i>
               </div>
-              <strong style="color:#150126; font-size:0.82rem; letter-spacing:0.03em; text-transform:uppercase;">OBSERVAÇÕES E CONDIÇÕES COMERCIAIS</strong>
+              <strong style="color:#0A0A0A; font-size:0.82rem; letter-spacing:0.03em; text-transform:uppercase;">OBSERVAÇÕES E CONDIÇÕES COMERCIAIS</strong>
             </div>
             
             <p style="margin:0 0 10px; color:#17111F; font-size:0.82rem;">${notesVal}</p>
@@ -1036,13 +1036,13 @@
 
           <div class="pf-a4-footer" style="border-top:1.5px solid #E8B138; padding-top:14px; display:grid; grid-template-columns:1fr 1px 1fr; gap:16px; align-items:center; font-size:0.75rem; color:#706A78;">
             <div style="display:flex; align-items:center; gap:12px;">
-              <div style="width:36px; height:36px; border-radius:50%; background:#150126; display:flex; align-items:center; justify-content:center; border:1px solid #E8B138; flex-shrink:0;">
+              <div style="width:36px; height:36px; border-radius:50%; background:#000000; display:flex; align-items:center; justify-content:center; border:1px solid #C9A84C; flex-shrink:0;">
                 <img src="assets/icons/seven-gold-g7.png" alt="Seven Gold" style="width:24px; height:24px; object-fit:contain;" />
               </div>
               <div>
-                <strong style="color:#B98220; font-size:0.82rem; display:block;">Seven Gold Financeira</strong>
+                <strong style="color:#C9A84C; font-size:0.82rem; display:block;">Seven Gold Financeira</strong>
                 <div style="display:flex; align-items:center; gap:4px; color:#706A78; font-size:0.74rem;">
-                  <i data-lucide="instagram" style="width:12px; height:12px; color:#B98220;"></i>
+                  <i data-lucide="instagram" style="width:12px; height:12px; color:#C9A84C;"></i>
                   <span>Instagram: @sevengoldfinanceira</span>
                 </div>
               </div>
@@ -1052,11 +1052,11 @@
 
             <div style="text-align:right; font-size:0.73rem; color:#706A78; display:flex; flex-direction:column; gap:2px;">
               <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
-                <i data-lucide="headphones" style="width:12px; height:12px; color:#B98220;"></i>
+                <i data-lucide="headphones" style="width:12px; height:12px; color:#C9A84C;"></i>
                 <span>Atendimento Oficial • Todos os Direitos Reservados</span>
               </div>
               <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
-                <i data-lucide="globe" style="width:12px; height:12px; color:#B98220;"></i>
+                <i data-lucide="globe" style="width:12px; height:12px; color:#C9A84C;"></i>
                 <span>www.sevengold.com.br</span>
               </div>
               <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
