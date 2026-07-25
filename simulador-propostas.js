@@ -484,6 +484,15 @@
             if (sortBy === 'credit-desc') {
               currentActiveList.sort((a, b) => {
                 if (b.credit_value !== a.credit_value) return b.credit_value - a.credit_value;
+
+                const aPrimeMatch = /PRIME\s*(\d+)/i.exec(a.product_name || '');
+                const bPrimeMatch = /PRIME\s*(\d+)/i.exec(b.product_name || '');
+                if (aPrimeMatch && bPrimeMatch) {
+                  const aNum = parseInt(aPrimeMatch[1], 10);
+                  const bNum = parseInt(bPrimeMatch[1], 10);
+                  if (aNum !== bNum) return aNum - bNum;
+                }
+
                 const aTempMonths = (a.temporary_installment_end - a.temporary_installment_start + 1) || 0;
                 const bTempMonths = (b.temporary_installment_end - b.temporary_installment_start + 1) || 0;
                 if (bTempMonths !== aTempMonths) return bTempMonths - aTempMonths;
