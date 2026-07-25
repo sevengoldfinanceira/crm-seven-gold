@@ -677,3 +677,186 @@
     flex-direction: column;
   }
 }
+
+/*
+ * Ajustes visuais exclusivos da Faculdade Seven Gold.
+ */
+
+html,
+body {
+  min-height: 100%;
+  background-color: #030303 !important;
+  background-image: none !important;
+}
+
+body::before,
+body::after,
+.faculdade-page::before,
+.faculdade-page::after,
+.academy-page::before,
+.academy-page::after {
+  background: none !important;
+  background-image: none !important;
+  opacity: 0 !important;
+  content: none !important;
+}
+
+body,
+.faculdade-page,
+.faculdade-content,
+.faculdade-main,
+.academy-page,
+.academy-content,
+.academy-main,
+.page-shell,
+.page-content {
+  background-color: #030303 !important;
+  background-image:
+    radial-gradient(circle at 50% -12%, rgba(212, 175, 55, 0.16), transparent 34%),
+    linear-gradient(180deg, #0d0b07 0%, #050505 42%, #020202 100%) !important;
+  background-attachment: fixed !important;
+}
+
+body > main,
+body > .container,
+main > .container,
+.faculdade-page > .container,
+.faculdade-container,
+.academy-container,
+.page-container,
+.main-container {
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: auto !important;
+  padding-inline: clamp(14px, 1.6vw, 30px) !important;
+}
+
+.courses-grid,
+.course-grid,
+.cursos-grid,
+.courses-list,
+.course-list,
+.cursos-list,
+.courses-container,
+.course-container,
+.cursos-container,
+#coursesGrid,
+#courseGrid,
+#cursosGrid,
+[data-course-grid],
+[class*="courses-grid"],
+[class*="course-grid"],
+[class*="cursos-grid"] {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: clamp(12px, 1vw, 18px) !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
+  align-items: stretch !important;
+}
+
+.courses-grid > *,
+.course-grid > *,
+.cursos-grid > *,
+.courses-list > *,
+.course-list > *,
+.cursos-list > *,
+.courses-container > *,
+.course-container > *,
+.cursos-container > *,
+#coursesGrid > *,
+#courseGrid > *,
+#cursosGrid > *,
+[data-course-grid] > *,
+[class*="courses-grid"] > *,
+[class*="course-grid"] > *,
+[class*="cursos-grid"] > * {
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+@media (max-width: 1500px) {
+  .courses-grid,
+  .course-grid,
+  .cursos-grid,
+  .courses-list,
+  .course-list,
+  .cursos-list,
+  .courses-container,
+  .course-container,
+  .cursos-container,
+  #coursesGrid,
+  #courseGrid,
+  #cursosGrid,
+  [data-course-grid],
+  [class*="courses-grid"],
+  [class*="course-grid"],
+  [class*="cursos-grid"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  .courses-grid,
+  .course-grid,
+  .cursos-grid,
+  .courses-list,
+  .course-list,
+  .cursos-list,
+  .courses-container,
+  .course-container,
+  .cursos-container,
+  #coursesGrid,
+  #courseGrid,
+  #cursosGrid,
+  [data-course-grid],
+  [class*="courses-grid"],
+  [class*="course-grid"],
+  [class*="cursos-grid"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 880px) {
+  .courses-grid,
+  .course-grid,
+  .cursos-grid,
+  .courses-list,
+  .course-list,
+  .cursos-list,
+  .courses-container,
+  .course-container,
+  .cursos-container,
+  #coursesGrid,
+  #courseGrid,
+  #cursosGrid,
+  [data-course-grid],
+  [class*="courses-grid"],
+  [class*="course-grid"],
+  [class*="cursos-grid"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .courses-grid,
+  .course-grid,
+  .cursos-grid,
+  .courses-list,
+  .course-list,
+  .cursos-list,
+  .courses-container,
+  .course-container,
+  .cursos-container,
+  #coursesGrid,
+  #courseGrid,
+  #cursosGrid,
+  [data-course-grid],
+  [class*="courses-grid"],
+  [class*="course-grid"],
+  [class*="cursos-grid"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
