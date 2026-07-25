@@ -2407,6 +2407,39 @@
     localStorage.setItem(`seven_gold_colab_docs_${colabId}`, JSON.stringify(current));
   };
 
+  // Upload document file to Supabase Storage
+  const uploadColabDocFile = async (profileId, docId, file) => {
+    const nowStr = new Date().toLocaleDateString('pt-BR');
+    let fileUrl = "";
+
+    try {
+      const client = window.supabaseClient;
+      if (client && client.storage) {
+        const ext = file.name.split('.').pop();
+        const path = `rh-pessoais/${profileId}_${docId}_${Date.now()}.${ext}`;
+        const { data, error } = await client.storage.from('company-documents').upload(path, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+        if (!error && data) {
+          const { data: pubData } = client.storage.from('company-documents').getPublicUrl(path);
+          fileUrl = pubData?.publicUrl || '';
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase Storage upload warning:", e);
+    }
+
+    saveColabDocStatus(profileId, docId, {
+      attached: true,
+      fileName: file.name,
+      fileSize: file.size,
+      fileUrl: fileUrl,
+      attachedAt: nowStr
+    });
+  };
+
   const getColabDocsProgress = (profileId) => {
     const docsData = getColabDocsData(profileId);
     const count = REQUIRED_SELLER_DOCS.filter(d => docsData[d.id] && docsData[d.id].attached).length;
@@ -3165,23 +3198,49 @@
             ${REQUIRED_SELLER_DOCS.map(doc => {
               const info = docsData[doc.id] || { attached: false };
               return `
-                <div style="background: #f8fafc; border: 1px solid ${info.attached ? '#cbd5e1' : '#fecaca'}; border-radius: 8px; padding: 10px; display: flex; justify-content: space-between; align-items: center;">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <i data-lucide="${doc.icon}" style="width: 16px; height: 16px; color: ${info.attached ? '#10b981' : '#ef4444'};"></i>
+                <label style="cursor: pointer; background: #fafafa; border: 1.5px solid ${info.attached ? '#cbd5e1' : '#fecaca'}; border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease; position: relative;">
+                  <input type="file" class="input-sidebar-colab-doc" data-colab-id="${profile.id}" data-doc-id="${doc.id}" style="display: none;" accept=".pdf,.png,.jpg,.jpeg" />
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="background: ${info.attached ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.08)'}; color: ${info.attached ? '#10b981' : '#ef4444'}; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                      <i data-lucide="${doc.icon}" style="width: 18px; height: 18px;"></i>
+                    </div>
                     <div>
-                      <strong style="font-size: 0.78rem; display: block; color: #0f172a;">${doc.name}</strong>
-                      <span style="font-size: 0.7rem; color: ${info.attached ? '#10b981' : '#ef4444'}; font-weight: 600;">${info.attached ? 'Anexado' : 'Pendente'}</span>
+                      <strong style="font-size: 0.82rem; display: block; color: #0f172a;">${doc.name}</strong>
+                      <span class="doc-status-text" style="font-size: 0.72rem; color: ${info.attached ? '#10b981' : '#ef4444'}; font-weight: 700;">
+                        ${info.attached ? `✓ Anexado ${info.attachedAt ? '(' + info.attachedAt + ')' : ''}` : '• Pendente (Clique para anexar)'}
+                      </span>
                     </div>
                   </div>
-                </div>
+                  <span style="font-size: 0.72rem; font-weight: 700; color: #64748b; background: #fff; border: 1px solid #cbd5e1; padding: 4px 8px; border-radius: 6px; flex-shrink: 0;">
+                    ${info.attached ? 'Substituir' : 'Anexar'}
+                  </span>
+                </label>
               `;
             }).join('')}
           </div>
 
           <button type="button" id="side-btn-manage-colab-docs" style="width: 100%; padding: 10px; background: #0f172a; color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
-            <i data-lucide="folder-check" style="width: 16px; height: 16px;"></i> Gerenciar Documentos (RG, CPF...)
+            <i data-lucide="folder-check" style="width: 16px; height: 16px;"></i> Gerenciar Todos os Documentos
           </button>
         `;
+
+        // Direct file upload listener in sidebar
+        pane.querySelectorAll(".input-sidebar-colab-doc").forEach(fileInput => {
+          fileInput.addEventListener("change", async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const dId = fileInput.dataset.docId;
+            const cId = fileInput.dataset.colabId;
+            const label = fileInput.closest("label");
+            const statusSpan = label?.querySelector(".doc-status-text");
+            if (statusSpan) statusSpan.textContent = "⏳ Enviando para o Supabase...";
+
+            await uploadColabDocFile(cId, dId, file);
+            renderSidebarDetails();
+            renderListView();
+            if (state.activeTab === 'hierarquia') renderOrganograma();
+          });
+        });
 
         const sideManageBtn = pane.querySelector("#side-btn-manage-colab-docs");
         if (sideManageBtn) {
@@ -4376,19 +4435,17 @@
 
     // Add file input change listeners
     body.querySelectorAll(".input-upload-colab-doc").forEach(fileInput => {
-      fileInput.addEventListener("change", (e) => {
+      fileInput.addEventListener("change", async (e) => {
         const file = e.target.files[0];
         if (!file) return;
         const dId = fileInput.dataset.docId;
         const cId = fileInput.dataset.colabId;
-        const nowStr = new Date().toLocaleDateString('pt-BR');
-        saveColabDocStatus(cId, dId, {
-          attached: true,
-          fileName: file.name,
-          fileSize: file.size,
-          attachedAt: nowStr
-        });
+        const parentDiv = fileInput.closest("label");
+        if (parentDiv) parentDiv.style.opacity = "0.5";
+
+        await uploadColabDocFile(cId, dId, file);
         openColabDocsModal(cId);
+        renderSidebarDetails();
         renderListView();
         if (state.activeTab === 'hierarquia') renderOrganograma();
       });
@@ -4400,6 +4457,7 @@
         const cId = btn.dataset.colabId;
         saveColabDocStatus(cId, dId, { attached: false });
         openColabDocsModal(cId);
+        renderSidebarDetails();
         renderListView();
         if (state.activeTab === 'hierarquia') renderOrganograma();
       });
