@@ -898,7 +898,11 @@
 
         <div style="border:1px solid #e7e1eb; border-radius:10px; padding:12px; background:#fafafa; margin-bottom:20px; font-size:0.8rem;">
           <strong style="color:#150126; display:block; margin-bottom:4px; font-size:0.8rem; text-transform:uppercase;">OBSERVAÇÕES E CONDIÇÕES COMERCIAIS</strong>
-          <p style="margin:0; color:#374151;">${notesVal}</p>
+          <p style="margin:0 0 8px; color:#374151;">${notesVal}</p>
+          <div style="margin-top:8px; padding-top:8px; border-top:1px dashed #e7e1eb; font-size:0.73rem; color:#6f6878; font-weight:600; line-height:1.4;">
+            <div>** Sujeito a análise e aprovação de crédito.</div>
+            <div>** Esta proposta é uma simulação, não garantindo qualquer espécie de obrigação entre as partes.</div>
+          </div>
         </div>
 
         <div class="pf-a4-footer" style="border-top:1.5px solid #e8b138; padding-top:12px; display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#6f6878;">
