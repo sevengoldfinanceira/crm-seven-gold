@@ -228,6 +228,25 @@ select.simulador-input option {
   gap: 16px;
 }
 
+/* Sticky Top Bar for Results Summary & Sorting Bar */
+.simulador-sticky-top-bar {
+  position: sticky;
+  top: 24px;
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--seven-bg-general);
+  padding-bottom: 6px;
+}
+
+@media (max-width: 1024px) {
+  .simulador-sticky-top-bar {
+    position: static;
+    padding-bottom: 0;
+  }
+}
+
 .simulador-results-header {
   display: flex;
   justify-content: space-between;

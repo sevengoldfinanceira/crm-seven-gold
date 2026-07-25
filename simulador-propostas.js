@@ -169,33 +169,35 @@
 
             <!-- Right Results List -->
             <div class="simulador-results-container">
-              <div class="simulador-results-header">
-                <span class="simulador-results-count" id="sim-results-count-text">
-                  Informe os limites do cliente ao lado para realizar a simulação.
-                </span>
-                <button type="button" class="bordero-btn-secondary" id="sim-toggle-near-btn" style="display:none;">
-                  <i data-lucide="eye"></i> Mostrar Opções Próximas
-                </button>
-              </div>
+              <div class="simulador-sticky-top-bar">
+                <div class="simulador-results-header">
+                  <span class="simulador-results-count" id="sim-results-count-text">
+                    Informe os limites do cliente ao lado para realizar a simulação.
+                  </span>
+                  <button type="button" class="bordero-btn-secondary" id="sim-toggle-near-btn" style="display:none;">
+                    <i data-lucide="eye"></i> Mostrar Opções Próximas
+                  </button>
+                </div>
 
-              <!-- Quick Sorting Bar -->
-              <div class="simulador-sort-bar" id="sim-sort-bar" style="display:none; padding:10px 16px; background:#ffffff; border:1px solid #e7e1eb; border-radius:12px; margin-bottom:12px; gap:8px; flex-wrap:wrap; align-items:center;">
-                <span style="font-size:0.78rem; font-weight:800; color:#150126; margin-right:4px;">Ordenar por:</span>
-                <button type="button" class="sim-sort-btn active" data-sort-by="credit-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#e8b138; color:#15121a; border:none; font-weight:800;">
-                  💳 Crédito (Maior → Menor)
-                </button>
-                <button type="button" class="sim-sort-btn" data-sort-by="inst-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#f7f6f8; color:#6f6878; border:1px solid #e7e1eb; font-weight:600;">
-                  📊 Parcela (Maior → Menor)
-                </button>
-                <button type="button" class="sim-sort-btn" data-sort-by="inst-asc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#f7f6f8; color:#6f6878; border:1px solid #e7e1eb; font-weight:600;">
-                  📉 Parcela (Menor → Maior)
-                </button>
-                <button type="button" class="sim-sort-btn" data-sort-by="first-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#f7f6f8; color:#6f6878; border:1px solid #e7e1eb; font-weight:600;">
-                  💰 Entrada (Maior → Menor)
-                </button>
-                <button type="button" class="sim-sort-btn" data-sort-by="first-asc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#f7f6f8; color:#6f6878; border:1px solid #e7e1eb; font-weight:600;">
-                  🏷️ Entrada (Menor → Maior)
-                </button>
+                <!-- Quick Sorting Bar -->
+                <div class="simulador-sort-bar" id="sim-sort-bar" style="display:none; padding:10px 16px; background:#ffffff; border:1px solid #e7e1eb; border-radius:12px; margin-bottom:12px; gap:8px; flex-wrap:wrap; align-items:center;">
+                  <span style="font-size:0.78rem; font-weight:800; color:#150126; margin-right:4px;">Ordenar por:</span>
+                  <button type="button" class="sim-sort-btn active" data-sort-by="credit-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#e8b138; color:#15121a; border:none; font-weight:800;">
+                    💳 Crédito (Maior → Menor)
+                  </button>
+                  <button type="button" class="sim-sort-btn" data-sort-by="inst-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#f7f6f8; color:#6f6878; border:1px solid #e7e1eb; font-weight:600;">
+                    📊 Parcela (Maior → Menor)
+                  </button>
+                  <button type="button" class="sim-sort-btn" data-sort-by="inst-asc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#f7f6f8; color:#6f6878; border:1px solid #e7e1eb; font-weight:600;">
+                    📉 Parcela (Menor → Maior)
+                  </button>
+                  <button type="button" class="sim-sort-btn" data-sort-by="first-desc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#f7f6f8; color:#6f6878; border:1px solid #e7e1eb; font-weight:600;">
+                    💰 Entrada (Maior → Menor)
+                  </button>
+                  <button type="button" class="sim-sort-btn" data-sort-by="first-asc" style="padding:6px 12px; font-size:0.78rem; border-radius:6px; cursor:pointer; background:#f7f6f8; color:#6f6878; border:1px solid #e7e1eb; font-weight:600;">
+                    🏷️ Entrada (Menor → Maior)
+                  </button>
+                </div>
               </div>
 
               <div class="proposals-cards-list" id="sim-proposals-list">
