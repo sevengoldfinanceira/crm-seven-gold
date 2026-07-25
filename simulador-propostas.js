@@ -482,7 +482,14 @@
 
             const sortBy = btn.dataset.sortBy;
             if (sortBy === 'credit-desc') {
-              currentActiveList.sort((a, b) => b.credit_value - a.credit_value);
+              currentActiveList.sort((a, b) => {
+                if (b.credit_value !== a.credit_value) return b.credit_value - a.credit_value;
+                const aTempMonths = (a.temporary_installment_end - a.temporary_installment_start + 1) || 0;
+                const bTempMonths = (b.temporary_installment_end - b.temporary_installment_start + 1) || 0;
+                if (bTempMonths !== aTempMonths) return bTempMonths - aTempMonths;
+                if (b.first_installment !== a.first_installment) return b.first_installment - a.first_installment;
+                return a.final_installment_value - b.final_installment_value;
+              });
             } else if (sortBy === 'inst-desc') {
               currentActiveList.sort((a, b) => b.final_installment_value - a.final_installment_value);
             } else if (sortBy === 'inst-asc') {
@@ -521,6 +528,12 @@
       const badgeText = isNearMatch ? "Opção Próxima" : (p.badge || `Rank #${idx + 1}`);
       const badgeClass = isNearMatch ? "near" : "";
 
+      const rawTitle = p.product_name || 'AUTOCON PRIME';
+      const cleanTitle = rawTitle
+        .replace(/\s*-\s*(?:IMO|G\.|COD|A\d+|S\d+).*/gi, '')
+        .replace(/Tabela\s*Nº.*/gi, '')
+        .trim();
+
       return `
         <article class="proposal-item-card ${isNearMatch ? 'near-match' : ''}">
           <span class="proposal-badge ${badgeClass}">${badgeText}</span>
@@ -528,7 +541,7 @@
           <div class="proposal-card-header">
             <div class="proposal-rank-num">${idx + 1}</div>
             <div class="proposal-title-meta">
-              <h3>${p.product_name} - Tabela Nº ${p.table_number}</h3>
+              <h3>${cleanTitle}</h3>
               <p>${p.administrator_name} • Validade até <strong>${new Date(p.valid_until).toLocaleDateString('pt-BR')}</strong></p>
             </div>
           </div>
@@ -568,8 +581,8 @@
             </div>
 
             <div class="proposal-spec-item">
-              <span>Taxa Adm / Grupo</span>
-              <strong>${p.administration_fee_percentage}% • ${p.group_code || 'G-01'}</strong>
+              <span>Taxa Adm</span>
+              <strong>${p.administration_fee_percentage}%</strong>
             </div>
           </div>
 
