@@ -213,6 +213,19 @@
         ${isAdminOrManager ? `
           <div class="simulador-subtab-content" id="subtab-configuracoes" style="display:none;">
             <div class="admin-proposals-panel">
+              <!-- Active Table Info Panel -->
+              <div id="sim-active-table-panel" class="admin-card-box" style="margin-bottom:16px;">
+                <h2 style="color:#fff; font-size:1.1rem; margin:0 0 14px; font-weight:800; display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="database" style="color:#d4af37; width:18px;"></i> Tabela Comercial Ativa
+                </h2>
+                <div id="sim-active-table-content">
+                  <div style="display:flex; align-items:center; gap:8px; color:#9ca3af; font-size:0.85rem;">
+                    <i data-lucide="loader-2" class="animate-spin" style="width:16px; height:16px; color:#d4af37;"></i>
+                    Carregando tabela ativa...
+                  </div>
+                </div>
+              </div>
+
               <!-- Upload PDF Box -->
               <div class="admin-card-box">
                 <h2 style="color:#fff; font-size:1.1rem; margin:0; font-weight:800;"><i data-lucide="file-up" style="color:#d4af37; width:18px;"></i> Importar Nova Tabela Comercial (PDF)</h2>
@@ -251,8 +264,77 @@
         if (activeContent) activeContent.style.display = 'block';
 
         if (targetSubtab === 'tabelas') fetchActiveTablesList();
+        if (targetSubtab === 'configuracoes') loadActiveTableInfo();
       });
     });
+
+    // Load and render the currently active table info in the admin panel
+    async function loadActiveTableInfo() {
+      const contentEl = document.getElementById('sim-active-table-content');
+      if (!contentEl) return;
+      try {
+        const resp = await fetch('/api/attendance/proposals/imports/history');
+        const data = await readApiPayload(resp);
+        const imports = data.imports || [];
+        const active = imports.find(i => i.status === 'ACTIVE') || imports[0];
+
+        if (!active) {
+          contentEl.innerHTML = `<p style="color:#9ca3af; font-size:0.85rem; margin:0;">Nenhuma tabela ativa encontrada.</p>`;
+          return;
+        }
+
+        const uploadedDate = active.activated_at || active.created_at
+          ? new Date(active.activated_at || active.created_at).toLocaleString('pt-BR')
+          : '—';
+
+        contentEl.innerHTML = `
+          <div style="display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center;">
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:rgba(212,175,55,0.12); border:1px solid rgba(212,175,55,0.3); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                  <i data-lucide="file-text" style="width:18px; height:18px; color:#d4af37;"></i>
+                </div>
+                <div>
+                  <div style="font-weight:800; color:#ffffff; font-size:0.95rem; word-break:break-all;">${active.source_file_name || 'Tabela.pdf'}</div>
+                  <div style="font-size:0.75rem; color:#9ca3af; margin-top:2px;">
+                    Versão: <strong style="color:#d4af37;">${active.version || 'v1.0'}</strong>
+                    &nbsp;•&nbsp; ${active.valid_tables_count || 0} planos &nbsp;•&nbsp; ${active.proposal_rows_count || 0} propostas
+                  </div>
+                </div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.78rem; color:#9ca3af;">
+                <div><i data-lucide="calendar" style="width:12px; height:12px; vertical-align:middle; color:#d4af37;"></i> Ativada em: <strong style="color:#e5e7eb;">${uploadedDate}</strong></div>
+                <div><i data-lucide="user" style="width:12px; height:12px; vertical-align:middle; color:#d4af37;"></i> Por: <strong style="color:#e5e7eb;">${active.uploaded_by || 'Administrador'}</strong></div>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+              <span style="background:rgba(16,185,129,0.15); color:#10b981; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:20px; border:1px solid rgba(16,185,129,0.3); white-space:nowrap;">
+                ✓ ATIVA
+              </span>
+              <button type="button" id="sim-open-pdf-btn"
+                style="padding:6px 14px; font-size:0.76rem; font-weight:700; border-radius:8px; background:#000; color:#d4af37; border:1px solid #d4af37; cursor:pointer; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;"
+                title="Abrir PDF da tabela">
+                <i data-lucide="external-link" style="width:13px; height:13px;"></i> Abrir PDF
+              </button>
+            </div>
+          </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+
+        // Open PDF button — tries to open the stored PDF URL or download link
+        document.getElementById('sim-open-pdf-btn')?.addEventListener('click', () => {
+          const pdfUrl = active.pdf_url || active.source_url || null;
+          if (pdfUrl) {
+            window.open(pdfUrl, '_blank');
+          } else {
+            alert(`Arquivo: ${active.source_file_name || 'Tabela.pdf'}\n\nO PDF desta tabela não possui URL direta armazenada. Para visualizá-lo, faça uma nova importação.`);
+          }
+        });
+
+      } catch (err) {
+        contentEl.innerHTML = `<p style="color:#ef4444; font-size:0.82rem; margin:0;">Erro ao carregar tabela ativa: ${err.message}</p>`;
+      }
+    }
 
     // Handle simulation form submit
     const simForm = document.getElementById('proposal-sim-form');
