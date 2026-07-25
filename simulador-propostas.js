@@ -882,7 +882,7 @@
 
         <div class="pf-a4-footer" style="border-top:1.5px solid #e8b138; padding-top:12px; display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#6f6878;">
           <div>
-            <strong>Seven Gold Financeira</strong> • Assessoria Comercial em Consórcios<br />
+            <strong>Seven Gold Financeira</strong><br />
             Instagram: @sevengoldfinanceira
           </div>
           <div style="text-align:right;">
