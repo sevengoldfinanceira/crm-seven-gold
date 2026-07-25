@@ -968,7 +968,7 @@
                     <span>Valor da Carta de Crédito / Bem</span>
                   </div>
                 </td>
-                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#B98220; font-size:1.05rem;">${creditFormatted}</td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#B98220; font-size:0.9rem;">${creditFormatted}</td>
               </tr>
               <tr>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
@@ -977,7 +977,7 @@
                     <span>Entrada / 1ª Parcela (Adesão)</span>
                   </div>
                 </td>
-                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:700; color:#17111F;">${firstInstFormatted}</td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:700; color:#17111F; font-size:0.9rem;">${firstInstFormatted}</td>
               </tr>
               <tr>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
@@ -986,7 +986,7 @@
                     <span>Valor da Parcela Integral (100%)</span>
                   </div>
                 </td>
-                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#1769E0; font-size:0.95rem;">${finalInstFormatted}</td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#1769E0; font-size:0.9rem;">${finalInstFormatted}</td>
               </tr>
               <tr>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
@@ -995,7 +995,7 @@
                     <span>Valor da Parcela Reduzida (50% Meia Parcela)</span>
                   </div>
                 </td>
-                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#059669; font-size:0.95rem;">${halfInstFormatted}</td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#059669; font-size:0.9rem;">${halfInstFormatted}</td>
               </tr>
               <tr>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
