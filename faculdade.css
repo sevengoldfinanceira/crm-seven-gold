@@ -18,6 +18,54 @@
   margin-bottom: 10px;
 }
 
+/* Top Sub-Tabs Navigation */
+.faculdade-subtabs-nav {
+  display: flex;
+  gap: 12px;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 14px;
+  margin-top: 6px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.faculdade-tab-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  font-size: 0.86rem;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.faculdade-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.faculdade-tab-btn.active {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #d4af37;
+  color: #f4cf5d;
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.15);
+}
+
+.faculdade-tab-btn .badge {
+  background: rgba(212, 175, 55, 0.25);
+  color: #f4cf5d;
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 800;
+}
+
 /* Stats */
 .faculdade-stats {
   display: grid;

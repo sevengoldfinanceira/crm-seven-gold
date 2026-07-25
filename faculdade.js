@@ -169,6 +169,8 @@
     return total > 0 ? Math.round((completed / total) * 100) : 0;
   };
 
+  let currentLmsSubTab = 'cursos';
+
   const renderDashboard = () => {
     const lmsTab = document.querySelector('[data-tab="faculdade"]');
     if (!lmsTab) return;
@@ -177,6 +179,7 @@
     let totalModules = 0;
     let completedModules = 0;
     let unlockedCertificates = 0;
+    let pendingModulesList = [];
 
     Object.keys(COURSES_DATA).forEach(cId => {
       const course = COURSES_DATA[cId];
@@ -188,6 +191,14 @@
           completedModules++;
         } else {
           courseCompleted = false;
+          pendingModulesList.push({
+            courseId: cId,
+            courseTitle: course.title,
+            courseBadge: course.badge,
+            moduleId: m.id,
+            moduleTitle: m.title,
+            moduleDuration: m.duration
+          });
         }
       });
       if (courseCompleted && course.modules.length > 0) {
@@ -195,50 +206,11 @@
       }
     });
 
-    lmsTab.innerHTML = `
-      <div class="faculdade-container">
-        <!-- Header -->
-        <header class="faculdade-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-          <div class="eq-header-left">
-            <div class="eq-header-icon-box" style="background: rgba(212, 175, 55, 0.1); color: #d4af37; border-color: rgba(212, 175, 55, 0.28); flex-shrink: 0;">
-              <i data-lucide="graduation-cap"></i>
-            </div>
-            <div class="eq-header-title">
-              <h1 style="color:#fff; font-size:1.5rem; margin:0;">Faculdade Seven Gold</h1>
-              <p style="color:#94a3b8; font-size:0.84rem; margin:2px 0 0;">Plataforma de capacitação, onboarding e certificação de colaboradores.</p>
-            </div>
-          </div>
-          <a href="painel.html" class="bordero-btn-secondary" style="height: fit-content; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;"><i data-lucide="home"></i> Voltar ao Painel</a>
-        </header>
+    let tabContentHTML = '';
 
-        <!-- Stats Grid -->
-        <section class="faculdade-stats" aria-label="Estatísticas de estudo">
-          <div class="faculdade-stats-card">
-            <div class="faculdade-stats-info">
-              <span>Aulas Concluídas</span>
-              <strong>${completedModules} de ${totalModules}</strong>
-            </div>
-            <div class="faculdade-stats-icon"><i data-lucide="book-open"></i></div>
-          </div>
-          <div class="faculdade-stats-card">
-            <div class="faculdade-stats-info">
-              <span>Progresso Total</span>
-              <strong>${totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0}%</strong>
-            </div>
-            <div class="faculdade-stats-icon"><i data-lucide="trending-up"></i></div>
-          </div>
-          <div class="faculdade-stats-card">
-            <div class="faculdade-stats-info">
-              <span>Certificados Obtidos</span>
-              <strong>${unlockedCertificates} de ${Object.keys(COURSES_DATA).length}</strong>
-            </div>
-            <div class="faculdade-stats-icon"><i data-lucide="award"></i></div>
-          </div>
-        </section>
-
-        <!-- Courses Section -->
+    if (currentLmsSubTab === 'cursos') {
+      tabContentHTML = `
         <h2 class="faculdade-courses-title"><i data-lucide="library" style="color:#d4af37; width:20px;"></i> Cursos Disponíveis</h2>
-        
         <section class="faculdade-courses-grid">
           ${Object.keys(COURSES_DATA).map(cId => {
             const course = COURSES_DATA[cId];
@@ -276,14 +248,166 @@
             `;
           }).join('')}
         </section>
+      `;
+    } else if (currentLmsSubTab === 'certificados') {
+      tabContentHTML = `
+        <h2 class="faculdade-courses-title"><i data-lucide="award" style="color:#d4af37; width:20px;"></i> Meus Certificados e Conquistas</h2>
+        <section class="faculdade-courses-grid">
+          ${Object.keys(COURSES_DATA).map(cId => {
+            const course = COURSES_DATA[cId];
+            const pct = calculateCourseProgress(cId);
+            const isCompleted = pct === 100;
+            return `
+              <article class="course-card" style="${isCompleted ? 'border-color: rgba(212, 175, 55, 0.4); background: rgba(212, 175, 55, 0.03);' : ''}">
+                <span class="course-badge" style="${isCompleted ? 'background: rgba(212, 175, 55, 0.2); color: #f4cf5d; border-color: rgba(212, 175, 55, 0.4);' : ''}">${isCompleted ? 'Certificado Liberado' : 'Em Andamento'}</span>
+                <div class="course-card-banner">
+                  <div class="course-card-banner-icon"><i data-lucide="award" style="${isCompleted ? 'color:#d4af37;' : ''}"></i></div>
+                </div>
+                <div class="course-card-content">
+                  <h3 class="course-card-title">Certificado de ${course.title}</h3>
+                  <p class="course-card-desc">${isCompleted ? 'Você concluiu 100% dos módulos. Seu certificado de conclusão oficial está liberado!' : `Progresso atual: ${pct}%. Conclua todas as aulas para liberar seu certificado.`}</p>
+
+                  <div class="course-progress-container" style="margin-top:12px;">
+                    <div class="course-progress-header">
+                      <span>Status do Certificado</span>
+                      <span>${pct}%</span>
+                    </div>
+                    <div class="course-progress-bar-bg">
+                      <div class="course-progress-bar-fill" style="width: ${pct}%; background:${isCompleted ? '#d4af37' : 'linear-gradient(90deg, #d4af37, #f4cf5d)'}"></div>
+                    </div>
+                  </div>
+
+                  ${isCompleted ? `
+                    <button type="button" class="course-card-btn" data-action-view-cert="${cId}" style="background:#d4af37; color:#000; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+                      <i data-lucide="award" style="width:16px; height:16px;"></i> Visualizar Certificado PDF
+                    </button>
+                  ` : `
+                    <button type="button" class="course-card-btn" data-action-course="${cId}">
+                      Concluir Aulas Pendentes
+                    </button>
+                  `}
+                </div>
+              </article>
+            `;
+          }).join('')}
+        </section>
+      `;
+    } else if (currentLmsSubTab === 'pendencias') {
+      tabContentHTML = `
+        <h2 class="faculdade-courses-title"><i data-lucide="clock" style="color:#d4af37; width:20px;"></i> Aulas e Módulos Pendentes (${pendingModulesList.length})</h2>
+        ${pendingModulesList.length === 0 ? `
+          <div style="background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 16px; padding: 40px; text-align: center; color: #f3f4f6;">
+            <i data-lucide="check-circle-2" style="width: 48px; height: 48px; color: #d4af37; margin-bottom: 12px;"></i>
+            <h3 style="margin: 0; font-size: 1.2rem; color: #f4cf5d;">Tudo em Dia!</h3>
+            <p style="margin: 6px 0 0; color: #94a3b8; font-size: 0.9rem;">Parabéns! Você já concluiu 100% de todas as aulas e módulos da Faculdade Seven Gold.</p>
+          </div>
+        ` : `
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            ${pendingModulesList.map(item => `
+              <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 18px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                  <span style="font-size: 0.7rem; font-weight: 800; color: #d4af37; text-transform: uppercase; letter-spacing: 0.05em;">${item.courseBadge} • ${item.courseTitle}</span>
+                  <h4 style="margin: 0; font-size: 1rem; color: #fff; font-weight: 700;">${item.moduleTitle}</h4>
+                  <span style="font-size: 0.78rem; color: #94a3b8;"><i data-lucide="clock" style="width:12px; height:12px; vertical-align:middle;"></i> Duração: ~${item.moduleDuration}</span>
+                </div>
+                <button type="button" class="course-card-btn" data-action-play-module="${item.courseId}:${item.moduleId}" style="width: auto; padding: 10px 20px; display: inline-flex; align-items: center; gap: 6px;">
+                  <i data-lucide="play-circle" style="width: 16px; height: 16px;"></i> Assistir Aula
+                </button>
+              </div>
+            `).join('')}
+          </div>
+        `}
+      `;
+    }
+
+    lmsTab.innerHTML = `
+      <div class="faculdade-container">
+        <!-- Header -->
+        <header class="faculdade-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <div class="eq-header-left">
+            <div class="eq-header-icon-box" style="background: rgba(212, 175, 55, 0.1); color: #d4af37; border-color: rgba(212, 175, 55, 0.28); flex-shrink: 0;">
+              <i data-lucide="graduation-cap"></i>
+            </div>
+            <div class="eq-header-title">
+              <h1 style="color:#fff; font-size:1.5rem; margin:0;">Faculdade Seven Gold</h1>
+              <p style="color:#94a3b8; font-size:0.84rem; margin:2px 0 0;">Plataforma de capacitação, onboarding e certificação de colaboradores.</p>
+            </div>
+          </div>
+          <a href="painel.html" class="bordero-btn-secondary" style="height: fit-content; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;"><i data-lucide="home"></i> Voltar ao Painel</a>
+        </header>
+
+        <!-- Top Sub-Tabs Bar -->
+        <nav class="faculdade-subtabs-nav">
+          <button type="button" class="faculdade-tab-btn ${currentLmsSubTab === 'cursos' ? 'active' : ''}" data-faculdade-tab="cursos">
+            <i data-lucide="book-open"></i> Cursos
+          </button>
+          <button type="button" class="faculdade-tab-btn ${currentLmsSubTab === 'certificados' ? 'active' : ''}" data-faculdade-tab="certificados">
+            <i data-lucide="award"></i> Certificados <span class="badge">${unlockedCertificates}</span>
+          </button>
+          <button type="button" class="faculdade-tab-btn ${currentLmsSubTab === 'pendencias' ? 'active' : ''}" data-faculdade-tab="pendencias">
+            <i data-lucide="clock"></i> Pendências <span class="badge">${pendingModulesList.length}</span>
+          </button>
+        </nav>
+
+        <!-- Stats Grid -->
+        <section class="faculdade-stats" aria-label="Estatísticas de estudo">
+          <div class="faculdade-stats-card">
+            <div class="faculdade-stats-info">
+              <span>Aulas Concluídas</span>
+              <strong>${completedModules} de ${totalModules}</strong>
+            </div>
+            <div class="faculdade-stats-icon"><i data-lucide="book-open"></i></div>
+          </div>
+          <div class="faculdade-stats-card">
+            <div class="faculdade-stats-info">
+              <span>Progresso Total</span>
+              <strong>${totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0}%</strong>
+            </div>
+            <div class="faculdade-stats-icon"><i data-lucide="trending-up"></i></div>
+          </div>
+          <div class="faculdade-stats-card">
+            <div class="faculdade-stats-info">
+              <span>Certificados Obtidos</span>
+              <strong>${unlockedCertificates} de ${Object.keys(COURSES_DATA).length}</strong>
+            </div>
+            <div class="faculdade-stats-icon"><i data-lucide="award"></i></div>
+          </div>
+        </section>
+
+        <!-- Tab Content -->
+        ${tabContentHTML}
       </div>
     `;
 
-    // Add event listeners to card buttons
+    // Add event listeners for top sub-tabs
+    document.querySelectorAll('[data-faculdade-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentLmsSubTab = btn.dataset.faculdadeTab;
+        renderDashboard();
+      });
+    });
+
+    // Add event listeners to course buttons
     document.querySelectorAll('[data-action-course]').forEach(btn => {
       btn.addEventListener('click', () => {
         const cId = btn.dataset.actionCourse;
         openCourse(cId);
+      });
+    });
+
+    // Add event listeners to view certificate buttons
+    document.querySelectorAll('[data-action-view-cert]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cId = btn.dataset.actionViewCert;
+        renderCertificateView(cId);
+      });
+    });
+
+    // Add event listeners to play pending module buttons
+    document.querySelectorAll('[data-action-play-module]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const [cId, mId] = btn.dataset.actionPlayModule.split(':');
+        renderClassroom(cId, mId);
       });
     });
 
