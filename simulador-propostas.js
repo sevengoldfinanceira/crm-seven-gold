@@ -91,9 +91,6 @@
           <button type="button" class="simulador-tab-btn active" data-subtab="simulacao">
             <i data-lucide="calculator"></i> Simulação
           </button>
-          <button type="button" class="simulador-tab-btn" data-subtab="tabelas">
-            <i data-lucide="table"></i> Tabelas Disponíveis
-          </button>
           ${isAdminOrManager ? `
             <button type="button" class="simulador-tab-btn" data-subtab="configuracoes">
               <i data-lucide="settings"></i> Configurações e Importação (Admin)
@@ -185,33 +182,6 @@
           </div>
         </div>
 
-        <!-- Sub-tab 2: Tabelas Disponíveis -->
-        <div class="simulador-subtab-content" id="subtab-tabelas" style="display:none;">
-          <div class="admin-card-box">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <h2 style="color:#fff; font-size:1.1rem; margin:0; font-weight:800;">Tabelas Comerciais Ativas</h2>
-              <button type="button" class="bordero-btn-secondary" id="sim-refresh-tables-btn"><i data-lucide="refresh-cw"></i> Atualizar Lista</button>
-            </div>
-            <div style="overflow-x:auto;">
-              <table class="proposals-data-table" id="sim-tables-list-table">
-                <thead>
-                  <tr>
-                    <th>Nº Tabela</th>
-                    <th>Plano / Produto</th>
-                    <th>Administradora</th>
-                    <th>Prazo Total</th>
-                    <th>Validade</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><td colspan="6" style="text-align:center; color:#9ca3af;">Carregando tabelas comerciais...</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
         <!-- Sub-tab 3: Configurações e Importação (Admin) -->
         ${isAdminOrManager ? `
           <div class="simulador-subtab-content" id="subtab-configuracoes" style="display:none;">
@@ -229,48 +199,6 @@
 
                 <div id="sim-upload-preview-area" style="display:none;">
                   <!-- Dynamic preview injected here -->
-                </div>
-              </div>
-
-              <!-- Google Drive Sync Box -->
-              <div class="admin-card-box">
-                <h2 style="color:#fff; font-size:1.1rem; margin:0; font-weight:800;"><i data-lucide="folder-git2" style="color:#d4af37; width:18px;"></i> Sincronização Google Drive</h2>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
-                  <div class="simulador-form-group">
-                    <label for="sim-drive-folder-id">ID ou Link da Pasta do Google Drive</label>
-                    <input type="text" id="sim-drive-folder-id" class="simulador-input" placeholder="Ex: 1A2b3C4d5E6f7G8h9I" />
-                  </div>
-                  <div class="simulador-form-group">
-                    <label for="sim-drive-account">Conta Autenticada Conectada</label>
-                    <input type="text" id="sim-drive-account" class="simulador-input" value="admin@sevengold.com.br" readonly />
-                  </div>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-                  <span style="font-size:0.78rem; color:#9ca3af;">Última sincronização efetuada: <strong id="sim-drive-last-sync" style="color:#fff;">Hoje às 14:00</strong></span>
-                  <button type="button" class="bordero-btn-primary" id="sim-drive-sync-now-btn"><i data-lucide="refresh-cw"></i> Sincronizar Agora</button>
-                </div>
-              </div>
-
-              <!-- Audit History Table -->
-              <div class="admin-card-box">
-                <h2 style="color:#fff; font-size:1.1rem; margin:0; font-weight:800;"><i data-lucide="history" style="color:#d4af37; width:18px;"></i> Histórico de Importações e Versões</h2>
-                <div style="overflow-x:auto;">
-                  <table class="proposals-data-table" id="sim-audit-table">
-                    <thead>
-                      <tr>
-                        <th>Arquivo</th>
-                        <th>Origem</th>
-                        <th>Versão</th>
-                        <th>Tabelas</th>
-                        <th>Status</th>
-                        <th>Data Importação</th>
-                        <th>Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr><td colspan="7" style="text-align:center; color:#9ca3af;">Carregando histórico...</td></tr>
-                    </tbody>
-                  </table>
                 </div>
               </div>
             </div>
@@ -296,7 +224,6 @@
         if (activeContent) activeContent.style.display = 'block';
 
         if (targetSubtab === 'tabelas') fetchActiveTablesList();
-        if (targetSubtab === 'configuracoes') fetchAuditHistory();
       });
     });
 
@@ -391,8 +318,6 @@
               await fetch(`/api/attendance/proposals/imports/${data.import_id}/activate`, { method: 'POST' });
               alert("Tabela comercial ativada com sucesso! As novas propostas já estão disponíveis para todos os atendentes.");
               previewArea.style.display = 'none';
-              fetchActiveTablesList();
-              fetchAuditHistory();
             });
 
           } else {
@@ -602,67 +527,8 @@
   }
 
   // Fetch active commercial tables
-  async function fetchActiveTablesList() {
-    const tableBody = document.querySelector('#sim-tables-list-table tbody');
-    if (!tableBody) return;
-
-    try {
-      const resp = await fetch('/api/attendance/proposals/tables');
-      const data = await readApiPayload(resp);
-      if (!resp.ok) {
-        throw new Error(getApiErrorMessage(resp, data, 'Erro ao carregar tabelas.'));
-      }
-
-      if (data.tables && data.tables.length > 0) {
-        tableBody.innerHTML = data.tables.map(t => `
-          <tr>
-            <td><strong>${t.table_number}</strong></td>
-            <td>${t.product_name}</td>
-            <td>${t.administrator_name}</td>
-            <td>${t.total_term_months} meses</td>
-            <td>${new Date(t.valid_until).toLocaleDateString('pt-BR')}</td>
-            <td><span style="color:#10b981; font-weight:700; background:rgba(16,185,129,0.1); padding:2px 8px; border-radius:4px;">ATIVO</span></td>
-          </tr>
-        `).join('');
-      } else {
-        tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#9ca3af;">Nenhuma tabela comercial ativa cadastrada.</td></tr>`;
-      }
-    } catch (e) {
-      tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#ef4444;">Erro ao carregar tabelas.</td></tr>`;
-    }
-  }
-
-  // Fetch audit history
-  async function fetchAuditHistory() {
-    const tableBody = document.querySelector('#sim-audit-table tbody');
-    if (!tableBody) return;
-
-    try {
-      const resp = await fetch('/api/attendance/proposals/imports');
-      const data = await readApiPayload(resp);
-      if (!resp.ok) {
-        throw new Error(getApiErrorMessage(resp, data, 'Erro ao carregar historico.'));
-      }
-
-      if (data.imports && data.imports.length > 0) {
-        tableBody.innerHTML = data.imports.map(i => `
-          <tr>
-            <td><strong>${i.source_file_name}</strong></td>
-            <td><span style="font-size:0.72rem; background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:4px;">${i.source_type}</span></td>
-            <td>${i.version}</td>
-            <td>${i.valid_tables_count} tabelas (${i.proposal_rows_count} propostas)</td>
-            <td><span style="color:#10b981; font-weight:700;">${i.status}</span></td>
-            <td>${new Date(i.created_at).toLocaleDateString('pt-BR')}</td>
-            <td><button type="button" class="bordero-btn-secondary" style="padding:4px 8px; font-size:0.72rem;">Auditado</button></td>
-          </tr>
-        `).join('');
-      } else {
-        tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#9ca3af;">Nenhum histórico de importação encontrado.</td></tr>`;
-      }
-    } catch (e) {
-      tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#ef4444;">Erro ao carregar histórico.</td></tr>`;
-    }
-  }
+  async function fetchActiveTablesList() {}
+  async function fetchAuditHistory() {}
 
   // Initialize
   const initSimulador = () => {
