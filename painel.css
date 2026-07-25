@@ -318,6 +318,7 @@
   font-size: 0.85rem;
   color: #9b8daa !important;
   line-height: 1.5;
+  min-height: 2.55em;
 }
 
 /* Card highlight variations */
@@ -335,6 +336,7 @@
   flex-wrap: wrap;
   gap: 8px;
   margin-top: -2px;
+  min-height: 28px;
 }
 
 .tag {
@@ -370,7 +372,7 @@
   justify-content: center;
   gap: 8px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-top: 8px;
+  margin-top: auto;
 }
 
 .card-button.primary {
