@@ -282,6 +282,8 @@
               </div>
             </div>
           </div>
+        </div>
+
         <!-- Sub-tab 2: Clientes (Visível a todos) -->
         <div class="simulador-subtab-content" id="subtab-clientes" style="display:none;">
           <div class="closed-clients-panel">
@@ -411,6 +413,9 @@
         if (targetSubtab === 'clientes') renderClosedClientsTab();
       });
     });
+
+    // Pre-initialize closed clients list
+    renderClosedClientsTab();
 
     // Search and status filter listeners for closed clients
     document.getElementById('closed-search-input')?.addEventListener('input', () => renderClosedClientsTab());
