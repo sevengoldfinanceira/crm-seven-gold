@@ -27,39 +27,42 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Internal Sub-Tabs Navigation */
-.simulador-tabs-nav {
+/* Internal Sub-Tabs Navigation (Topbar Center) */
+.simulador-topbar-tabs-nav {
   display: flex;
-  gap: 12px;
-  border-bottom: 1.5px solid var(--seven-border);
-  padding-bottom: 12px;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto;
 }
 
 .simulador-tab-btn {
-  background: var(--seven-card-bg);
-  border: 1px solid var(--seven-border);
-  color: var(--seven-purple-dark);
-  font-size: 0.84rem;
-  font-weight: 700;
-  padding: 10px 20px;
-  border-radius: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(212, 175, 55, 0.25) !important;
+  color: #E2E8F0 !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  padding: 8px 16px !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: all 0.2s ease !important;
 }
 
 .simulador-tab-btn:hover {
-  background: var(--seven-bg-general);
-  color: var(--seven-purple-sec);
+  background: rgba(212, 175, 55, 0.15) !important;
+  border-color: #D8B34A !important;
+  color: #FFFFFF !important;
+  transform: translateY(-1px) !important;
 }
 
 .simulador-tab-btn.active {
-  background: var(--seven-purple-dark);
-  border-color: var(--seven-purple-dark);
-  color: var(--seven-gold-main);
-  box-shadow: 0 4px 14px rgba(21, 1, 38, 0.2);
+  background: linear-gradient(135deg, #E8B138 0%, #C9A84C 100%) !important;
+  border-color: #E8B138 !important;
+  color: #050505 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 14px rgba(232, 177, 56, 0.35) !important;
 }
 
 /* Simulation Layout (Grid Filters + Results) */

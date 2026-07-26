@@ -32,12 +32,19 @@
             <div class="service-header-vdivider" style="width: 1px; height: 32px; background: rgba(255, 255, 255, 0.15);"></div>
             <div class="service-header-titles">
               <p class="eyebrow" style="margin: 0; font-size: 0.68rem; font-weight: 800; color: #d4af37; letter-spacing: 0.1em;">PAINEL DE ATENDIMENTO</p>
-              <h1 style="margin: 2px 0 0; font-size: 1.25rem; font-weight: 800; color: #ffffff;">Simulador de Propostas</h1>
             </div>
           </div>
 
-          <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+          <nav class="simulador-topbar-tabs-nav" id="simulador-topbar-nav">
+            <button type="button" class="simulador-tab-btn active" data-subtab="simulacao">
+              <i data-lucide="calculator"></i> Simulação
+            </button>
+            <button type="button" class="simulador-tab-btn" data-subtab="configuracoes" id="topbar-btn-config" style="display: none;">
+              <i data-lucide="settings"></i> Configurações e Importação (Admin)
+            </button>
+          </nav>
 
+          <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
             <div class="service-user-actions" style="display: flex; align-items: center; gap: 10px;">
               <a href="painel.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #f8fafc; font-size: 0.78rem; font-weight: 700; text-decoration: none;">
                 <i data-lucide="layout-grid" style="width: 14px; height: 14px;"></i>

@@ -106,20 +106,14 @@
       console.error("Erro ao resolver permissão:", err);
     }
 
+    // Exibe botão de configurações no menu superior se admin/gestor
+    const topbarConfigBtn = document.getElementById("topbar-btn-config");
+    if (topbarConfigBtn) {
+      topbarConfigBtn.style.display = isAdminOrManager ? "flex" : "none";
+    }
+
     container.innerHTML = `
       <div class="simulador-container">
-        <!-- Sub-tabs nav -->
-        <nav class="simulador-tabs-nav">
-          <button type="button" class="simulador-tab-btn active" data-subtab="simulacao">
-            <i data-lucide="calculator"></i> Simulação
-          </button>
-          ${isAdminOrManager ? `
-            <button type="button" class="simulador-tab-btn" data-subtab="configuracoes">
-              <i data-lucide="settings"></i> Configurações e Importação (Admin)
-            </button>
-          ` : ''}
-        </nav>
-
         <!-- Sub-tab 1: Simulação -->
         <div class="simulador-subtab-content" id="subtab-simulacao">
           <div class="simulador-main-grid">
