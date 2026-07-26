@@ -1032,12 +1032,20 @@
     const randomSeq = Math.floor(Math.random() * 900) + 100; // 100–999
     const protocolNumber = `SG-${dateStr}-${randomSeq}`;
     
-    const validityDefault = new Date(now.getTime() + 15 * 24 * 60 * 60 * 1000).toISOString().slice(0,10);
+    const validityDefault = proposal.validity_date || new Date(now.getTime() + 15 * 24 * 60 * 60 * 1000).toISOString().slice(0,10);
 
-    const creditFormatted = formatCurrency(proposal.credit_value);
-    const firstInstFormatted = formatCurrency(proposal.first_installment);
-    const finalInstFormatted = formatCurrency(proposal.final_installment_value);
-    const halfInstFormatted = formatCurrency(proposal.final_installment_value * 0.5);
+    const creditValue = Number(proposal.credit_value || proposal.credito || 0);
+    const firstInstValue = Number(proposal.first_installment || proposal.entrada || 0);
+    const finalInstValue = Number(proposal.final_installment_value || proposal.parcela || 0);
+
+    const creditFormatted = formatCurrency(creditValue);
+    const firstInstFormatted = formatCurrency(firstInstValue);
+    const finalInstFormatted = formatCurrency(finalInstValue);
+    const halfInstFormatted = formatCurrency(finalInstValue * 0.5);
+
+    const savedBidPercent = proposal.bid_percentage ?? proposal.fixed_bid_percentage ?? 30;
+    const savedBidAmount = proposal.bid_amount ?? (creditValue * (savedBidPercent / 100));
+    const savedBidAmountFormatted = formatCurrency(savedBidAmount);
 
     // Switch active tab in atendimento.html
     const tabs = document.querySelectorAll('[data-service-tab]');
@@ -1150,34 +1158,34 @@
                 <!-- Área de Lance -->
                 <div class="pf-bid-section-box">
                   <label class="pf-bid-toggle-header">
-                    <input type="checkbox" id="pf-include-bid-toggle" checked class="pf-checkbox-custom" />
+                    <input type="checkbox" id="pf-include-bid-toggle" ${proposal.include_bid !== false ? 'checked' : ''} class="pf-checkbox-custom" />
                     <span class="pf-bid-toggle-title">Incluir Oferta / Pretensão de Lance nesta Proposta</span>
                   </label>
 
-                  <div id="pf-bid-controls-wrapper">
+                  <div id="pf-bid-controls-wrapper" style="display: ${proposal.include_bid !== false ? 'block' : 'none'};">
                     <div class="pf-bid-slider-header">
                       <label for="pf-embedded-bid-range" class="pf-bid-slider-label">
                         <i data-lucide="sliders-horizontal" style="width:16px; height:16px; color:#D8B34A;"></i>
                         Lance Embutido / Pretendido (%)
                       </label>
-                      <span id="pf-embedded-bid-badge" class="pf-bid-badge">${Math.min(proposal.fixed_bid_percentage || 30, 50)}%</span>
+                      <span id="pf-embedded-bid-badge" class="pf-bid-badge">${savedBidPercent}%</span>
                     </div>
 
-                    <input type="range" id="pf-embedded-bid-range" min="0" max="50" step="0.5" value="${Math.min(proposal.fixed_bid_percentage || 30, 50)}" class="pf-range-slider" />
+                    <input type="range" id="pf-embedded-bid-range" min="0" max="50" step="0.5" value="${savedBidPercent}" class="pf-range-slider" />
 
                     <div class="pf-grid-2col pf-bid-values-grid">
                       <div class="simulador-form-group">
                         <label for="pf-embedded-bid" class="pf-sublabel">Porcentagem (%)</label>
-                        <input type="text" id="pf-embedded-bid" class="simulador-input pf-input-centered" value="${Math.min(proposal.fixed_bid_percentage || 30, 50)}%" />
+                        <input type="text" id="pf-embedded-bid" class="simulador-input pf-input-centered" value="${savedBidPercent}%" />
                       </div>
                       <div class="simulador-form-group">
                         <label for="pf-bid-amount" class="pf-sublabel">Valor em R$ (Calculado)</label>
-                        <input type="text" id="pf-bid-amount" class="simulador-input brl-mask pf-input-bold-dark" placeholder="R$ 0,00" value="${formatCurrency(proposal.credit_value * (Math.min(proposal.fixed_bid_percentage || 30, 50) / 100))}" />
+                        <input type="text" id="pf-bid-amount" class="simulador-input brl-mask pf-input-bold-dark" placeholder="R$ 0,00" value="${savedBidAmountFormatted}" />
                       </div>
                     </div>
 
                     <label class="pf-show-percentage-card">
-                      <input type="checkbox" id="pf-show-percentage-toggle" class="pf-checkbox-custom" />
+                      <input type="checkbox" id="pf-show-percentage-toggle" ${proposal.show_percentages ? 'checked' : ''} class="pf-checkbox-custom" />
                       <span>Exibir porcentagens (%) do lance na proposta final impressa</span>
                     </label>
                   </div>
@@ -1729,6 +1737,13 @@
       const clientPhone = (document.getElementById('pf-client-phone')?.value || '').trim();
       const notesVal = (document.getElementById('pf-notes')?.value || '').trim();
       const propType = (document.getElementById('pf-property-type')?.value || '').trim();
+      const validityDate = (document.getElementById('pf-validity')?.value || '').trim();
+      const includeBid = document.getElementById('pf-include-bid-toggle')?.checked ?? true;
+      const bidPercent = parseFloat(document.getElementById('pf-embedded-bid-range')?.value || 30);
+      const bidAmountStr = document.getElementById('pf-bid-amount')?.value || '';
+      const bidAmount = parseCurrency(bidAmountStr) || ((proposal.credit_value || proposal.credito || 0) * (bidPercent / 100));
+      const showPercentages = document.getElementById('pf-show-percentage-toggle')?.checked ?? false;
+
       const productName = proposal.product_name || proposal.produto || 'Imóveis (AUTOCON)';
 
       const todayStr = new Date().toISOString().slice(0, 10);
@@ -1763,6 +1778,12 @@
           client_phone: clientPhone,
           notes: notesVal,
           property_type: propType,
+          validity_date: validityDate,
+          include_bid: includeBid,
+          bid_percentage: bidPercent,
+          fixed_bid_percentage: bidPercent,
+          bid_amount: bidAmount,
+          show_percentages: showPercentages,
           consultant_name: consultantName
         }
       };
