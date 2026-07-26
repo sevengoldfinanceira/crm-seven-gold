@@ -125,42 +125,86 @@
           <div class="simulador-main-grid">
             <!-- Left Form Filters -->
             <form class="simulador-filters-card" id="proposal-sim-form">
-              <h2 class="simulador-filters-title"><i data-lucide="sliders-horizontal" style="color:#d4af37; width:18px;"></i> Limites do Cliente</h2>
+              <div class="simulador-filters-header">
+                <div class="simulador-header-icon-box">
+                  <i data-lucide="sliders-horizontal" style="color:#D8B34A; width:20px; height:20px;"></i>
+                </div>
+                <div class="simulador-header-divider"></div>
+                <h2 class="simulador-filters-title">Limites do Cliente</h2>
+              </div>
               
-              <div class="simulador-form-group">
-                <label for="sim-min-credit">Crédito Mínimo</label>
-                <input type="text" id="sim-min-credit" class="simulador-input brl-mask" placeholder="R$ 200.000,00" />
+              <!-- Crédito Mínimo -->
+              <div class="simulador-field-row">
+                <div class="simulador-field-icon-box">
+                  <i data-lucide="dollar-sign" style="color:#D8B34A; width:20px; height:20px;"></i>
+                </div>
+                <div class="simulador-field-group">
+                  <div class="simulador-field-label-row">
+                    <label for="sim-min-credit">Crédito Mínimo</label>
+                  </div>
+                  <input type="text" id="sim-min-credit" class="simulador-input brl-mask" placeholder="R$ 200.000,00" />
+                </div>
               </div>
 
-              <div class="simulador-form-group">
-                <label for="sim-max-credit">Crédito Máximo</label>
-                <input type="text" id="sim-max-credit" class="simulador-input brl-mask" placeholder="R$ 300.000,00" />
+              <!-- Crédito Máximo -->
+              <div class="simulador-field-row">
+                <div class="simulador-field-icon-box">
+                  <i data-lucide="dollar-sign" style="color:#D8B34A; width:20px; height:20px;"></i>
+                </div>
+                <div class="simulador-field-group">
+                  <div class="simulador-field-label-row">
+                    <label for="sim-max-credit">Crédito Máximo</label>
+                  </div>
+                  <input type="text" id="sim-max-credit" class="simulador-input brl-mask" placeholder="R$ 300.000,00" />
+                </div>
               </div>
 
-
-              <div class="simulador-form-group">
-                <label for="sim-max-first-inst">Entrada Máxima <span class="req">*</span></label>
-                <input type="text" id="sim-max-first-inst" class="simulador-input brl-mask" placeholder="R$ 24.000,00" required />
+              <!-- Entrada Máxima -->
+              <div class="simulador-field-row">
+                <div class="simulador-field-icon-box">
+                  <i data-lucide="home" style="color:#D8B34A; width:20px; height:20px;"></i>
+                </div>
+                <div class="simulador-field-group">
+                  <div class="simulador-field-label-row">
+                    <label for="sim-max-first-inst">Entrada Máxima</label>
+                    <i data-lucide="info" style="color:#D8B34A; width:16px; height:16px; cursor:pointer;" title="Informe a entrada máxima disponível pelo cliente."></i>
+                  </div>
+                  <input type="text" id="sim-max-first-inst" class="simulador-input brl-mask" placeholder="R$ 24.000,00" required />
+                </div>
               </div>
 
-              <div class="simulador-form-group">
-                <label for="sim-max-inst">Valor de Parcela Máxima <span class="req">*</span></label>
-                <input type="text" id="sim-max-inst" class="simulador-input brl-mask" placeholder="R$ 1.850,00" required />
+              <!-- Valor de Parcela Máxima -->
+              <div class="simulador-field-row">
+                <div class="simulador-field-icon-box">
+                  <i data-lucide="calendar" style="color:#D8B34A; width:20px; height:20px;"></i>
+                </div>
+                <div class="simulador-field-group">
+                  <div class="simulador-field-label-row">
+                    <label for="sim-max-inst">Valor de Parcela Máxima</label>
+                    <i data-lucide="info" style="color:#D8B34A; width:16px; height:16px; cursor:pointer;" title="Informe o valor máximo de parcela mensal suportado pelo cliente."></i>
+                  </div>
+                  <input type="text" id="sim-max-inst" class="simulador-input brl-mask" placeholder="R$ 1.850,00" required />
+                </div>
               </div>
 
-              <div class="simulador-form-group" style="margin-top:4px; margin-bottom:6px;">
-                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.82rem; color:#374151; font-weight:600;">
-                  <input type="checkbox" id="sim-use-half-inst" style="width:16px; height:16px; accent-color:#d4af37; cursor:pointer;" />
-                  Considerar Parcela Integral (100%)
+              <!-- Checkbox: Considerar Parcela Integral -->
+              <div class="simulador-checkbox-container">
+                <label for="sim-use-half-inst" class="simulador-checkbox-label">
+                  <input type="checkbox" id="sim-use-half-inst" class="simulador-checkbox-input" />
+                  <div class="simulador-checkbox-text">
+                    <strong class="simulador-checkbox-title">Considerar Parcela Integral (100%)</strong>
+                    <span class="simulador-checkbox-sub">Marcando esta opção será considerada a parcela com 100% do crédito.</span>
+                  </div>
                 </label>
               </div>
 
+              <!-- Action Buttons -->
               <div class="simulador-actions">
-                <button type="submit" class="bordero-btn-primary" style="width:100%; justify-content:center;">
-                  <i data-lucide="search"></i> Buscar Propostas
+                <button type="submit" class="simulador-btn-search">
+                  <i data-lucide="search" style="color:#E8B138; width:18px; height:18px;"></i> Buscar Propostas
                 </button>
-                <button type="button" class="bordero-btn-secondary" id="sim-reset-btn" style="width:100%; justify-content:center;">
-                  <i data-lucide="rotate-ccw"></i> Limpar Filtros
+                <button type="button" class="simulador-btn-reset" id="sim-reset-btn">
+                  <i data-lucide="rotate-ccw" style="color:#E8B138; width:18px; height:18px;"></i> Limpar Filtros
                 </button>
               </div>
             </form>
