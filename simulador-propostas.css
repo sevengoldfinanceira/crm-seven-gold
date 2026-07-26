@@ -1644,3 +1644,156 @@ select.simulador-input option {
   }
 }
 
+/* Estado Inicial Vazio (Cópia fiel da 1ª Foto com badge circular, estrelas e gráficos) */
+.simulador-empty-state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 50px 24px 30px;
+  background: #FFFFFF;
+  border: 1px dashed #E2E8F0;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  margin-top: 12px;
+}
+
+.empty-state-sparkles-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.empty-state-badge {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: #FAF6EE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 8px 24px rgba(216, 179, 74, 0.12);
+}
+
+.empty-state-calc-icon {
+  width: 44px !important;
+  height: 44px !important;
+  color: #D8B34A !important;
+}
+
+.sparkle {
+  position: absolute;
+  font-size: 1.1rem;
+  user-select: none;
+}
+
+.sparkle-top-right {
+  top: 4px;
+  right: -8px;
+  color: #F59E0B;
+}
+
+.sparkle-bottom-left {
+  bottom: 8px;
+  left: -10px;
+  color: #FBBF24;
+  font-size: 0.9rem;
+}
+
+.empty-state-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.02em;
+}
+
+.empty-state-subtitle {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #64748B;
+  margin: 0 0 36px 0;
+  max-width: 480px;
+}
+
+.empty-state-subtitle .highlight-gold {
+  color: #D8B34A;
+  font-weight: 800;
+}
+
+/* Ilustração Translucida de Gráficos no Rodapé */
+.empty-state-illustration {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 20px;
+  opacity: 0.65;
+  margin-top: 10px;
+  pointer-events: none;
+}
+
+.ill-card {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 12px;
+  width: 90px;
+}
+
+.ill-card-bar .ill-line-short {
+  height: 6px;
+  width: 50%;
+  background: #E2E8F0;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.ill-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 36px;
+}
+
+.ill-bars span,
+.ill-bars-standalone span {
+  width: 12px;
+  background: #CBD5E1;
+  border-radius: 4px 4px 0 0;
+  display: block;
+}
+
+.ill-bars-standalone {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.ill-bars-standalone span {
+  width: 14px;
+  background: #FAF0D7;
+  border: 1px solid #F3CF66;
+}
+
+.ill-pie-chart {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: conic-gradient(#F3CF66 0deg 90deg, #FAF0D7 90deg 210deg, #E2E8F0 210deg 360deg);
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.ill-card-doc .ill-line {
+  height: 6px;
+  width: 100%;
+  background: #E2E8F0;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.ill-card-doc .ill-line.short {
+  width: 60%;
+}
+

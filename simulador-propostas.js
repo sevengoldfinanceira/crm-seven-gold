@@ -243,9 +243,41 @@
 
               <div class="proposals-cards-list" id="sim-proposals-list">
                 <!-- Simulation Results Cards injected dynamically -->
-                <div style="text-align:center; color:#9ca3af; padding:40px; border:1px dashed rgba(255,255,255,0.08); border-radius:16px;">
-                  <i data-lucide="calculator" style="width:40px; height:40px; color:#d4af37; margin-bottom:12px;"></i>
-                  <p style="margin:0; font-size:0.9rem; font-weight:600;">Preencha os valores de crédito e parcelas e clique em <strong>Buscar Propostas</strong>.</p>
+                <div class="simulador-empty-state-card">
+                  <div class="empty-state-sparkles-container">
+                    <div class="empty-state-badge">
+                      <i data-lucide="calculator" class="empty-state-calc-icon"></i>
+                      <span class="sparkle sparkle-top-right">✨</span>
+                      <span class="sparkle sparkle-bottom-left">✨</span>
+                    </div>
+                  </div>
+                  
+                  <h2 class="empty-state-title">Simule propostas personalizadas</h2>
+                  <p class="empty-state-subtitle">
+                    Preencha os valores de crédito e parcelas ao lado<br />
+                    e clique em <strong class="highlight-gold">Buscar Propostas</strong> para visualizar as melhores opções.
+                  </p>
+
+                  <div class="empty-state-illustration">
+                    <div class="ill-card ill-card-bar">
+                      <div class="ill-line-short"></div>
+                      <div class="ill-bars">
+                        <span style="height: 18px;"></span>
+                        <span style="height: 28px;"></span>
+                        <span style="height: 22px;"></span>
+                      </div>
+                    </div>
+                    <div class="ill-bars-standalone">
+                      <span style="height: 48px;"></span>
+                      <span style="height: 32px;"></span>
+                    </div>
+                    <div class="ill-pie-chart"></div>
+                    <div class="ill-card ill-card-doc">
+                      <div class="ill-line"></div>
+                      <div class="ill-line"></div>
+                      <div class="ill-line short"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -390,9 +422,41 @@
     document.getElementById('sim-reset-btn')?.addEventListener('click', () => {
       simForm.reset();
       document.getElementById('sim-proposals-list').innerHTML = `
-        <div style="text-align:center; color:#9ca3af; padding:40px; border:1px dashed rgba(255,255,255,0.08); border-radius:16px;">
-          <i data-lucide="calculator" style="width:40px; height:40px; color:#d4af37; margin-bottom:12px;"></i>
-          <p style="margin:0; font-size:0.9rem; font-weight:600;">Filtros limpos com sucesso. Preencha os novos limites.</p>
+        <div class="simulador-empty-state-card">
+          <div class="empty-state-sparkles-container">
+            <div class="empty-state-badge">
+              <i data-lucide="calculator" class="empty-state-calc-icon"></i>
+              <span class="sparkle sparkle-top-right">✨</span>
+              <span class="sparkle sparkle-bottom-left">✨</span>
+            </div>
+          </div>
+          
+          <h2 class="empty-state-title">Simule propostas personalizadas</h2>
+          <p class="empty-state-subtitle">
+            Preencha os valores de crédito e parcelas ao lado<br />
+            e clique em <strong class="highlight-gold">Buscar Propostas</strong> para visualizar as melhores opções.
+          </p>
+
+          <div class="empty-state-illustration">
+            <div class="ill-card ill-card-bar">
+              <div class="ill-line-short"></div>
+              <div class="ill-bars">
+                <span style="height: 18px;"></span>
+                <span style="height: 28px;"></span>
+                <span style="height: 22px;"></span>
+              </div>
+            </div>
+            <div class="ill-bars-standalone">
+              <span style="height: 48px;"></span>
+              <span style="height: 32px;"></span>
+            </div>
+            <div class="ill-pie-chart"></div>
+            <div class="ill-card ill-card-doc">
+              <div class="ill-line"></div>
+              <div class="ill-line"></div>
+              <div class="ill-line short"></div>
+            </div>
+          </div>
         </div>
       `;
       document.getElementById('sim-results-header')?.classList.add('is-empty-notice');
