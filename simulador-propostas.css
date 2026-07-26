@@ -408,32 +408,36 @@ select.simulador-input option {
 /* Proposal Grid Metric Specs */
 .proposal-specs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
   background: var(--seven-bg-general);
   border: 1px solid var(--seven-border);
   border-radius: 12px;
-  padding: 14px 18px;
+  padding: 10px 14px;
+  align-items: center;
 }
 
 .proposal-spec-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+  min-width: 0;
 }
 
 .proposal-spec-item span {
-  font-size: 0.68rem;
-  font-weight: 700;
+  font-size: 0.61rem;
+  font-weight: 800;
   color: var(--seven-text-sec);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .proposal-spec-item strong {
-  font-size: 0.95rem;
+  font-size: 0.82rem;
   font-weight: 800;
   color: var(--seven-purple-dark);
+  white-space: nowrap;
 }
 
 .proposal-spec-item strong.highlight {
