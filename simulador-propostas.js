@@ -1081,7 +1081,7 @@
       const bidAmount = document.getElementById('pf-bid-amount')?.value || 'R$ 0,00';
       const embeddedBid = document.getElementById('pf-embedded-bid')?.value || '30%';
       const validityVal = document.getElementById('pf-validity')?.value ? new Date(document.getElementById('pf-validity').value + 'T00:00:00').toLocaleDateString('pt-BR') : '15 dias';
-      const notesVal = document.getElementById('pf-notes')?.value || 'Sem observações adicionais.';
+      const notesVal = document.getElementById('pf-notes')?.value?.trim() || '';
 
       const includeBid = document.getElementById('pf-include-bid-toggle')?.checked ?? true;
 
@@ -1285,6 +1285,7 @@
             </tbody>
           </table>
 
+          ${notesVal ? `
           <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:14px; padding:20px 24px; font-size:0.86rem;">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
               <div style="width:28px; height:28px; border-radius:50%; background:#0A0A0A; display:flex; align-items:center; justify-content:center; color:#C9A84C; flex-shrink:0;">
@@ -1300,6 +1301,12 @@
               <div>** Esta proposta é uma simulação, não garantindo qualquer espécie de obrigação entre as partes.</div>
             </div>
           </div>
+          ` : `
+          <div style="padding-top:4px; font-size:0.76rem; color:#706A78; font-weight:600; line-height:1.5;">
+            <div>** Sujeito a análise e aprovação de crédito.</div>
+            <div>** Esta proposta é uma simulação, não garantindo qualquer espécie de obrigação entre as partes.</div>
+          </div>
+          `}
 
           <div class="pf-a4-footer" style="border-top:1.5px solid #E8B138; padding-top:18px; display:grid; grid-template-columns:1fr 1px 1fr; gap:16px; align-items:center; font-size:0.78rem; color:#706A78; margin-top:auto;">
             <div style="display:flex; align-items:center; gap:12px;">
