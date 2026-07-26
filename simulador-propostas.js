@@ -1331,10 +1331,6 @@
             <div style="background:#E4DEE8; height:36px;"></div>
 
             <div style="text-align:right; font-size:0.73rem; color:#706A78; display:flex; flex-direction:column; gap:2px;">
-              <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px; white-space:nowrap;">
-                <i data-lucide="headphones" style="width:12px; height:12px; color:#C9A84C;"></i>
-                <span style="white-space:nowrap;">Atendimento Oficial • Todos os Direitos Reservados</span>
-              </div>
               <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
                 <i data-lucide="globe" style="width:12px; height:12px; color:#C9A84C;"></i>
                 <span>www.sevengoldfinanceira.com.br</span>
