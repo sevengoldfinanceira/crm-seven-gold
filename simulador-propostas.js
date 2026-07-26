@@ -766,10 +766,8 @@
 
           <div class="proposal-card-footer">
             <div class="proposal-footer-meta">
-              <i data-lucide="file-text" style="width:18px; height:18px; color:#667085; flex-shrink:0;"></i>
-              <span>Origem: <strong>${p.source_file_name || 'Tabela_Comercial.pdf'}</strong></span>
-              <span class="proposal-footer-dot"></span>
-              <span>Lance Fixo: <strong>${p.fixed_bid_percentage || 30}%</strong></span>
+              <i data-lucide="gavel" style="width:18px; height:18px; color:#D8B34A; flex-shrink:0;"></i>
+              <span>Lance Fixo: <strong style="color:#050505;">30% ou 50%</strong></span>
             </div>
             
             <button type="button" class="simulador-btn-select-proposal" data-action-select-proposal="${p.id}">
