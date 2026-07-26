@@ -1022,53 +1022,55 @@
         </div>
 
         <div class="pf-a4-body" style="padding:24px;">
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
-            <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:12px; padding:16px 18px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; align-items:stretch;">
+            <!-- DADOS DO CONSULTOR -->
+            <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:12px; padding:16px 18px; display:flex; flex-direction:column; justify-content:flex-start; min-width:0;">
               <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; padding-bottom:8px; border-bottom:2px solid #E8B138;">
                 <div style="width:28px; height:28px; border-radius:50%; background:#0A0A0A; display:flex; align-items:center; justify-content:center; color:#C9A84C; flex-shrink:0;">
                   <i data-lucide="user" style="width:15px; height:15px;"></i>
                 </div>
-                <strong style="color:#0A0A0A; font-size:0.82rem; letter-spacing:0.04em; text-transform:uppercase;">DADOS DO CONSULTOR</strong>
+                <strong style="color:#0A0A0A; font-size:0.82rem; letter-spacing:0.02em; text-transform:uppercase; white-space:nowrap;">DADOS DO CONSULTOR</strong>
               </div>
               <div style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem; color:#706A78;">
-                <div style="display:flex; align-items:center; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                   <i data-lucide="user-check" style="width:14px; height:14px; color:#B98220; flex-shrink:0;"></i>
-                  <span><strong style="color:#17111F;">Nome:</strong> ${consultantName}</span>
+                  <span style="min-width:0; word-break:break-word;"><strong style="color:#17111F;">Nome:</strong> ${consultantName}</span>
                 </div>
-                <div style="display:flex; align-items:center; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                   <i data-lucide="mail" style="width:14px; height:14px; color:#B98220; flex-shrink:0;"></i>
-                  <span><strong style="color:#17111F;">E-mail:</strong> ${consultantEmail}</span>
+                  <span style="min-width:0; word-break:break-word;"><strong style="color:#17111F;">E-mail:</strong> ${consultantEmail}</span>
                 </div>
-                <div style="display:flex; align-items:center; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                   <i data-lucide="briefcase" style="width:14px; height:14px; color:#B98220; flex-shrink:0;"></i>
-                  <span><strong style="color:#17111F;">Cargo:</strong> ${consultantRole}</span>
+                  <span style="min-width:0; word-break:break-word;"><strong style="color:#17111F;">Cargo:</strong> ${consultantRole}</span>
                 </div>
               </div>
             </div>
 
-            <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:12px; padding:16px 18px;">
+            <!-- DADOS DO CLIENTE -->
+            <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:12px; padding:16px 18px; display:flex; flex-direction:column; justify-content:flex-start; min-width:0;">
               <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; padding-bottom:8px; border-bottom:2px solid #E8B138;">
                 <div style="width:28px; height:28px; border-radius:50%; background:#0A0A0A; display:flex; align-items:center; justify-content:center; color:#C9A84C; flex-shrink:0;">
                   <i data-lucide="users" style="width:15px; height:15px;"></i>
                 </div>
-                <strong style="color:#0A0A0A; font-size:0.82rem; letter-spacing:0.04em; text-transform:uppercase;">DADOS DO CLIENTE</strong>
+                <strong style="color:#0A0A0A; font-size:0.82rem; letter-spacing:0.02em; text-transform:uppercase; white-space:nowrap;">DADOS DO CLIENTE</strong>
               </div>
               <div style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem; color:#706A78;">
-                <div style="display:flex; align-items:center; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                   <i data-lucide="contact" style="width:14px; height:14px; color:#B98220; flex-shrink:0;"></i>
-                  <span><strong style="color:#17111F;">Nome:</strong> ${clientName}</span>
+                  <span style="min-width:0; word-break:break-word;"><strong style="color:#17111F;">Nome:</strong> ${clientName}</span>
                 </div>
-                <div style="display:flex; align-items:center; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                   <i data-lucide="credit-card" style="width:14px; height:14px; color:#B98220; flex-shrink:0;"></i>
-                  <span><strong style="color:#17111F;">CPF:</strong> ${clientCpf}</span>
+                  <span style="min-width:0; word-break:break-word;"><strong style="color:#17111F;">CPF:</strong> ${clientCpf}</span>
                 </div>
-                <div style="display:flex; align-items:center; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                   <i data-lucide="phone" style="width:14px; height:14px; color:#B98220; flex-shrink:0;"></i>
-                  <span><strong style="color:#17111F;">Telefone:</strong> ${clientPhone}</span>
+                  <span style="min-width:0; word-break:break-word;"><strong style="color:#17111F;">Telefone:</strong> ${clientPhone}</span>
                 </div>
-                <div style="display:flex; align-items:center; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                   <i data-lucide="home" style="width:14px; height:14px; color:#B98220; flex-shrink:0;"></i>
-                  <span><strong style="color:#17111F;">Tipo de Bem:</strong> ${propType}</span>
+                  <span style="min-width:0; word-break:break-word;"><strong style="color:#17111F;">Tipo de Bem:</strong> ${propType}</span>
                 </div>
               </div>
             </div>
