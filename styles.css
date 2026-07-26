@@ -133,13 +133,28 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
 }
 
 .nav-item:hover {
-  background: var(--sidebar-soft);
-  color: #f7f5ed;
+  background: rgba(232, 177, 56, 0.12) !important;
+  color: #E8B138 !important;
+}
+
+.nav-item:hover .nav-icon,
+.nav-item:hover svg {
+  color: #E8B138 !important;
+  stroke: #E8B138 !important;
 }
 
 .nav-item.active {
-  background: var(--gold);
-  color: #17130a;
+  background: linear-gradient(135deg, #E8B138 0%, #C9A84C 100%) !important;
+  color: #050505 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 14px rgba(232, 177, 56, 0.35) !important;
+}
+
+.nav-item.active .nav-icon,
+.nav-item.active .nav-label,
+.nav-item.active svg {
+  color: #050505 !important;
+  stroke: #050505 !important;
 }
 
 .nav-item[draggable="true"] {
@@ -3642,18 +3657,27 @@ body.theme-dark .crm-workspace {
 }
 
 .nav-item.active {
-  background: #4c2bbf !important;
-  color: #ffffff !important;
+  background: linear-gradient(135deg, #E8B138 0%, #C9A84C 100%) !important;
+  color: #050505 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 14px rgba(232, 177, 56, 0.35) !important;
+}
+
+.nav-item.active .nav-icon,
+.nav-item.active .nav-label,
+.nav-item.active svg {
+  color: #050505 !important;
+  stroke: #050505 !important;
 }
 
 .nav-item {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: rgba(255, 255, 255, 0.75) !important;
   transition: all 0.2s ease;
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.06) !important;
-  color: #ffffff !important;
+  background: rgba(232, 177, 56, 0.14) !important;
+  color: #E8B138 !important;
 }
 
 /* User Box refinement */
@@ -3663,9 +3687,9 @@ body.theme-dark .crm-workspace {
 }
 
 .user-profile-meta .user-role {
-  background: rgba(76, 43, 191, 0.2) !important;
-  color: #9c5bf0 !important;
-  border: 1px solid rgba(156, 91, 240, 0.3) !important;
+  background: rgba(232, 177, 56, 0.15) !important;
+  color: #E8B138 !important;
+  border: 1px solid rgba(232, 177, 56, 0.35) !important;
 }
 
 /* Card de identidade alinhado ao painel da empresa */
