@@ -1123,19 +1123,19 @@
               </div>
             </div>
             
-            <div style="display:flex; flex-direction:column; gap:4px; text-align:right; font-size:0.78rem;">
-              <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px;">
-                <i data-lucide="file-text" style="width:14px; height:14px; color:#ffffff; opacity:0.9;"></i>
+            <div style="display:flex; flex-direction:column; gap:4px; font-size:0.78rem; align-items:flex-start; text-align:left;">
+              <div style="display:flex; align-items:center; justify-content:flex-start; gap:6px;">
+                <i data-lucide="file-text" style="width:14px; height:14px; color:#ffffff; opacity:0.9; flex-shrink:0;"></i>
                 <span style="color:rgba(255,255,255,0.9); font-weight:500;">Protocolo:</span>
                 <strong style="color:#ffffff; font-weight:700; font-family:monospace; letter-spacing:0.02em; white-space:nowrap;">${protocolNumber}</strong>
               </div>
-              <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px;">
-                <i data-lucide="calendar" style="width:14px; height:14px; color:#ffffff; opacity:0.9;"></i>
+              <div style="display:flex; align-items:center; justify-content:flex-start; gap:6px;">
+                <i data-lucide="calendar" style="width:14px; height:14px; color:#ffffff; opacity:0.9; flex-shrink:0;"></i>
                 <span style="color:rgba(255,255,255,0.9); font-weight:500;">Data:</span>
                 <span style="color:#ffffff; font-weight:600;">${new Date().toLocaleDateString('pt-BR')}</span>
               </div>
-              <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px;">
-                <i data-lucide="shield-check" style="width:14px; height:14px; color:#E8B138;"></i>
+              <div style="display:flex; align-items:center; justify-content:flex-start; gap:6px;">
+                <i data-lucide="shield-check" style="width:14px; height:14px; color:#E8B138; flex-shrink:0;"></i>
                 <span style="color:#E8B138; font-weight:600;">Validade:</span>
                 <strong style="color:#E8B138; font-weight:700;">${validityVal}</strong>
               </div>
