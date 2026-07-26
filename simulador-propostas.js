@@ -1750,8 +1750,11 @@
       const currentList = getClosedClientsList();
 
       const existingId = window.__currentEditingClientId;
-      const existingClient = existingId ? currentList.find(c => c.id === existingId) : null;
-      const clientId = existingId || ('cl-' + Date.now());
+      const existingClient = existingId ? currentList.find(c => String(c.id) === String(existingId)) : null;
+      const clientId = existingClient ? existingClient.id : (existingId || ('cl-' + Date.now()));
+
+      // Retain current editing ID for future saves in the same view session
+      window.__currentEditingClientId = clientId;
 
       const updatedClientRecord = {
         id: clientId,
@@ -1789,7 +1792,7 @@
       };
 
       if (existingClient) {
-        const idx = currentList.findIndex(c => c.id === existingId);
+        const idx = currentList.findIndex(c => String(c.id) === String(clientId));
         if (idx !== -1) currentList[idx] = updatedClientRecord;
       } else {
         currentList.unshift(updatedClientRecord);
@@ -1800,7 +1803,7 @@
       // Async sync to Supabase database
       saveProposalToSupabase(updatedClientRecord);
 
-      alert(`✅ Proposta de "${clientName}" salva com sucesso!\n\nOs dados foram gravados no Supabase e estão atualizados na lista de "Clientes".`);
+      alert(`✅ Todos os dados da proposta de "${clientName}" foram salvos no sistema e no Supabase!`);
 
       // Switch to Clientes subtab in topbar
       const clientesNavBtn = document.querySelector('[data-subtab="clientes"]');
