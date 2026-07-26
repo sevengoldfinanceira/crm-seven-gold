@@ -945,19 +945,19 @@
                         <i data-lucide="sliders-horizontal" style="width:16px; height:16px; color:#D8B34A;"></i>
                         Lance Embutido / Pretendido (%)
                       </label>
-                      <span id="pf-embedded-bid-badge" class="pf-bid-badge">${proposal.fixed_bid_percentage || 30}%</span>
+                      <span id="pf-embedded-bid-badge" class="pf-bid-badge">${Math.min(proposal.fixed_bid_percentage || 30, 50)}%</span>
                     </div>
 
-                    <input type="range" id="pf-embedded-bid-range" min="0" max="100" step="0.5" value="${proposal.fixed_bid_percentage || 30}" class="pf-range-slider" />
+                    <input type="range" id="pf-embedded-bid-range" min="0" max="50" step="0.5" value="${Math.min(proposal.fixed_bid_percentage || 30, 50)}" class="pf-range-slider" />
 
                     <div class="pf-grid-2col pf-bid-values-grid">
                       <div class="simulador-form-group">
                         <label for="pf-embedded-bid" class="pf-sublabel">Porcentagem (%)</label>
-                        <input type="text" id="pf-embedded-bid" class="simulador-input pf-input-centered" value="${proposal.fixed_bid_percentage || 30}%" />
+                        <input type="text" id="pf-embedded-bid" class="simulador-input pf-input-centered" value="${Math.min(proposal.fixed_bid_percentage || 30, 50)}%" />
                       </div>
                       <div class="simulador-form-group">
                         <label for="pf-bid-amount" class="pf-sublabel">Valor em R$ (Calculado)</label>
-                        <input type="text" id="pf-bid-amount" class="simulador-input brl-mask pf-input-bold-dark" placeholder="R$ 0,00" value="${formatCurrency(proposal.credit_value * ((proposal.fixed_bid_percentage || 30) / 100))}" />
+                        <input type="text" id="pf-bid-amount" class="simulador-input brl-mask pf-input-bold-dark" placeholder="R$ 0,00" value="${formatCurrency(proposal.credit_value * (Math.min(proposal.fixed_bid_percentage || 30, 50) / 100))}" />
                       </div>
                     </div>
 
@@ -1376,7 +1376,7 @@
 
     // Sync from Percentage
     const syncFromPercentage = (pct, source) => {
-      const clampedPct = Math.min(Math.max(parseFloat(pct) || 0, 0), 100);
+      const clampedPct = Math.min(Math.max(parseFloat(pct) || 0, 0), 50);
       const displayPct = formatPctDisplay(clampedPct);
 
       if (rangeSlider && source !== 'slider') rangeSlider.value = clampedPct;
@@ -1398,14 +1398,19 @@
         return;
       }
       const valMoney = parseFloat(digits) / 100;
-      if (moneyInput) {
-        moneyInput.value = formatCurrency(valMoney);
-      }
 
       if (creditVal > 0) {
-        const calcPct = Math.min(Math.max((valMoney / creditVal) * 100, 0), 100);
+        const maxMoney = creditVal * 0.50; // Máximo 50%
+        const clampedMoney = Math.min(valMoney, maxMoney);
+        if (moneyInput) {
+          moneyInput.value = formatCurrency(clampedMoney);
+        }
+        const calcPct = Math.min(Math.max((clampedMoney / creditVal) * 100, 0), 50);
         syncFromPercentage(calcPct, 'moneyInput');
       } else {
+        if (moneyInput) {
+          moneyInput.value = formatCurrency(valMoney);
+        }
         updateA4Sheet();
       }
     };
