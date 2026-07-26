@@ -282,6 +282,70 @@
               </div>
             </div>
           </div>
+        <!-- Sub-tab 2: Clientes (Visível a todos) -->
+        <div class="simulador-subtab-content" id="subtab-clientes" style="display:none;">
+          <div class="closed-clients-panel">
+            <div class="closed-clients-kpi-grid">
+              <div class="closed-kpi-card">
+                <div class="closed-kpi-icon gold"><i data-lucide="users"></i></div>
+                <div class="closed-kpi-info">
+                  <span class="closed-kpi-label">CLIENTES FECHADOS</span>
+                  <strong class="closed-kpi-value" id="kpi-total-clients">0</strong>
+                </div>
+              </div>
+              <div class="closed-kpi-card">
+                <div class="closed-kpi-icon green"><i data-lucide="badge-dollar-sign"></i></div>
+                <div class="closed-kpi-info">
+                  <span class="closed-kpi-label">CRÉDITO TOTAL FECHADO</span>
+                  <strong class="closed-kpi-value" id="kpi-total-credit">R$ 0,00</strong>
+                </div>
+              </div>
+              <div class="closed-kpi-card">
+                <div class="closed-kpi-icon blue"><i data-lucide="file-check-2"></i></div>
+                <div class="closed-kpi-info">
+                  <span class="closed-kpi-label">CONTRATOS ASSINADOS</span>
+                  <strong class="closed-kpi-value" id="kpi-signed-contracts">0</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filter & Action Bar -->
+            <div class="closed-clients-filter-bar">
+              <div class="closed-search-input-box">
+                <i data-lucide="search" class="closed-search-icon"></i>
+                <input type="text" id="closed-search-input" placeholder="Buscar por cliente, CPF/CNPJ, grupo ou cota..." />
+              </div>
+              <select id="closed-filter-status" class="closed-filter-select">
+                <option value="">Todos os Status</option>
+                <option value="Assinado">Assinado</option>
+                <option value="Em Análise">Em Análise</option>
+                <option value="Contemplado">Contemplado</option>
+              </select>
+              <button type="button" class="simulador-btn-submit" id="btn-add-closed-client" style="width:auto; padding:10px 18px; margin:0;">
+                <i data-lucide="user-plus"></i> Novo Cliente Fechado
+              </button>
+            </div>
+
+            <!-- Clients Table -->
+            <div class="closed-clients-table-wrapper">
+              <table class="closed-clients-table">
+                <thead>
+                  <tr>
+                    <th>CLIENTE / CONTATO</th>
+                    <th>PRODUTO / GRUPO & COTA</th>
+                    <th>VALOR DE CRÉDITO</th>
+                    <th>ENTRADA / PARCELA</th>
+                    <th>FECHAMENTO</th>
+                    <th>STATUS</th>
+                    <th style="text-align: right;">AÇÕES</th>
+                  </tr>
+                </thead>
+                <tbody id="closed-clients-tbody">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
         <!-- Sub-tab 3: Configurações e Importação (Admin) -->
@@ -340,7 +404,43 @@
 
         if (targetSubtab === 'tabelas') fetchActiveTablesList();
         if (targetSubtab === 'configuracoes') loadActiveTableInfo();
+        if (targetSubtab === 'clientes') renderClosedClientsTab();
       });
+    });
+
+    // Search and status filter listeners for closed clients
+    document.getElementById('closed-search-input')?.addEventListener('input', () => renderClosedClientsTab());
+    document.getElementById('closed-filter-status')?.addEventListener('change', () => renderClosedClientsTab());
+
+    document.getElementById("btn-add-closed-client")?.addEventListener("click", () => {
+      const nome = prompt("Nome do Cliente:");
+      if (!nome) return;
+      const cpf_cnpj = prompt("CPF ou CNPJ (opcional):") || "";
+      const produto = prompt("Produto (ex: Imóveis, Auto, Pesados):", "Imóveis (AUTOCON)") || "Imóveis (AUTOCON)";
+      const creditoStr = prompt("Valor do Crédito (R$):", "500000") || "500000";
+      const entradaStr = prompt("Valor da Entrada / Adesão (R$):", "25000") || "25000";
+      const parcelaStr = prompt("Valor da Parcela (R$):", "2450") || "2450";
+      const grupo_cota = prompt("Grupo & Cota:", "Grupo 7042 / Cota 148") || "";
+
+      const newClient = {
+        id: "cl-" + Date.now(),
+        nome,
+        cpf_cnpj,
+        telefone: "",
+        produto,
+        credito: parseFloat(creditoStr.replace(/[^0-9.]/g, "")) || 500000,
+        entrada: parseFloat(entradaStr.replace(/[^0-9.]/g, "")) || 25000,
+        parcela: parseFloat(parcelaStr.replace(/[^0-9.]/g, "")) || 2450,
+        grupo_cota,
+        data_fechamento: new Date().toISOString().slice(0, 10),
+        status: "Assinado",
+        consultor: "Seven Gold"
+      };
+
+      const currentList = getClosedClientsList();
+      currentList.unshift(newClient);
+      saveClosedClientsList(currentList);
+      renderClosedClientsTab();
     });
 
     // Load and render the currently active table info in the admin panel
@@ -1662,5 +1762,196 @@
     document.addEventListener("DOMContentLoaded", initSimulador);
   } else {
     initSimulador();
+  }
+
+  // --- MÓDULO DE CLIENTES FECHADOS & CONTRATOS ATIVOS ---
+  const DEFAULT_CLOSED_CLIENTS = [
+    {
+      id: "cl-1",
+      nome: "Carlos Eduardo Oliveira",
+      cpf_cnpj: "123.456.789-00",
+      telefone: "(11) 98765-4321",
+      produto: "Imóveis (AUTOCON)",
+      credito: 450000,
+      entrada: 225000,
+      parcela: 2150,
+      grupo_cota: "Grupo 7042 / Cota 148",
+      data_fechamento: "2026-07-24",
+      status: "Assinado",
+      consultor: "Seven Gold"
+    },
+    {
+      id: "cl-2",
+      nome: "Juliana Mendes Ribeiro",
+      cpf_cnpj: "987.654.321-11",
+      telefone: "(11) 97123-8899",
+      produto: "Automóveis (AUTOCON)",
+      credito: 180000,
+      entrada: 90000,
+      parcela: 890,
+      grupo_cota: "Grupo 3012 / Cota 082",
+      data_fechamento: "2026-07-20",
+      status: "Em Análise",
+      consultor: "Seven Gold"
+    },
+    {
+      id: "cl-3",
+      nome: "Transportadora Ouro Verde Ltda",
+      cpf_cnpj: "12.345.678/0001-99",
+      telefone: "(11) 3344-5566",
+      produto: "Pesados & Maquinários",
+      credito: 850000,
+      entrada: 425000,
+      parcela: 4100,
+      grupo_cota: "Grupo 9050 / Cota 015",
+      data_fechamento: "2026-07-15",
+      status: "Contemplado",
+      consultor: "Seven Gold"
+    }
+  ];
+
+  function getClosedClientsList() {
+    try {
+      const stored = localStorage.getItem("seven_gold_closed_clients");
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    localStorage.setItem("seven_gold_closed_clients", JSON.stringify(DEFAULT_CLOSED_CLIENTS));
+    return DEFAULT_CLOSED_CLIENTS;
+  }
+
+  function saveClosedClientsList(list) {
+    localStorage.setItem("seven_gold_closed_clients", JSON.stringify(list));
+  }
+
+  function renderClosedClientsTab() {
+    const tbody = document.getElementById("closed-clients-tbody");
+    if (!tbody) return;
+
+    const searchVal = (document.getElementById("closed-search-input")?.value || "").toLowerCase().trim();
+    const statusVal = document.getElementById("closed-filter-status")?.value || "";
+
+    const allClients = getClosedClientsList();
+
+    const filtered = allClients.filter(c => {
+      const matchSearch = !searchVal || 
+        c.nome.toLowerCase().includes(searchVal) || 
+        (c.cpf_cnpj && c.cpf_cnpj.toLowerCase().includes(searchVal)) || 
+        (c.grupo_cota && c.grupo_cota.toLowerCase().includes(searchVal));
+
+      const matchStatus = !statusVal || c.status === statusVal;
+
+      return matchSearch && matchStatus;
+    });
+
+    // Compute KPIs
+    const totalClients = allClients.length;
+    const totalCredit = allClients.reduce((acc, curr) => acc + Number(curr.credito || 0), 0);
+    const signedCount = allClients.filter(c => c.status === "Assinado" || c.status === "Contemplado").length;
+
+    const kpiClientsEl = document.getElementById("kpi-total-clients");
+    const kpiCreditEl = document.getElementById("kpi-total-credit");
+    const kpiSignedEl = document.getElementById("kpi-signed-contracts");
+
+    if (kpiClientsEl) kpiClientsEl.textContent = totalClients;
+    if (kpiCreditEl) kpiCreditEl.textContent = formatCurrency(totalCredit);
+    if (kpiSignedEl) kpiSignedEl.textContent = signedCount;
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align:center; padding:40px; color:#64748b;">
+            Nenhum cliente fechado encontrado com estes filtros.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(client => {
+      const initial = (client.nome || "C").charAt(0).toUpperCase();
+      const statusClass = client.status === "Assinado" ? "badge-signed" : (client.status === "Contemplado" ? "badge-contemplated" : "badge-analysis");
+
+      return `
+        <tr>
+          <td>
+            <div class="closed-client-name-cell">
+              <span class="closed-client-avatar">${initial}</span>
+              <div class="closed-client-details">
+                <strong class="closed-client-title">${client.nome}</strong>
+                <span class="closed-client-sub">${client.cpf_cnpj || "CPF/CNPJ N/A"} • ${client.telefone || "Tel N/A"}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="closed-product-cell">
+              <strong style="color:#0f172a; font-size:0.85rem;">${client.produto || "Consórcio"}</strong>
+              <span style="color:#64748b; font-size:0.75rem;">${client.grupo_cota || "—"}</span>
+            </div>
+          </td>
+          <td>
+            <strong style="color:#10b981; font-weight:800; font-size:0.92rem;">${formatCurrency(client.credito)}</strong>
+          </td>
+          <td>
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <span style="color:#0f172a; font-size:0.82rem; font-weight:700;">Entrada: ${formatCurrency(client.entrada)}</span>
+              <span style="color:#64748b; font-size:0.75rem;">Parcela: ${formatCurrency(client.parcela)}</span>
+            </div>
+          </td>
+          <td style="color:#475569; font-size:0.82rem; font-weight:600;">
+            ${client.data_fechamento ? new Date(client.data_fechamento + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}
+          </td>
+          <td>
+            <span class="closed-status-badge ${statusClass}">${client.status || "Assinado"}</span>
+          </td>
+          <td style="text-align: right;">
+            <div class="closed-actions-row">
+              <button type="button" class="btn-closed-action a4" data-open-a4="${client.id}" title="Visualizar Proposta Final A4">
+                <i data-lucide="file-text"></i> A4
+              </button>
+              <button type="button" class="btn-closed-action delete" data-delete-client="${client.id}" title="Excluir">
+                <i data-lucide="trash-2"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    if (window.lucide) window.lucide.createIcons();
+
+    // Attach click listeners for action buttons in table
+    tbody.querySelectorAll("[data-open-a4]").forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.dataset.openA4;
+        const client = allClients.find(c => c.id === id);
+        if (!client) return;
+
+        openMontarPropostaFinal({
+          product_name: client.produto || "Imóveis (AUTOCON)",
+          credit_value: Number(client.credito || 0),
+          first_installment: Number(client.entrada || 0),
+          final_installment_value: Number(client.parcela || 0),
+          total_months: 180,
+          bid_amount: Number(client.entrada || 0),
+          bid_percentage: client.credito > 0 ? ((Number(client.entrada) / Number(client.credito)) * 100).toFixed(2) : "0",
+          group_number: client.grupo_cota ? client.grupo_cota.split('/')[0] : '—',
+          quota_number: client.grupo_cota ? client.grupo_cota.split('/')[1] : '—'
+        });
+      };
+    });
+
+    tbody.querySelectorAll("[data-delete-client]").forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.dataset.deleteClient;
+        if (!confirm("Deseja realmente remover este cliente fechado?")) return;
+        const updated = allClients.filter(c => c.id !== id);
+        saveClosedClientsList(updated);
+        renderClosedClientsTab();
+      };
+    });
   }
 })();
