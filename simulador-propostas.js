@@ -439,8 +439,9 @@
       });
     });
 
-    // Pre-initialize closed clients list
+    // Pre-initialize closed clients list and fetch Supabase records
     renderClosedClientsTab();
+    fetchSupabaseProposals();
 
     // Search and status filter listeners for closed clients
     document.getElementById('closed-search-input')?.addEventListener('input', () => renderClosedClientsTab());
@@ -1007,7 +1008,8 @@
   }
 
   // Open Montar Proposta Final Screen
-  function openMontarPropostaFinal(proposal) {
+  function openMontarPropostaFinal(proposal, existingClientId = null) {
+    window.__currentEditingClientId = existingClientId || proposal.client_id || proposal.id || null;
     const container = document.getElementById('proposta-final-container');
     if (!container) return;
 
@@ -1099,7 +1101,7 @@
                   <label for="pf-client-name">Nome Completo do Cliente <span class="req">*</span></label>
                   <div class="pf-input-wrapper">
                     <i data-lucide="user" class="pf-input-icon"></i>
-                    <input type="text" id="pf-client-name" class="simulador-input pf-input-with-icon" placeholder="Ex: João da Silva" required />
+                    <input type="text" id="pf-client-name" class="simulador-input pf-input-with-icon" placeholder="Ex: João da Silva" value="${proposal.client_name || proposal.nome || ''}" required />
                   </div>
                 </div>
 
@@ -1109,14 +1111,14 @@
                     <label for="pf-client-cpf">CPF do Cliente</label>
                     <div class="pf-input-wrapper">
                       <i data-lucide="contact" class="pf-input-icon"></i>
-                      <input type="text" id="pf-client-cpf" class="simulador-input pf-input-with-icon" placeholder="000.000.000-00" />
+                      <input type="text" id="pf-client-cpf" class="simulador-input pf-input-with-icon" placeholder="000.000.000-00" value="${proposal.client_cpf || proposal.cpf_cnpj || ''}" />
                     </div>
                   </div>
                   <div class="simulador-form-group">
                     <label for="pf-client-phone">Telefone / WhatsApp</label>
                     <div class="pf-input-wrapper">
                       <i data-lucide="phone" class="pf-input-icon"></i>
-                      <input type="text" id="pf-client-phone" class="simulador-input pf-input-with-icon" placeholder="(00) 90000-0000" />
+                      <input type="text" id="pf-client-phone" class="simulador-input pf-input-with-icon" placeholder="(00) 90000-0000" value="${proposal.client_phone || proposal.telefone || ''}" />
                     </div>
                   </div>
                 </div>
@@ -1128,11 +1130,11 @@
                     <div class="pf-input-wrapper">
                       <i data-lucide="home" class="pf-input-icon"></i>
                       <select id="pf-property-type" class="simulador-input pf-input-with-icon">
-                        <option value="Imóvel Residencial">Imóvel Residencial</option>
-                        <option value="Imóvel Comercial">Imóvel Comercial</option>
-                        <option value="Terreno / Construção">Terreno / Construção</option>
-                        <option value="Automóvel / Veículo">Automóvel / Veículo</option>
-                        <option value="Maquinário / Pesados">Maquinário / Pesados</option>
+                        <option value="Imóvel Residencial" ${proposal.property_type === 'Imóvel Residencial' ? 'selected' : ''}>Imóvel Residencial</option>
+                        <option value="Imóvel Comercial" ${proposal.property_type === 'Imóvel Comercial' ? 'selected' : ''}>Imóvel Comercial</option>
+                        <option value="Terreno / Construção" ${proposal.property_type === 'Terreno / Construção' ? 'selected' : ''}>Terreno / Construção</option>
+                        <option value="Automóvel / Veículo" ${proposal.property_type === 'Automóvel / Veículo' ? 'selected' : ''}>Automóvel / Veículo</option>
+                        <option value="Maquinário / Pesados" ${proposal.property_type === 'Maquinário / Pesados' ? 'selected' : ''}>Maquinário / Pesados</option>
                       </select>
                     </div>
                   </div>
@@ -1186,7 +1188,7 @@
                   <label for="pf-notes">Observações / Condições Especiais</label>
                   <div class="pf-input-wrapper pf-textarea-wrapper">
                     <i data-lucide="file-edit" class="pf-input-icon pf-textarea-icon"></i>
-                    <textarea id="pf-notes" class="simulador-input pf-textarea-with-icon" rows="3" placeholder="Insira observações relevantes sobre o atendimento ou regras de contemplação..."></textarea>
+                    <textarea id="pf-notes" class="simulador-input pf-textarea-with-icon" rows="3" placeholder="Insira observações relevantes sobre o atendimento ou regras de contemplação...">${proposal.notes || proposal.observacao || ''}</textarea>
                   </div>
                 </div>
               </form>
@@ -1721,42 +1723,74 @@
       });
     });
 
-    document.getElementById('pf-btn-save-system')?.addEventListener('click', () => {
+    document.getElementById('pf-btn-save-system')?.addEventListener('click', async () => {
       const clientName = (document.getElementById('pf-client-name')?.value || 'Cliente Não Informado').trim();
       const clientCpf = (document.getElementById('pf-client-cpf')?.value || '').trim();
       const clientPhone = (document.getElementById('pf-client-phone')?.value || '').trim();
-      const productName = proposal.product_name || 'Imóveis (AUTOCON)';
+      const notesVal = (document.getElementById('pf-notes')?.value || '').trim();
+      const propType = (document.getElementById('pf-property-type')?.value || '').trim();
+      const productName = proposal.product_name || proposal.produto || 'Imóveis (AUTOCON)';
 
       const todayStr = new Date().toISOString().slice(0, 10);
+      const currentList = getClosedClientsList();
 
-      const newClosedClient = {
-        id: 'cl-' + Date.now(),
+      const existingId = window.__currentEditingClientId;
+      const existingClient = existingId ? currentList.find(c => c.id === existingId) : null;
+      const clientId = existingId || ('cl-' + Date.now());
+
+      const updatedClientRecord = {
+        id: clientId,
         nome: clientName,
         cpf_cnpj: clientCpf || 'N/A',
         telefone: clientPhone || 'N/A',
         produto: productName,
-        credito: Number(proposal.credit_value || 0),
-        entrada: Number(proposal.first_installment || 0),
-        parcela: Number(proposal.final_installment_value || 0),
+        credito: Number(proposal.credit_value || proposal.credito || 0),
+        entrada: Number(proposal.first_installment || proposal.entrada || 0),
+        parcela: Number(proposal.final_installment_value || proposal.parcela || 0),
         grupo_cota: (proposal.group_number && proposal.quota_number) 
           ? `Grupo ${proposal.group_number} / Cota ${proposal.quota_number}` 
-          : 'G7-VIP',
-        data_fechamento: todayStr,
-        status: 'Assinado',
-        consultor: consultantName || 'Seven Gold'
+          : (proposal.grupo_cota || 'G7-VIP'),
+        data_fechamento: existingClient ? existingClient.data_fechamento : todayStr,
+        status: existingClient ? existingClient.status : 'Assinado',
+        consultor: consultantName || 'Seven Gold',
+        observacao: notesVal,
+        documentos_obrigatorios: existingClient ? (existingClient.documentos_obrigatorios || {}) : {},
+        proposal_config: {
+          ...proposal,
+          client_id: clientId,
+          client_name: clientName,
+          client_cpf: clientCpf,
+          client_phone: clientPhone,
+          notes: notesVal,
+          property_type: propType,
+          consultant_name: consultantName
+        }
       };
 
-      const currentList = getClosedClientsList();
-      currentList.unshift(newClosedClient);
+      if (existingClient) {
+        const idx = currentList.findIndex(c => c.id === existingId);
+        if (idx !== -1) currentList[idx] = updatedClientRecord;
+      } else {
+        currentList.unshift(updatedClientRecord);
+      }
+
       saveClosedClientsList(currentList);
 
-      alert(`✅ Proposta de "${clientName}" salva no sistema com sucesso!\n\nEla já está disponível na lista da aba "Clientes".`);
+      // Async sync to Supabase database
+      saveProposalToSupabase(updatedClientRecord);
+
+      alert(`✅ Proposta de "${clientName}" salva com sucesso!\n\nOs dados foram gravados no Supabase e estão atualizados na lista de "Clientes".`);
 
       // Switch to Clientes subtab in topbar
       const clientesNavBtn = document.querySelector('[data-subtab="clientes"]');
       if (clientesNavBtn) {
         document.querySelectorAll('.simulador-tab-btn').forEach(b => b.classList.remove('active'));
         clientesNavBtn.classList.add('active');
+
+        const simContainer = document.querySelector('[data-service-tab-content="simulador"]');
+        const pfContainer = document.getElementById('proposta-final-container');
+        if (simContainer) simContainer.style.display = 'block';
+        if (pfContainer) pfContainer.style.display = 'none';
 
         document.querySelectorAll('.simulador-subtab-content').forEach(c => c.style.display = 'none');
         const activeContent = document.getElementById('subtab-clientes');
@@ -1952,6 +1986,63 @@
     localStorage.setItem("seven_gold_closed_clients", JSON.stringify(list));
   }
 
+  async function saveProposalToSupabase(clientRecord) {
+    try {
+      const client = getClient();
+      if (!client) return;
+      await client.from('crm_propostas').upsert({
+        id: clientRecord.id,
+        nome_cliente: clientRecord.nome,
+        cpf_cnpj: clientRecord.cpf_cnpj,
+        telefone: clientRecord.telefone,
+        consultor: clientRecord.consultor,
+        produto: clientRecord.produto,
+        credito: clientRecord.credito,
+        entrada: clientRecord.entrada,
+        parcela: clientRecord.parcela,
+        grupo_cota: clientRecord.grupo_cota,
+        data_fechamento: clientRecord.data_fechamento,
+        status: clientRecord.status,
+        observacao: clientRecord.observacao,
+        documentos_obrigatorios: clientRecord.documentos_obrigatorios,
+        proposal_config: clientRecord.proposal_config
+      });
+    } catch (e) {
+      console.warn("Aviso ao sincronizar proposta no Supabase:", e);
+    }
+  }
+
+  async function fetchSupabaseProposals() {
+    try {
+      const client = getClient();
+      if (!client) return;
+      const { data, error } = await client.from('crm_propostas').select('*').order('created_at', { ascending: false });
+      if (data && data.length > 0) {
+        const supabaseClients = data.map(row => ({
+          id: row.id || ('cl-' + Date.now()),
+          nome: row.nome_cliente || row.nome || 'Cliente',
+          cpf_cnpj: row.cpf_cnpj || 'N/A',
+          telefone: row.telefone || 'N/A',
+          produto: row.produto || 'Consórcio',
+          credito: Number(row.credito || 0),
+          entrada: Number(row.entrada || 0),
+          parcela: Number(row.parcela || 0),
+          grupo_cota: row.grupo_cota || 'G7-VIP',
+          data_fechamento: row.data_fechamento || new Date().toISOString().slice(0, 10),
+          status: row.status || 'Assinado',
+          consultor: row.consultor || 'Seven Gold',
+          observacao: row.observacao || '',
+          documentos_obrigatorios: row.documentos_obrigatorios || {},
+          proposal_config: row.proposal_config || null
+        }));
+        saveClosedClientsList(supabaseClients);
+        renderClosedClientsTab();
+      }
+    } catch (e) {
+      console.warn("Aviso ao carregar propostas do Supabase:", e);
+    }
+  }
+
   function renderClosedClientsTab() {
     const tbody = document.getElementById("closed-clients-tbody");
     if (!tbody) return;
@@ -2077,7 +2168,7 @@
         const client = allClients.find(c => c.id === id);
         if (!client) return;
 
-        openMontarPropostaFinal({
+        const proposalPayload = client.proposal_config || {
           product_name: client.produto || "Imóveis (AUTOCON)",
           credit_value: Number(client.credito || 0),
           first_installment: Number(client.entrada || 0),
@@ -2087,7 +2178,16 @@
           bid_percentage: client.credito > 0 ? ((Number(client.entrada) / Number(client.credito)) * 100).toFixed(2) : "0",
           group_number: client.grupo_cota ? client.grupo_cota.split('/')[0] : '—',
           quota_number: client.grupo_cota ? client.grupo_cota.split('/')[1] : '—'
-        });
+        };
+
+        proposalPayload.client_id = client.id;
+        proposalPayload.client_name = client.nome;
+        proposalPayload.client_cpf = client.cpf_cnpj;
+        proposalPayload.client_phone = client.telefone;
+        proposalPayload.notes = client.observacao || '';
+        proposalPayload.consultant_name = client.consultor;
+
+        openMontarPropostaFinal(proposalPayload, client.id);
       };
     });
 
