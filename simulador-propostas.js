@@ -1035,8 +1035,8 @@
             <button type="button" id="pf-btn-back" class="pf-btn-dark-secondary">
               <i data-lucide="arrow-left" class="pf-btn-icon-gold"></i> Voltar à Simulação
             </button>
-            <button type="button" id="pf-btn-draft" class="pf-btn-dark-secondary">
-              <i data-lucide="save" class="pf-btn-icon-gold"></i> Salvar Rascunho
+            <button type="button" id="pf-btn-save-system" class="pf-btn-dark-secondary">
+              <i data-lucide="save" class="pf-btn-icon-gold"></i> Salvar no Sistema
             </button>
             <button type="button" id="pf-btn-pdf" class="pf-btn-outline-gold">
               <i data-lucide="file-text" class="pf-btn-icon-gold"></i> Gerar PDF
@@ -1685,23 +1685,49 @@
       });
     });
 
-    document.getElementById('pf-btn-draft')?.addEventListener('click', () => {
-      const draftData = {
-        proposal,
-        protocolNumber,
-        clientName: document.getElementById('pf-client-name')?.value,
-        clientCpf: document.getElementById('pf-client-cpf')?.value,
-        clientPhone: document.getElementById('pf-client-phone')?.value,
-        propertyType: document.getElementById('pf-property-type')?.value,
-        bidAmount: document.getElementById('pf-bid-amount')?.value,
-        embeddedBid: document.getElementById('pf-embedded-bid')?.value,
-        includeBid: document.getElementById('pf-include-bid-toggle')?.checked,
-        validity: document.getElementById('pf-validity')?.value,
-        notes: document.getElementById('pf-notes')?.value,
-        updatedAt: new Date().toISOString()
+    document.getElementById('pf-btn-save-system')?.addEventListener('click', () => {
+      const clientName = (document.getElementById('pf-client-name')?.value || 'Cliente Não Informado').trim();
+      const clientCpf = (document.getElementById('pf-client-cpf')?.value || '').trim();
+      const clientPhone = (document.getElementById('pf-client-phone')?.value || '').trim();
+      const productName = proposal.product_name || 'Imóveis (AUTOCON)';
+
+      const todayStr = new Date().toISOString().slice(0, 10);
+
+      const newClosedClient = {
+        id: 'cl-' + Date.now(),
+        nome: clientName,
+        cpf_cnpj: clientCpf || 'N/A',
+        telefone: clientPhone || 'N/A',
+        produto: productName,
+        credito: Number(proposal.credit_value || 0),
+        entrada: Number(proposal.first_installment || 0),
+        parcela: Number(proposal.final_installment_value || 0),
+        grupo_cota: (proposal.group_number && proposal.quota_number) 
+          ? `Grupo ${proposal.group_number} / Cota ${proposal.quota_number}` 
+          : 'G7-VIP',
+        data_fechamento: todayStr,
+        status: 'Assinado',
+        consultor: consultantName || 'Seven Gold'
       };
-      localStorage.setItem('seven_gold_proposal_draft', JSON.stringify(draftData));
-      alert('Rascunho da Proposta Final salvo com sucesso!');
+
+      const currentList = getClosedClientsList();
+      currentList.unshift(newClosedClient);
+      saveClosedClientsList(currentList);
+
+      alert(`✅ Proposta de "${clientName}" salva no sistema com sucesso!\n\nEla já está disponível na lista da aba "Clientes".`);
+
+      // Switch to Clientes subtab in topbar
+      const clientesNavBtn = document.querySelector('[data-subtab="clientes"]');
+      if (clientesNavBtn) {
+        document.querySelectorAll('.simulador-tab-btn').forEach(b => b.classList.remove('active'));
+        clientesNavBtn.classList.add('active');
+
+        document.querySelectorAll('.simulador-subtab-content').forEach(c => c.style.display = 'none');
+        const activeContent = document.getElementById('subtab-clientes');
+        if (activeContent) activeContent.style.display = 'block';
+
+        renderClosedClientsTab();
+      }
     });
 
     // Helper to format document/print title: Proposta - Nome do Cliente - DD.MM
