@@ -350,7 +350,7 @@
           </div>
         </div>
 
-        <!-- Sub-tab 3: Configurações e Importação (Admin) -->
+        <!-- Sub-tab 3: Configurações -->
         <div class="simulador-subtab-content" id="subtab-configuracoes" style="display:none;">
           <div class="admin-proposals-panel">
             <!-- Active Table Info Panel -->
