@@ -688,7 +688,13 @@
 
     listEl.innerHTML = proposals.map((p, idx) => {
       const nearItem = isNearMatch || p._isNear;
-      const badgeText = nearItem ? "Opção Próxima" : (p.badge || `Rank #${idx + 1}`);
+      const isTopOption = idx === 0 && !nearItem;
+      const badgeLabel = nearItem
+        ? "Opção Próxima"
+        : (isTopOption ? "MELHOR OPÇÃO" : (p.badge || `RANK #${idx + 1}`));
+      const badgeIcon = isTopOption
+        ? `<i data-lucide="star" style="width:13px; height:13px; fill:#E8B138; color:#E8B138; margin-right:4px;"></i>`
+        : '';
       const badgeClass = nearItem ? "near" : "";
 
       const rawTitle = p.product_name || 'AUTOCON PRIME';
@@ -699,58 +705,75 @@
 
       return `
         <article class="proposal-item-card ${nearItem ? 'near-match' : ''}">
-          <span class="proposal-badge ${badgeClass}">${badgeText}</span>
-          
           <div class="proposal-card-header">
-            <div class="proposal-rank-num">${idx + 1}</div>
-            <div class="proposal-title-meta" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-              <h3 style="margin:0;">${cleanTitle}</h3>
-              ${nearItem && p.excess_reason ? `
-                <span class="near-match-warning-inline" style="display:inline-flex; align-items:center; gap:4px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.25); color:#dc2626; font-size:0.74rem; font-weight:700; padding:2px 8px; border-radius:10px;">
-                  <i data-lucide="info" style="width:13px; height:13px; flex-shrink:0;"></i>
-                  ${p.excess_reason}
-                </span>
-              ` : ''}
+            <div class="proposal-header-left">
+              <div class="proposal-rank-num">${idx + 1}</div>
+              <div class="proposal-header-divider"></div>
+              <div class="proposal-title-meta">
+                <h3>${cleanTitle}</h3>
+                ${nearItem && p.excess_reason ? `
+                  <span class="near-match-warning-inline">
+                    <i data-lucide="info" style="width:13px; height:13px; flex-shrink:0;"></i>
+                    ${p.excess_reason}
+                  </span>
+                ` : ''}
+              </div>
+            </div>
+            
+            <div class="proposal-header-right">
+              <span class="proposal-badge ${badgeClass}">${badgeIcon}${badgeLabel}</span>
             </div>
           </div>
 
           <!-- Metric Specs Grid -->
           <div class="proposal-specs-grid">
             <div class="proposal-spec-item">
+              <i data-lucide="dollar-sign" class="proposal-spec-icon"></i>
               <span>Valor do Crédito</span>
               <strong class="highlight">${formatCurrency(p.credit_value)}</strong>
             </div>
 
             <div class="proposal-spec-item">
+              <i data-lucide="credit-card" class="proposal-spec-icon"></i>
               <span>Entrada / 1ª Parcela</span>
-              <strong>${formatCurrency(p.first_installment)}</strong>
+              <strong style="color:#050505;">${formatCurrency(p.first_installment)}</strong>
             </div>
 
             <div class="proposal-spec-item">
+              <i data-lucide="pie-chart" class="proposal-spec-icon"></i>
               <span>Parcela Integral</span>
-              <strong style="color:#1d4ed8;">${formatCurrency(p.final_installment_value)}</strong>
+              <strong style="color:#2563EB;">${formatCurrency(p.final_installment_value)}</strong>
             </div>
 
             <div class="proposal-spec-item">
+              <i data-lucide="trending-down" class="proposal-spec-icon"></i>
               <span>Parcela Reduzida 50%</span>
               <strong style="color:#059669;">${formatCurrency(p.final_installment_value * 0.5)}</strong>
             </div>
 
             <div class="proposal-spec-item">
+              <i data-lucide="calendar" class="proposal-spec-icon"></i>
               <span>Prazo Total</span>
-              <strong>${formatTermMonthsYears(p.total_term_months)}</strong>
+              <strong style="color:#050505;">${formatTermMonthsYears(p.total_term_months)}</strong>
             </div>
 
             <div class="proposal-spec-item">
+              <i data-lucide="percent" class="proposal-spec-icon"></i>
               <span>Taxa Adm</span>
-              <strong>${p.administration_fee_percentage}%</strong>
+              <strong style="color:#050505;">${p.administration_fee_percentage}%</strong>
             </div>
           </div>
 
           <div class="proposal-card-footer">
-            <span class="proposal-card-meta-text">Origem: ${p.source_file_name || 'Tabela_Comercial.pdf'} • Lance Fixo: ${p.fixed_bid_percentage || 30}%</span>
-            <button type="button" class="bordero-btn-primary" data-action-select-proposal="${p.id}" style="padding:8px 16px; font-size:0.8rem;">
-              <i data-lucide="check-circle"></i> Selecionar Proposta
+            <div class="proposal-footer-meta">
+              <i data-lucide="file-text" style="width:18px; height:18px; color:#667085; flex-shrink:0;"></i>
+              <span>Origem: <strong>${p.source_file_name || 'Tabela_Comercial.pdf'}</strong></span>
+              <span class="proposal-footer-dot"></span>
+              <span>Lance Fixo: <strong>${p.fixed_bid_percentage || 30}%</strong></span>
+            </div>
+            
+            <button type="button" class="simulador-btn-select-proposal" data-action-select-proposal="${p.id}">
+              <i data-lucide="check-circle-2" style="width:20px; height:20px; color:#050505;"></i> Selecionar Proposta
             </button>
           </div>
         </article>
