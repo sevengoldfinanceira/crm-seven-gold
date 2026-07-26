@@ -1506,7 +1506,9 @@
 
           <div class="pf-a4-footer" style="border-top:1.5px solid #E8B138; padding-top:18px; display:grid; grid-template-columns:1fr 1px 1fr; gap:16px; align-items:center; font-size:0.78rem; color:#706A78; margin-top:auto;">
             <div style="display:flex; align-items:center; justify-content:flex-start;">
-              <img src="assets/icons/seven-gold-logo-completa.png" alt="Seven Gold Financeira" style="height:48px; max-width:220px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15));" />
+              <div style="background:#050505; padding:6px 12px; border-radius:8px; border:1px solid #D8B34A; display:inline-flex; align-items:center; box-shadow:0 4px 12px rgba(0,0,0,0.25);">
+                <img src="assets/icons/seven-gold-black-bg.jpg" alt="Seven Gold Financeira" style="height:48px; max-width:220px; object-fit:contain; border-radius:4px;" />
+              </div>
             </div>
 
             <div style="background:#E4DEE8; height:44px;"></div>
