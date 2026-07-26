@@ -18984,7 +18984,7 @@ body.theme-dark .admin-btn-icon{border-color:rgba(255,255,255,.1);background:#21
 }
 
 .sg-transition-overlay.active .sg-transition-progress-fill {
-  animation: fillProgress 1s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+  animation: fillProgress 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
 }
 
 @keyframes fillProgress {

@@ -756,7 +756,7 @@ function setupGlobalModuleTransitions() {
 
       setTimeout(() => {
         if (overlay) overlay.classList.remove("active");
-      }, 1000);
+      }, 500);
     }
   };
 
@@ -795,7 +795,7 @@ function setupGlobalModuleTransitions() {
 
     setTimeout(() => {
       window.location.href = href;
-    }, 1000);
+    }, 500);
   }, true);
 }
 

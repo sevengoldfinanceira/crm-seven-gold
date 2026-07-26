@@ -360,7 +360,7 @@ body { font-family: Inter, sans-serif; background: var(--page); color: var(--ink
 }
 
 .sg-transition-overlay.active .sg-transition-progress-fill {
-  animation: fillProgress 1s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+  animation: fillProgress 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
 }
 
 @keyframes fillProgress {
