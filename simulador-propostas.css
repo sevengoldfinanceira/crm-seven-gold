@@ -560,12 +560,39 @@ select.simulador-input option {
   border-radius: 2px;
 }
 
+.proposal-title-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .proposal-title-meta h3 {
   font-size: 1.25rem;
   font-weight: 700;
   color: #050505;
   margin: 0;
   letter-spacing: -0.01em;
+}
+
+.near-match-warning-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #dc2626 !important;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.near-match-warning-inline i,
+.near-match-warning-inline svg {
+  color: #dc2626 !important;
+  stroke: #dc2626 !important;
 }
 
 /* Proposal Grid Metric Specs (Visual Reference Box) */
