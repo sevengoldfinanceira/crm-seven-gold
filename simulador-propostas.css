@@ -900,12 +900,6 @@ select.simulador-input option {
   width: 210mm;
   max-width: 210mm;
   min-height: 297mm;
-  max-height: 297mm;
-  height: 297mm;
-  overflow: hidden;
-  page-break-after: avoid;
-  page-break-inside: avoid;
-  break-inside: avoid;
 }
 
 @media print {
