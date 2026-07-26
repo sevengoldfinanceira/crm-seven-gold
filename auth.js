@@ -706,11 +706,139 @@
     setupLoginForms();
     setupLogout();
 
+    if (permissionArea === "crm") {
+      applyCrmUserIdentity(session.user, authorizedPortalUser, role);
+      document.body.classList.add("crm-authorized");
+      document.dispatchEvent(new CustomEvent("crm-authorized"));
+
+      // Check if current hash is allowed for this role
+      const hash = window.location.hash.replace("#", "") || "pipeline";
+      if (!canAccessArea(role, hash)) {
+        const allowedTabs = ["pipeline", "dashboard", "calendario", "tarefas", "feed"];
+        const fallbackTab = allowedTabs.find(tab => canAccessArea(role, tab)) || "pipeline";
+        window.location.hash = "#" + fallbackTab;
+      }
+    }
+    document.body.classList.add("portal-authorized");
+  };
+
+  const setupLogout = () => {
+    document.querySelectorAll("[data-logout]").forEach((button) => {
+      button.addEventListener("click", async (event) => {
+        event.stopPropagation();
+        button.disabled = true;
+        await client.auth.signOut();
+        window.location.href = button.dataset.logoutRedirect || "index.html";
+      });
+    });
+  };
+
+  const initTheme = () => {
+    if (!document.body || !document.body.matches("[data-require-auth]")) {
+      return;
+    }
+
+    const currentPage = window.location.pathname.split("/").pop();
+    if (currentPage === "painel.html" || currentPage === "painel") {
+      document.body.classList.add("theme-dark");
+      return;
+    }
+
+    const savedTheme = localStorage.getItem("seven-gold-theme") || "light";
+    if (savedTheme === "dark") {
+      document.body.classList.add("theme-dark");
+    } else {
+      document.body.classList.remove("theme-dark");
+    }
+
+  };
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    initTheme();
+
+    const storedError = localStorage.getItem("seven-gold-permission-error");
+    if (storedError) {
+      localStorage.removeItem("seven-gold-permission-error");
+      alert(storedError);
+    }
+
+    const handledCallback = await setupAuthCallbackPage();
+    if (handledCallback) {
+      return;
+    }
+
+    const callbackResult = await handleOAuthCallback();
+    setupLoginForms();
+    setupLogout();
+
     const redirectedAuthenticatedUser = await redirectAuthenticatedLoginPage();
     if (redirectedAuthenticatedUser) {
       return;
     }
 
     await setupProtectedPages(callbackResult.error);
+    setupGlobalModuleTransitions();
   });
 })();
+
+// Animação Global de 1 Segundo para Entrada & Retorno dos Módulos aos Painéis
+function setupGlobalModuleTransitions() {
+  let overlay = document.getElementById("sg-module-transition-overlay");
+  if (!overlay) {
+    overlay = document.createElement("div");
+    overlay.id = "sg-module-transition-overlay";
+    overlay.className = "sg-transition-overlay";
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.innerHTML = `
+      <div class="sg-transition-content">
+        <div class="sg-transition-logo-wrapper">
+          <img src="assets/icons/seven-gold-logo-completa.png" alt="Seven Gold Financeira" class="sg-transition-logo" />
+        </div>
+        <div class="sg-transition-status">
+          <span class="sg-transition-kicker">CARREGANDO AMBIENTE</span>
+          <h3 id="sg-transition-title" class="sg-transition-title">Acessando...</h3>
+        </div>
+        <div class="sg-transition-progress-bar">
+          <div class="sg-transition-progress-fill"></div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
+
+  const currentPage = getCurrentPage();
+
+  // Caso esteja abrindo/retornando ao painel.html via clique de retorno
+  if ((currentPage === "painel.html" || currentPage === "painel") && sessionStorage.getItem("sg_returning_from_module") === "true") {
+    sessionStorage.removeItem("sg_returning_from_module");
+    const statusTitle = document.getElementById("sg-transition-title");
+    if (statusTitle) statusTitle.textContent = "Retornando aos Painéis...";
+    overlay.classList.add("active");
+
+    // Revelação Reversa: oculta a transição de forma fluida ao chegar no Painel
+    setTimeout(() => {
+      overlay.classList.remove("active");
+    }, 500);
+  }
+
+  // Intercepta todos os cliques nos botões/links de retorno ao painel.html
+  document.addEventListener("click", (e) => {
+    const link = e.target.closest('a[href*="painel.html"], .sidebar-panels-link, .empresa-topbar-panels');
+    if (!link) return;
+
+    const href = link.getAttribute("href") || "painel.html";
+    if (!href || href === "#") return;
+
+    e.preventDefault();
+
+    sessionStorage.setItem("sg_returning_from_module", "true");
+    const statusTitle = document.getElementById("sg-transition-title");
+    if (statusTitle) statusTitle.textContent = "Retornando aos Painéis...";
+
+    overlay.classList.add("active");
+
+    setTimeout(() => {
+      window.location.href = href;
+    }, 1000);
+  });
+}
