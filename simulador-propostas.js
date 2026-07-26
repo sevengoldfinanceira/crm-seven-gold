@@ -1226,7 +1226,7 @@
                     <span style="white-space:nowrap;">Institui&ccedil;&atilde;o Financeira/Administradora</span>
                   </div>
                 </td>
-                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:700; color:#17111F;">Alpha Administradora de Consórcio Ltda.</td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:700; color:#050505;">Alpha Administradora de Consórcio Ltda.</td>
               </tr>
               <tr>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
@@ -1235,7 +1235,7 @@
                     <span>Valor de Crédito</span>
                   </div>
                 </td>
-                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#B98220; font-size:0.9rem;">${creditFormatted}</td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#050505; font-size:0.9rem;">${creditFormatted}</td>
               </tr>
               ${includeBid ? `
               <tr>
@@ -1245,7 +1245,7 @@
                     <span>Valor do Imóvel</span>
                   </div>
                 </td>
-                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#059669; font-size:0.9rem;">${netPropertyFormatted}</td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#050505; font-size:0.9rem;">${netPropertyFormatted}</td>
               </tr>
               ` : ''}
               <tr>
@@ -1255,25 +1255,25 @@
                     <span>Entrada / 1ª Parcela (Adesão)</span>
                   </div>
                 </td>
-                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:700; color:#17111F; font-size:0.9rem;">${firstInstFormatted}</td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#050505; font-size:0.9rem;">${firstInstFormatted}</td>
               </tr>
               <tr>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:8px;">
-                    <i data-lucide="trending-up" style="width:14px; height:14px; color:#1769E0;"></i>
+                    <i data-lucide="trending-up" style="width:14px; height:14px; color:#B98220;"></i>
                     <span>Valor da Parcela Integral (100%)</span>
                   </div>
                 </td>
-                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#1769E0; font-size:0.9rem;">${finalInstFormatted}</td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#050505; font-size:0.9rem;">${finalInstFormatted}</td>
               </tr>
               <tr>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:8px;">
-                    <i data-lucide="percent" style="width:14px; height:14px; color:#059669;"></i>
+                    <i data-lucide="percent" style="width:14px; height:14px; color:#B98220;"></i>
                     <span style="white-space:nowrap;">Valor da Parcela Reduzida (50% Meia Parcela)</span>
                   </div>
                 </td>
-                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#059669; font-size:0.9rem;">${halfInstFormatted}</td>
+                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#050505; font-size:0.9rem;">${halfInstFormatted}</td>
               </tr>
               <tr>
                 <td style="padding:10px 16px; ${includeBid ? 'border-bottom:1px solid #E4DEE8;' : ''} background:#FAF9FB; color:#706A78; font-weight:500;">
@@ -1282,7 +1282,7 @@
                     <span>Prazo de Pagamento do Plano</span>
                   </div>
                 </td>
-                <td style="padding:10px 16px; ${includeBid ? 'border-bottom:1px solid #E4DEE8;' : ''} font-weight:700; color:#17111F;">${formatTermMonthsYears(proposal.total_term_months)}</td>
+                <td style="padding:10px 16px; ${includeBid ? 'border-bottom:1px solid #E4DEE8;' : ''} font-weight:800; color:#050505;">${formatTermMonthsYears(proposal.total_term_months)}</td>
               </tr>
               ${includeBid ? `
               <tr>
@@ -1292,7 +1292,7 @@
                     <span>Lance Embutido <span style="font-size:0.75em; font-weight:400; color:#9ca3af;">(Adiantamento de Parcelas)</span></span>
                   </div>
                 </td>
-                <td style="padding:10px 16px; font-weight:700; color:#17111F;">${lanceText}</td>
+                <td style="padding:10px 16px; font-weight:800; color:#050505;">${lanceText}</td>
               </tr>
               ` : ''}
             </tbody>
