@@ -79,14 +79,15 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
 .brand-mark {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 8px;
-  background-color: var(--brand-purple);
-  background-image: url("assets/icons/seven-gold-g7.png?v=20260714");
+  width: 44px;
+  height: 44px;
+  border-radius: 0;
+  background-color: transparent !important;
+  background-image: url("assets/icons/seven-gold-g7.png?v=20260726") !important;
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
+  filter: drop-shadow(0 2px 8px rgba(216, 179, 74, 0.45));
   color: transparent;
   font-size: 0.88rem;
   font-weight: 800;
@@ -6639,7 +6640,8 @@ body.sidebar-collapsed .brand-text {
 body.sidebar-collapsed .brand-mark {
   width: 38px;
   height: 38px;
-  border-radius: 50%;
+  border-radius: 0;
+  background-color: transparent !important;
 }
 
 /* Collapse button: icon only, rotated arrow */
