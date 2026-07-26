@@ -25,6 +25,13 @@
     });
   }
 
+  function parseCurrency(str) {
+    if (typeof str === 'number') return str;
+    if (!str) return 0;
+    const cleanStr = String(str).replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.');
+    return parseFloat(cleanStr) || 0;
+  }
+
   function formatTermMonthsYears(months) {
     const m = parseInt(months, 10);
     if (isNaN(m) || m <= 0) return `${months || 0} Meses`;
@@ -1732,95 +1739,100 @@
     });
 
     document.getElementById('pf-btn-save-system')?.addEventListener('click', async () => {
-      const clientName = (document.getElementById('pf-client-name')?.value || 'Cliente Não Informado').trim();
-      const clientCpf = (document.getElementById('pf-client-cpf')?.value || '').trim();
-      const clientPhone = (document.getElementById('pf-client-phone')?.value || '').trim();
-      const notesVal = (document.getElementById('pf-notes')?.value || '').trim();
-      const propType = (document.getElementById('pf-property-type')?.value || '').trim();
-      const validityDate = (document.getElementById('pf-validity')?.value || '').trim();
-      const includeBid = document.getElementById('pf-include-bid-toggle')?.checked ?? true;
-      const bidPercent = parseFloat(document.getElementById('pf-embedded-bid-range')?.value || 30);
-      const bidAmountStr = document.getElementById('pf-bid-amount')?.value || '';
-      const bidAmount = parseCurrency(bidAmountStr) || ((proposal.credit_value || proposal.credito || 0) * (bidPercent / 100));
-      const showPercentages = document.getElementById('pf-show-percentage-toggle')?.checked ?? false;
+      try {
+        const clientName = (document.getElementById('pf-client-name')?.value || 'Cliente Não Informado').trim();
+        const clientCpf = (document.getElementById('pf-client-cpf')?.value || '').trim();
+        const clientPhone = (document.getElementById('pf-client-phone')?.value || '').trim();
+        const notesVal = (document.getElementById('pf-notes')?.value || '').trim();
+        const propType = (document.getElementById('pf-property-type')?.value || '').trim();
+        const validityDate = (document.getElementById('pf-validity')?.value || '').trim();
+        const includeBid = document.getElementById('pf-include-bid-toggle')?.checked ?? true;
+        const bidPercent = parseFloat(document.getElementById('pf-embedded-bid-range')?.value || 30);
+        const bidAmountStr = document.getElementById('pf-bid-amount')?.value || '';
+        const bidAmount = parseCurrency(bidAmountStr) || ((proposal.credit_value || proposal.credito || 0) * (bidPercent / 100));
+        const showPercentages = document.getElementById('pf-show-percentage-toggle')?.checked ?? false;
 
-      const productName = proposal.product_name || proposal.produto || 'Imóveis (AUTOCON)';
+        const productName = proposal.product_name || proposal.produto || 'Imóveis (AUTOCON)';
 
-      const todayStr = new Date().toISOString().slice(0, 10);
-      const currentList = getClosedClientsList();
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const currentList = getClosedClientsList();
 
-      const existingId = window.__currentEditingClientId;
-      const existingClient = existingId ? currentList.find(c => String(c.id) === String(existingId)) : null;
-      const clientId = existingClient ? existingClient.id : (existingId || ('cl-' + Date.now()));
+        const existingId = window.__currentEditingClientId;
+        const existingClient = existingId ? currentList.find(c => String(c.id) === String(existingId)) : null;
+        const clientId = existingClient ? existingClient.id : (existingId || ('cl-' + Date.now()));
 
-      // Retain current editing ID for future saves in the same view session
-      window.__currentEditingClientId = clientId;
+        // Retain current editing ID for future saves in the same view session
+        window.__currentEditingClientId = clientId;
 
-      const updatedClientRecord = {
-        id: clientId,
-        nome: clientName,
-        cpf_cnpj: clientCpf || 'N/A',
-        telefone: clientPhone || 'N/A',
-        produto: productName,
-        credito: Number(proposal.credit_value || proposal.credito || 0),
-        entrada: Number(proposal.first_installment || proposal.entrada || 0),
-        parcela: Number(proposal.final_installment_value || proposal.parcela || 0),
-        grupo_cota: (proposal.group_number && proposal.quota_number) 
-          ? `Grupo ${proposal.group_number} / Cota ${proposal.quota_number}` 
-          : (proposal.grupo_cota || 'G7-VIP'),
-        data_fechamento: existingClient ? existingClient.data_fechamento : todayStr,
-        status: existingClient ? existingClient.status : 'Assinado',
-        consultor: consultantName || 'Seven Gold',
-        observacao: notesVal,
-        documentos_obrigatorios: existingClient ? (existingClient.documentos_obrigatorios || {}) : {},
-        proposal_config: {
-          ...proposal,
-          client_id: clientId,
-          client_name: clientName,
-          client_cpf: clientCpf,
-          client_phone: clientPhone,
-          notes: notesVal,
-          property_type: propType,
-          validity_date: validityDate,
-          include_bid: includeBid,
-          bid_percentage: bidPercent,
-          fixed_bid_percentage: bidPercent,
-          bid_amount: bidAmount,
-          show_percentages: showPercentages,
-          consultant_name: consultantName
+        const updatedClientRecord = {
+          id: clientId,
+          nome: clientName,
+          cpf_cnpj: clientCpf || 'N/A',
+          telefone: clientPhone || 'N/A',
+          produto: productName,
+          credito: Number(proposal.credit_value || proposal.credito || 0),
+          entrada: Number(proposal.first_installment || proposal.entrada || 0),
+          parcela: Number(proposal.final_installment_value || proposal.parcela || 0),
+          grupo_cota: (proposal.group_number && proposal.quota_number) 
+            ? `Grupo ${proposal.group_number} / Cota ${proposal.quota_number}` 
+            : (proposal.grupo_cota || 'G7-VIP'),
+          data_fechamento: existingClient ? existingClient.data_fechamento : todayStr,
+          status: existingClient ? existingClient.status : 'Assinado',
+          consultor: consultantName || 'Seven Gold',
+          observacao: notesVal,
+          documentos_obrigatorios: existingClient ? (existingClient.documentos_obrigatorios || {}) : {},
+          proposal_config: {
+            ...proposal,
+            client_id: clientId,
+            client_name: clientName,
+            client_cpf: clientCpf,
+            client_phone: clientPhone,
+            notes: notesVal,
+            property_type: propType,
+            validity_date: validityDate,
+            include_bid: includeBid,
+            bid_percentage: bidPercent,
+            fixed_bid_percentage: bidPercent,
+            bid_amount: bidAmount,
+            show_percentages: showPercentages,
+            consultant_name: consultantName
+          }
+        };
+
+        if (existingClient) {
+          const idx = currentList.findIndex(c => String(c.id) === String(clientId));
+          if (idx !== -1) currentList[idx] = updatedClientRecord;
+        } else {
+          currentList.unshift(updatedClientRecord);
         }
-      };
 
-      if (existingClient) {
-        const idx = currentList.findIndex(c => String(c.id) === String(clientId));
-        if (idx !== -1) currentList[idx] = updatedClientRecord;
-      } else {
-        currentList.unshift(updatedClientRecord);
-      }
+        saveClosedClientsList(currentList);
 
-      saveClosedClientsList(currentList);
+        // Async sync to Supabase database
+        saveProposalToSupabase(updatedClientRecord);
 
-      // Async sync to Supabase database
-      saveProposalToSupabase(updatedClientRecord);
+        alert(`✅ Todos os dados da proposta de "${clientName}" foram salvos no sistema e no Supabase!`);
 
-      alert(`✅ Todos os dados da proposta de "${clientName}" foram salvos no sistema e no Supabase!`);
+        // Switch to Clientes subtab in topbar
+        const clientesNavBtn = document.querySelector('[data-subtab="clientes"]');
+        if (clientesNavBtn) {
+          document.querySelectorAll('.simulador-tab-btn').forEach(b => b.classList.remove('active'));
+          clientesNavBtn.classList.add('active');
 
-      // Switch to Clientes subtab in topbar
-      const clientesNavBtn = document.querySelector('[data-subtab="clientes"]');
-      if (clientesNavBtn) {
-        document.querySelectorAll('.simulador-tab-btn').forEach(b => b.classList.remove('active'));
-        clientesNavBtn.classList.add('active');
+          const simContainer = document.querySelector('[data-service-tab-content="simulador"]');
+          const pfContainer = document.getElementById('proposta-final-container');
+          if (simContainer) simContainer.style.display = 'block';
+          if (pfContainer) pfContainer.style.display = 'none';
 
-        const simContainer = document.querySelector('[data-service-tab-content="simulador"]');
-        const pfContainer = document.getElementById('proposta-final-container');
-        if (simContainer) simContainer.style.display = 'block';
-        if (pfContainer) pfContainer.style.display = 'none';
+          document.querySelectorAll('.simulador-subtab-content').forEach(c => c.style.display = 'none');
+          const activeContent = document.getElementById('subtab-clientes');
+          if (activeContent) activeContent.style.display = 'block';
 
-        document.querySelectorAll('.simulador-subtab-content').forEach(c => c.style.display = 'none');
-        const activeContent = document.getElementById('subtab-clientes');
-        if (activeContent) activeContent.style.display = 'block';
-
-        renderClosedClientsTab();
+          renderClosedClientsTab();
+        }
+      } catch (err) {
+        console.error("Erro ao salvar proposta:", err);
+        alert("⚠️ Erro ao salvar a proposta no sistema. Por favor tente novamente.");
       }
     });
 
