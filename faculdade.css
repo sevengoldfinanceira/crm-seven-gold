@@ -29,6 +29,27 @@
   flex-wrap: wrap;
 }
 
+.faculdade-search-box {
+  position: relative;
+}
+
+.faculdade-search-box i,
+.faculdade-search-box svg {
+  position: absolute !important;
+  left: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: #94a3b8 !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+.faculdade-search-box input {
+  padding-left: 40px !important;
+}
+
 .faculdade-tab-btn {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);

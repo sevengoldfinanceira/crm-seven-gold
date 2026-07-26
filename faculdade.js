@@ -373,8 +373,8 @@
           </nav>
 
           <div class="faculdade-search-box" style="position: relative; min-width: 260px; max-width: 380px; flex: 1;">
-            <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #94a3b8;"></i>
-            <input type="text" id="faculdade-course-search" placeholder="Pesquisar curso por nome ou tema..." value="${currentCourseSearchQuery}" style="width: 100%; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 9px 12px 9px 36px; color: #ffffff; font-size: 0.85rem; font-family: inherit; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);" />
+            <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #94a3b8; pointer-events: none; z-index: 2;"></i>
+            <input type="text" id="faculdade-course-search" placeholder="Pesquisar curso por nome ou tema..." value="${currentCourseSearchQuery}" style="width: 100%; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 9px 12px 9px 40px; color: #ffffff; font-size: 0.85rem; font-family: inherit; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);" />
           </div>
         </div>
 

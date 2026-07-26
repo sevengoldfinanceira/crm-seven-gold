@@ -822,30 +822,37 @@
                 </div>
 
                 <div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:12px; padding:14px; margin-bottom:12px;">
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <label for="pf-embedded-bid-range" style="font-weight:700; color:#0f172a; font-size:0.85rem; margin:0;">
-                      <i data-lucide="sliders" style="width:14px; height:14px; color:#d4af37; vertical-align:middle;"></i> Lance Embutido / Pretendido (%)
-                    </label>
-                    <span id="pf-embedded-bid-badge" style="background:#000000; color:#C9A84C; font-weight:800; font-size:0.85rem; padding:3px 10px; border-radius:6px;">${proposal.fixed_bid_percentage || 30}%</span>
-                  </div>
-
-                  <input type="range" id="pf-embedded-bid-range" min="0" max="100" step="0.5" value="${proposal.fixed_bid_percentage || 30}" style="width:100%; accent-color:#d4af37; cursor:pointer; height:6px; margin-bottom:12px;" />
-
-                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                    <div>
-                      <label for="pf-embedded-bid" style="font-size:0.75rem; color:#64748b; font-weight:600;">Porcentagem (%)</label>
-                      <input type="text" id="pf-embedded-bid" class="simulador-input" style="font-weight:700; text-align:center;" value="${proposal.fixed_bid_percentage || 30}%" />
-                    </div>
-                    <div>
-                      <label for="pf-bid-amount" style="font-size:0.75rem; color:#64748b; font-weight:600;">Valor em R$ (Calculado)</label>
-                      <input type="text" id="pf-bid-amount" class="simulador-input brl-mask" style="font-weight:800; color:#0A0A0A;" placeholder="R$ 0,00" value="${formatCurrency(proposal.credit_value * ((proposal.fixed_bid_percentage || 30) / 100))}" />
-                    </div>
-                  </div>
-
-                  <label style="display:flex; align-items:center; gap:8px; margin-top:12px; font-size:0.78rem; color:#475569; font-weight:600; cursor:pointer; background:#fff; border:1px solid #cbd5e1; padding:8px 12px; border-radius:8px;">
-                    <input type="checkbox" id="pf-show-percentage-toggle" style="width:16px; height:16px; accent-color:#d4af37; cursor:pointer;" />
-                    <span>Exibir porcentagens (%) do lance na proposta final impressa</span>
+                  <label style="display:flex; align-items:center; gap:10px; font-weight:700; color:#0f172a; font-size:0.85rem; cursor:pointer; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #e2e8f0;">
+                    <input type="checkbox" id="pf-include-bid-toggle" checked style="width:18px; height:18px; accent-color:#d4af37; cursor:pointer;" />
+                    <span>Incluir Oferta / Pretensão de Lance nesta Proposta</span>
                   </label>
+
+                  <div id="pf-bid-controls-wrapper">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                      <label for="pf-embedded-bid-range" style="font-weight:700; color:#0f172a; font-size:0.85rem; margin:0;">
+                        <i data-lucide="sliders" style="width:14px; height:14px; color:#d4af37; vertical-align:middle;"></i> Lance Embutido / Pretendido (%)
+                      </label>
+                      <span id="pf-embedded-bid-badge" style="background:#000000; color:#C9A84C; font-weight:800; font-size:0.85rem; padding:3px 10px; border-radius:6px;">${proposal.fixed_bid_percentage || 30}%</span>
+                    </div>
+
+                    <input type="range" id="pf-embedded-bid-range" min="0" max="100" step="0.5" value="${proposal.fixed_bid_percentage || 30}" style="width:100%; accent-color:#d4af37; cursor:pointer; height:6px; margin-bottom:12px;" />
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                      <div>
+                        <label for="pf-embedded-bid" style="font-size:0.75rem; color:#64748b; font-weight:600;">Porcentagem (%)</label>
+                        <input type="text" id="pf-embedded-bid" class="simulador-input" style="font-weight:700; text-align:center;" value="${proposal.fixed_bid_percentage || 30}%" />
+                      </div>
+                      <div>
+                        <label for="pf-bid-amount" style="font-size:0.75rem; color:#64748b; font-weight:600;">Valor em R$ (Calculado)</label>
+                        <input type="text" id="pf-bid-amount" class="simulador-input brl-mask" style="font-weight:800; color:#0A0A0A;" placeholder="R$ 0,00" value="${formatCurrency(proposal.credit_value * ((proposal.fixed_bid_percentage || 30) / 100))}" />
+                      </div>
+                    </div>
+
+                    <label style="display:flex; align-items:center; gap:8px; margin-top:12px; font-size:0.78rem; color:#475569; font-weight:600; cursor:pointer; background:#fff; border:1px solid #cbd5e1; padding:8px 12px; border-radius:8px;">
+                      <input type="checkbox" id="pf-show-percentage-toggle" style="width:16px; height:16px; accent-color:#d4af37; cursor:pointer;" />
+                      <span>Exibir porcentagens (%) do lance na proposta final impressa</span>
+                    </label>
+                  </div>
                 </div>
 
                 <div class="simulador-form-group">
@@ -920,13 +927,15 @@
       const validityVal = document.getElementById('pf-validity')?.value ? new Date(document.getElementById('pf-validity').value + 'T00:00:00').toLocaleDateString('pt-BR') : '15 dias';
       const notesVal = document.getElementById('pf-notes')?.value || 'Sem observações adicionais.';
 
+      const includeBid = document.getElementById('pf-include-bid-toggle')?.checked ?? true;
+
       let lanceText = `${bidAmount}`;
       if (showPct) {
         lanceText += ` (${embeddedBid})`;
       }
 
       // Valor líquido para o imóvel = crédito - lance
-      const bidNumeric = parseFloat(String(bidAmount).replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+      const bidNumeric = includeBid ? (parseFloat(String(bidAmount).replace(/[^\d,]/g, '').replace(',', '.')) || 0) : 0;
       const netPropertyValue = Math.max((proposal.credit_value || 0) - bidNumeric, 0);
       const netPropertyFormatted = formatCurrency(netPropertyValue);
 
@@ -1057,6 +1066,7 @@
                 </td>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#B98220; font-size:0.9rem;">${creditFormatted}</td>
               </tr>
+              ${includeBid ? `
               <tr>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:8px;">
@@ -1066,6 +1076,7 @@
                 </td>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#059669; font-size:0.9rem;">${netPropertyFormatted}</td>
               </tr>
+              ` : ''}
               <tr>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:8px;">
@@ -1088,20 +1099,21 @@
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:8px;">
                     <i data-lucide="percent" style="width:14px; height:14px; color:#059669;"></i>
-                    <span>Valor da Parcela Reduzida (50% Meia Parcela)</span>
+                    <span style="white-space:nowrap;">Valor da Parcela Reduzida (50% Meia Parcela)</span>
                   </div>
                 </td>
                 <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#059669; font-size:0.9rem;">${halfInstFormatted}</td>
               </tr>
               <tr>
-                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
+                <td style="padding:10px 16px; ${includeBid ? 'border-bottom:1px solid #E4DEE8;' : ''} background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:8px;">
                     <i data-lucide="calendar" style="width:14px; height:14px; color:#B98220;"></i>
                     <span>Prazo de Pagamento do Plano</span>
                   </div>
                 </td>
-                <td style="padding:10px 16px; border-bottom:1px solid #E4DEE8; font-weight:700; color:#17111F;">${formatTermMonthsYears(proposal.total_term_months)}</td>
+                <td style="padding:10px 16px; ${includeBid ? 'border-bottom:1px solid #E4DEE8;' : ''} font-weight:700; color:#17111F;">${formatTermMonthsYears(proposal.total_term_months)}</td>
               </tr>
+              ${includeBid ? `
               <tr>
                 <td style="padding:10px 16px; background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:8px;">
@@ -1111,6 +1123,7 @@
                 </td>
                 <td style="padding:10px 16px; font-weight:700; color:#17111F;">${lanceText}</td>
               </tr>
+              ` : ''}
             </tbody>
           </table>
 
@@ -1147,9 +1160,9 @@
             <div style="background:#E4DEE8; height:36px;"></div>
 
             <div style="text-align:right; font-size:0.73rem; color:#706A78; display:flex; flex-direction:column; gap:2px;">
-              <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
+              <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px; white-space:nowrap;">
                 <i data-lucide="headphones" style="width:12px; height:12px; color:#C9A84C;"></i>
-                <span>Atendimento Oficial • Todos os Direitos Reservados</span>
+                <span style="white-space:nowrap;">Atendimento Oficial • Todos os Direitos Reservados</span>
               </div>
               <div style="display:flex; align-items:center; justify-content:flex-end; gap:4px;">
                 <i data-lucide="globe" style="width:12px; height:12px; color:#C9A84C;"></i>
@@ -1277,15 +1290,31 @@
       });
     }
 
+    // Toggle bid controls visibility based on pf-include-bid-toggle
+    const toggleBidControlsVisibility = () => {
+      const includeBid = document.getElementById('pf-include-bid-toggle')?.checked ?? true;
+      const wrapper = document.getElementById('pf-bid-controls-wrapper');
+      if (wrapper) {
+        wrapper.style.display = includeBid ? 'block' : 'none';
+      }
+    };
+
     // Attach listeners for live update of A4 sheet
-    ['pf-client-name', 'pf-property-type', 'pf-bid-amount', 'pf-embedded-bid', 'pf-show-percentage-toggle', 'pf-validity', 'pf-notes'].forEach(id => {
+    ['pf-client-name', 'pf-property-type', 'pf-bid-amount', 'pf-embedded-bid', 'pf-show-percentage-toggle', 'pf-include-bid-toggle', 'pf-validity', 'pf-notes'].forEach(id => {
       const inputEl = document.getElementById(id);
       if (inputEl) {
-        inputEl.addEventListener('input', updateA4Sheet);
-        inputEl.addEventListener('change', updateA4Sheet);
+        inputEl.addEventListener('input', () => {
+          toggleBidControlsVisibility();
+          updateA4Sheet();
+        });
+        inputEl.addEventListener('change', () => {
+          toggleBidControlsVisibility();
+          updateA4Sheet();
+        });
       }
     });
 
+    toggleBidControlsVisibility();
     updateA4Sheet();
 
     // Attach action button handlers
@@ -1309,6 +1338,7 @@
         propertyType: document.getElementById('pf-property-type')?.value,
         bidAmount: document.getElementById('pf-bid-amount')?.value,
         embeddedBid: document.getElementById('pf-embedded-bid')?.value,
+        includeBid: document.getElementById('pf-include-bid-toggle')?.checked,
         validity: document.getElementById('pf-validity')?.value,
         notes: document.getElementById('pf-notes')?.value,
         updatedAt: new Date().toISOString()
@@ -1317,26 +1347,42 @@
       alert('Rascunho da Proposta Final salvo com sucesso!');
     });
 
+    // Helper to format document/print title: Proposta - Nome do Cliente - DD.MM
+    const getFormattedPdfTitle = () => {
+      const clientName = (document.getElementById('pf-client-name')?.value || 'Cliente').trim();
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      return `Proposta - ${clientName} - ${day}.${month}`;
+    };
+
     document.getElementById('pf-btn-pdf')?.addEventListener('click', () => {
       const element = document.getElementById('proposta-final-a4-sheet');
       if (!element) return;
+      const pdfTitle = getFormattedPdfTitle();
       if (window.html2pdf) {
-        const clientNameClean = (document.getElementById('pf-client-name')?.value || 'Cliente').replace(/\s+/g, '_');
         const opt = {
           margin: 10,
-          filename: `Proposta_SevenGold_${protocolNumber}_${clientNameClean}.pdf`,
+          filename: `${pdfTitle}.pdf`,
           image: { type: 'jpeg', quality: 0.98 },
           html2canvas: { scale: 2, useCORS: true, logging: false },
           jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
         window.html2pdf().from(element).set(opt).save();
       } else {
+        const oldTitle = document.title;
+        document.title = pdfTitle;
         window.print();
+        setTimeout(() => { document.title = oldTitle; }, 1000);
       }
     });
 
     document.getElementById('pf-btn-print')?.addEventListener('click', () => {
+      const pdfTitle = getFormattedPdfTitle();
+      const oldTitle = document.title;
+      document.title = pdfTitle;
       window.print();
+      setTimeout(() => { document.title = oldTitle; }, 1000);
     });
 
     if (window.lucide) window.lucide.createIcons();
