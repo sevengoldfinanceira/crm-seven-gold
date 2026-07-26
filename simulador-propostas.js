@@ -349,40 +349,38 @@
         </div>
 
         <!-- Sub-tab 3: Configurações e Importação (Admin) -->
-        ${isAdminOrManager ? `
-          <div class="simulador-subtab-content" id="subtab-configuracoes" style="display:none;">
-            <div class="admin-proposals-panel">
-              <!-- Active Table Info Panel -->
-              <div id="sim-active-table-panel" class="admin-card-box" style="margin-bottom:16px;">
-                <h2 style="color:#0f172a; font-size:1.1rem; margin:0 0 14px; font-weight:800; display:flex; align-items:center; gap:8px;">
-                  <i data-lucide="database" style="color:#b45309; width:18px;"></i> Tabela Comercial Ativa
-                </h2>
-                <div id="sim-active-table-content">
-                  <div style="display:flex; align-items:center; gap:8px; color:#64748b; font-size:0.85rem;">
-                    <i data-lucide="loader-2" class="animate-spin" style="width:16px; height:16px; color:#b45309;"></i>
-                    Carregando tabela ativa...
-                  </div>
-                </div>
-              </div>
-
-              <!-- Upload PDF Box -->
-              <div class="admin-card-box">
-                <h2 style="color:#0f172a; font-size:1.1rem; margin:0; font-weight:800;"><i data-lucide="file-up" style="color:#b45309; width:18px;"></i> Importar Nova Tabela Comercial (PDF)</h2>
-                
-                <div class="pdf-upload-dropzone" id="sim-pdf-dropzone">
-                  <i data-lucide="upload-cloud" style="width:40px; height:40px; color:#b45309;"></i>
-                  <p style="font-size:0.9rem; font-weight:700; color:#0f172a; margin:0;">Clique aqui ou arraste o arquivo PDF da Tabela Comercial</p>
-                  <span style="font-size:0.75rem; color:#64748b;">Suporta arquivos PDF comerciais originais de até 20MB com hash de validação SHA-256</span>
-                  <input type="file" id="sim-pdf-file-input" accept=".pdf" style="display:none;" />
-                </div>
-
-                <div id="sim-upload-preview-area" style="display:none;">
-                  <!-- Dynamic preview injected here -->
+        <div class="simulador-subtab-content" id="subtab-configuracoes" style="display:none;">
+          <div class="admin-proposals-panel">
+            <!-- Active Table Info Panel -->
+            <div id="sim-active-table-panel" class="admin-card-box" style="margin-bottom:16px;">
+              <h2 style="color:#0f172a; font-size:1.1rem; margin:0 0 14px; font-weight:800; display:flex; align-items:center; gap:8px;">
+                <i data-lucide="database" style="color:#b45309; width:18px;"></i> Tabela Comercial Ativa
+              </h2>
+              <div id="sim-active-table-content">
+                <div style="display:flex; align-items:center; gap:8px; color:#64748b; font-size:0.85rem;">
+                  <i data-lucide="loader-2" class="animate-spin" style="width:16px; height:16px; color:#b45309;"></i>
+                  Carregando tabela ativa...
                 </div>
               </div>
             </div>
+
+            <!-- Upload PDF Box -->
+            <div class="admin-card-box">
+              <h2 style="color:#0f172a; font-size:1.1rem; margin:0; font-weight:800;"><i data-lucide="file-up" style="color:#b45309; width:18px;"></i> Importar Nova Tabela Comercial (PDF)</h2>
+              
+              <div class="pdf-upload-dropzone" id="sim-pdf-dropzone">
+                <i data-lucide="upload-cloud" style="width:40px; height:40px; color:#b45309;"></i>
+                <p style="font-size:0.9rem; font-weight:700; color:#0f172a; margin:0;">Clique aqui ou arraste o arquivo PDF da Tabela Comercial</p>
+                <span style="font-size:0.75rem; color:#64748b;">Suporta arquivos PDF comerciais originais de até 20MB com hash de validação SHA-256</span>
+                <input type="file" id="sim-pdf-file-input" accept=".pdf" style="display:none;" />
+              </div>
+
+              <div id="sim-upload-preview-area" style="display:none;">
+                <!-- Dynamic preview injected here -->
+              </div>
+            </div>
           </div>
-        ` : ''}
+        </div>
       </div>
     `;
 
@@ -396,6 +394,12 @@
       btn.addEventListener('click', () => {
         document.querySelectorAll('.simulador-tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+
+        // Always show the main simulator container and hide A4 proposal container when navigating topbar tabs
+        const simContainer = document.querySelector('[data-service-tab-content="simulador"]');
+        const pfContainer = document.getElementById('proposta-final-container');
+        if (simContainer) simContainer.style.display = 'block';
+        if (pfContainer) pfContainer.style.display = 'none';
 
         const targetSubtab = btn.dataset.subtab;
         document.querySelectorAll('.simulador-subtab-content').forEach(c => c.style.display = 'none');
