@@ -1247,6 +1247,15 @@
               <tr>
                 <td style="padding:13px 18px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:10px;">
+                    <i data-lucide="gavel" style="width:16px; height:16px; color:#B98220;"></i>
+                    <span>Valor do Lance <span style="font-size:0.75em; font-weight:400; color:#9ca3af;">(Adiantamento de Parcelas)</span></span>
+                  </div>
+                </td>
+                <td style="padding:13px 18px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#050505; font-size:0.96rem;">${lanceText}</td>
+              </tr>
+              <tr>
+                <td style="padding:13px 18px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
+                  <div style="display:flex; align-items:center; gap:10px;">
                     <i data-lucide="home" style="width:16px; height:16px; color:#B98220;"></i>
                     <span>Valor do Imóvel</span>
                   </div>
@@ -1282,25 +1291,14 @@
                 <td style="padding:13px 18px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#050505; font-size:0.96rem;">${halfInstFormatted}</td>
               </tr>
               <tr>
-                <td style="padding:13px 18px; ${includeBid ? 'border-bottom:1px solid #E4DEE8;' : ''} background:#FAF9FB; color:#706A78; font-weight:500;">
+                <td style="padding:13px 18px; background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:10px;">
                     <i data-lucide="calendar" style="width:16px; height:16px; color:#B98220;"></i>
                     <span>Prazo de Pagamento do Plano</span>
                   </div>
                 </td>
-                <td style="padding:13px 18px; ${includeBid ? 'border-bottom:1px solid #E4DEE8;' : ''} font-weight:800; color:#050505;">${formatTermMonthsYears(proposal.total_term_months)}</td>
+                <td style="padding:13px 18px; font-weight:800; color:#050505;">${formatTermMonthsYears(proposal.total_term_months)}</td>
               </tr>
-              ${includeBid ? `
-              <tr>
-                <td style="padding:13px 18px; background:#FAF9FB; color:#706A78; font-weight:500;">
-                  <div style="display:flex; align-items:center; gap:10px;">
-                    <i data-lucide="gavel" style="width:16px; height:16px; color:#B98220;"></i>
-                    <span>Lance Embutido <span style="font-size:0.75em; font-weight:400; color:#9ca3af;">(Adiantamento de Parcelas)</span></span>
-                  </div>
-                </td>
-                <td style="padding:13px 18px; font-weight:800; color:#050505;">${lanceText}</td>
-              </tr>
-              ` : ''}
             </tbody>
           </table>
 
