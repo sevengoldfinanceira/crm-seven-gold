@@ -923,3 +923,245 @@ select.simulador-input option {
   height: 14px !important;
 }
 
+/* Card 1: Dados do Cliente & Lance (Reformulação Visual) */
+.pf-form-card {
+  background: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pf-form-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.pf-form-header-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.pf-form-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.01em;
+}
+
+.pf-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pf-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .pf-form-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .pf-grid-2col {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* Inputs com ícones internos em ouro */
+.pf-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.pf-input-icon {
+  position: absolute;
+  left: 16px;
+  width: 20px;
+  height: 20px;
+  color: #D8B34A;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.pf-textarea-wrapper {
+  align-items: flex-start;
+}
+
+.pf-textarea-icon {
+  top: 16px;
+}
+
+.pf-input-with-icon {
+  height: 52px !important;
+  border-radius: 12px !important;
+  padding-left: 48px !important;
+  padding-right: 16px !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  color: #050505 !important;
+  border: 1px solid #E4E4E7 !important;
+  background: #FFFFFF !important;
+  transition: all 0.2s ease !important;
+  width: 100% !important;
+}
+
+.pf-input-with-icon:focus {
+  border-color: #E8B138 !important;
+  box-shadow: 0 0 0 4px rgba(216, 179, 74, 0.18) !important;
+}
+
+.pf-textarea-with-icon {
+  min-height: 120px !important;
+  border-radius: 12px !important;
+  padding-left: 48px !important;
+  padding-top: 14px !important;
+  padding-right: 16px !important;
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+  color: #050505 !important;
+  border: 1px solid #E4E4E7 !important;
+  background: #FFFFFF !important;
+  transition: all 0.2s ease !important;
+  width: 100% !important;
+  resize: vertical;
+}
+
+.pf-textarea-with-icon:focus {
+  border-color: #E8B138 !important;
+  box-shadow: 0 0 0 4px rgba(216, 179, 74, 0.18) !important;
+}
+
+/* Área de Lance destacada */
+.pf-bid-section-box {
+  background: #FFFDF7;
+  border: 1px solid rgba(216, 179, 74, 0.35);
+  border-radius: 16px;
+  padding: 22px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.pf-bid-toggle-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(216, 179, 74, 0.25);
+  margin-bottom: 18px;
+}
+
+.pf-bid-toggle-title {
+  font-weight: 700;
+  color: #050505;
+  font-size: 0.92rem;
+}
+
+.pf-checkbox-custom {
+  width: 18px;
+  height: 18px;
+  accent-color: #D8B34A;
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+
+.pf-bid-slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.pf-bid-slider-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #050505;
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+.pf-bid-badge {
+  background: #050505;
+  color: #E8B138;
+  font-weight: 800;
+  font-size: 0.88rem;
+  padding: 4px 14px;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+}
+
+.pf-range-slider {
+  width: 100%;
+  height: 8px;
+  accent-color: #D8B34A;
+  cursor: pointer;
+  margin-bottom: 18px;
+  margin-top: 4px;
+}
+
+.pf-sublabel {
+  font-size: 0.76rem;
+  color: #667085;
+  font-weight: 600;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.pf-input-centered {
+  height: 52px !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  color: #050505 !important;
+  border: 1px solid #E4E4E7 !important;
+  background: #FFFFFF !important;
+}
+
+.pf-input-bold-dark {
+  height: 52px !important;
+  border-radius: 12px !important;
+  font-weight: 800 !important;
+  color: #050505 !important;
+  border: 1px solid #E4E4E7 !important;
+  background: #FFFFFF !important;
+}
+
+.pf-show-percentage-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  font-size: 0.85rem;
+  color: #344054;
+  font-weight: 500;
+  cursor: pointer;
+  background: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  padding: 14px 16px;
+  border-radius: 12px;
+  user-select: none;
+}
+

@@ -854,81 +854,110 @@
         <div class="pf-content-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; align-items:start;">
           <!-- Left Column: Form + Summary Stacked -->
           <div class="pf-left-panel" style="display:flex; flex-direction:column; gap:20px;">
-            <!-- Card 1: Complementary Form -->
-            <div class="pf-form-card" style="background:#ffffff; border:1px solid #e7e1eb; border-radius:16px; padding:24px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
-              <h3 style="margin:0 0 16px; font-size:1.1rem; color:#150126; display:flex; align-items:center; gap:8px;"><i data-lucide="user-check" style="color:#e8b138; width:20px;"></i> Dados do Cliente & Lance</h3>
+            <!-- Card 1: Dados do Cliente & Lance Form -->
+            <div class="pf-form-card">
+              <div class="pf-form-header">
+                <div class="pf-form-header-icon">
+                  <i data-lucide="user-check" style="width:22px; height:22px; color:#D8B34A;"></i>
+                </div>
+                <h3 class="pf-form-title">Dados do Cliente & Lance</h3>
+              </div>
 
-              <form id="pf-complementary-form" style="display:flex; flex-direction:column; gap:14px;">
+              <form id="pf-complementary-form" class="pf-form-body">
+                <!-- Nome Completo -->
                 <div class="simulador-form-group">
                   <label for="pf-client-name">Nome Completo do Cliente <span class="req">*</span></label>
-                  <input type="text" id="pf-client-name" class="simulador-input" placeholder="Ex: João da Silva" required />
+                  <div class="pf-input-wrapper">
+                    <i data-lucide="user" class="pf-input-icon"></i>
+                    <input type="text" id="pf-client-name" class="simulador-input pf-input-with-icon" placeholder="Ex: João da Silva" required />
+                  </div>
                 </div>
 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <!-- CPF e Telefone -->
+                <div class="pf-grid-2col">
                   <div class="simulador-form-group">
                     <label for="pf-client-cpf">CPF do Cliente</label>
-                    <input type="text" id="pf-client-cpf" class="simulador-input" placeholder="000.000.000-00" />
+                    <div class="pf-input-wrapper">
+                      <i data-lucide="contact" class="pf-input-icon"></i>
+                      <input type="text" id="pf-client-cpf" class="simulador-input pf-input-with-icon" placeholder="000.000.000-00" />
+                    </div>
                   </div>
                   <div class="simulador-form-group">
                     <label for="pf-client-phone">Telefone / WhatsApp</label>
-                    <input type="text" id="pf-client-phone" class="simulador-input" placeholder="(00) 90000-0000" />
+                    <div class="pf-input-wrapper">
+                      <i data-lucide="phone" class="pf-input-icon"></i>
+                      <input type="text" id="pf-client-phone" class="simulador-input pf-input-with-icon" placeholder="(00) 90000-0000" />
+                    </div>
                   </div>
                 </div>
 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <!-- Tipo de Bem e Validade -->
+                <div class="pf-grid-2col">
                   <div class="simulador-form-group">
                     <label for="pf-property-type">Tipo de Bem</label>
-                    <select id="pf-property-type" class="simulador-input">
-                      <option value="Imóvel Residencial">Imóvel Residencial</option>
-                      <option value="Imóvel Comercial">Imóvel Comercial</option>
-                      <option value="Terreno / Construção">Terreno / Construção</option>
-                      <option value="Automóvel / Veículo">Automóvel / Veículo</option>
-                      <option value="Maquinário / Pesados">Maquinário / Pesados</option>
-                    </select>
+                    <div class="pf-input-wrapper">
+                      <i data-lucide="home" class="pf-input-icon"></i>
+                      <select id="pf-property-type" class="simulador-input pf-input-with-icon">
+                        <option value="Imóvel Residencial">Imóvel Residencial</option>
+                        <option value="Imóvel Comercial">Imóvel Comercial</option>
+                        <option value="Terreno / Construção">Terreno / Construção</option>
+                        <option value="Automóvel / Veículo">Automóvel / Veículo</option>
+                        <option value="Maquinário / Pesados">Maquinário / Pesados</option>
+                      </select>
+                    </div>
                   </div>
                   <div class="simulador-form-group">
                     <label for="pf-validity">Validade da Proposta</label>
-                    <input type="date" id="pf-validity" class="simulador-input" value="${validityDefault}" />
+                    <div class="pf-input-wrapper">
+                      <i data-lucide="calendar" class="pf-input-icon"></i>
+                      <input type="date" id="pf-validity" class="simulador-input pf-input-with-icon" value="${validityDefault}" />
+                    </div>
                   </div>
                 </div>
 
-                <div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:12px; padding:14px; margin-bottom:12px;">
-                  <label style="display:flex; align-items:center; gap:10px; font-weight:700; color:#0f172a; font-size:0.85rem; cursor:pointer; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #e2e8f0;">
-                    <input type="checkbox" id="pf-include-bid-toggle" checked style="width:18px; height:18px; accent-color:#d4af37; cursor:pointer;" />
-                    <span>Incluir Oferta / Pretensão de Lance nesta Proposta</span>
+                <!-- Área de Lance -->
+                <div class="pf-bid-section-box">
+                  <label class="pf-bid-toggle-header">
+                    <input type="checkbox" id="pf-include-bid-toggle" checked class="pf-checkbox-custom" />
+                    <span class="pf-bid-toggle-title">Incluir Oferta / Pretensão de Lance nesta Proposta</span>
                   </label>
 
                   <div id="pf-bid-controls-wrapper">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                      <label for="pf-embedded-bid-range" style="font-weight:700; color:#0f172a; font-size:0.85rem; margin:0;">
-                        <i data-lucide="sliders" style="width:14px; height:14px; color:#d4af37; vertical-align:middle;"></i> Lance Embutido / Pretendido (%)
+                    <div class="pf-bid-slider-header">
+                      <label for="pf-embedded-bid-range" class="pf-bid-slider-label">
+                        <i data-lucide="sliders-horizontal" style="width:16px; height:16px; color:#D8B34A;"></i>
+                        Lance Embutido / Pretendido (%)
                       </label>
-                      <span id="pf-embedded-bid-badge" style="background:#000000; color:#C9A84C; font-weight:800; font-size:0.85rem; padding:3px 10px; border-radius:6px;">${proposal.fixed_bid_percentage || 30}%</span>
+                      <span id="pf-embedded-bid-badge" class="pf-bid-badge">${proposal.fixed_bid_percentage || 30}%</span>
                     </div>
 
-                    <input type="range" id="pf-embedded-bid-range" min="0" max="100" step="0.5" value="${proposal.fixed_bid_percentage || 30}" style="width:100%; accent-color:#d4af37; cursor:pointer; height:6px; margin-bottom:12px;" />
+                    <input type="range" id="pf-embedded-bid-range" min="0" max="100" step="0.5" value="${proposal.fixed_bid_percentage || 30}" class="pf-range-slider" />
 
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                      <div>
-                        <label for="pf-embedded-bid" style="font-size:0.75rem; color:#64748b; font-weight:600;">Porcentagem (%)</label>
-                        <input type="text" id="pf-embedded-bid" class="simulador-input" style="font-weight:700; text-align:center;" value="${proposal.fixed_bid_percentage || 30}%" />
+                    <div class="pf-grid-2col pf-bid-values-grid">
+                      <div class="simulador-form-group">
+                        <label for="pf-embedded-bid" class="pf-sublabel">Porcentagem (%)</label>
+                        <input type="text" id="pf-embedded-bid" class="simulador-input pf-input-centered" value="${proposal.fixed_bid_percentage || 30}%" />
                       </div>
-                      <div>
-                        <label for="pf-bid-amount" style="font-size:0.75rem; color:#64748b; font-weight:600;">Valor em R$ (Calculado)</label>
-                        <input type="text" id="pf-bid-amount" class="simulador-input brl-mask" style="font-weight:800; color:#0A0A0A;" placeholder="R$ 0,00" value="${formatCurrency(proposal.credit_value * ((proposal.fixed_bid_percentage || 30) / 100))}" />
+                      <div class="simulador-form-group">
+                        <label for="pf-bid-amount" class="pf-sublabel">Valor em R$ (Calculado)</label>
+                        <input type="text" id="pf-bid-amount" class="simulador-input brl-mask pf-input-bold-dark" placeholder="R$ 0,00" value="${formatCurrency(proposal.credit_value * ((proposal.fixed_bid_percentage || 30) / 100))}" />
                       </div>
                     </div>
 
-                    <label style="display:flex; align-items:center; gap:8px; margin-top:12px; font-size:0.78rem; color:#475569; font-weight:600; cursor:pointer; background:#fff; border:1px solid #cbd5e1; padding:8px 12px; border-radius:8px;">
-                      <input type="checkbox" id="pf-show-percentage-toggle" style="width:16px; height:16px; accent-color:#d4af37; cursor:pointer;" />
+                    <label class="pf-show-percentage-card">
+                      <input type="checkbox" id="pf-show-percentage-toggle" class="pf-checkbox-custom" />
                       <span>Exibir porcentagens (%) do lance na proposta final impressa</span>
                     </label>
                   </div>
                 </div>
 
+                <!-- Observações -->
                 <div class="simulador-form-group">
                   <label for="pf-notes">Observações / Condições Especiais</label>
-                  <textarea id="pf-notes" class="simulador-input" rows="3" placeholder="Insira observações relevantes sobre o atendimento ou regras de contemplação..."></textarea>
+                  <div class="pf-input-wrapper pf-textarea-wrapper">
+                    <i data-lucide="file-edit" class="pf-input-icon pf-textarea-icon"></i>
+                    <textarea id="pf-notes" class="simulador-input pf-textarea-with-icon" rows="3" placeholder="Insira observações relevantes sobre o atendimento ou regras de contemplação..."></textarea>
+                  </div>
                 </div>
               </form>
             </div>
