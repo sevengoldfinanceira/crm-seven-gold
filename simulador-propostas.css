@@ -897,6 +897,15 @@ select.simulador-input option {
   color: #15121a;
   background: #ffffff;
   box-sizing: border-box;
+  width: 210mm;
+  max-width: 210mm;
+  min-height: 297mm;
+  max-height: 297mm;
+  height: 297mm;
+  overflow: hidden;
+  page-break-after: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 
 @media print {
@@ -951,8 +960,10 @@ select.simulador-input option {
   .proposta-final-print-sheet {
     display: block !important;
     position: static !important;
-    width: 100% !important;
+    width: 210mm !important;
     max-width: 210mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
     margin: 0 auto !important;
     padding: 0 !important;
     border: none !important;
@@ -960,17 +971,19 @@ select.simulador-input option {
     box-shadow: none !important;
     background: #ffffff !important;
     color: #17111F !important;
-    page-break-after: avoid;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    overflow: hidden !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   .proposta-final-print-sheet table,
   .proposta-final-print-sheet tr,
   .proposta-final-print-sheet td,
   .proposta-final-print-sheet div {
-    page-break-inside: avoid;
-    break-inside: avoid;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 }
 
