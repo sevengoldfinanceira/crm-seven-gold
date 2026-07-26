@@ -175,8 +175,8 @@ body { font-family: Inter, sans-serif; background: var(--page); color: var(--ink
 }
 
 .service-header-logo {
-  width: 52px;
-  height: 52px;
+  width: 58px;
+  height: 58px;
   object-fit: contain;
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
   flex-shrink: 0;

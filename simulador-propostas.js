@@ -1017,7 +1017,7 @@
         <div class="pf-a4-header" style="background:linear-gradient(135deg, #000000 0%, #111111 60%, #0A0A0A 100%); padding:20px 24px 18px; color:#ffffff; position:relative; overflow:hidden; border-radius:12px 12px 0 0;">
           <div style="display:flex; justify-content:space-between; align-items:center; position:relative; z-index:2;">
             <div style="display:flex; align-items:center; gap:16px;">
-              <img src="assets/icons/seven-gold-g7.png" alt="Seven Gold" style="width:48px; height:48px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));" />
+              <img src="assets/icons/seven-gold-g7.png" alt="Seven Gold" style="width:60px; height:60px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));" />
               <div style="width:1.5px; height:36px; background:#E8B138;"></div>
               <div>
                 <h2 style="margin:0; font-size:1.25rem; color:#E8B138; font-weight:800; letter-spacing:0.04em; line-height:1.2;">SEVEN GOLD FINANCEIRA</h2>
