@@ -1328,22 +1328,17 @@
           `}
 
           <div class="pf-a4-footer" style="border-top:1.5px solid #E8B138; padding-top:18px; display:grid; grid-template-columns:1fr 1px 1fr; gap:16px; align-items:center; font-size:0.78rem; color:#706A78; margin-top:auto;">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <div style="width:38px; height:38px; border-radius:50%; background:#000000; display:flex; align-items:center; justify-content:center; border:1px solid #C9A84C; flex-shrink:0;">
-                <img src="assets/icons/seven-gold-g7.png" alt="Seven Gold" style="width:26px; height:26px; object-fit:contain;" />
-              </div>
-              <div>
-                <strong style="color:#C9A84C; font-size:0.85rem; display:block;">Seven Gold Financeira</strong>
-                <div style="display:flex; align-items:center; gap:4px; color:#706A78; font-size:0.76rem;">
-                  <i data-lucide="instagram" style="width:13px; height:13px; color:#C9A84C;"></i>
-                  <span>Instagram: @sevengoldfinanceira</span>
-                </div>
-              </div>
+            <div style="display:flex; align-items:center; justify-content:flex-start;">
+              <img src="assets/icons/seven-gold-logo-completa.png" alt="Seven Gold Financeira" style="height:48px; max-width:220px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15));" />
             </div>
 
-            <div style="background:#E4DEE8; height:40px;"></div>
+            <div style="background:#E4DEE8; height:44px;"></div>
 
-            <div style="text-align:right; font-size:0.76rem; color:#706A78; display:flex; flex-direction:column; gap:3px;">
+            <div style="text-align:right; font-size:0.76rem; color:#706A78; display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; align-items:center; justify-content:flex-end; gap:5px;">
+                <i data-lucide="instagram" style="width:13px; height:13px; color:#C9A84C;"></i>
+                <span>Instagram: @sevengoldfinanceira</span>
+              </div>
               <div style="display:flex; align-items:center; justify-content:flex-end; gap:5px;">
                 <i data-lucide="globe" style="width:13px; height:13px; color:#C9A84C;"></i>
                 <span>www.sevengoldfinanceira.com.br</span>
