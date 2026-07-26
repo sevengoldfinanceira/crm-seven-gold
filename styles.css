@@ -12,10 +12,8 @@
   --gold-dark: #9b711b;
   --blue: #5e63f1;
   --orange: #f08a18;
-  --purple: #9c5bf0;
-  --pink: #e847a4;
-  --green: #28a65a;
-  --brand-purple: #000000;
+  --purple: #E8B138;
+  --brand-purple: #E8B138;
   --shadow: 0 16px 38px rgba(18, 20, 18, 0.08);
 }
 
@@ -376,10 +374,10 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
   padding: 0 18px;
   border: 0;
   border-radius: 8px;
-  background: #6D4CFF;
-  color: #ffffff;
-  box-shadow: 0 8px 18px rgba(109, 76, 255, 0.22);
-  font-weight: 800;
+  background: linear-gradient(135deg, #E8B138 0%, #C9A84C 100%) !important;
+  color: #050505 !important;
+  box-shadow: 0 8px 18px rgba(232, 177, 56, 0.3) !important;
+  font-weight: 800 !important;
 }
 
 .new-lead-button span {
@@ -614,10 +612,10 @@ body[data-permission-area="crm"].crm-authorized .profile-dashboard-shell { visib
   padding: 0 18px;
   border: 0;
   border-radius: 8px;
-  background: #6D4CFF;
-  color: #ffffff;
-  box-shadow: 0 8px 18px rgba(109, 76, 255, 0.22);
-  font-weight: 800;
+  background: linear-gradient(135deg, #E8B138 0%, #C9A84C 100%) !important;
+  color: #050505 !important;
+  box-shadow: 0 8px 18px rgba(232, 177, 56, 0.3) !important;
+  font-weight: 800 !important;
 }
 
 .new-lead-button span {
@@ -1441,17 +1439,17 @@ body.theme-dark .lead-trash-origin-badge--unknown {
   height: 56px;
   border: 0;
   border-radius: 12px;
-  background: linear-gradient(180deg, #E0B43A 0%, #B8861C 100%);
-  background-color: #D4AF37;
-  color: #FFFFFF;
+  background: linear-gradient(135deg, #E8B138 0%, #C9A84C 100%) !important;
+  color: #050505 !important;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   letter-spacing: 0.01em;
+  box-shadow: 0 8px 20px rgba(232, 177, 56, 0.3) !important;
   transition: filter 0.16s ease, transform 0.16s ease;
 }
 
@@ -1460,7 +1458,7 @@ body.theme-dark .lead-trash-origin-badge--unknown {
   display: inline-block;
   width: 18px;
   height: 18px;
-  background: #FFFFFF;
+  background: #050505 !important;
   -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'><path d='M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z'/><polyline points='17 21 17 13 7 13 7 21'/><polyline points='7 3 7 8 15 8'/></svg>") no-repeat center / contain;
   mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'><path d='M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z'/><polyline points='17 21 17 13 7 13 7 21'/><polyline points='7 3 7 8 15 8'/></svg>") no-repeat center / contain;
   flex: 0 0 18px;
@@ -2205,13 +2203,13 @@ body.theme-dark .theme-fab:hover {
   padding: 12px 28px;
   border: 0;
   border-radius: 14px;
-  background: linear-gradient(135deg, #7C3AED, #6D4CFF);
-  color: #fff;
+  background: linear-gradient(135deg, #E8B138 0%, #C9A84C 100%);
+  color: #050505;
   font-size: .85rem;
-  font-weight: 700;
+  font-weight: 800;
   white-space: nowrap;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(109, 76, 255, .3);
+  box-shadow: 0 8px 20px rgba(232, 177, 56, .3);
   transition: transform .18s, box-shadow .18s;
 }
 .crm-profile-save-button:hover {
@@ -2515,9 +2513,9 @@ body.theme-dark .calendar-day-add-btn:hover { background: rgba(156,91,240,.1); c
   padding: 0 19px;
   border: 1px solid rgba(109, 76, 255, .25);
   border-radius: 13px;
-  background: linear-gradient(135deg, #7C5CFF 0%, #6D4CFF 100%);
-  color: #ffffff;
-  box-shadow: 0 10px 24px rgba(109, 76, 255, .25);
+  background: linear-gradient(135deg, #E8B138 0%, #C9A84C 100%);
+  color: #050505;
+  box-shadow: 0 10px 24px rgba(232, 177, 56, .3);
   font-size: .82rem;
   font-weight: 800;
   transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
