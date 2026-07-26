@@ -16098,8 +16098,15 @@ body.theme-dark .modal-role-row {
 }
 
 /* Premium Login Page Enhancements */
-.login-page-body {
-  background: radial-gradient(circle at center, #0b0b0b 0%, #000000 50%, #000000 100%) !important;
+.login-page-body,
+.index-login-body,
+.crm-login-body {
+  background:
+    radial-gradient(circle 520px at 8% 8%, rgba(244, 215, 106, 0.2) 0%, rgba(216, 160, 24, 0.1) 34%, transparent 72%),
+    radial-gradient(circle at 88% 48%, rgba(216, 160, 24, 0.18), transparent 30%),
+    linear-gradient(135deg, #000000 0%, #050505 48%, #000000 100%) !important;
+  background-color: #050009 !important;
+  background-attachment: fixed !important;
   min-height: 100vh;
 }
 
