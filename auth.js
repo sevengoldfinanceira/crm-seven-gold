@@ -750,10 +750,10 @@ function setupGlobalModuleTransitions() {
     if (statusTitle) statusTitle.textContent = "Retornando aos Painéis...";
     overlay.classList.add("active");
 
-    // Revelação Reversa: oculta a transição de forma fluida ao chegar no Painel
+    // Revelação Reversa: oculta a transição de forma fluida ao chegar no Painel após 1s
     setTimeout(() => {
       overlay.classList.remove("active");
-    }, 500);
+    }, 1000);
   }
 
   // Intercepta todos os cliques nos botões/links de retorno ao painel.html
