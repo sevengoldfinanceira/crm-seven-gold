@@ -206,10 +206,15 @@
             <!-- Right Results List -->
             <div class="simulador-results-container">
               <div class="simulador-sticky-top-bar">
-                <div class="simulador-results-header">
-                  <span class="simulador-results-count" id="sim-results-count-text">
-                    Informe os limites do cliente ao lado para realizar a simulação.
-                  </span>
+                <div class="simulador-results-header is-empty-notice" id="sim-results-header">
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="empty-notice-info-icon" id="sim-empty-info-icon">
+                      <i data-lucide="info"></i>
+                    </div>
+                    <span class="simulador-results-count" id="sim-results-count-text">
+                      Informe os limites do cliente ao lado para realizar a simulação.
+                    </span>
+                  </div>
                   <button type="button" class="bordero-btn-secondary" id="sim-toggle-near-btn" style="display:none;">
                     <i data-lucide="eye"></i> Mostrar Opções Próximas
                   </button>
@@ -390,6 +395,9 @@
           <p style="margin:0; font-size:0.9rem; font-weight:600;">Filtros limpos com sucesso. Preencha os novos limites.</p>
         </div>
       `;
+      document.getElementById('sim-results-header')?.classList.add('is-empty-notice');
+      const emptyIcon = document.getElementById('sim-empty-info-icon');
+      if (emptyIcon) emptyIcon.style.display = 'flex';
       document.getElementById('sim-results-count-text').textContent = 'Informe os limites do cliente ao lado para realizar a simulação.';
       if (window.lucide) window.lucide.createIcons();
     });
@@ -600,17 +608,30 @@
       }
 
 
+      const resultsHeader = document.getElementById('sim-results-header');
+      const emptyIcon = document.getElementById('sim-empty-info-icon');
+
       if (validList.length > 0) {
+        if (resultsHeader) resultsHeader.classList.remove('is-empty-notice');
+        if (emptyIcon) emptyIcon.style.display = 'none';
         countTextEl.innerHTML = `Encontradas <strong>${validList.length}</strong> propostas ideais dentro dos limites do cliente.`;
         toggleNearBtn.style.display = nearList.length > 0 ? 'inline-flex' : 'none';
         if (sortBar) sortBar.style.display = 'flex';
         renderProposalCards(validList, false);
-      } else {
-        // No strict valid matches, show near matches automatically with clear excess notice
+      } else if (nearList.length > 0) {
+        if (resultsHeader) resultsHeader.classList.remove('is-empty-notice');
+        if (emptyIcon) emptyIcon.style.display = 'none';
         countTextEl.innerHTML = `Nenhuma proposta exata dentro do limite. Exibindo <strong>${nearList.length}</strong> opções próximas.`;
         toggleNearBtn.style.display = 'none';
         if (sortBar) sortBar.style.display = 'flex';
         renderProposalCards(nearList, true);
+      } else {
+        if (resultsHeader) resultsHeader.classList.add('is-empty-notice');
+        if (emptyIcon) emptyIcon.style.display = 'flex';
+        countTextEl.textContent = 'Informe os limites do cliente ao lado para realizar a simulação.';
+        toggleNearBtn.style.display = 'none';
+        if (sortBar) sortBar.style.display = 'none';
+        listEl.innerHTML = `<div style="text-align:center; color:#9ca3af; padding:40px;">Nenhuma proposta encontrada com estes parâmetros.</div>`;
       }
 
       // Attach client-side sorting handlers for quick sorting buttons

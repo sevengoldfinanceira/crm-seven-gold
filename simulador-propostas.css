@@ -419,6 +419,59 @@ select.simulador-input option {
   border-radius: 14px;
   padding: 16px 20px;
   box-shadow: 0 4px 16px rgba(21, 1, 38, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Estado de Aviso Vazio (Cópia fiel da 1ª Imagem com cantoneira dobrada dourada e ícone i) */
+.simulador-results-header.is-empty-notice {
+  background: linear-gradient(90deg, #FFFDF7 0%, #FFF9EB 100%) !important;
+  border: 1px solid rgba(232, 177, 56, 0.45) !important;
+  border-radius: 14px !important;
+  padding: 16px 22px !important;
+  box-shadow: 0 6px 20px rgba(216, 179, 74, 0.12) !important;
+}
+
+.simulador-results-header.is-empty-notice::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 44px;
+  height: 34px;
+  background: linear-gradient(135deg, rgba(232, 177, 56, 0.35) 0%, #D8B34A 60%, #C9A84C 100%);
+  clip-path: polygon(100% 0, 0 100%, 100% 100%);
+  border-top-left-radius: 14px;
+  box-shadow: -2px -2px 8px rgba(184, 121, 13, 0.25);
+  pointer-events: none;
+}
+
+.empty-notice-info-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid #D8B34A;
+  color: #B8790D;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(216, 179, 74, 0.18);
+}
+
+.empty-notice-info-icon svg,
+.empty-notice-info-icon i {
+  width: 15px !important;
+  height: 15px !important;
+  color: #B8790D !important;
+}
+
+.simulador-results-header.is-empty-notice .simulador-results-count {
+  color: #0F172A !important;
+  font-weight: 800 !important;
+  font-size: 0.9rem !important;
+  letter-spacing: -0.01em;
 }
 
 .simulador-results-count {
