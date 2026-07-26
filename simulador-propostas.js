@@ -338,6 +338,7 @@
                     <th>VALOR DE CRÉDITO</th>
                     <th>ENTRADA / PARCELA</th>
                     <th>FECHAMENTO</th>
+                    <th>DOCS OBRIGATÓRIOS</th>
                     <th>STATUS</th>
                     <th style="text-align: right;">AÇÕES</th>
                   </tr>
@@ -346,6 +347,30 @@
                   <!-- Injected dynamically -->
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Gerenciar Documentos Obrigatórios do Contrato -->
+        <div id="modal-client-docs" class="modal-overlay-closed-client" style="display:none; z-index:99999;">
+          <div class="modal-card-closed-client" style="max-width:780px;">
+            <div class="modal-header-closed-client">
+              <div>
+                <h3 id="modal-docs-client-name" style="margin:0; font-size:1.15rem; color:#0F172A; font-weight:800; display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="folder-check" style="color:#D8B34A;"></i> Documentos Obrigatórios do Contrato
+                </h3>
+                <p id="modal-docs-client-sub" style="margin:4px 0 0 0; font-size:0.8rem; color:#64748B;"></p>
+              </div>
+              <button type="button" class="modal-close-btn" id="btn-close-docs-modal">&times;</button>
+            </div>
+
+            <div class="modal-body-docs" style="padding:20px 24px;">
+              <div id="modal-docs-compliance-banner" class="compliance-banner" style="margin-bottom:20px;"></div>
+              <div class="mandatory-docs-list" id="mandatory-docs-slots-container" style="display:flex; flex-direction:column; gap:16px;"></div>
+            </div>
+
+            <div class="modal-footer-closed-client" style="padding:16px 24px; background:#F8FAFC; border-top:1px solid #E2E8F0; display:flex; justify-content:flex-end;">
+              <button type="button" class="btn-cancel-closed" id="btn-finish-docs-modal" style="background:#0F172A; color:#FFFFFF; padding:8px 20px; border-radius:8px; font-weight:700;">Concluído</button>
             </div>
           </div>
         </div>
@@ -1802,6 +1827,51 @@
   }
 
   // --- MÓDULO DE CLIENTES FECHADOS & CONTRATOS ATIVOS ---
+  const MANDATORY_DOC_TYPES = [
+    {
+      key: "direito_imagem",
+      title: "Direito de Imagens",
+      icon: "camera",
+      description: "Termo de cessão e autorização de uso de imagem e voz.",
+      accept: ".pdf,.jpg,.jpeg,.png"
+    },
+    {
+      key: "recapitulacao_escrita",
+      title: "Recapitulação Escrita",
+      icon: "file-signature",
+      description: "Documento assinado de recapitulação dos termos do consórcio.",
+      accept: ".pdf,.doc,.docx"
+    },
+    {
+      key: "recapitulacao_video",
+      title: "Recapitulação em Vídeo",
+      icon: "video",
+      description: "Gravação de vídeo/áudio com a validação do contrato.",
+      accept: "video/*,.mp4,.mov,.webm,.m4v"
+    },
+    {
+      key: "lgpd",
+      title: "Termo de Consentimento LGPD",
+      icon: "shield-check",
+      description: "Termo assinado de consentimento sob a Lei Geral de Proteção de Dados.",
+      accept: ".pdf,.jpg,.jpeg,.png"
+    }
+  ];
+
+  function getClientDocsCompliance(client) {
+    const docs = client.documentos_obrigatorios || {};
+    const mandatoryKeys = ["direito_imagem", "recapitulacao_escrita", "recapitulacao_video", "lgpd"];
+    let attachedCount = 0;
+    mandatoryKeys.forEach(k => {
+      if (docs[k] && docs[k].anexado) attachedCount++;
+    });
+    return {
+      attachedCount,
+      total: 4,
+      isComplete: attachedCount === 4
+    };
+  }
+
   const DEFAULT_CLOSED_CLIENTS = [
     {
       id: "cl-1",
@@ -1815,7 +1885,13 @@
       grupo_cota: "Grupo 7042 / Cota 148",
       data_fechamento: "2026-07-24",
       status: "Assinado",
-      consultor: "Seven Gold"
+      consultor: "Seven Gold",
+      documentos_obrigatorios: {
+        direito_imagem: { anexado: true, arquivo_nome: "termo_imagem_carlos.pdf", data_upload: "2026-07-24T14:30:00Z" },
+        recapitulacao_escrita: { anexado: true, arquivo_nome: "recapitulacao_escrita_carlos.pdf", data_upload: "2026-07-24T14:31:00Z" },
+        recapitulacao_video: { anexado: true, arquivo_nome: "recapitulacao_video_carlos.mp4", data_upload: "2026-07-24T14:35:00Z" },
+        lgpd: { anexado: true, arquivo_nome: "termo_lgpd_carlos.pdf", data_upload: "2026-07-24T14:32:00Z" }
+      }
     },
     {
       id: "cl-2",
@@ -1829,7 +1905,13 @@
       grupo_cota: "Grupo 3012 / Cota 082",
       data_fechamento: "2026-07-20",
       status: "Em Análise",
-      consultor: "Seven Gold"
+      consultor: "Seven Gold",
+      documentos_obrigatorios: {
+        direito_imagem: { anexado: false, arquivo_nome: null, data_upload: null },
+        recapitulacao_escrita: { anexado: true, arquivo_nome: "recapitulacao_juliana.pdf", data_upload: "2026-07-20T10:15:00Z" },
+        recapitulacao_video: { anexado: false, arquivo_nome: null, data_upload: null },
+        lgpd: { anexado: true, arquivo_nome: "termo_lgpd_juliana.pdf", data_upload: "2026-07-20T10:16:00Z" }
+      }
     },
     {
       id: "cl-3",
@@ -1843,7 +1925,13 @@
       grupo_cota: "Grupo 9050 / Cota 015",
       data_fechamento: "2026-07-15",
       status: "Contemplado",
-      consultor: "Seven Gold"
+      consultor: "Seven Gold",
+      documentos_obrigatorios: {
+        direito_imagem: { anexado: true, arquivo_nome: "termo_imagem_ouro_verde.pdf", data_upload: "2026-07-15T09:00:00Z" },
+        recapitulacao_escrita: { anexado: true, arquivo_nome: "recapitulacao_escrita_ouro_verde.pdf", data_upload: "2026-07-15T09:05:00Z" },
+        recapitulacao_video: { anexado: true, arquivo_nome: "recapitulacao_video_ouro_verde.mp4", data_upload: "2026-07-15T09:12:00Z" },
+        lgpd: { anexado: true, arquivo_nome: "termo_lgpd_ouro_verde.pdf", data_upload: "2026-07-15T09:02:00Z" }
+      }
     }
   ];
 
@@ -1911,6 +1999,7 @@
     tbody.innerHTML = filtered.map(client => {
       const initial = (client.nome || "C").charAt(0).toUpperCase();
       const statusClass = client.status === "Assinado" ? "badge-signed" : (client.status === "Contemplado" ? "badge-contemplated" : "badge-analysis");
+      const compliance = getClientDocsCompliance(client);
 
       return `
         <tr>
@@ -1942,10 +2031,24 @@
             ${client.data_fechamento ? new Date(client.data_fechamento + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}
           </td>
           <td>
+            ${compliance.isComplete ? `
+              <span class="doc-badge-status ready" title="Todos os 4 documentos obrigatórios estão anexados!">
+                <i data-lucide="shield-check"></i> 4/4 OK
+              </span>
+            ` : `
+              <span class="doc-badge-status warning" title="Pendências em documentos obrigatórios!">
+                <i data-lucide="alert-triangle"></i> ${compliance.attachedCount}/4 Anexados
+              </span>
+            `}
+          </td>
+          <td>
             <span class="closed-status-badge ${statusClass}">${client.status || "Assinado"}</span>
           </td>
           <td style="text-align: right;">
             <div class="closed-actions-row">
+              <button type="button" class="btn-closed-action docs" data-open-docs="${client.id}" title="Gerenciar Documentos Obrigatórios">
+                <i data-lucide="folder-check"></i> Docs (${compliance.attachedCount}/4)
+              </button>
               <button type="button" class="btn-closed-action a4" data-open-a4="${client.id}" title="Visualizar Proposta Final A4">
                 <i data-lucide="file-text"></i> A4
               </button>
@@ -1961,6 +2064,13 @@
     if (window.lucide) window.lucide.createIcons();
 
     // Attach click listeners for action buttons in table
+    tbody.querySelectorAll("[data-open-docs]").forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.dataset.openDocs;
+        openClientDocsModal(id);
+      };
+    });
+
     tbody.querySelectorAll("[data-open-a4]").forEach(btn => {
       btn.onclick = () => {
         const id = btn.dataset.openA4;
@@ -1991,4 +2101,134 @@
       };
     });
   }
+
+  // --- MODAL DE GERENCIAMENTO DE DOCUMENTOS OBRIGATÓRIOS ---
+  function openClientDocsModal(clientId) {
+    const modal = document.getElementById("modal-client-docs");
+    if (!modal) return;
+
+    const allClients = getClosedClientsList();
+    const client = allClients.find(c => c.id === clientId);
+    if (!client) return;
+
+    document.getElementById("modal-docs-client-name").innerHTML = `<i data-lucide="folder-check" style="color:#D8B34A;"></i> Documentos do Contrato: <strong>${client.nome}</strong>`;
+    document.getElementById("modal-docs-client-sub").textContent = `CPF/CNPJ: ${client.cpf_cnpj || 'N/A'} • Produto: ${client.produto || 'Consórcio'}`;
+
+    function renderModalContent() {
+      const compliance = getClientDocsCompliance(client);
+      const banner = document.getElementById("modal-docs-compliance-banner");
+      const slotsContainer = document.getElementById("mandatory-docs-slots-container");
+
+      if (compliance.isComplete) {
+        banner.className = "compliance-banner success";
+        banner.innerHTML = `<i data-lucide="check-circle-2"></i> <div><strong>Contrato Liberado para Envio!</strong> Todos os 4 documentos obrigatórios estão devidamente anexados.</div>`;
+      } else {
+        banner.className = "compliance-banner warning";
+        banner.innerHTML = `<i data-lucide="alert-triangle"></i> <div><strong>Pendência de Documentos (${compliance.attachedCount}/4)</strong>: Anexe os ${4 - compliance.attachedCount} documento(s) restantes para poder enviar o contrato.</div>`;
+      }
+
+      if (!client.documentos_obrigatorios) {
+        client.documentos_obrigatorios = {};
+      }
+
+      slotsContainer.innerHTML = MANDATORY_DOC_TYPES.map(docType => {
+        const docState = client.documentos_obrigatorios[docType.key] || { anexado: false, arquivo_nome: null };
+        const isAttached = docState.anexado;
+
+        return `
+          <div class="mandatory-doc-slot ${isAttached ? 'attached' : ''}">
+            <div class="doc-slot-left">
+              <div class="doc-slot-icon-box">
+                <i data-lucide="${docType.icon}"></i>
+              </div>
+              <div class="doc-slot-info">
+                <div class="doc-slot-title">
+                  ${docType.title}
+                  ${isAttached ? '<span style="color:#10b981; font-size:0.75rem; font-weight:800;">✓ Anexado</span>' : '<span style="color:#ef4444; font-size:0.75rem; font-weight:800;">• Pendente</span>'}
+                </div>
+                <div class="doc-slot-desc">${docType.description}</div>
+                ${isAttached ? `<div class="doc-file-meta"><i data-lucide="paperclip"></i> ${docState.arquivo_nome || 'Arquivo anexado'}</div>` : ''}
+              </div>
+            </div>
+
+            <div class="doc-slot-actions">
+              ${isAttached ? `
+                <button type="button" class="btn-upload-doc-slot" style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1;" data-view-doc="${docType.key}">
+                  <i data-lucide="eye"></i> Ver
+                </button>
+                <button type="button" class="btn-delete-doc-slot" data-remove-doc="${docType.key}" title="Remover Documento">
+                  <i data-lucide="trash-2"></i>
+                </button>
+              ` : `
+                <label class="btn-upload-doc-slot">
+                  <i data-lucide="upload-cloud"></i> Anexar
+                  <input type="file" accept="${docType.accept}" style="display:none;" data-upload-doc="${docType.key}" />
+                </label>
+              `}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      if (window.lucide) window.lucide.createIcons();
+
+      // Attach file input listeners
+      slotsContainer.querySelectorAll("[data-upload-doc]").forEach(input => {
+        input.onchange = (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const key = input.dataset.uploadDoc;
+          if (!client.documentos_obrigatorios) client.documentos_obrigatorios = {};
+
+          client.documentos_obrigatorios[key] = {
+            anexado: true,
+            arquivo_nome: file.name,
+            data_upload: new Date().toISOString()
+          };
+
+          // Save updated client list
+          const list = getClosedClientsList();
+          const idx = list.findIndex(c => c.id === client.id);
+          if (idx !== -1) list[idx] = client;
+          saveClosedClientsList(list);
+
+          renderModalContent();
+          renderClosedClientsTab();
+        };
+      });
+
+      // View button click
+      slotsContainer.querySelectorAll("[data-view-doc]").forEach(btn => {
+        btn.onclick = () => {
+          const key = btn.dataset.viewDoc;
+          const docState = client.documentos_obrigatorios[key];
+          alert(`📄 Documento '${docState.arquivo_nome}' anexado com sucesso.`);
+        };
+      });
+
+      // Remove button click
+      slotsContainer.querySelectorAll("[data-remove-doc]").forEach(btn => {
+        btn.onclick = () => {
+          const key = btn.dataset.removeDoc;
+          if (!confirm("Deseja realmente remover este documento anexado?")) return;
+          client.documentos_obrigatorios[key] = { anexado: false, arquivo_nome: null, data_upload: null };
+
+          const list = getClosedClientsList();
+          const idx = list.findIndex(c => c.id === client.id);
+          if (idx !== -1) list[idx] = client;
+          saveClosedClientsList(list);
+
+          renderModalContent();
+          renderClosedClientsTab();
+        };
+      });
+    }
+
+    renderModalContent();
+    modal.style.display = "flex";
+
+    document.getElementById("btn-close-docs-modal").onclick = () => { modal.style.display = "none"; };
+    document.getElementById("btn-finish-docs-modal").onclick = () => { modal.style.display = "none"; };
+  }
 })();
+

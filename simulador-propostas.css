@@ -2085,3 +2085,204 @@ select.simulador-input option {
   color: #FFFFFF;
 }
 
+/* --- DOCUMENTOS OBRIGATÓRIOS DO CONTRATO --- */
+.doc-badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.doc-badge-status.ready {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.doc-badge-status.warning {
+  background: rgba(239, 68, 68, 0.12);
+  color: #DC2626;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.doc-badge-status svg,
+.doc-badge-status i {
+  width: 14px !important;
+  height: 14px !important;
+  color: inherit !important;
+}
+
+.btn-closed-action.docs {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563EB;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.btn-closed-action.docs:hover {
+  background: #2563EB;
+  color: #FFFFFF;
+}
+
+/* Compliance Banner inside Modal */
+.compliance-banner {
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.compliance-banner.success {
+  background: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  color: #166534;
+}
+
+.compliance-banner.warning {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #991B1B;
+}
+
+.compliance-banner svg,
+.compliance-banner i {
+  width: 20px !important;
+  height: 20px !important;
+  color: inherit !important;
+  flex-shrink: 0;
+}
+
+/* Mandatory Document Slots */
+.mandatory-doc-slot {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  transition: all 0.2s ease;
+}
+
+.mandatory-doc-slot.attached {
+  background: #FFFFFF;
+  border-color: #BBF7D0;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.06);
+}
+
+.doc-slot-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.doc-slot-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #64748B;
+}
+
+.mandatory-doc-slot.attached .doc-slot-icon-box {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #10B981;
+}
+
+.doc-slot-icon-box svg,
+.doc-slot-icon-box i {
+  width: 20px !important;
+  height: 20px !important;
+  color: inherit !important;
+}
+
+.doc-slot-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.doc-slot-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doc-slot-desc {
+  font-size: 0.78rem;
+  color: #64748B;
+}
+
+.doc-file-meta {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #059669;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.doc-file-meta svg,
+.doc-file-meta i {
+  width: 12px !important;
+  height: 12px !important;
+  color: inherit !important;
+}
+
+.doc-slot-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-upload-doc-slot {
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-upload-doc-slot:hover {
+  background: #D8B34A;
+  color: #050505;
+}
+
+.btn-delete-doc-slot {
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  cursor: pointer;
+}
+
+.btn-delete-doc-slot:hover {
+  background: #EF4444;
+  color: #FFFFFF;
+}
+
