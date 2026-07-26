@@ -836,16 +836,35 @@
 
     container.innerHTML = `
       <div class="pf-wrapper">
-        <div class="pf-header-bar" style="position:sticky; top:0; z-index:100; background:rgba(0,0,0,0.97); backdrop-filter:blur(10px); padding:16px 0; margin-bottom:24px; border-bottom:2px solid #C9A84C; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
-          <div>
-            <span class="eyebrow" style="font-weight:700; color:#d4af37; font-size:0.75rem; text-transform:uppercase;">Montagem da Proposta Comercial</span>
-            <h2 style="margin:4px 0 0; font-size:1.4rem; color:#C9A84C; font-weight:800;">Proposta Final — Protocolo ${protocolNumber}</h2>
+        <div class="pf-header-bar">
+          <div class="pf-header-brand-info">
+            <div class="pf-header-icon-box">
+              <i data-lucide="file-badge" style="width:24px; height:24px; color:#D8B34A;" aria-hidden="true"></i>
+            </div>
+            <div class="pf-header-vdivider"></div>
+            <div class="pf-header-text-block">
+              <span class="pf-header-eyebrow">MONTAGEM DA PROPOSTA COMERCIAL</span>
+              <div class="pf-header-title-row">
+                <h2 class="pf-header-main-title">Proposta Final</h2>
+                <span class="pf-header-dash">—</span>
+                <span class="pf-header-protocol">Protocolo <strong class="pf-protocol-num">${protocolNumber}</strong></span>
+              </div>
+            </div>
           </div>
-          <div class="pf-action-buttons" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-            <button type="button" id="pf-btn-back" class="bordero-btn-secondary" style="padding:6px 12px; font-size:0.76rem; font-weight:700; border-radius:8px; display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.08); color:#ffffff; border:1px solid rgba(255,255,255,0.2);"><i data-lucide="arrow-left" style="width:14px; height:14px;"></i> Voltar à Simulação</button>
-            <button type="button" id="pf-btn-draft" class="bordero-btn-secondary" style="padding:6px 12px; font-size:0.76rem; font-weight:700; border-radius:8px; display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.08); color:#ffffff; border:1px solid rgba(255,255,255,0.2);"><i data-lucide="save" style="width:14px; height:14px;"></i> Salvar Rascunho</button>
-            <button type="button" id="pf-btn-pdf" class="bordero-btn-primary" style="padding:6px 12px; font-size:0.76rem; font-weight:700; border-radius:8px; background:#000000; color:#C9A84C; border:1px solid #C9A84C; display:inline-flex; align-items:center; gap:6px;"><i data-lucide="file-text" style="width:14px; height:14px;"></i> Gerar PDF</button>
-            <button type="button" id="pf-btn-print" class="bordero-btn-primary" style="padding:6px 12px; font-size:0.76rem; font-weight:800; border-radius:8px; background:#C9A84C; color:#000000; display:inline-flex; align-items:center; gap:6px;"><i data-lucide="printer" style="width:14px; height:14px;"></i> Imprimir Proposta</button>
+
+          <div class="pf-action-buttons">
+            <button type="button" id="pf-btn-back" class="pf-btn-dark-secondary">
+              <i data-lucide="arrow-left" class="pf-btn-icon-gold"></i> Voltar à Simulação
+            </button>
+            <button type="button" id="pf-btn-draft" class="pf-btn-dark-secondary">
+              <i data-lucide="save" class="pf-btn-icon-gold"></i> Salvar Rascunho
+            </button>
+            <button type="button" id="pf-btn-pdf" class="pf-btn-outline-gold">
+              <i data-lucide="file-text" class="pf-btn-icon-gold"></i> Gerar PDF
+            </button>
+            <button type="button" id="pf-btn-print" class="pf-btn-primary-gold">
+              <i data-lucide="printer" class="pf-btn-icon-black"></i> Imprimir Proposta
+            </button>
           </div>
         </div>
 

@@ -900,27 +900,210 @@ select.simulador-input option {
   }
 }
 
+/* Header Bar Proposta Final (Reformulação Visual Fiel à Referência) */
 .pf-header-bar {
   position: sticky !important;
   top: 0 !important;
   z-index: 100 !important;
-  background: rgba(0, 0, 0, 0.97) !important;
-  backdrop-filter: blur(10px);
-  padding: 14px 0 !important;
+  background: #080808 !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-bottom: 2.5px solid #D8B34A !important;
+  padding: 16px 24px !important;
   margin-bottom: 24px !important;
-  border-bottom: 2px solid #C9A84C !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 20px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-.pf-action-buttons button {
-  padding: 6px 12px !important;
-  font-size: 0.76rem !important;
-  border-radius: 8px !important;
+.pf-header-brand-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-.pf-action-buttons button svg {
-  width: 14px !important;
-  height: 14px !important;
+.pf-header-icon-box {
+  width: 52px;
+  height: 52px;
+  background: #121212;
+  border: 1.5px solid #D8B34A;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 10px rgba(216, 179, 74, 0.15);
+}
+
+.pf-header-vdivider {
+  width: 2px;
+  height: 38px;
+  background: #D8B34A;
+  flex-shrink: 0;
+  opacity: 0.8;
+  border-radius: 2px;
+}
+
+.pf-header-text-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pf-header-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #D8B34A;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pf-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pf-header-main-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.pf-header-dash {
+  color: #D8B34A;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.pf-header-protocol {
+  color: #B8B8B8;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.pf-protocol-num {
+  color: #FFFFFF;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Botões do Lado Direito */
+.pf-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pf-btn-dark-secondary {
+  height: 46px !important;
+  padding: 0 18px !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  background: #151515 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #353535 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.pf-btn-dark-secondary:hover {
+  background: #222222 !important;
+  border-color: #454545 !important;
+  transform: translateY(-1px) !important;
+}
+
+.pf-btn-outline-gold {
+  height: 46px !important;
+  padding: 0 18px !important;
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  background: #080808 !important;
+  color: #D8B34A !important;
+  border: 1.5px solid #D8B34A !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.pf-btn-outline-gold:hover {
+  background: rgba(216, 179, 74, 0.1) !important;
+  box-shadow: 0 0 14px rgba(216, 179, 74, 0.25) !important;
+  transform: translateY(-1px) !important;
+}
+
+.pf-btn-primary-gold {
+  height: 46px !important;
+  padding: 0 20px !important;
+  font-size: 0.88rem !important;
+  font-weight: 800 !important;
+  border-radius: 12px !important;
+  background: #E8B138 !important;
+  color: #050505 !important;
+  border: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 14px rgba(232, 177, 56, 0.35) !important;
+  transition: all 0.2s ease !important;
+}
+
+.pf-btn-primary-gold:hover {
+  background: #F0B940 !important;
+  box-shadow: 0 6px 18px rgba(232, 177, 56, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+.pf-btn-primary-gold:active {
+  transform: scale(0.98) !important;
+}
+
+.pf-btn-icon-gold {
+  width: 16px !important;
+  height: 16px !important;
+  color: #D8B34A !important;
+}
+
+.pf-btn-icon-black {
+  width: 18px !important;
+  height: 18px !important;
+  color: #050505 !important;
+}
+
+@media (max-width: 900px) {
+  .pf-header-bar {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+
+  .pf-action-buttons {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+
+  .pf-btn-primary-gold {
+    width: 100% !important;
+    justify-content: center !important;
+  }
 }
 
 /* Card 1: Dados do Cliente & Lance (Reformulação Visual) */
