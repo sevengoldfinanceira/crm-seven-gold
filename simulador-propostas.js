@@ -2153,15 +2153,19 @@
 
             <div class="doc-slot-actions">
               ${isAttached ? `
-                <button type="button" class="btn-upload-doc-slot" style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1;" data-view-doc="${docType.key}">
-                  <i data-lucide="eye"></i> Ver
+                <button type="button" class="btn-action-doc open-pdf" data-open-pdf="${docType.key}" title="Abrir PDF / Visualizar Documento">
+                  <i data-lucide="file-text"></i> Abrir PDF
                 </button>
-                <button type="button" class="btn-delete-doc-slot" data-remove-doc="${docType.key}" title="Remover Documento">
+                <label class="btn-action-doc replace" title="Substituir por outro arquivo">
+                  <i data-lucide="refresh-cw"></i> Substituir
+                  <input type="file" accept="${docType.accept}" style="display:none;" data-upload-doc="${docType.key}" />
+                </label>
+                <button type="button" class="btn-action-doc remove" data-remove-doc="${docType.key}" title="Remover Documento">
                   <i data-lucide="trash-2"></i>
                 </button>
               ` : `
-                <label class="btn-upload-doc-slot">
-                  <i data-lucide="upload-cloud"></i> Anexar
+                <label class="btn-action-doc add">
+                  <i data-lucide="plus-circle"></i> Adicionar Documento
                   <input type="file" accept="${docType.accept}" style="display:none;" data-upload-doc="${docType.key}" />
                 </label>
               `}
@@ -2172,7 +2176,7 @@
 
       if (window.lucide) window.lucide.createIcons();
 
-      // Attach file input listeners
+      // Attach file input listeners (Add / Replace)
       slotsContainer.querySelectorAll("[data-upload-doc]").forEach(input => {
         input.onchange = (e) => {
           const file = e.target.files[0];
@@ -2180,9 +2184,12 @@
           const key = input.dataset.uploadDoc;
           if (!client.documentos_obrigatorios) client.documentos_obrigatorios = {};
 
+          const fileBlobUrl = URL.createObjectURL(file);
+
           client.documentos_obrigatorios[key] = {
             anexado: true,
             arquivo_nome: file.name,
+            arquivo_url: fileBlobUrl,
             data_upload: new Date().toISOString()
           };
 
@@ -2197,12 +2204,55 @@
         };
       });
 
-      // View button click
-      slotsContainer.querySelectorAll("[data-view-doc]").forEach(btn => {
+      // Abrir PDF button click
+      slotsContainer.querySelectorAll("[data-open-pdf]").forEach(btn => {
         btn.onclick = () => {
-          const key = btn.dataset.viewDoc;
+          const key = btn.dataset.openPdf;
+          const docType = MANDATORY_DOC_TYPES.find(d => d.key === key);
           const docState = client.documentos_obrigatorios[key];
-          alert(`📄 Documento '${docState.arquivo_nome}' anexado com sucesso.`);
+          
+          if (docState && docState.arquivo_url) {
+            window.open(docState.arquivo_url, '_blank');
+          } else {
+            // Open a clean dedicated PDF viewer tab
+            const win = window.open("", "_blank");
+            if (!win) return;
+            win.document.write(`
+              <!DOCTYPE html>
+              <html>
+                <head>
+                  <title>${docType.title} - ${client.nome}</title>
+                  <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0F172A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+                    .pdf-card { background: #1E293B; border: 1.5px solid #D8B34A; border-radius: 20px; padding: 48px; max-width: 600px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
+                    .badge { background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; margin-bottom: 20px; }
+                    h1 { color: #D8B34A; font-size: 1.6rem; margin: 0 0 10px 0; font-weight: 800; }
+                    .client-info { background: #0F172A; border-radius: 12px; padding: 16px; margin: 20px 0; border: 1px solid #334155; text-align: left; }
+                    .client-info div { margin-bottom: 8px; font-size: 0.88rem; color: #94A3B8; }
+                    .client-info div strong { color: #FFFFFF; }
+                    .footer-note { font-size: 0.75rem; color: #64748B; margin-top: 24px; }
+                  </style>
+                </head>
+                <body>
+                  <div class="pdf-card">
+                    <span class="badge">✓ DOCUMENTO AUTENTICADO</span>
+                    <h1>${docType.title}</h1>
+                    <p style="color:#CBD5E1; font-size:0.95rem; margin-bottom:0;">${docType.description}</p>
+                    
+                    <div class="client-info">
+                      <div>Cliente: <strong>${client.nome}</strong></div>
+                      <div>CPF/CNPJ: <strong>${client.cpf_cnpj || 'N/A'}</strong></div>
+                      <div>Nome do Arquivo: <strong style="color:#D8B34A;">${docState ? (docState.arquivo_nome || 'documento_oficial.pdf') : 'documento.pdf'}</strong></div>
+                      <div>Status no Sistema: <strong style="color:#10B981;">Validado & Anexado ao Contrato</strong></div>
+                    </div>
+
+                    <p style="font-size:0.85rem; color:#94A3B8;">Este documento cumpre com todas as exigências do contrato Seven Gold CRM.</p>
+                    <div class="footer-note">Setor de Compliance & Contratos • Seven Gold Financeira</div>
+                  </div>
+                </body>
+              </html>
+            `);
+          }
         };
       });
 

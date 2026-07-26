@@ -2245,16 +2245,59 @@ select.simulador-input option {
   color: inherit !important;
 }
 
-.doc-slot-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
+/* Modal Overlay Centralizado */
+.modal-overlay-closed-client {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(5, 5, 5, 0.75) !important;
+  backdrop-filter: blur(6px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 99999 !important;
+  animation: fadeIn 0.2s ease !important;
 }
 
-.btn-upload-doc-slot {
-  background: #0F172A;
-  color: #FFFFFF;
+.modal-card-closed-client {
+  background: #FFFFFF !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(216, 179, 74, 0.3) !important;
+  width: 90% !important;
+  max-width: 780px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4) !important;
+  overflow: hidden !important;
+  animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.modal-header-closed-client {
+  padding: 18px 24px !important;
+  background: #F8FAFC !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.modal-close-btn {
+  background: transparent !important;
+  border: none !important;
+  font-size: 1.6rem !important;
+  color: #64748B !important;
+  cursor: pointer !important;
+  line-height: 1 !important;
+}
+
+.modal-close-btn:hover {
+  color: #EF4444 !important;
+}
+
+/* Action Buttons inside Document Slots */
+.btn-action-doc {
   padding: 8px 14px;
   border-radius: 8px;
   font-size: 0.78rem;
@@ -2265,23 +2308,49 @@ select.simulador-input option {
   gap: 6px;
   border: none;
   transition: all 0.2s ease;
+  user-select: none;
 }
 
-.btn-upload-doc-slot:hover {
+.btn-action-doc.add {
+  background: #0F172A;
+  color: #FFFFFF;
+}
+
+.btn-action-doc.add:hover {
   background: #D8B34A;
   color: #050505;
 }
 
-.btn-delete-doc-slot {
-  background: rgba(239, 68, 68, 0.1);
-  color: #EF4444;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  cursor: pointer;
+.btn-action-doc.open-pdf {
+  background: #D8B34A;
+  color: #050505;
+  box-shadow: 0 2px 8px rgba(216, 179, 74, 0.25);
 }
 
-.btn-delete-doc-slot:hover {
+.btn-action-doc.open-pdf:hover {
+  background: #E8B138;
+  transform: translateY(-1px);
+}
+
+.btn-action-doc.replace {
+  background: #F1F5F9;
+  color: #334155;
+  border: 1px solid #CBD5E1;
+}
+
+.btn-action-doc.replace:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+
+.btn-action-doc.remove {
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 8px 10px;
+}
+
+.btn-action-doc.remove:hover {
   background: #EF4444;
   color: #FFFFFF;
 }
