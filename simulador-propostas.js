@@ -735,7 +735,7 @@
 
             <div class="proposal-spec-item">
               <i data-lucide="credit-card" class="proposal-spec-icon"></i>
-              <span>Entrada / 1ª Parcela</span>
+              <span>Entrada (Adesão)</span>
               <strong style="color:#050505;">${formatCurrency(p.first_installment)}</strong>
             </div>
 
@@ -1017,7 +1017,7 @@
                     <i data-lucide="credit-card" style="width:20px; height:20px; color:#D8B34A;" aria-hidden="true"></i>
                   </div>
                   <div class="pf-summary-item-content">
-                    <span class="pf-summary-label">ENTRADA / 1ª PARCELA</span>
+                    <span class="pf-summary-label">ENTRADA (ADESÃO)</span>
                     <strong class="pf-summary-value pf-val-dark">${firstInstFormatted}</strong>
                   </div>
                 </div>
@@ -1258,7 +1258,7 @@
                 <td style="padding:13px 18px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:10px;">
                     <i data-lucide="coins" style="width:16px; height:16px; color:#B98220;"></i>
-                    <span>Entrada / 1ª Parcela (Adesão)</span>
+                    <span>Entrada (Adesão)</span>
                   </div>
                 </td>
                 <td style="padding:13px 18px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#050505; font-size:0.96rem;">${firstInstFormatted}</td>
