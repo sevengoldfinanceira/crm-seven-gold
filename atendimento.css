@@ -162,8 +162,8 @@ body { font-family: Inter, sans-serif; background: var(--page); color: var(--ink
   gap: 24px;
   padding: 24px 30px;
   border-radius: 16px;
-  background: linear-gradient(135deg, #000000 0%, #121017 100%);
-  border: 1px solid rgba(232, 177, 56, 0.4);
+  background: linear-gradient(135deg, #000000 0%, #0A0A0A 50%, #111111 100%);
+  border: 1px solid #C9A84C;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   color: #FFFFFF;
 }
