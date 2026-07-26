@@ -1165,3 +1165,216 @@ select.simulador-input option {
   user-select: none;
 }
 
+/* Card 2: Resumo Automático da Cota (Reformulação Visual) */
+.pf-summary-card {
+  background: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pf-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pf-summary-header-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.pf-summary-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.01em;
+}
+
+.pf-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.pf-summary-item {
+  background: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.pf-summary-item:hover {
+  transform: translateY(-2px);
+  border-color: #D4D4D8;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+
+.pf-summary-item-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #FFFDF7;
+  border: 1px solid rgba(216, 179, 74, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pf-summary-item-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.pf-summary-label {
+  font-size: 0.70rem;
+  font-weight: 700;
+  color: #667085;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+}
+
+.pf-summary-value {
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.pf-val-dark {
+  color: #050505;
+}
+
+.pf-val-gold {
+  color: #D8B34A;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.pf-val-blue {
+  color: #2563EB;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.pf-val-green {
+  color: #059669;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+/* Área do Consultor Responsável */
+.pf-summary-consultant-box {
+  background: #FFFDF7;
+  border: 1px solid rgba(216, 179, 74, 0.35);
+  border-radius: 16px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.pf-summary-consultant-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 1.5px solid #D8B34A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pf-summary-consultant-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pf-summary-consultant-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #D8B34A;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pf-summary-consultant-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #050505;
+}
+
+.pf-summary-consultant-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  color: #667085;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.pf-consultant-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pf-meta-divider {
+  color: #D8B34A;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .pf-summary-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .pf-summary-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .pf-summary-consultant-box {
+    padding: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .pf-summary-consultant-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .pf-meta-divider {
+    display: none;
+  }
+}
+

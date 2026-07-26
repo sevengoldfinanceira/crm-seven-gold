@@ -962,45 +962,114 @@
               </form>
             </div>
 
-            <!-- Card 2: Live Summary -->
-            <div class="pf-summary-card" style="background:#ffffff; border:1px solid #e7e1eb; border-radius:16px; padding:24px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
-              <h3 style="margin:0 0 16px; font-size:1.1rem; color:#150126; display:flex; align-items:center; gap:8px;"><i data-lucide="file-badge" style="color:#e8b138; width:20px;"></i> Resumo Automático da Cota</h3>
-              
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:0.85rem;">
-                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                  <span style="color:#6f6878; font-size:0.72rem; display:block;">ADMINISTRADORA</span>
-                  <strong style="color:#150126;">Alpha Administradora de Consórcio Ltda.</strong>
+            <!-- Card 2: Resumo Automático da Cota -->
+            <div class="pf-summary-card">
+              <div class="pf-summary-header">
+                <div class="pf-summary-header-icon">
+                  <i data-lucide="file-badge" style="width:22px; height:22px; color:#D8B34A;"></i>
                 </div>
-                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                  <span style="color:#6f6878; font-size:0.72rem; display:block;">PLANO / TABELA</span>
-                  <strong style="color:#150126;">${proposal.product_name || 'AUTOCON PRIME'}</strong>
+                <h3 class="pf-summary-title">Resumo Automático da Cota</h3>
+              </div>
+
+              <div class="pf-summary-grid">
+                <!-- Administradora -->
+                <div class="pf-summary-item">
+                  <div class="pf-summary-item-icon-box">
+                    <i data-lucide="building-2" style="width:20px; height:20px; color:#D8B34A;" aria-hidden="true"></i>
+                  </div>
+                  <div class="pf-summary-item-content">
+                    <span class="pf-summary-label">ADMINISTRADORA</span>
+                    <strong class="pf-summary-value pf-val-dark">Alpha Administradora de Consórcio Ltda.</strong>
+                  </div>
                 </div>
-                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                  <span style="color:#6f6878; font-size:0.72rem; display:block;">CRÉDITO / BEM</span>
-                  <strong style="color:#150126; font-size:1rem; font-weight:800;">${creditFormatted}</strong>
+
+                <!-- Plano / Tabela -->
+                <div class="pf-summary-item">
+                  <div class="pf-summary-item-icon-box">
+                    <i data-lucide="table" style="width:20px; height:20px; color:#D8B34A;" aria-hidden="true"></i>
+                  </div>
+                  <div class="pf-summary-item-content">
+                    <span class="pf-summary-label">PLANO / TABELA</span>
+                    <strong class="pf-summary-value pf-val-dark" title="${proposal.product_name || 'AUTOCON PRIME'}">${proposal.product_name || 'AUTOCON PRIME'}</strong>
+                  </div>
                 </div>
-                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                  <span style="color:#6f6878; font-size:0.72rem; display:block;">ENTRADA / 1ª PARCELA</span>
-                  <strong style="color:#150126;">${firstInstFormatted}</strong>
+
+                <!-- Crédito / Bem -->
+                <div class="pf-summary-item">
+                  <div class="pf-summary-item-icon-box">
+                    <i data-lucide="dollar-sign" style="width:20px; height:20px; color:#D8B34A;" aria-hidden="true"></i>
+                  </div>
+                  <div class="pf-summary-item-content">
+                    <span class="pf-summary-label">CRÉDITO / BEM</span>
+                    <strong class="pf-summary-value pf-val-gold">${creditFormatted}</strong>
+                  </div>
                 </div>
-                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                  <span style="color:#6f6878; font-size:0.72rem; display:block;">PARCELA INTEGRAL (100%)</span>
-                  <strong style="color:#1d4ed8;">${finalInstFormatted}</strong>
+
+                <!-- Entrada / 1ª Parcela -->
+                <div class="pf-summary-item">
+                  <div class="pf-summary-item-icon-box">
+                    <i data-lucide="credit-card" style="width:20px; height:20px; color:#D8B34A;" aria-hidden="true"></i>
+                  </div>
+                  <div class="pf-summary-item-content">
+                    <span class="pf-summary-label">ENTRADA / 1ª PARCELA</span>
+                    <strong class="pf-summary-value pf-val-dark">${firstInstFormatted}</strong>
+                  </div>
                 </div>
-                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                  <span style="color:#6f6878; font-size:0.72rem; display:block;">PARCELA REDUZIDA (50%)</span>
-                  <strong style="color:#059669;">${halfInstFormatted}</strong>
+
+                <!-- Parcela Integral -->
+                <div class="pf-summary-item">
+                  <div class="pf-summary-item-icon-box">
+                    <i data-lucide="pie-chart" style="width:20px; height:20px; color:#D8B34A;" aria-hidden="true"></i>
+                  </div>
+                  <div class="pf-summary-item-content">
+                    <span class="pf-summary-label">PARCELA INTEGRAL (100%)</span>
+                    <strong class="pf-summary-value pf-val-blue">${finalInstFormatted}</strong>
+                  </div>
                 </div>
-                <div style="background:#f7f6f8; padding:10px 14px; border-radius:10px;">
-                  <span style="color:#6f6878; font-size:0.72rem; display:block;">PRAZO TOTAL</span>
-                  <strong style="color:#150126;">${formatTermMonthsYears(proposal.total_term_months)}</strong>
+
+                <!-- Parcela Reduzida -->
+                <div class="pf-summary-item">
+                  <div class="pf-summary-item-icon-box">
+                    <i data-lucide="trending-down" style="width:20px; height:20px; color:#D8B34A;" aria-hidden="true"></i>
+                  </div>
+                  <div class="pf-summary-item-content">
+                    <span class="pf-summary-label">PARCELA REDUZIDA (50%)</span>
+                    <strong class="pf-summary-value pf-val-green">${halfInstFormatted}</strong>
+                  </div>
+                </div>
+
+                <!-- Prazo Total -->
+                <div class="pf-summary-item">
+                  <div class="pf-summary-item-icon-box">
+                    <i data-lucide="calendar" style="width:20px; height:20px; color:#D8B34A;" aria-hidden="true"></i>
+                  </div>
+                  <div class="pf-summary-item-content">
+                    <span class="pf-summary-label">PRAZO TOTAL</span>
+                    <strong class="pf-summary-value pf-val-dark">${formatTermMonthsYears(proposal.total_term_months)}</strong>
+                  </div>
                 </div>
               </div>
 
-              <div style="margin-top:16px; background:rgba(232,177,56,0.1); border:1px solid rgba(232,177,56,0.3); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:6px;">
-                <span style="font-size:0.75rem; font-weight:800; color:#150126; text-transform:uppercase;">CONSULTOR RESPONSÁVEL</span>
-                <strong style="color:#150126; font-size:0.95rem;">${consultantName}</strong>
-                <span style="color:#6f6878; font-size:0.8rem;">${consultantEmail} • ${consultantRole}</span>
+              <!-- Consultor Responsável Box -->
+              <div class="pf-summary-consultant-box">
+                <div class="pf-summary-consultant-avatar">
+                  <i data-lucide="user" style="width:22px; height:22px; color:#D8B34A;" aria-hidden="true"></i>
+                </div>
+                <div class="pf-summary-consultant-info">
+                  <span class="pf-summary-consultant-tag">CONSULTOR RESPONSÁVEL</span>
+                  <strong class="pf-summary-consultant-name">${consultantName}</strong>
+                  <div class="pf-summary-consultant-meta">
+                    <span class="pf-consultant-meta-item">
+                      <i data-lucide="mail" style="width:14px; height:14px; color:#D8B34A;" aria-hidden="true"></i>
+                      <span>${consultantEmail}</span>
+                    </span>
+                    <span class="pf-meta-divider">•</span>
+                    <span class="pf-consultant-meta-item">
+                      <i data-lucide="briefcase" style="width:14px; height:14px; color:#D8B34A;" aria-hidden="true"></i>
+                      <span>${consultantRole}</span>
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
