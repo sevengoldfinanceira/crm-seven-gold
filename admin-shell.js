@@ -78,13 +78,6 @@
           .join("")}
       </nav>
       <div class="empresa-topbar-actions">
-        <button class="topbar-action-btn notification-trigger" type="button" title="Notificações">
-          <i data-lucide="bell"></i>
-          <span class="notification-badge">3</span>
-        </button>
-        <button class="topbar-action-btn chat-trigger" type="button" title="Chat/Mensagens">
-          <i data-lucide="message-square"></i>
-        </button>
         <a href="perfil.html?area=empresa" class="empresa-topbar-profile" title="Perfil">
           <span class="empresa-topbar-avatar" data-user-avatar>U</span>
           <span class="empresa-topbar-user">
