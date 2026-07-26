@@ -981,17 +981,6 @@
                   </div>
                 </div>
 
-                <!-- Plano / Tabela -->
-                <div class="pf-summary-item">
-                  <div class="pf-summary-item-icon-box">
-                    <i data-lucide="table" style="width:20px; height:20px; color:#D8B34A;" aria-hidden="true"></i>
-                  </div>
-                  <div class="pf-summary-item-content">
-                    <span class="pf-summary-label">PLANO / TABELA</span>
-                    <strong class="pf-summary-value pf-val-dark" title="${proposal.product_name || 'AUTOCON PRIME'}">${proposal.product_name || 'AUTOCON PRIME'}</strong>
-                  </div>
-                </div>
-
                 <!-- Crédito / Bem -->
                 <div class="pf-summary-item">
                   <div class="pf-summary-item-icon-box">
