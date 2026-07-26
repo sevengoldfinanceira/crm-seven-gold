@@ -119,12 +119,53 @@
         </section>
       </div>
     </main>
+
+    <!-- Overlay de Transição Animada de 1 Segundo -->
+    <div id="sg-module-transition-overlay" class="sg-transition-overlay" aria-hidden="true">
+      <div class="sg-transition-content">
+        <div class="sg-transition-logo-wrapper">
+          <img src="assets/icons/seven-gold-logo-completa.png?v=ms1b2b9a" alt="Seven Gold Financeira" class="sg-transition-logo" />
+        </div>
+        <div class="sg-transition-status">
+          <span class="sg-transition-kicker">CARREGANDO AMBIENTE</span>
+          <h3 id="sg-transition-title" class="sg-transition-title">Acessando Módulo...</h3>
+        </div>
+        <div class="sg-transition-progress-bar">
+          <div class="sg-transition-progress-fill"></div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=ms1b400z"></script>
     <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
     <script>
       lucide.createIcons();
+
+      // Animação Perceptível de 1 Segundo para os 4 Módulos
+      document.querySelectorAll('.premium-access-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          e.preventDefault();
+          const href = card.getAttribute('href');
+          const titleEl = card.querySelector('.card-title');
+          const titleText = titleEl ? titleEl.textContent.trim() : 'Módulo';
+
+          const overlay = document.getElementById('sg-module-transition-overlay');
+          const statusTitle = document.getElementById('sg-transition-title');
+
+          if (overlay && statusTitle) {
+            statusTitle.textContent = `Acessando ${titleText}...`;
+            overlay.classList.add('active');
+
+            setTimeout(() => {
+              window.location.href = href;
+            }, 1000);
+          } else {
+            window.location.href = href;
+          }
+        });
+      });
     </script>
     <script src="/pwa.js"></script>
   </body>
