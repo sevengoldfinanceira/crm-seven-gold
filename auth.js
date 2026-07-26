@@ -718,62 +718,85 @@
 
 // Animação Global de 1 Segundo para Entrada & Retorno dos Módulos aos Painéis
 function setupGlobalModuleTransitions() {
-  let overlay = document.getElementById("sg-module-transition-overlay");
-  if (!overlay) {
-    overlay = document.createElement("div");
-    overlay.id = "sg-module-transition-overlay";
-    overlay.className = "sg-transition-overlay";
-    overlay.setAttribute("aria-hidden", "true");
-    overlay.innerHTML = `
-      <div class="sg-transition-content">
-        <div class="sg-transition-logo-wrapper">
-          <img src="assets/icons/seven-gold-logo-completa.png" alt="Seven Gold Financeira" class="sg-transition-logo" />
+  const ensureOverlay = () => {
+    let overlay = document.getElementById("sg-module-transition-overlay");
+    if (!overlay && document.body) {
+      overlay = document.createElement("div");
+      overlay.id = "sg-module-transition-overlay";
+      overlay.className = "sg-transition-overlay";
+      overlay.setAttribute("aria-hidden", "true");
+      overlay.innerHTML = `
+        <div class="sg-transition-content">
+          <div class="sg-transition-logo-wrapper">
+            <img src="assets/icons/seven-gold-logo-completa.png" alt="Seven Gold Financeira" class="sg-transition-logo" />
+          </div>
+          <div class="sg-transition-status">
+            <span class="sg-transition-kicker">CARREGANDO AMBIENTE</span>
+            <h3 id="sg-transition-title" class="sg-transition-title">Acessando...</h3>
+          </div>
+          <div class="sg-transition-progress-bar">
+            <div class="sg-transition-progress-fill"></div>
+          </div>
         </div>
-        <div class="sg-transition-status">
-          <span class="sg-transition-kicker">CARREGANDO AMBIENTE</span>
-          <h3 id="sg-transition-title" class="sg-transition-title">Acessando...</h3>
-        </div>
-        <div class="sg-transition-progress-bar">
-          <div class="sg-transition-progress-fill"></div>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(overlay);
+      `;
+      document.body.appendChild(overlay);
+    }
+    return overlay;
+  };
+
+  const initArrivalTransition = () => {
+    const overlay = ensureOverlay();
+    const currentPage = getCurrentPage();
+
+    if ((currentPage === "painel.html" || currentPage === "painel") && sessionStorage.getItem("sg_returning_from_module") === "true") {
+      sessionStorage.removeItem("sg_returning_from_module");
+      const statusTitle = document.getElementById("sg-transition-title");
+      if (statusTitle) statusTitle.textContent = "Retornando aos Painéis...";
+      if (overlay) overlay.classList.add("active");
+
+      setTimeout(() => {
+        if (overlay) overlay.classList.remove("active");
+      }, 1000);
+    }
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initArrivalTransition);
+  } else {
+    initArrivalTransition();
   }
 
-  const currentPage = getCurrentPage();
-
-  // Caso esteja abrindo/retornando ao painel.html via clique de retorno
-  if ((currentPage === "painel.html" || currentPage === "painel") && sessionStorage.getItem("sg_returning_from_module") === "true") {
-    sessionStorage.removeItem("sg_returning_from_module");
-    const statusTitle = document.getElementById("sg-transition-title");
-    if (statusTitle) statusTitle.textContent = "Retornando aos Painéis...";
-    overlay.classList.add("active");
-
-    // Revelação Reversa: oculta a transição de forma fluida ao chegar no Painel após 1s
-    setTimeout(() => {
-      overlay.classList.remove("active");
-    }, 1000);
-  }
-
-  // Intercepta todos os cliques nos botões/links de retorno ao painel.html
+  // Intercepta todos os cliques nos botões/links de retorno ao painel.html (fase de captura)
   document.addEventListener("click", (e) => {
-    const link = e.target.closest('a[href*="painel.html"], .sidebar-panels-link, .empresa-topbar-panels');
+    const link = e.target.closest('a[href*="painel.html"], .sidebar-panels-link, .empresa-topbar-panels, [href="painel.html"]');
     if (!link) return;
 
     const href = link.getAttribute("href") || "painel.html";
     if (!href || href === "#") return;
 
     e.preventDefault();
+    e.stopPropagation();
 
     sessionStorage.setItem("sg_returning_from_module", "true");
+
+    const overlay = ensureOverlay();
     const statusTitle = document.getElementById("sg-transition-title");
     if (statusTitle) statusTitle.textContent = "Retornando aos Painéis...";
 
-    overlay.classList.add("active");
+    if (overlay) {
+      const fill = overlay.querySelector(".sg-transition-progress-fill");
+      if (fill) {
+        fill.style.animation = "none";
+        void fill.offsetWidth;
+        fill.style.animation = "";
+      }
+      overlay.classList.add("active");
+    }
 
     setTimeout(() => {
       window.location.href = href;
     }, 1000);
-  });
+  }, true);
 }
+
+setupGlobalModuleTransitions();
