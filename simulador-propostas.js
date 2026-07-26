@@ -2071,7 +2071,21 @@
           documentos_obrigatorios: row.documentos_obrigatorios || {},
           proposal_config: row.proposal_config || null
         }));
-        saveClosedClientsList(supabaseClients);
+
+        // Merge: retain all local proposals and overlay Supabase updates without discarding newly created local items
+        const localList = getClosedClientsList();
+        const mergedList = [...localList];
+
+        supabaseClients.forEach(sbClient => {
+          const idx = mergedList.findIndex(l => String(l.id) === String(sbClient.id));
+          if (idx !== -1) {
+            mergedList[idx] = { ...mergedList[idx], ...sbClient };
+          } else {
+            mergedList.push(sbClient);
+          }
+        });
+
+        saveClosedClientsList(mergedList);
         renderClosedClientsTab();
       }
     } catch (e) {
