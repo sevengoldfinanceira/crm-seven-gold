@@ -54,6 +54,14 @@
     const topbar = document.createElement("header");
     topbar.className = "empresa-topbar";
     topbar.innerHTML = `
+      <div class="sidebar-bubble-bg" aria-hidden="true">
+        <div class="sidebar-bubble"></div>
+        <div class="sidebar-bubble"></div>
+        <div class="sidebar-bubble"></div>
+        <div class="sidebar-bubble"></div>
+        <div class="sidebar-bubble"></div>
+        <div class="sidebar-bubble"></div>
+      </div>
       <a class="empresa-topbar-brand" href="empresa.html" aria-label="Seven Gold">
         <img src="assets/icons/seven-gold-g7.png?v=20260714" alt="" />
       </a>
