@@ -1089,11 +1089,8 @@
             <button type="button" id="pf-btn-save-system" class="pf-btn-dark-secondary">
               <i data-lucide="save" class="pf-btn-icon-gold"></i> Salvar no Sistema
             </button>
-            <button type="button" id="pf-btn-pdf" class="pf-btn-outline-gold">
-              <i data-lucide="file-text" class="pf-btn-icon-gold"></i> Gerar PDF
-            </button>
-            <button type="button" id="pf-btn-print" class="pf-btn-primary-gold">
-              <i data-lucide="printer" class="pf-btn-icon-black"></i> Imprimir Proposta
+            <button type="button" id="pf-btn-pdf" class="pf-btn-primary-gold">
+              <i data-lucide="file-text" class="pf-btn-icon-black"></i> Gerar PDF
             </button>
           </div>
         </div>
@@ -1877,14 +1874,6 @@
         }
       }
 
-      const oldTitle = document.title;
-      document.title = pdfTitle;
-      window.print();
-      setTimeout(() => { document.title = oldTitle; }, 1000);
-    });
-
-    document.getElementById('pf-btn-print')?.addEventListener('click', () => {
-      const pdfTitle = getFormattedPdfTitle();
       const oldTitle = document.title;
       document.title = pdfTitle;
       window.print();
