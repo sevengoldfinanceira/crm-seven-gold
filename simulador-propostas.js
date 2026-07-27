@@ -1850,41 +1850,37 @@
       if (!element) return;
       const pdfTitle = getFormattedPdfTitle();
 
-      if (window.html2canvas && (window.jspdf || window.jsPDF)) {
+      if (window.html2pdf) {
         try {
-          const canvas = await window.html2canvas(element, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            backgroundColor: '#ffffff'
+          const worker = window.html2pdf().from(element).set({
+            margin: 0,
+            filename: `${pdfTitle}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
           });
-          const imgData = canvas.toDataURL('image/jpeg', 0.98);
-          const JS = window.jspdf ? window.jspdf.jsPDF : window.jsPDF;
-          const pdf = new JS('portrait', 'mm', 'a4');
-          pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-          pdf.save(`${pdfTitle}.pdf`);
+
+          const pdf = await worker.toPdf().get('pdf');
+          if (pdf && pdf.internal) {
+            const totalPages = pdf.internal.getNumberOfPages();
+            if (totalPages > 1) {
+              for (let page = totalPages; page > 1; page--) {
+                pdf.deletePage(page);
+              }
+            }
+          }
+          await worker.save();
           return;
         } catch (e) {
-          console.warn("Fallback para html2pdf:", e);
+          console.warn("Erro no processamento do PDF:", e);
         }
       }
 
-      if (window.html2pdf) {
-        const opt = {
-          margin: 0,
-          filename: `${pdfTitle}.pdf`,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, logging: false },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-        };
-        window.html2pdf().from(element).set(opt).save();
-      } else {
-        const oldTitle = document.title;
-        document.title = pdfTitle;
-        window.print();
-        setTimeout(() => { document.title = oldTitle; }, 1000);
-      }
+      const oldTitle = document.title;
+      document.title = pdfTitle;
+      window.print();
+      setTimeout(() => { document.title = oldTitle; }, 1000);
     });
 
     document.getElementById('pf-btn-print')?.addEventListener('click', () => {
