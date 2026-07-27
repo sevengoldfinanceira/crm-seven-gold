@@ -1735,7 +1735,7 @@
       });
     });
 
-    document.getElementById('pf-btn-save-system')?.addEventListener('click', async () => {
+    const saveProposalAndNavigate = async (showAlert = false) => {
       try {
         const clientName = (document.getElementById('pf-client-name')?.value || 'Cliente Não Informado').trim();
         const clientCpf = (document.getElementById('pf-client-cpf')?.value || '').trim();
@@ -1808,7 +1808,9 @@
         // Async sync to Supabase database
         saveProposalToSupabase(updatedClientRecord);
 
-        alert(`✅ Todos os dados da proposta de "${clientName}" foram salvos no sistema e no Supabase!`);
+        if (showAlert) {
+          alert(`✅ Todos os dados da proposta de "${clientName}" foram salvos no sistema e no Supabase!`);
+        }
 
         // Switch to Clientes subtab in topbar
         const clientesNavBtn = document.querySelector('[data-subtab="clientes"]');
@@ -1829,8 +1831,11 @@
         }
       } catch (err) {
         console.error("Erro ao salvar proposta:", err);
-        alert("⚠️ Erro ao salvar a proposta no sistema. Por favor tente novamente.");
       }
+    };
+
+    document.getElementById('pf-btn-save-system')?.addEventListener('click', async () => {
+      await saveProposalAndNavigate(true);
     });
 
     // Helper to format document/print title: Proposta - Nome do Cliente - DD.MM
@@ -1868,6 +1873,9 @@
             }
           }
           await worker.save();
+
+          // Auto-save proposal into system & navigate to Clientes tab
+          await saveProposalAndNavigate(false);
           return;
         } catch (e) {
           console.warn("Erro no processamento do PDF:", e);
@@ -1878,6 +1886,9 @@
       document.title = pdfTitle;
       window.print();
       setTimeout(() => { document.title = oldTitle; }, 1000);
+
+      // Auto-save proposal into system & navigate to Clientes tab
+      await saveProposalAndNavigate(false);
     });
 
     if (window.lucide) window.lucide.createIcons();
