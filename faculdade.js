@@ -356,7 +356,7 @@
             </div>
           <div style="display: flex; align-items: center; gap: 10px;">
             <a href="painel.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #f8fafc; font-size: 0.78rem; font-weight: 700; text-decoration: none;">
-              <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+              <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
               <span>Voltar aos Painéis</span>
             </a>
             <button type="button" data-logout data-logout-redirect="index.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; color: #ef4444; font-size: 0.78rem; font-weight: 700; cursor: pointer;">
