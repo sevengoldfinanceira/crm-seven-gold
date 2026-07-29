@@ -169,10 +169,63 @@
     return total > 0 ? Math.round((completed / total) * 100) : 0;
   };
 
+  const escapeHtml = (value = "") => String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+  const stripHtml = (value = "") => String(value || "").replace(/<[^>]*>/g, " ");
+
+  const normalizeSearchText = (value = "") => String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, " ")
+    .trim()
+    .toLowerCase();
+
+  const getCourseSearchText = (course = {}) => normalizeSearchText([
+    course.id,
+    course.title,
+    course.description,
+    course.badge,
+    course.icon,
+    ...(course.modules || []).flatMap((module) => [
+      module.id,
+      module.title,
+      module.duration,
+      module.videoText,
+      stripHtml(module.content),
+    ]),
+  ].join(" "));
+
+  const getCourseMatchesSearch = (course = {}, query = "") => {
+    const normalizedQuery = normalizeSearchText(query);
+    return !normalizedQuery || getCourseSearchText(course).includes(normalizedQuery);
+  };
+
+  const getPendingModuleMatchesSearch = (item = {}, query = "") => {
+    const normalizedQuery = normalizeSearchText(query);
+    if (!normalizedQuery) return true;
+    const course = COURSES_DATA[item.courseId] || {};
+    const module = (course.modules || []).find((entry) => entry.id === item.moduleId) || {};
+    return normalizeSearchText([
+      item.courseId,
+      item.courseTitle,
+      item.courseBadge,
+      item.moduleId,
+      item.moduleTitle,
+      item.moduleDuration,
+      module.videoText,
+      stripHtml(module.content),
+    ].join(" ")).includes(normalizedQuery);
+  };
+
   let currentLmsSubTab = 'cursos';
   let currentCourseSearchQuery = '';
 
-  const renderDashboard = () => {
+  const renderDashboard = ({ focusSearch = false, selectionStart = null, selectionEnd = null } = {}) => {
     const lmsTab = document.querySelector('[data-tab="faculdade"]');
     if (!lmsTab) return;
 
@@ -208,16 +261,9 @@
     });
 
     // Filter courses based on search query
-    const filteredCourseIds = Object.keys(COURSES_DATA).filter(cId => {
-      if (!currentCourseSearchQuery.trim()) return true;
-      const q = currentCourseSearchQuery.trim().toLowerCase();
-      const c = COURSES_DATA[cId];
-      const matchTitle = (c.title || '').toLowerCase().includes(q);
-      const matchDesc = (c.description || '').toLowerCase().includes(q);
-      const matchBadge = (c.badge || '').toLowerCase().includes(q);
-      const matchModule = (c.modules || []).some(m => (m.title || '').toLowerCase().includes(q));
-      return matchTitle || matchDesc || matchBadge || matchModule;
-    });
+    const filteredCourseIds = Object.keys(COURSES_DATA).filter(cId => getCourseMatchesSearch(COURSES_DATA[cId], currentCourseSearchQuery));
+    const filteredPendingModulesList = pendingModulesList.filter(item => getPendingModuleMatchesSearch(item, currentCourseSearchQuery));
+    const safeSearchQuery = escapeHtml(currentCourseSearchQuery);
 
     let tabContentHTML = '';
 
@@ -227,7 +273,7 @@
         ${filteredCourseIds.length === 0 ? `
           <div style="background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.1); border-radius: 16px; padding: 40px; text-align: center; color: #94a3b8;">
             <i data-lucide="search-x" style="width:40px; height:40px; color:#d4af37; margin-bottom:12px;"></i>
-            <h3 style="margin:0; font-size:1.1rem; color:#fff;">Nenhum curso encontrado para "${currentCourseSearchQuery}"</h3>
+            <h3 style="margin:0; font-size:1.1rem; color:#fff;">Nenhum curso encontrado para "${safeSearchQuery}"</h3>
             <p style="margin:6px 0 16px; font-size:0.86rem;">Tente pesquisar com outros termos ou limpe o campo de busca.</p>
             <button type="button" id="faculdade-clear-search-btn" class="bordero-btn-secondary" style="padding: 8px 16px;">Limpar Pesquisa</button>
           </div>
@@ -316,16 +362,16 @@
       `;
     } else if (currentLmsSubTab === 'pendencias') {
       tabContentHTML = `
-        <h2 class="faculdade-courses-title"><i data-lucide="clock" style="color:#d4af37; width:20px;"></i> Aulas e Módulos Pendentes (${pendingModulesList.length})</h2>
-        ${pendingModulesList.length === 0 ? `
+        <h2 class="faculdade-courses-title"><i data-lucide="clock" style="color:#d4af37; width:20px;"></i> Aulas e Módulos Pendentes (${filteredPendingModulesList.length})</h2>
+        ${filteredPendingModulesList.length === 0 ? `
           <div style="background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 16px; padding: 40px; text-align: center; color: #f3f4f6;">
-            <i data-lucide="check-circle-2" style="width: 48px; height: 48px; color: #d4af37; margin-bottom: 12px;"></i>
-            <h3 style="margin: 0; font-size: 1.2rem; color: #f4cf5d;">Tudo em Dia!</h3>
-            <p style="margin: 6px 0 0; color: #94a3b8; font-size: 0.9rem;">Parabéns! Você já concluiu 100% de todas as aulas e módulos da Faculdade Seven Gold.</p>
+            <i data-lucide="${pendingModulesList.length === 0 ? "check-circle-2" : "search-x"}" style="width: 48px; height: 48px; color: #d4af37; margin-bottom: 12px;"></i>
+            <h3 style="margin: 0; font-size: 1.2rem; color: #f4cf5d;">${pendingModulesList.length === 0 ? "Tudo em Dia!" : `Nenhuma pendência encontrada para "${safeSearchQuery}"`}</h3>
+            <p style="margin: 6px 0 0; color: #94a3b8; font-size: 0.9rem;">${pendingModulesList.length === 0 ? "Parabéns! Você já concluiu 100% de todas as aulas e módulos da Faculdade Seven Gold." : "Tente pesquisar com outros termos ou limpe o campo de busca."}</p>
           </div>
         ` : `
           <div style="display: flex; flex-direction: column; gap: 12px;">
-            ${pendingModulesList.map(item => `
+            ${filteredPendingModulesList.map(item => `
               <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 18px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
                 <div style="display: flex; flex-direction: column; gap: 4px;">
                   <span style="font-size: 0.7rem; font-weight: 800; color: #d4af37; text-transform: uppercase; letter-spacing: 0.05em;">${item.courseBadge} • ${item.courseTitle}</span>
@@ -383,7 +429,7 @@
 
           <div class="faculdade-search-box" style="position: relative; min-width: 260px; max-width: 380px; flex: 1;">
             <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #94a3b8; pointer-events: none; z-index: 2;"></i>
-            <input type="text" id="faculdade-course-search" placeholder="Pesquisar curso por nome ou tema..." value="${currentCourseSearchQuery}" style="width: 100%; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 9px 12px 9px 40px; color: #ffffff; font-size: 0.85rem; font-family: inherit; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);" />
+            <input type="search" id="faculdade-course-search" placeholder="Pesquisar curso por nome ou tema..." value="${safeSearchQuery}" autocomplete="off" spellcheck="false" aria-label="Pesquisar curso por nome ou tema" style="width: 100%; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 9px 12px 9px 40px; color: #ffffff; font-size: 0.85rem; font-family: inherit; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);" />
           </div>
         </div>
 
@@ -422,13 +468,18 @@
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         currentCourseSearchQuery = e.target.value;
-        renderDashboard();
-        const updatedInput = document.getElementById('faculdade-course-search');
-        if (updatedInput) {
-          updatedInput.focus();
-          updatedInput.setSelectionRange(updatedInput.value.length, updatedInput.value.length);
-        }
+        renderDashboard({
+          focusSearch: true,
+          selectionStart: e.target.selectionStart,
+          selectionEnd: e.target.selectionEnd,
+        });
       });
+      if (focusSearch) {
+        searchInput.focus();
+        const cursorStart = Number.isInteger(selectionStart) ? selectionStart : searchInput.value.length;
+        const cursorEnd = Number.isInteger(selectionEnd) ? selectionEnd : cursorStart;
+        searchInput.setSelectionRange(cursorStart, cursorEnd);
+      }
     }
 
     const clearSearchBtn = document.getElementById('faculdade-clear-search-btn');
