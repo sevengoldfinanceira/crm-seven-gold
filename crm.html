@@ -21,21 +21,6 @@
     <link rel="apple-touch-icon" href="/assets/icons/seven-gold-g7.png?v=ms5g1jxm" />
   </head>
   <body data-require-auth data-permission-area="crm" data-login-page="crm-login.html" data-allowed-roles="dono,administrador,coordenador,supervisor,home_office,vendedor,financeiro,marketing" data-denied-redirect="crm-login.html">
-    <!-- Initial CRM Loading Screen Overlay -->
-    <div id="crm-initial-loader" class="crm-initial-loader-overlay">
-      <div class="crm-loader-content">
-        <div class="crm-loader-logo-wrapper">
-          <div class="crm-loader-ring-pulse"></div>
-          <img src="assets/icons/seven-gold-g7.png" alt="Seven Gold" class="crm-loader-logo-img" />
-        </div>
-        <h2 class="crm-loader-title">SEVEN GOLD CRM</h2>
-        <p class="crm-loader-subtitle" id="crm-loader-text">Sincronizando Leads e Dados Comerciais...</p>
-        <div class="crm-loader-progress-track">
-          <div class="crm-loader-progress-bar"></div>
-        </div>
-      </div>
-    </div>
-
     <script>
       (function() {
         const theme = localStorage.getItem("seven-gold-theme") || "light";

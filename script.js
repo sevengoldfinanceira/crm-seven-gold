@@ -6738,19 +6738,49 @@ const loadLeads = async () => {
     }
   }
 
-  // Smoothly fade out initial CRM loader screen when leads & data are ready
-  hideCrmInitialLoader();
+  // Smoothly hide native module entrance transition overlay when leads & data are ready
+  hideCrmEntranceTransition();
 };
 
-const hideCrmInitialLoader = () => {
-  const loader = document.getElementById("crm-initial-loader");
-  if (loader && !loader.classList.contains("fade-out")) {
-    loader.classList.add("fade-out");
-    setTimeout(() => {
-      if (loader && loader.parentNode) {
-        loader.parentNode.removeChild(loader);
-      }
-    }, 600);
+const ensureCrmEntranceOverlay = () => {
+  let overlay = document.getElementById("sg-module-transition-overlay");
+  if (!overlay && document.body) {
+    overlay = document.createElement("div");
+    overlay.id = "sg-module-transition-overlay";
+    overlay.className = "sg-transition-overlay active";
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.innerHTML = `
+      <div class="sg-transition-content">
+        <div class="sg-transition-logo-wrapper">
+          <img src="assets/icons/seven-gold-logo-completa.png" alt="Seven Gold Financeira" class="sg-transition-logo" />
+        </div>
+        <div class="sg-transition-status">
+          <span class="sg-transition-kicker">CARREGANDO CRM</span>
+          <h3 id="sg-transition-title" class="sg-transition-title">Sincronizando Leads...</h3>
+        </div>
+        <div class="sg-transition-progress-bar">
+          <div class="sg-transition-progress-fill"></div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
+  return overlay;
+};
+
+const showCrmEntranceTransition = (statusText = "Sincronizando Leads...") => {
+  const overlay = ensureCrmEntranceOverlay();
+  if (overlay) {
+    const titleEl = document.getElementById("sg-transition-title");
+    if (titleEl) titleEl.textContent = statusText;
+    overlay.classList.add("active");
+  }
+};
+
+const hideCrmEntranceTransition = () => {
+  const overlay = document.getElementById("sg-module-transition-overlay");
+  if (overlay) {
+    overlay.classList.remove("active");
   }
 };
 
@@ -7744,16 +7774,18 @@ document.addEventListener("DOMContentLoaded", () => {
       renderLeads(window.pipelineLeadsCache || []);
     });
   }
+  showCrmEntranceTransition("Carregando Leads do Supabase...");
   loadLeads();
-  // Safety timeout fallback to ensure loader disappears even on slow connection
-  setTimeout(hideCrmInitialLoader, 6000);
+  // Safety timeout fallback to ensure overlay disappears even on slow connection
+  setTimeout(hideCrmEntranceTransition, 7000);
 });
 
 document.addEventListener("crm-authorized", async () => {
+  showCrmEntranceTransition("Sincronizando Leads e Metas...");
   window.currentCrmUser = window.crmUser || window.sevenGoldCrmSession?.crmUser;
   await loadCommercialProductions();
   await loadLeads();
-  hideCrmInitialLoader();
+  hideCrmEntranceTransition();
   const hash = window.location.hash.replace("#", "") || "pipeline";
   if (hash === "calendario") {
     loadAppointments();
