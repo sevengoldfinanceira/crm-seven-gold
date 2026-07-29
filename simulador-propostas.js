@@ -1684,7 +1684,7 @@
           </table>
 
           ${notesVal ? `
-          <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:14px; padding:18px 22px;">
+          <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:14px; padding:18px 22px; margin-bottom:18px;">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
               <i data-lucide="info" style="width:16px; height:16px; color:#B98220;"></i>
               <strong style="color:#0A0A0A; font-size:0.84rem; letter-spacing:0.02em; text-transform:uppercase;">OBSERVAÇÕES E CONDIÇÕES</strong>
@@ -1693,9 +1693,42 @@
           </div>
           ` : ''}
 
-          <div style="border-top:1px solid #E4DEE8; padding-top:18px; display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#8C8594;">
-            <span>Proposta Comercial gerada por <strong>Seven Gold Financeira</strong></span>
-            <span>Documento para simples consulta comercial</span>
+          <!-- Disclaimers -->
+          <div style="margin-top:24px; font-size:0.80rem; color:#475569; font-weight:600; line-height:1.6;">
+            <p style="margin:0;">** Sujeito a análise e aprovação de crédito.</p>
+            <p style="margin:2px 0 0 0;">** Esta proposta é uma simulação, não garantindo qualquer espécie de obrigação entre as partes.</p>
+          </div>
+
+          <!-- Divisor Dourado -->
+          <div style="border-top:1.5px solid #E2D099; margin-top:14px; margin-bottom:18px;"></div>
+
+          <!-- Rodapé Luxo Seven Gold -->
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:42px; height:42px; border-radius:50%; background:#000000; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+                <img src="assets/icons/seven-gold-g7.png" alt="G7" style="width:26px; height:26px; object-fit:contain;" />
+              </div>
+              <div>
+                <div style="font-weight:800; color:#B98220; font-size:0.95rem; letter-spacing:0.01em;">Seven Gold Financeira</div>
+                <div style="display:flex; align-items:center; gap:5px; color:#64748B; font-size:0.80rem; margin-top:2px;">
+                  <i data-lucide="instagram" style="width:14px; height:14px; color:#B98220;"></i>
+                  <span>Instagram: @sevengoldfinanceira</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="height:34px; width:1px; background:#CBD5E1;"></div>
+
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:3px; color:#64748B; font-size:0.80rem;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <i data-lucide="globe" style="width:14px; height:14px; color:#B98220;"></i>
+                <span>www.sevengoldfinanceira.com.br</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <i data-lucide="building-2" style="width:14px; height:14px; color:#B98220;"></i>
+                <span>CNPJ 66.347.779/0001-24</span>
+              </div>
+            </div>
           </div>
         </div>
       `;
