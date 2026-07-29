@@ -1485,7 +1485,20 @@ const getAppointmentRaceInitials = (name = "") => {
   return (parts[0]?.[0] || "S") + (parts[1]?.[0] || parts[0]?.[1] || "G");
 };
 
+const normalizeAppointmentRaceEmail = (value = "") => String(value || "").trim().toLowerCase();
+
 const getAppointmentRaceAvatarKey = (seller = {}) => String(seller.user_id || seller.id || seller.email || seller.name || "").trim();
+
+const getAppointmentRaceAvatarLookupKeys = (seller = {}) => {
+  const keys = [
+    seller.user_id,
+    seller.id,
+    seller.auth_user_id,
+    seller.authUserId,
+    normalizeAppointmentRaceEmail(seller.email || seller.user_email),
+  ].map((value) => String(value || "").trim()).filter(Boolean);
+  return [...new Set(keys)];
+};
 
 const getAppointmentRaceDirectAvatarUrl = (seller = {}) => {
   const url = seller.avatar_url
@@ -1504,29 +1517,39 @@ const getAppointmentRaceDirectAvatarUrl = (seller = {}) => {
 const getAppointmentRaceAvatarUrl = (seller = {}) => {
   const directUrl = getAppointmentRaceDirectAvatarUrl(seller);
   if (directUrl) return directUrl;
-  const key = getAppointmentRaceAvatarKey(seller);
-  return key ? (appointmentRaceAvatarCache.get(key) || "") : "";
+  for (const key of getAppointmentRaceAvatarLookupKeys(seller)) {
+    const cachedUrl = appointmentRaceAvatarCache.get(key);
+    if (cachedUrl) return cachedUrl;
+  }
+  return "";
 };
 
 const renderAppointmentRaceAvatar = (seller = {}, className = "appointment-race-person-photo") => {
   const avatarUrl = getAppointmentRaceAvatarUrl(seller);
-  const key = getAppointmentRaceAvatarKey(seller);
+  const keys = getAppointmentRaceAvatarLookupKeys(seller);
+  const key = keys[0] || getAppointmentRaceAvatarKey(seller);
   const initials = escapeHtml(getAppointmentRaceInitials(seller.name || seller.email).toUpperCase());
   const name = escapeHtml(seller.name || "Vendedor");
   const keyAttr = key ? ` data-race-avatar-id="${escapeHtml(key)}"` : "";
+  const keysAttr = keys.length ? ` data-race-avatar-keys="${escapeHtml(keys.join("|"))}"` : "";
   const photoClass = `${className}${avatarUrl ? " has-photo" : ""}`;
 
   if (avatarUrl) {
-    return `<span class="${photoClass}"${keyAttr}><img src="${escapeHtml(avatarUrl)}" alt="${name}"></span>`;
+    return `<span class="${photoClass}"${keyAttr}${keysAttr}><img src="${escapeHtml(avatarUrl)}" alt="${name}"></span>`;
   }
 
-  return `<span class="${photoClass}"${keyAttr}>${initials}</span>`;
+  return `<span class="${photoClass}"${keyAttr}${keysAttr}>${initials}</span>`;
 };
 
-const updateAppointmentRaceAvatarNodes = (key, avatarUrl) => {
-  if (!key || !avatarUrl) return;
-  document.querySelectorAll("[data-race-avatar-id]").forEach((element) => {
-    if (element.dataset.raceAvatarId !== key) return;
+const updateAppointmentRaceAvatarNodes = (keys, avatarUrl) => {
+  const keySet = new Set((Array.isArray(keys) ? keys : [keys]).map((value) => String(value || "").trim()).filter(Boolean));
+  if (!keySet.size || !avatarUrl) return;
+  document.querySelectorAll("[data-race-avatar-id], [data-race-avatar-keys]").forEach((element) => {
+    const elementKeys = String(element.dataset.raceAvatarKeys || element.dataset.raceAvatarId || "")
+      .split("|")
+      .map((value) => value.trim())
+      .filter(Boolean);
+    if (!elementKeys.some((key) => keySet.has(key))) return;
     const img = document.createElement("img");
     img.src = avatarUrl;
     img.alt = element.getAttribute("aria-label") || "Vendedor";
@@ -1544,7 +1567,10 @@ const loadAppointmentRaceProfileAvatars = () => {
   appointmentRaceProfileAvatarPromise = (async () => {
     const { data: sessionData } = await client.auth.getSession();
     const token = sessionData?.session?.access_token;
-    if (!token) return;
+    if (!token) {
+      appointmentRaceProfileAvatarPromise = null;
+      return;
+    }
 
     const response = await fetch("/api/permissions/save", {
       method: "POST",
@@ -1560,13 +1586,18 @@ const loadAppointmentRaceProfileAvatars = () => {
     }
 
     (result.avatars || []).forEach((avatar) => {
-      const key = String(avatar?.id || "").trim();
       const url = String(avatar?.url || "").trim();
-      if (!key || !url) return;
-      appointmentRaceAvatarCache.set(key, url);
-      updateAppointmentRaceAvatarNodes(key, url);
+      const keys = [
+        avatar?.id,
+        avatar?.auth_id,
+        normalizeAppointmentRaceEmail(avatar?.email),
+      ].map((value) => String(value || "").trim()).filter(Boolean);
+      if (!keys.length || !url) return;
+      keys.forEach((key) => appointmentRaceAvatarCache.set(key, url));
+      updateAppointmentRaceAvatarNodes(keys, url);
     });
   })().catch((error) => {
+    appointmentRaceProfileAvatarPromise = null;
     console.warn("[Corrida de Agendamentos] Não foi possível carregar fotos das contas:", error);
   });
 
@@ -1579,8 +1610,9 @@ const hydrateAppointmentRaceAvatars = (participants = []) => {
 
   const hydrateStorageFallback = () => {
     participants.forEach((seller) => {
+      const keys = getAppointmentRaceAvatarLookupKeys(seller);
       const key = getAppointmentRaceAvatarKey(seller);
-      if (!key || getAppointmentRaceDirectAvatarUrl(seller) || appointmentRaceAvatarCache.get(key) || appointmentRaceAvatarPending.has(key)) return;
+      if (!key || getAppointmentRaceDirectAvatarUrl(seller) || keys.some((item) => appointmentRaceAvatarCache.get(item)) || appointmentRaceAvatarPending.has(key)) return;
       appointmentRaceAvatarPending.add(key);
 
       client.storage
@@ -1589,8 +1621,8 @@ const hydrateAppointmentRaceAvatars = (participants = []) => {
         .then(({ data, error }) => {
           if (error || !data) return;
           const avatarUrl = URL.createObjectURL(data);
-          appointmentRaceAvatarCache.set(key, avatarUrl);
-          updateAppointmentRaceAvatarNodes(key, avatarUrl);
+          keys.forEach((item) => appointmentRaceAvatarCache.set(item, avatarUrl));
+          updateAppointmentRaceAvatarNodes(keys, avatarUrl);
         })
         .catch(() => {})
         .finally(() => {

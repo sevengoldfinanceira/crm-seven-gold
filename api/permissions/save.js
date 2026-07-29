@@ -162,7 +162,7 @@ async function listCrmUserAvatars() {
   const avatarPaths = avatarChecks.filter(Boolean); let signedUrls = [];
   if (avatarPaths.length) { const { data, error } = await supabase.storage.from('company-documents').createSignedUrls(avatarPaths, 60 * 60); if (error) console.error('[permissions/save] avatar signed URLs error:', error); signedUrls = data || []; }
   const customAvatarByPath = new Map(signedUrls.filter(i => i?.signedUrl).map(i => [i.path, i.signedUrl]));
-  return { status: 200, avatars: resolvedUsers.map(({ crmUser, authUser }) => { const path = authUser?.id ? `${authUser.id}/profile/avatar.jpg` : ''; const customAvatar = customAvatarByPath.get(path) || null; const googleAvatar = authUser?.user_metadata?.avatar_url || authUser?.user_metadata?.picture || null; return { id: crmUser.id, url: customAvatar || googleAvatar || null }; }) };
+  return { status: 200, avatars: resolvedUsers.map(({ crmUser, authUser }) => { const path = authUser?.id ? `${authUser.id}/profile/avatar.jpg` : ''; const customAvatar = customAvatarByPath.get(path) || null; const googleAvatar = authUser?.user_metadata?.avatar_url || authUser?.user_metadata?.picture || null; return { id: crmUser.id, email: crmUser.email, auth_id: authUser?.id || null, url: customAvatar || googleAvatar || null }; }) };
 }
 
 async function updateOwnProfile(crmUser, profile) {
