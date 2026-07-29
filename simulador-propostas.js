@@ -32,6 +32,23 @@
     return parseFloat(cleanStr) || 0;
   }
 
+  function formatCpfOnly(val) {
+    const digits = String(val || '').replace(/\D/g, '').slice(0, 11);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+    if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+  }
+
+  function formatPhone(val) {
+    const digits = String(val || '').replace(/\D/g, '').slice(0, 11);
+    if (digits.length === 0) return '';
+    if (digits.length <= 2) return `(${digits}`;
+    if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  }
+
   function formatTermMonthsYears(months) {
     const m = parseInt(months, 10);
     if (isNaN(m) || m <= 0) return `${months || 0} Meses`;
@@ -1194,14 +1211,14 @@
                     <label for="pf-client-cpf">CPF do Cliente</label>
                     <div class="pf-input-wrapper">
                       <i data-lucide="contact" class="pf-input-icon"></i>
-                      <input type="text" id="pf-client-cpf" class="simulador-input pf-input-with-icon" placeholder="000.000.000-00" maxlength="14" value="${proposal.client_cpf || proposal.cpf_cnpj || ''}" />
+                      <input type="text" id="pf-client-cpf" class="simulador-input pf-input-with-icon" placeholder="000.000.000-00" maxlength="14" value="${formatCpfOnly(proposal.client_cpf || proposal.cpf_cnpj || '')}" />
                     </div>
                   </div>
                   <div class="simulador-form-group">
                     <label for="pf-client-phone">Telefone / WhatsApp</label>
                     <div class="pf-input-wrapper">
                       <i data-lucide="phone" class="pf-input-icon"></i>
-                      <input type="text" id="pf-client-phone" class="simulador-input pf-input-with-icon" placeholder="(00) 90000-0000" value="${proposal.client_phone || proposal.telefone || ''}" />
+                      <input type="text" id="pf-client-phone" class="simulador-input pf-input-with-icon" placeholder="(00) 90000-0000" maxlength="15" value="${formatPhone(proposal.client_phone || proposal.telefone || '')}" />
                     </div>
                   </div>
                 </div>
@@ -1922,6 +1939,9 @@
 
     const phoneInputEl = document.getElementById('pf-client-phone');
     if (phoneInputEl) {
+      if (phoneInputEl.value) {
+        phoneInputEl.value = formatPhone(phoneInputEl.value);
+      }
       phoneInputEl.addEventListener('input', (e) => {
         e.target.value = formatPhone(e.target.value);
         updateA4Sheet();
