@@ -36,14 +36,14 @@
 }
 
 .sg-search-select__trigger:hover {
-  border-color: rgba(109, 74, 255, .48);
+  border-color: rgba(185, 130, 32, .48);
   box-shadow: 0 8px 20px rgba(45, 52, 89, .085);
 }
 
 .sg-search-select__trigger:focus-visible,
 .sg-search-select.is-open .sg-search-select__trigger {
-  border-color: #6d4aff;
-  box-shadow: 0 0 0 3px rgba(109, 74, 255, .14), 0 10px 24px rgba(45, 52, 89, .09);
+  border-color: #b98220;
+  box-shadow: 0 0 0 3px rgba(185, 130, 32, .18), 0 10px 24px rgba(45, 52, 89, .09);
 }
 
 .sg-search-select.is-open .sg-search-select__trigger {
@@ -71,7 +71,7 @@
   transition: transform .2s ease, color .2s ease;
 }
 
-.sg-search-select.is-open .sg-search-select__chevron { transform: rotate(180deg); color: #6d4aff; }
+.sg-search-select.is-open .sg-search-select__chevron { transform: rotate(180deg); color: #b98220; }
 
 .sg-search-select.is-disabled .sg-search-select__trigger {
   cursor: not-allowed;
@@ -141,16 +141,9 @@
 }
 
 .sg-search-select__search:focus {
-  border-color: #6d4aff;
+  border-color: #b98220;
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(109, 74, 255, .12);
-}
-
-.sg-search-select__options {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  max-height: min(330px, calc(100vh - 190px));
+  box-shadow: 0 0 0 3px rgba(185, 130, 32, .18);
 }
 
 .sg-search-select__options {
@@ -191,15 +184,15 @@
 
 .sg-search-select__option:hover,
 .sg-search-select__option.is-active {
-  background: #f5f2ff;
-  color: #4f32c9;
+  background: #fdf8e8;
+  color: #b98220;
 }
 
 .sg-search-select__option:active { transform: scale(.992); }
 
 .sg-search-select__option.is-selected {
-  background: #ebe5ff;
-  color: #4124b8;
+  background: #faf0d0;
+  color: #9a6914;
   font-weight: 750;
 }
 
@@ -214,7 +207,7 @@
   flex: 0 0 auto;
   width: 17px;
   height: 17px;
-  color: #6d4aff;
+  color: #b98220;
   opacity: 0;
 }
 
@@ -240,43 +233,39 @@ body.theme-dark .sg-search-select__trigger,
   box-shadow: 0 7px 20px rgba(0, 0, 0, .16);
 }
 
-body.theme-dark .sg-search-select__trigger:hover,
-[data-theme="dark"] .sg-search-select__trigger:hover { border-color: rgba(109, 74, 255, .62); }
-
 body.theme-dark .sg-search-select__dropdown,
 [data-theme="dark"] .sg-search-select__dropdown {
-  border-color: rgba(255, 255, 255, .11);
-  background: rgba(29, 22, 37, .99);
-  box-shadow: 0 24px 65px rgba(0, 0, 0, .46);
+  border-color: rgba(255, 255, 255, .12);
+  background: rgba(30, 24, 38, .98);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .45);
 }
 
 body.theme-dark .sg-search-select__search,
 [data-theme="dark"] .sg-search-select__search {
-  border-color: rgba(255, 255, 255, .1);
-  background: #17121d;
-  color: #fff;
+  border-color: rgba(255, 255, 255, .12);
+  background: rgba(255, 255, 255, .05);
+  color: #f7f5ed;
+}
+
+body.theme-dark .sg-search-select__search:focus,
+[data-theme="dark"] .sg-search-select__search:focus {
+  border-color: #b98220;
+  background: rgba(255, 255, 255, .08);
 }
 
 body.theme-dark .sg-search-select__option,
-[data-theme="dark"] .sg-search-select__option { color: #ede9f2; }
+[data-theme="dark"] .sg-search-select__option { color: #e4e6eb; }
 
 body.theme-dark .sg-search-select__option:hover,
 body.theme-dark .sg-search-select__option.is-active,
 [data-theme="dark"] .sg-search-select__option:hover,
-[data-theme="dark"] .sg-search-select__option.is-active { background: rgba(109, 74, 255, .18); color: #c4b5fd; }
-
-body.theme-dark .sg-search-select__option.is-selected,
-[data-theme="dark"] .sg-search-select__option.is-selected { background: rgba(109, 74, 255, .28); color: #ddd6fe; }
-
-@media (max-width: 600px) {
-  .sg-search-select__trigger { min-height: 46px; border-radius: 14px; }
-  .sg-search-select__dropdown { max-width: calc(100vw - 20px); border-radius: 15px; }
-  .sg-search-select__options { max-height: min(300px, calc(100vh - 170px)); }
+[data-theme="dark"] .sg-search-select__option.is-active {
+  background: rgba(212, 175, 55, 0.16);
+  color: #f5d46b;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .sg-search-select__dropdown { animation: none; }
-  .sg-search-select__trigger,
-  .sg-search-select__option,
-  .sg-search-select__chevron { transition: none; }
+body.theme-dark .sg-search-select__option.is-selected,
+[data-theme="dark"] .sg-search-select__option.is-selected {
+  background: rgba(212, 175, 55, 0.25);
+  color: #fce79f;
 }
