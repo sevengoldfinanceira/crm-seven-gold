@@ -1671,15 +1671,8 @@ const renderAppointmentRace = () => {
     if (appointmentRaceFinishMarker) appointmentRaceFinishMarker.hidden = true;
     if (appointmentRaceWinnerBanner) appointmentRaceWinnerBanner.hidden = true;
     if (appointmentRaceEmpty) {
-      appointmentRaceEmpty.hidden = false;
-      appointmentRaceEmpty.querySelector("strong").textContent = raceBusinessDay
-        ? "Corrida automática aguardando a meta."
-        : "Corrida pausada no fim de semana.";
-      appointmentRaceEmpty.querySelector("span").textContent = raceBusinessDay
-        ? isAdmin
-          ? "Configure a meta uma vez para ela repetir automaticamente de segunda a sexta-feira."
-          : "A corrida diária será criada automaticamente em dias úteis."
-        : "A meta volta automaticamente no próximo dia útil, de segunda a sexta-feira.";
+      appointmentRaceEmpty.hidden = true;
+      appointmentRaceEmpty.textContent = "";
     }
     if (appointmentRaceTrackList) appointmentRaceTrackList.innerHTML = "";
     if (appointmentRaceRankingList) appointmentRaceRankingList.innerHTML = "";
