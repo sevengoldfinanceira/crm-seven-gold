@@ -2247,7 +2247,8 @@
     tbody.innerHTML = filtered.map(proposal => {
       const initial = (proposal.nome || "P").charAt(0).toUpperCase();
       const statusText = proposal.status || "Em Aberto";
-      const statusClass = (statusText === "Assinado" || statusText === "Contratado") ? "badge-signed" : "badge-analysis";
+      const isClosedContract = statusText === "Assinado" || statusText === "Contratado";
+      const statusClass = isClosedContract ? "badge-signed" : "badge-analysis";
 
       return `
         <tr>
@@ -2286,12 +2287,21 @@
               <button type="button" class="btn-closed-action a4" data-open-proposal-a4="${proposal.id}" title="Editar / Visualizar Proposta A4">
                 <i data-lucide="file-text"></i> A4
               </button>
+              ${!isClosedContract ? `
               <button type="button" class="btn-closed-action docs" style="background:#D8B34A; color:#0F172A; font-weight:800;" data-convert-client="${proposal.id}" title="Transformar Proposta em Cliente Contratado">
                 <i data-lucide="user-check"></i> Fechar Contrato
               </button>
               <button type="button" class="btn-closed-action delete" data-delete-proposal="${proposal.id}" title="Excluir Proposta">
                 <i data-lucide="trash-2"></i>
               </button>
+              ` : `
+              <span style="font-size:0.75rem; color:#10B981; font-weight:800; padding:4px 8px; background:#ECFDF5; border-radius:6px; border:1px solid #A7F3D0; display:inline-flex; align-items:center; gap:4px;">
+                <i data-lucide="check-circle-2" style="width:13px; height:13px;"></i> Contrato Fechado
+              </span>
+              <button type="button" class="btn-closed-action delete disabled" style="opacity:0.6; cursor:not-allowed; background:#F1F5F9; color:#94A3B8; border:1px solid #CBD5E1;" data-protected-proposal="${proposal.id}" title="Proposta convertida em contrato - Exclusão Bloqueada">
+                <i data-lucide="lock"></i>
+              </button>
+              `}
             </div>
           </td>
         </tr>
@@ -2379,6 +2389,12 @@
         const updated = allProposals.filter(p => p.id !== id);
         saveSavedProposalsList(updated);
         renderSavedProposalsTab();
+      };
+    });
+
+    tbody.querySelectorAll("[data-protected-proposal]").forEach(btn => {
+      btn.onclick = () => {
+        alert("🔒 Propostas que foram convertidas em contratos fechados não podem ser excluídas por razões de auditoria e compliance.");
       };
     });
   }
@@ -2483,8 +2499,8 @@
               <button type="button" class="btn-closed-action a4" data-open-a4="${client.id}" title="Visualizar Proposta Final A4">
                 <i data-lucide="file-text"></i> A4
               </button>
-              <button type="button" class="btn-closed-action delete" data-delete-client="${client.id}" title="Excluir">
-                <i data-lucide="trash-2"></i>
+              <button type="button" class="btn-closed-action delete disabled" style="opacity:0.6; cursor:not-allowed; background:#F1F5F9; color:#94A3B8; border:1px solid #CBD5E1;" data-protected-client="${client.id}" title="Cliente em contrato fechado - Exclusão Bloqueada">
+                <i data-lucide="lock"></i> Protegido
               </button>
             </div>
           </td>
@@ -2531,13 +2547,9 @@
       };
     });
 
-    tbody.querySelectorAll("[data-delete-client]").forEach(btn => {
+    tbody.querySelectorAll("[data-protected-client]").forEach(btn => {
       btn.onclick = () => {
-        const id = btn.dataset.deleteClient;
-        if (!confirm("Deseja realmente remover este cliente fechado?")) return;
-        const updated = allClients.filter(c => c.id !== id);
-        saveClosedClientsList(updated);
-        renderClosedClientsTab();
+        alert("🔒 Clientes que fecharam contrato e estão em fase contratual não podem ser excluídos por razões de compliance e auditoria.");
       };
     });
   }
