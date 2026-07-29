@@ -1084,7 +1084,13 @@
     const userEmailEl = document.querySelector('[data-user-email]');
     const userRoleEl = document.querySelector('[data-user-role]');
     
-    const consultantName = (userNameEl && userNameEl.textContent.trim() !== 'Carregando...') ? userNameEl.textContent.trim() : 'Consultor Seven Gold';
+    let rawName = (userNameEl && userNameEl.textContent.trim() !== 'Carregando...') ? userNameEl.textContent.trim() : 'Seven Gold';
+    if (rawName === 'Consultor Seven Gold') {
+      rawName = 'Seven Gold';
+    } else {
+      rawName = rawName.replace(/^Consultor\s+/i, '');
+    }
+    const consultantName = rawName || 'Seven Gold';
     const consultantEmail = 'sevengoldfinanceira@gmail.com';
     let rawRole = (userRoleEl && userRoleEl.textContent.trim() !== '...') ? userRoleEl.textContent.trim() : 'Consultor Financeiro';
     if (rawRole.toLowerCase().includes('assistente')) {
