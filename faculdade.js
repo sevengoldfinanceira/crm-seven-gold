@@ -345,8 +345,8 @@
     lmsTab.innerHTML = `
       <div class="faculdade-container">
         <!-- Header -->
-        <header class="faculdade-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-          <div class="eq-header-left">
+        <header class="faculdade-header">
+          <div class="faculdade-header-main eq-header-left">
             <div class="eq-header-icon-box" style="background: rgba(212, 175, 55, 0.1); color: #d4af37; border-color: rgba(212, 175, 55, 0.28); flex-shrink: 0;">
               <i data-lucide="graduation-cap"></i>
             </div>
@@ -354,12 +354,13 @@
               <h1 style="color:#fff; font-size:1.5rem; margin:0;">Faculdade Seven Gold</h1>
               <p style="color:#94a3b8; font-size:0.84rem; margin:2px 0 0;">Plataforma de capacitação, onboarding e certificação de colaboradores.</p>
             </div>
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <a href="painel.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #f8fafc; font-size: 0.78rem; font-weight: 700; text-decoration: none;">
+          </div>
+          <div class="faculdade-header-actions">
+            <a href="painel.html" class="faculdade-panel-back-btn">
               <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
               <span>Voltar aos Painéis</span>
             </a>
-            <button type="button" data-logout data-logout-redirect="index.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; color: #ef4444; font-size: 0.78rem; font-weight: 700; cursor: pointer;">
+            <button type="button" data-logout data-logout-redirect="index.html" class="faculdade-logout-btn" style="background: #ffffff !important; background-color: #ffffff !important; color: #b98220 !important; border-color: rgba(212, 175, 55, 0.42) !important;">
               <i data-lucide="log-out" style="width: 14px; height: 14px;"></i>
               <span>Sair</span>
             </button>
