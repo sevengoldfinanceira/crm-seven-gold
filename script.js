@@ -30,6 +30,7 @@ const appointmentRaceRankingList = document.querySelector("[data-race-ranking-li
 const appointmentRaceRankingCount = document.querySelector("[data-race-ranking-count]");
 const appointmentRaceFinishMarker = document.querySelector("[data-race-finish-marker]");
 const appointmentRaceFinishLabel = document.querySelector("[data-race-finish-label]");
+const appointmentRaceFloatingCrown = document.querySelector("[data-race-floating-crown]");
 const appointmentRaceSettingsModal = document.querySelector("[data-race-settings-modal]");
 const appointmentRaceSettingsForm = document.querySelector("[data-race-settings-form]");
 const appointmentRaceTargetInput = document.querySelector("[data-race-target-input]");
@@ -49,6 +50,10 @@ let appointmentResolution = null;
 let appointmentRaceState = null;
 let appointmentRaceRealtimeChannel = null;
 let appointmentRaceLastCounts = new Map();
+let appointmentRaceHasCountSnapshot = false;
+let appointmentRaceCurrentRaceKey = "";
+let appointmentRaceLastLeaderId = "";
+const appointmentRaceAnimationTimers = new Set();
 let appointmentRaceTimer = null;
 let appointmentRaceWinnerSeenKey = sessionStorage.getItem("seven-gold-race-winner-seen") || "";
 const appointmentRaceAvatarCache = new Map();
@@ -1426,6 +1431,11 @@ function shouldSeeAllLeads(crmUser) {
 
 const APPOINTMENT_RACE_ORG_ID = "seven_gold";
 const APPOINTMENT_RACE_AVATAR_BUCKET = "company-documents";
+const APPOINTMENT_RACE_MOVE_MS = 900;
+const APPOINTMENT_RACE_GOAL_MS = 2500;
+const APPOINTMENT_RACE_START_POSITION = 6;
+const APPOINTMENT_RACE_FINISH_POSITION = 94;
+const APPOINTMENT_RACE_GOAL_POSITION = 97;
 const appointmentRaceCarThemes = [
   { primary: "#D1992C", light: "#F5D874", dark: "#906820", shadow: "rgba(209, 153, 44, 0.28)" },
   { primary: "#2563EB", light: "#60A5FA", dark: "#1D4ED8", shadow: "rgba(37, 99, 235, 0.24)" },
@@ -1478,6 +1488,284 @@ const formatAppointmentRaceTimeLeft = () => {
   const hours = Math.floor(diff / 3600000);
   const minutes = Math.floor((diff % 3600000) / 60000);
   return `${String(hours).padStart(2, "0")}h ${String(minutes).padStart(2, "0")}m`;
+};
+
+const prefersReducedAppointmentRaceMotion = () => {
+  try {
+    return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
+  } catch (_) {
+    return false;
+  }
+};
+
+const getAppointmentRaceKey = (race = null) =>
+  String(race?.id || race?.race_date || appointmentRaceState?.race_date || "").trim();
+
+const resetAppointmentRaceSnapshotIfNeeded = (race = null) => {
+  const raceKey = getAppointmentRaceKey(race);
+  if (!raceKey || raceKey === appointmentRaceCurrentRaceKey) return;
+  appointmentRaceCurrentRaceKey = raceKey;
+  appointmentRaceLastCounts = new Map();
+  appointmentRaceHasCountSnapshot = false;
+  appointmentRaceLastLeaderId = "";
+};
+
+const clearAppointmentRaceAnimationTimers = () => {
+  appointmentRaceAnimationTimers.forEach((timerId) => window.clearTimeout(timerId));
+  appointmentRaceAnimationTimers.clear();
+};
+
+const setAppointmentRaceAnimationTimer = (callback, delay) => {
+  const timerId = window.setTimeout(() => {
+    appointmentRaceAnimationTimers.delete(timerId);
+    callback();
+  }, delay);
+  appointmentRaceAnimationTimers.add(timerId);
+  return timerId;
+};
+
+const cleanupAppointmentRaceAnimations = ({ stopTimer = false, resetSnapshot = false } = {}) => {
+  clearAppointmentRaceAnimationTimers();
+  document.querySelectorAll(".appointment-race-confetti-burst, .appointment-race-goal-toast").forEach((node) => node.remove());
+  document.querySelectorAll(".appointment-race-track.is-advancing, .appointment-race-track.is-goal-celebrating, .appointment-race-ranking-item.is-goal-celebrating")
+    .forEach((node) => node.classList.remove("is-advancing", "is-goal-celebrating"));
+  appointmentRaceFloatingCrown?.classList.remove("is-large", "is-switching");
+  if (stopTimer && appointmentRaceTimer) {
+    window.clearInterval(appointmentRaceTimer);
+    appointmentRaceTimer = null;
+  }
+  if (resetSnapshot) {
+    appointmentRaceCurrentRaceKey = "";
+    appointmentRaceLastCounts = new Map();
+    appointmentRaceHasCountSnapshot = false;
+    appointmentRaceLastLeaderId = "";
+  }
+};
+
+const getAppointmentRaceVisualProgress = (count = 0, target = 0) => {
+  if (!target) return 0;
+  return Math.min(100, Math.max(0, (Number(count || 0) / Math.max(1, Number(target || 1))) * 100));
+};
+
+const getAppointmentRaceCarPosition = (count = 0, target = 0) => {
+  const safeTarget = Number(target || 0);
+  const safeCount = Number(count || 0);
+  if (!safeTarget) return APPOINTMENT_RACE_START_POSITION;
+  if (safeCount >= safeTarget) return APPOINTMENT_RACE_GOAL_POSITION;
+  const progress = getAppointmentRaceVisualProgress(safeCount, safeTarget);
+  return APPOINTMENT_RACE_START_POSITION + ((APPOINTMENT_RACE_FINISH_POSITION - APPOINTMENT_RACE_START_POSITION) * progress) / 100;
+};
+
+const getAppointmentRaceCountView = (count = 0, target = 0) => {
+  const safeCount = Number(count || 0);
+  const safeTarget = Number(target || 0);
+  const progress = getAppointmentRaceVisualProgress(safeCount, safeTarget);
+  const missing = Math.max(0, safeTarget - safeCount);
+  return {
+    progress,
+    progressLabel: safeTarget ? `${safeCount}/${safeTarget}` : `${safeCount}`,
+    missingLabel: missing > 0 ? `Faltam ${missing} para a meta` : "Meta atingida",
+    percentLabel: `${Math.round(progress)}%`,
+  };
+};
+
+const updateAppointmentRaceCountNodes = (userId, count, target) => {
+  const view = getAppointmentRaceCountView(count, target);
+  appointmentRaceTrackList?.querySelectorAll(".appointment-race-track").forEach((track) => {
+    if (String(track.dataset.raceUserId || "") !== String(userId)) return;
+    if (Number(track.dataset.raceTargetCount || count) !== Number(count || 0)) return;
+    const countEl = track.querySelector("[data-race-count-label]");
+    const missingEl = track.querySelector("[data-race-missing-label]");
+    const percentEl = track.querySelector("[data-race-percent-label]");
+    if (countEl) {
+      countEl.textContent = view.progressLabel;
+      countEl.classList.add("is-updating");
+      setAppointmentRaceAnimationTimer(() => countEl.classList.remove("is-updating"), 360);
+    }
+    if (missingEl) missingEl.textContent = view.missingLabel;
+    if (percentEl) percentEl.textContent = view.percentLabel;
+  });
+  appointmentRaceRankingList?.querySelectorAll(".appointment-race-ranking-item").forEach((item) => {
+    if (String(item.dataset.raceUserId || "") !== String(userId)) return;
+    if (Number(item.dataset.raceTargetCount || count) !== Number(count || 0)) return;
+    const progressEl = item.querySelector("[data-race-ranking-progress]");
+    const scoreEl = item.querySelector("[data-race-ranking-score]");
+    if (progressEl) progressEl.textContent = view.progressLabel;
+    if (scoreEl) {
+      scoreEl.textContent = Number(count || 0);
+      scoreEl.classList.add("is-updating");
+      setAppointmentRaceAnimationTimer(() => scoreEl.classList.remove("is-updating"), 360);
+    }
+  });
+};
+
+const getAppointmentRaceCelebrationStorageKey = (race = null) => {
+  const raceKey = getAppointmentRaceKey(race);
+  return raceKey ? `seven-gold-race-goal-celebrated:${raceKey}` : "";
+};
+
+const getAppointmentRaceCelebratedSet = (race = null) => {
+  const storageKey = getAppointmentRaceCelebrationStorageKey(race);
+  let users = [];
+  if (storageKey) {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      users = Array.isArray(parsed) ? parsed.map((item) => String(item)) : [];
+    } catch (_) {
+      users = [];
+    }
+  }
+  if (appointmentRaceState) {
+    appointmentRaceState.goalCelebrationStorageKey = storageKey;
+    appointmentRaceState.goalCelebratedUsers = users;
+  }
+  return new Set(users);
+};
+
+const markAppointmentRaceGoalCelebrated = (race, userId) => {
+  const storageKey = getAppointmentRaceCelebrationStorageKey(race);
+  const celebrated = getAppointmentRaceCelebratedSet(race);
+  celebrated.add(String(userId));
+  const users = Array.from(celebrated);
+  if (storageKey) {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(users));
+    } catch (_) {}
+  }
+  if (appointmentRaceState) {
+    appointmentRaceState.goalCelebrationStorageKey = storageKey;
+    appointmentRaceState.goalCelebratedUsers = users;
+  }
+};
+
+const findAppointmentRaceTrack = (userId) =>
+  Array.from(appointmentRaceTrackList?.querySelectorAll(".appointment-race-track") || [])
+    .find((track) => String(track.dataset.raceUserId || "") === String(userId));
+
+const findAppointmentRaceRankingItem = (userId) =>
+  Array.from(appointmentRaceRankingList?.querySelectorAll(".appointment-race-ranking-item") || [])
+    .find((item) => String(item.dataset.raceUserId || "") === String(userId));
+
+const positionAppointmentRaceCrown = (userId, { position = null, large = false, switching = false } = {}) => {
+  if (!appointmentRaceFloatingCrown || !appointmentRaceTrackList || !userId) {
+    if (appointmentRaceFloatingCrown) appointmentRaceFloatingCrown.hidden = true;
+    return;
+  }
+  const track = findAppointmentRaceTrack(userId);
+  const lane = track?.querySelector(".appointment-race-lane");
+  const container = appointmentRaceFloatingCrown.offsetParent || appointmentRaceTrackList.closest(".appointment-race-tracks");
+  if (!track || !lane || !container) {
+    appointmentRaceFloatingCrown.hidden = true;
+    return;
+  }
+  const laneRect = lane.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+  const carPosition = Number.isFinite(Number(position))
+    ? Number(position)
+    : Number(track.dataset.raceCarLeft || APPOINTMENT_RACE_START_POSITION);
+  const x = laneRect.left - containerRect.left + (laneRect.width * carPosition) / 100;
+  const y = laneRect.top - containerRect.top + laneRect.height / 2 - (large ? 30 : 23);
+  appointmentRaceFloatingCrown.style.setProperty("--race-crown-x", `${x}px`);
+  appointmentRaceFloatingCrown.style.setProperty("--race-crown-y", `${y}px`);
+  appointmentRaceFloatingCrown.classList.toggle("is-large", large);
+  appointmentRaceFloatingCrown.classList.toggle("is-switching", switching);
+  appointmentRaceFloatingCrown.hidden = false;
+  if (switching) {
+    setAppointmentRaceAnimationTimer(() => appointmentRaceFloatingCrown.classList.remove("is-switching"), 780);
+  }
+};
+
+const animateAppointmentRaceAdvance = ({ userId, count, target, finalProgress, finalPosition, isLeader }) => {
+  if (prefersReducedAppointmentRaceMotion()) {
+    const track = findAppointmentRaceTrack(userId);
+    if (track) {
+      track.style.setProperty("--race-progress", `${finalProgress}%`);
+      track.style.setProperty("--race-car-left", `${finalPosition}%`);
+      track.dataset.raceCarLeft = String(finalPosition);
+    }
+    updateAppointmentRaceCountNodes(userId, count, target);
+    if (isLeader) positionAppointmentRaceCrown(userId, { position: finalPosition });
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      const track = findAppointmentRaceTrack(userId);
+      if (!track) return;
+      if (Number(track.dataset.raceTargetCount || count) !== Number(count || 0)) return;
+      track.classList.add("is-advancing");
+      track.style.setProperty("--race-progress", `${finalProgress}%`);
+      track.style.setProperty("--race-car-left", `${finalPosition}%`);
+      track.dataset.raceCarLeft = String(finalPosition);
+      if (isLeader) positionAppointmentRaceCrown(userId, { position: finalPosition });
+      setAppointmentRaceAnimationTimer(() => updateAppointmentRaceCountNodes(userId, count, target), Math.round(APPOINTMENT_RACE_MOVE_MS * 0.35));
+      setAppointmentRaceAnimationTimer(() => track.classList.remove("is-advancing"), APPOINTMENT_RACE_MOVE_MS + 80);
+    });
+  });
+};
+
+const createAppointmentRaceConfetti = (userId, carPosition) => {
+  if (prefersReducedAppointmentRaceMotion()) return;
+  const track = findAppointmentRaceTrack(userId);
+  const lane = track?.querySelector(".appointment-race-lane");
+  if (!lane) return;
+  const burst = document.createElement("span");
+  burst.className = "appointment-race-confetti-burst";
+  burst.style.setProperty("--race-confetti-left", `${carPosition}%`);
+  const pieces = [
+    [-22, -34, -28, 0], [-10, -42, 18, 30], [6, -38, 58, 60], [20, -30, 96, 20],
+    [-30, -16, 132, 80], [-14, -22, 180, 120], [12, -20, 226, 90], [30, -12, 272, 140],
+    [-24, 6, 318, 110], [0, 10, 360, 40], [24, 4, 405, 70], [36, -24, 448, 100],
+  ];
+  pieces.forEach(([x, y, rotate, delay], index) => {
+    const piece = document.createElement("span");
+    piece.style.setProperty("--race-confetti-x", `${x}px`);
+    piece.style.setProperty("--race-confetti-y", `${y}px`);
+    piece.style.setProperty("--race-confetti-rotate", `${rotate}deg`);
+    piece.style.setProperty("--race-confetti-delay", `${delay}ms`);
+    piece.dataset.confettiTone = String(index % 3);
+    burst.append(piece);
+  });
+  lane.append(burst);
+  setAppointmentRaceAnimationTimer(() => burst.remove(), 1500);
+};
+
+const showAppointmentRaceGoalToast = (seller, count) => {
+  if (!appointmentRaceTrackList) return;
+  document.querySelectorAll(".appointment-race-goal-toast").forEach((node) => node.remove());
+  const toast = document.createElement("section");
+  toast.className = "appointment-race-goal-toast";
+  toast.setAttribute("aria-live", "polite");
+  toast.innerHTML = `
+    ${renderAppointmentRaceAvatar(seller, "appointment-race-goal-photo")}
+    <span>
+      <strong>🏆 META BATIDA!</strong>
+      <small>${escapeHtml(seller.name || "Vendedor")} alcançou ${Number(count || 0)} agendamentos</small>
+    </span>
+  `;
+  appointmentRaceTrackList.closest(".appointment-race-tracks")?.append(toast);
+  hydrateAppointmentRaceAvatars([seller]);
+  setAppointmentRaceAnimationTimer(() => toast.remove(), APPOINTMENT_RACE_GOAL_MS);
+};
+
+const triggerAppointmentRaceGoalCelebration = ({ seller, userId, count, finalPosition }) => {
+  if (prefersReducedAppointmentRaceMotion()) return;
+  setAppointmentRaceAnimationTimer(() => {
+    const track = findAppointmentRaceTrack(userId);
+    const rankingItem = findAppointmentRaceRankingItem(userId);
+    if (!track || Number(track.dataset.raceTargetCount || count) !== Number(count || 0)) return;
+    track?.classList.add("is-goal-celebrating");
+    rankingItem?.classList.add("is-goal-celebrating");
+    positionAppointmentRaceCrown(userId, { position: finalPosition, large: true });
+    createAppointmentRaceConfetti(userId, finalPosition);
+    showAppointmentRaceGoalToast(seller, count);
+    setAppointmentRaceAnimationTimer(() => {
+      track?.classList.remove("is-goal-celebrating");
+      rankingItem?.classList.remove("is-goal-celebrating");
+      appointmentRaceFloatingCrown?.classList.remove("is-large");
+      if (appointmentRaceLastLeaderId) positionAppointmentRaceCrown(appointmentRaceLastLeaderId);
+    }, APPOINTMENT_RACE_GOAL_MS);
+  }, Math.max(300, APPOINTMENT_RACE_MOVE_MS - 120));
 };
 
 const getAppointmentRaceInitials = (name = "") => {
@@ -1664,12 +1952,14 @@ const renderAppointmentRace = () => {
   const raceBusinessDay = isAppointmentRaceBusinessDay();
 
   if (!race) {
+    cleanupAppointmentRaceAnimations({ resetSnapshot: true });
     if (appointmentRaceTarget) appointmentRaceTarget.textContent = "--";
     if (appointmentRaceParticipants) appointmentRaceParticipants.textContent = "0";
     if (appointmentRaceWinner) appointmentRaceWinner.textContent = "--";
     if (appointmentRaceWinnerTime) appointmentRaceWinnerTime.textContent = "corrida não iniciada";
     if (appointmentRaceFinishMarker) appointmentRaceFinishMarker.hidden = true;
     if (appointmentRaceWinnerBanner) appointmentRaceWinnerBanner.hidden = true;
+    if (appointmentRaceFloatingCrown) appointmentRaceFloatingCrown.hidden = true;
     if (appointmentRaceEmpty) {
       appointmentRaceEmpty.hidden = true;
       appointmentRaceEmpty.textContent = "";
@@ -1681,10 +1971,13 @@ const renderAppointmentRace = () => {
     return;
   }
 
+  resetAppointmentRaceSnapshotIfNeeded(race);
   const target = Number(race.target || 0);
   const winnerId = race.winner_user_id ? String(race.winner_user_id) : "";
   const winner = participants.find((item) => String(item.user_id) === winnerId);
   const leader = winner || participants[0] || null;
+  const leaderId = leader ? String(leader.user_id || leader.id || leader.email || leader.name || "") : "";
+  const leaderChanged = Boolean(appointmentRaceHasCountSnapshot && appointmentRaceLastLeaderId && leaderId && leaderId !== appointmentRaceLastLeaderId);
   const winnerKey = winnerId && race.won_at ? `${race.id}:${winnerId}:${race.won_at}` : "";
 
   if (appointmentRaceTarget) appointmentRaceTarget.textContent = target || "--";
@@ -1729,30 +2022,51 @@ const renderAppointmentRace = () => {
   }
 
   if (appointmentRaceEmpty) {
-    appointmentRaceEmpty.hidden = participants.length > 0;
-    if (!participants.length) {
-      appointmentRaceEmpty.querySelector("strong").textContent = "Nenhum vendedor ativo encontrado.";
-      appointmentRaceEmpty.querySelector("span").textContent = "Verifique os usuários ativos em Permissões do sistema.";
-    }
+    appointmentRaceEmpty.hidden = true;
+    appointmentRaceEmpty.textContent = "";
   }
+
+  const nextCountSnapshot = new Map();
+  const advanceEvents = [];
+  const goalEvents = [];
+  const celebratedGoalUsers = getAppointmentRaceCelebratedSet(race);
+  const motionReduced = prefersReducedAppointmentRaceMotion();
 
   if (appointmentRaceTrackList) {
     appointmentRaceTrackList.innerHTML = "";
     participants.forEach((seller, index) => {
+      const userId = String(seller.user_id || seller.id || seller.email || seller.name || index);
       const count = Number(seller.count || 0);
-      const progress = Math.min(100, Math.max(0, Number(seller.progress || 0)));
-      const missing = Math.max(0, Number(seller.missing || 0));
-      const previous = appointmentRaceLastCounts.get(String(seller.user_id)) || 0;
-      const bumped = count > previous;
+      const previousCountValue = appointmentRaceLastCounts.get(userId);
+      const hasPreviousCount = appointmentRaceHasCountSnapshot && previousCountValue !== undefined;
+      const previousCount = hasPreviousCount ? Number(previousCountValue || 0) : count;
+      const bumped = hasPreviousCount && count > previousCount;
+      const shouldAnimateAdvance = bumped && !motionReduced;
+      const initialCount = shouldAnimateAdvance ? previousCount : count;
+      const initialView = getAppointmentRaceCountView(initialCount, target);
+      const finalView = getAppointmentRaceCountView(count, target);
+      const initialPosition = shouldAnimateAdvance ? getAppointmentRaceCarPosition(previousCount, target) : getAppointmentRaceCarPosition(count, target);
+      const finalPosition = getAppointmentRaceCarPosition(count, target);
+      const reachedGoalNow = target > 0 && bumped && previousCount < target && count >= target;
+      const shouldCelebrateGoal = reachedGoalNow && !celebratedGoalUsers.has(userId);
       const theme = getAppointmentRaceCarTheme(index);
-      const carPosition = Math.min(94, Math.max(6, progress));
-      const progressLabel = target ? `${count}/${target}` : `${count}`;
-      appointmentRaceLastCounts.set(String(seller.user_id), count);
+      nextCountSnapshot.set(userId, count);
+      if (shouldCelebrateGoal) {
+        markAppointmentRaceGoalCelebrated(race, userId);
+        celebratedGoalUsers.add(userId);
+        goalEvents.push({ seller, userId, count, finalPosition });
+      }
+      if (shouldAnimateAdvance) {
+        advanceEvents.push({ userId, count, target, finalProgress: finalView.progress, finalPosition, initialPosition });
+      }
 
       const track = document.createElement("article");
-      track.className = `appointment-race-track${index === 0 ? " is-leader" : ""}${winnerId && String(seller.user_id) === winnerId ? " is-winner" : ""}${bumped ? " is-bumped" : ""}`;
-      track.style.setProperty("--race-progress", `${progress}%`);
-      track.style.setProperty("--race-car-left", `${carPosition}%`);
+      track.className = `appointment-race-track${index === 0 ? " is-leader" : ""}${winnerId && String(seller.user_id) === winnerId ? " is-winner" : ""}${race.status === "active" || shouldAnimateAdvance || shouldCelebrateGoal ? " is-race-active" : ""}${shouldAnimateAdvance ? " is-bumped" : ""}${shouldCelebrateGoal ? " is-goal-pending" : ""}`;
+      track.dataset.raceUserId = userId;
+      track.dataset.raceTargetCount = String(count);
+      track.dataset.raceCarLeft = String(finalPosition);
+      track.style.setProperty("--race-progress", `${initialView.progress}%`);
+      track.style.setProperty("--race-car-left", `${initialPosition}%`);
       track.style.setProperty("--car-primary", theme.primary);
       track.style.setProperty("--car-light", theme.light);
       track.style.setProperty("--car-dark", theme.dark);
@@ -1762,18 +2076,19 @@ const renderAppointmentRace = () => {
           <span class="appointment-race-lane-code">${String(index + 1).padStart(2, "0")}</span>
           <div class="appointment-race-seller-copy">
             <strong>${escapeHtml(seller.name || "Vendedor")}</strong>
-            <span>${progressLabel}</span>
+            <span data-race-count-label>${initialView.progressLabel}</span>
           </div>
         </div>
         <div class="appointment-race-progress-area">
           <div class="appointment-race-track-meta">
-            <span>${missing > 0 ? `Faltam ${missing} para a meta` : "Meta atingida"}</span>
-            <strong>${Math.round(progress)}%</strong>
+            <span data-race-missing-label>${initialView.missingLabel}</span>
+            <strong data-race-percent-label>${initialView.percentLabel}</strong>
           </div>
-          <div class="appointment-race-lane" aria-label="${escapeHtml(`${seller.name || "Vendedor"}: ${progressLabel}`)}">
+          <div class="appointment-race-lane" aria-label="${escapeHtml(`${seller.name || "Vendedor"}: ${finalView.progressLabel}`)}">
             <span class="appointment-race-lane-fill"></span>
             <span class="appointment-race-car" aria-hidden="true">
               <span class="appointment-race-car-shadow"></span>
+              <span class="appointment-race-car-smoke" aria-hidden="true"><span></span><span></span><span></span></span>
               <span class="appointment-race-car-body">
                 <span class="appointment-race-car-tail"></span>
                 <span class="appointment-race-car-cockpit">
@@ -1784,7 +2099,7 @@ const renderAppointmentRace = () => {
                 <span class="appointment-race-car-wheel appointment-race-car-wheel--rear"></span>
                 <span class="appointment-race-car-wheel appointment-race-car-wheel--front"></span>
               </span>
-              ${bumped ? '<span class="appointment-race-car-boost">+1</span>' : ""}
+              ${shouldAnimateAdvance ? '<span class="appointment-race-car-boost">+1</span>' : ""}
             </span>
           </div>
         </div>
@@ -1796,18 +2111,26 @@ const renderAppointmentRace = () => {
   if (appointmentRaceRankingList) {
     appointmentRaceRankingList.innerHTML = "";
     participants.slice(0, 8).forEach((seller, index) => {
+      const userId = String(seller.user_id || seller.id || seller.email || seller.name || index);
       const count = Number(seller.count || 0);
-      const progressLabel = target ? `${count}/${target}` : `${count}`;
+      const previousCountValue = appointmentRaceLastCounts.get(userId);
+      const hasPreviousCount = appointmentRaceHasCountSnapshot && previousCountValue !== undefined;
+      const previousCount = hasPreviousCount ? Number(previousCountValue || 0) : count;
+      const shouldAnimateAdvance = hasPreviousCount && count > previousCount && !motionReduced;
+      const visibleCount = shouldAnimateAdvance ? previousCount : count;
+      const view = getAppointmentRaceCountView(visibleCount, target);
       const item = document.createElement("div");
-      item.className = `appointment-race-ranking-item${index === 0 ? " is-leader" : ""}${winnerId && String(seller.user_id) === winnerId ? " is-winner" : ""}`;
+      item.className = `appointment-race-ranking-item${index === 0 ? " is-leader" : ""}${winnerId && String(seller.user_id) === winnerId ? " is-winner" : ""}${goalEvents.some((event) => event.userId === userId) ? " is-goal-celebrating" : ""}`;
+      item.dataset.raceUserId = userId;
+      item.dataset.raceTargetCount = String(count);
       item.innerHTML = `
         <span class="appointment-race-ranking-position">${getAppointmentRaceMedal(index)}</span>
         ${renderAppointmentRaceAvatar(seller, "appointment-race-ranking-photo")}
         <span class="appointment-race-ranking-person">
           <strong>${escapeHtml(seller.name || "Vendedor")}</strong>
-          <small>${progressLabel}</small>
+          <small data-race-ranking-progress>${view.progressLabel}</small>
         </span>
-        <strong class="appointment-race-ranking-score">${count}</strong>
+        <strong class="appointment-race-ranking-score" data-race-ranking-score>${visibleCount}</strong>
       `;
       appointmentRaceRankingList.append(item);
     });
@@ -1815,6 +2138,21 @@ const renderAppointmentRace = () => {
       appointmentRaceRankingCount.textContent = `${participants.length} participante${participants.length === 1 ? "" : "s"}`;
     }
   }
+
+  if (leaderId) {
+    const leaderAdvanceEvent = advanceEvents.find((event) => event.userId === leaderId);
+    positionAppointmentRaceCrown(leaderId, {
+      position: leaderAdvanceEvent?.initialPosition ?? null,
+      switching: leaderChanged,
+    });
+  } else if (appointmentRaceFloatingCrown) {
+    appointmentRaceFloatingCrown.hidden = true;
+  }
+  advanceEvents.forEach((event) => animateAppointmentRaceAdvance({ ...event, isLeader: event.userId === leaderId }));
+  goalEvents.forEach((event) => triggerAppointmentRaceGoalCelebration(event));
+  appointmentRaceLastCounts = nextCountSnapshot;
+  appointmentRaceHasCountSnapshot = true;
+  appointmentRaceLastLeaderId = leaderId;
 
   hydrateAppointmentRaceAvatars(participants);
 
@@ -7689,6 +8027,9 @@ const switchTab = () => {
     section.style.display = section.dataset.tab === activeTab ? "" : "none";
   });
   document.body.classList.toggle("crm-race-active", activeTab === "corrida");
+  if (activeTab !== "corrida") {
+    cleanupAppointmentRaceAnimations({ stopTimer: true });
+  }
 
   navItems.forEach((item) => {
     const isActive = item.getAttribute("href") === "#" + activeTab;

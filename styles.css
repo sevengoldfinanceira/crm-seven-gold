@@ -11203,6 +11203,7 @@ body.theme-dark .appointment-race {
   grid-template-columns: 104px minmax(0, 1fr);
   gap: 8px;
   align-items: center;
+  position: relative;
   min-height: 43px;
   padding: 1px 0;
   border: 0;
@@ -11210,6 +11211,18 @@ body.theme-dark .appointment-race {
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+  overflow: visible;
+}
+
+.appointment-race-track::before {
+  content: "";
+  position: absolute;
+  inset: 2px -5px;
+  z-index: 0;
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(232, 177, 56, 0.2), rgba(245, 216, 116, 0.12), transparent 72%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .appointment-race-track:last-child {
@@ -11226,7 +11239,15 @@ body.theme-dark .appointment-race {
 }
 
 .appointment-race-track.is-bumped {
-  animation: raceTrackBoost 0.85s ease;
+  animation: none;
+}
+
+.appointment-race-track.is-bumped::before {
+  animation: raceTrackGlow 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.appointment-race-track.is-goal-celebrating::before {
+  animation: raceGoalTrackGlow 2.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .appointment-race-seller {
@@ -11235,6 +11256,8 @@ body.theme-dark .appointment-race {
   align-items: center;
   gap: 6px;
   min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .appointment-race-lane-code {
@@ -11288,6 +11311,8 @@ body.theme-dark .appointment-race {
 
 .appointment-race-progress-area {
   min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .appointment-race-track-meta {
@@ -11337,7 +11362,7 @@ body.theme-dark .appointment-race {
   transform: translateY(-50%);
   background: linear-gradient(90deg, var(--car-light, var(--sg-gold-light)), var(--car-primary, var(--sg-gold-main)));
   box-shadow: 0 8px 16px var(--car-shadow, rgba(209, 153, 44, 0.22));
-  transition: width 0.5s ease;
+  transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .appointment-race-car {
@@ -11347,8 +11372,9 @@ body.theme-dark .appointment-race {
   width: 100px;
   height: 38px;
   transform: translate(-50%, -50%);
-  transition: left 0.5s ease;
+  transition: left 0.9s cubic-bezier(0.22, 1, 0.36, 1);
   z-index: 3;
+  will-change: left;
 }
 
 .appointment-race-car-shadow {
@@ -11360,6 +11386,47 @@ body.theme-dark .appointment-race {
   border-radius: 50%;
   background: radial-gradient(ellipse, rgba(17, 17, 17, 0.22) 0%, rgba(17, 17, 17, 0.08) 52%, transparent 72%);
   filter: blur(2px);
+  z-index: 0;
+}
+
+.appointment-race-car-smoke {
+  position: absolute;
+  left: -5px;
+  top: 19px;
+  width: 36px;
+  height: 18px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.appointment-race-car-smoke span {
+  position: absolute;
+  right: 0;
+  top: 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.16);
+  opacity: 0;
+  transform: translate3d(0, 0, 0) scale(0.55);
+  animation: raceSmokePuff 1.7s ease-out infinite;
+  will-change: transform, opacity;
+}
+
+.appointment-race-car-smoke span:nth-child(2) {
+  top: 3px;
+  animation-delay: 0.45s;
+}
+
+.appointment-race-car-smoke span:nth-child(3) {
+  top: 10px;
+  animation-delay: 0.9s;
+}
+
+.appointment-race-track.is-advancing .appointment-race-car-smoke span,
+.appointment-race-track.is-goal-celebrating .appointment-race-car-smoke span {
+  background: rgba(144, 104, 32, 0.2);
+  animation-duration: 0.62s;
 }
 
 .appointment-race-car-body {
@@ -11374,6 +11441,26 @@ body.theme-dark .appointment-race {
     linear-gradient(90deg, var(--car-dark, var(--sg-gold-dark)) 0%, var(--car-primary, var(--sg-gold-mid)) 48%, var(--car-light, var(--sg-gold-light)) 100%);
   border: 1px solid rgba(17, 17, 17, 0.18);
   box-shadow: 0 9px 18px var(--car-shadow, rgba(209, 153, 44, 0.24));
+  z-index: 2;
+  will-change: transform;
+}
+
+.appointment-race-track.is-race-active:not(.is-advancing) .appointment-race-car-body {
+  animation: raceEngineIdle 1.5s ease-in-out infinite;
+}
+
+.appointment-race-track.is-leader .appointment-race-car-body {
+  box-shadow:
+    0 9px 18px var(--car-shadow, rgba(209, 153, 44, 0.24)),
+    0 0 0 2px rgba(232, 177, 56, 0.32),
+    0 0 20px rgba(232, 177, 56, 0.22);
+}
+
+.appointment-race-track.is-goal-celebrating .appointment-race-car-body {
+  box-shadow:
+    0 12px 24px var(--car-shadow, rgba(209, 153, 44, 0.28)),
+    0 0 0 3px rgba(245, 216, 116, 0.55),
+    0 0 32px rgba(232, 177, 56, 0.42);
 }
 
 .appointment-race-car-tail {
@@ -11416,7 +11503,8 @@ body.theme-dark .appointment-race {
 }
 
 .appointment-race-car-photo,
-.appointment-race-ranking-photo {
+.appointment-race-ranking-photo,
+.appointment-race-goal-photo {
   width: 100%;
   height: 100%;
   border-radius: inherit;
@@ -11431,7 +11519,8 @@ body.theme-dark .appointment-race {
 }
 
 .appointment-race-car-photo img,
-.appointment-race-ranking-photo img {
+.appointment-race-ranking-photo img,
+.appointment-race-goal-photo img {
   width: 100%;
   height: 100%;
   display: block;
@@ -11465,6 +11554,12 @@ body.theme-dark .appointment-race {
     radial-gradient(circle, #F5D874 0 16%, #111111 17% 48%, #2F2F2F 49% 68%, #111111 69%);
   border: 2px solid #111111;
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.appointment-race-track.is-advancing .appointment-race-car-wheel {
+  animation: raceWheelSpin 0.28s linear infinite;
 }
 
 .appointment-race-car-wheel--rear {
@@ -11492,6 +11587,139 @@ body.theme-dark .appointment-race {
   font-size: 0.66rem;
   font-weight: 950;
   animation: raceBoostBadge 0.85s ease both;
+}
+
+.appointment-race-seller-copy span.is-updating,
+.appointment-race-ranking-score.is-updating {
+  animation: raceCountUpdate 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.appointment-race-floating-crown {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 23px;
+  z-index: 8;
+  pointer-events: none;
+  color: var(--sg-gold-main);
+  transform: translate3d(var(--race-crown-x, 0), var(--race-crown-y, 0), 0) translate(-50%, -100%);
+  opacity: 1;
+  transition:
+    transform 0.72s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.22s ease,
+    width 0.22s ease,
+    height 0.22s ease;
+}
+
+.appointment-race-floating-crown[hidden] {
+  display: none !important;
+}
+
+.appointment-race-floating-crown-inner {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 8px 12px rgba(144, 104, 32, 0.3));
+  animation: raceCrownFloat 1.9s ease-in-out infinite;
+}
+
+.appointment-race-floating-crown svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.appointment-race-floating-crown.is-large {
+  width: 42px;
+  height: 32px;
+}
+
+.appointment-race-floating-crown.is-large .appointment-race-floating-crown-inner {
+  filter: drop-shadow(0 10px 18px rgba(232, 177, 56, 0.52));
+}
+
+.appointment-race-floating-crown.is-switching {
+  opacity: 0.82;
+}
+
+.appointment-race-confetti-burst {
+  position: absolute;
+  left: var(--race-confetti-left, 94%);
+  top: 50%;
+  width: 1px;
+  height: 1px;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.appointment-race-confetti-burst span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--sg-gold-main);
+  opacity: 0;
+  transform: translate3d(0, 0, 0) rotate(0deg) scale(0.65);
+  animation: raceConfettiBurst 0.95s cubic-bezier(0.22, 1, 0.36, 1) var(--race-confetti-delay, 0ms) both;
+  will-change: transform, opacity;
+}
+
+.appointment-race-confetti-burst span[data-confetti-tone="1"] {
+  background: var(--sg-gold-light);
+}
+
+.appointment-race-confetti-burst span[data-confetti-tone="2"] {
+  background: var(--sg-gold-dark);
+}
+
+.appointment-race-goal-toast {
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  z-index: 9;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: min(360px, calc(100% - 28px));
+  padding: 9px 12px;
+  border: 1px solid rgba(232, 177, 56, 0.58);
+  border-radius: 14px;
+  color: var(--sg-text);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 18px 40px rgba(144, 104, 32, 0.2);
+  transform: translate3d(-50%, 0, 0);
+  animation: raceGoalToast 2.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  pointer-events: none;
+}
+
+.appointment-race-goal-photo {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border: 2px solid #FFFFFF;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px rgba(232, 177, 56, 0.42);
+  font-size: 0.66rem;
+}
+
+.appointment-race-goal-toast span {
+  display: grid;
+  gap: 1px;
+}
+
+.appointment-race-goal-toast strong {
+  color: var(--sg-gold-dark);
+  font-size: 0.82rem;
+  font-weight: 950;
+}
+
+.appointment-race-goal-toast small {
+  color: var(--sg-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
 }
 
 .appointment-race-finish-marker {
@@ -11754,6 +11982,77 @@ body.theme-dark .appointment-race-settings-form .ghost-button {
   0% { opacity: 0; transform: translate(-50%, 10px) scale(0.92); }
   40% { opacity: 1; transform: translate(-50%, -4px) scale(1); }
   100% { opacity: 0; transform: translate(-50%, -18px) scale(0.98); }
+}
+
+@keyframes raceSmokePuff {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.55); }
+  18% { opacity: 0.28; transform: translate3d(-5px, -2px, 0) scale(0.75); }
+  100% { opacity: 0; transform: translate3d(-28px, -9px, 0) scale(1.55); }
+}
+
+@keyframes raceEngineIdle {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  35% { transform: translate3d(0, -0.8px, 0); }
+  70% { transform: translate3d(0.8px, 0, 0); }
+}
+
+@keyframes raceWheelSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes raceTrackGlow {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes raceGoalTrackGlow {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  70% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+@keyframes raceCountUpdate {
+  0% { opacity: 0.7; transform: translate3d(0, 2px, 0) scale(0.94); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes raceCrownFloat {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -4px, 0); }
+}
+
+@keyframes raceConfettiBurst {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg) scale(0.65); }
+  16% { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(var(--race-confetti-x, 0), var(--race-confetti-y, -28px), 0) rotate(var(--race-confetti-rotate, 180deg)) scale(1); }
+}
+
+@keyframes raceGoalToast {
+  0% { opacity: 0; transform: translate3d(-50%, -10px, 0) scale(0.96); }
+  12% { opacity: 1; transform: translate3d(-50%, 0, 0) scale(1); }
+  82% { opacity: 1; transform: translate3d(-50%, 0, 0) scale(1); }
+  100% { opacity: 0; transform: translate3d(-50%, -8px, 0) scale(0.98); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .appointment-race *,
+  .appointment-race *::before,
+  .appointment-race *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .appointment-race-car-smoke,
+  .appointment-race-confetti-burst {
+    display: none !important;
+  }
+
+  .appointment-race-floating-crown-inner {
+    animation: none !important;
+  }
 }
 
 @media (max-width: 1180px) {
