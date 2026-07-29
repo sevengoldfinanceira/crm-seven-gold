@@ -1729,6 +1729,20 @@
         const calculatedBrl = creditValue * (clampedPct / 100);
         embMoneyInput.value = formatCurrency(calculatedBrl);
       }
+
+      // Check max allowed for Own Bid (total sum cannot exceed 80%)
+      const incEmbedded = document.getElementById('pf-embedded-bid-toggle')?.checked ?? true;
+      const effectiveEmb = incEmbedded ? clampedPct : 0;
+      const maxOwnAllowed = Math.max(80 - effectiveEmb, 0);
+
+      if (ownRangeSlider) {
+        ownRangeSlider.max = maxOwnAllowed;
+        const currentOwn = parseFloat(ownRangeSlider.value) || 0;
+        if (currentOwn > maxOwnAllowed) {
+          syncOwnBidFromPercentage(maxOwnAllowed, 'clamp');
+        }
+      }
+
       updateA4Sheet();
     };
 
@@ -1751,12 +1765,19 @@
       }
     };
 
-    // Helper: Sync Own Bid
+    // Helper: Sync Own Bid (Capped so Embedded + Own <= 80%)
     const syncOwnBidFromPercentage = (pct, source) => {
-      const clampedPct = Math.min(Math.max(parseFloat(pct) || 0, 0), 50);
+      const incEmbedded = document.getElementById('pf-embedded-bid-toggle')?.checked ?? true;
+      const currentEmb = incEmbedded ? (parseFloat(embRangeSlider?.value || 0)) : 0;
+      const maxOwnAllowed = Math.max(80 - currentEmb, 0);
+
+      const clampedPct = Math.min(Math.max(parseFloat(pct) || 0, 0), maxOwnAllowed);
       const displayPct = formatPctDisplay(clampedPct);
 
-      if (ownRangeSlider && source !== 'slider') ownRangeSlider.value = clampedPct;
+      if (ownRangeSlider) {
+        ownRangeSlider.max = maxOwnAllowed;
+        if (source !== 'slider') ownRangeSlider.value = clampedPct;
+      }
       if (ownBadgeEl) ownBadgeEl.textContent = displayPct;
       if (ownPctInput && source !== 'pctInput') ownPctInput.value = displayPct;
 
@@ -1775,10 +1796,14 @@
       }
       const valMoney = parseFloat(digits) / 100;
       if (creditValue > 0) {
-        const maxMoney = creditValue * 0.50;
+        const incEmbedded = document.getElementById('pf-embedded-bid-toggle')?.checked ?? true;
+        const currentEmb = incEmbedded ? (parseFloat(embRangeSlider?.value || 0)) : 0;
+        const maxOwnPct = Math.max(80 - currentEmb, 0);
+
+        const maxMoney = creditValue * (maxOwnPct / 100);
         const clampedMoney = Math.min(valMoney, maxMoney);
         if (ownMoneyInput) ownMoneyInput.value = formatCurrency(clampedMoney);
-        const calcPct = Math.min(Math.max((clampedMoney / creditValue) * 100, 0), 50);
+        const calcPct = Math.min(Math.max((clampedMoney / creditValue) * 100, 0), maxOwnPct);
         syncOwnBidFromPercentage(calcPct, 'moneyInput');
       } else {
         if (ownMoneyInput) ownMoneyInput.value = formatCurrency(valMoney);
