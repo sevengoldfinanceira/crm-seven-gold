@@ -1460,7 +1460,7 @@
       const totalBidPct = embPct + ownPct;
 
       let bidTitle = "Valor do Lance Embutido";
-      let bidSubText = "(Adiantamento de Parcelas)";
+      let bidSubText = "(Adiant. de Parcelas)";
       let lanceText = formatCurrency(totalBidNumeric);
 
       if (includeEmbedded && includeOwn) {
@@ -1473,7 +1473,7 @@
         }
       } else if (includeEmbedded) {
         bidTitle = "Valor do Lance Embutido";
-        bidSubText = "(Adiantamento de Parcelas)";
+        bidSubText = "(Adiant. de Parcelas)";
         if (showPct) {
           lanceText = `${formatCurrency(embAmountBrl)} (${embPct.toFixed(1)}%)`;
         } else {
@@ -1481,7 +1481,7 @@
         }
       } else if (includeOwn) {
         bidTitle = "Valor do Lance Livre";
-        bidSubText = "(Recurso Próprio do Bolso)";
+        bidSubText = "(Recurso Próprio)";
         if (showPct) {
           lanceText = `${formatCurrency(ownAmountBrl)} (${ownPct.toFixed(1)}%)`;
         } else {
@@ -1627,9 +1627,9 @@
               ${hasAnyBid ? `
               <tr>
                 <td style="padding:13px 18px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
-                  <div style="display:flex; align-items:center; gap:10px;">
-                    <i data-lucide="gavel" style="width:16px; height:16px; color:#B98220;"></i>
-                    <span>${bidTitle} <span style="font-size:0.75em; font-weight:400; color:#9ca3af;">${bidSubText}</span></span>
+                  <div style="display:flex; align-items:center; gap:8px; white-space:nowrap;">
+                    <i data-lucide="gavel" style="width:16px; height:16px; color:#B98220; flex-shrink:0;"></i>
+                    <span style="white-space:nowrap;">${bidTitle} <span style="font-size:0.75em; font-weight:400; color:#9ca3af;">${bidSubText}</span></span>
                   </div>
                 </td>
                 <td style="padding:13px 18px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#050505; font-size:0.96rem;">${lanceText}</td>
