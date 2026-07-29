@@ -1643,15 +1643,18 @@ const getAppointmentRaceMedal = (index) => {
   return `${index + 1}º`;
 };
 
+const getAppointmentRaceVisibleParticipants = (participants = []) =>
+  participants.filter((seller) => !isAdminRole(seller.role || seller.user_role || seller.cargo));
+
 const updateAppointmentRaceTimeLeft = () => {
   if (appointmentRaceTimeLeft) appointmentRaceTimeLeft.textContent = formatAppointmentRaceTimeLeft();
 };
 
 const renderAppointmentRace = () => {
   const race = appointmentRaceState?.race || null;
-  const participants = Array.isArray(appointmentRaceState?.participants)
-    ? appointmentRaceState.participants
-    : [];
+  const participants = getAppointmentRaceVisibleParticipants(
+    Array.isArray(appointmentRaceState?.participants) ? appointmentRaceState.participants : []
+  );
   const currentUser = getAppointmentRaceUser();
   const isAdmin = Boolean(currentUser && isAdminRole(currentUser.cargo));
   const configButton = document.querySelector("[data-race-open-settings]");

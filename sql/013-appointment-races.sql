@@ -127,7 +127,6 @@ as $$
     from public.crm_users u
     where coalesce(u.ativo, false) = true
       and lower(regexp_replace(unaccent(coalesce(u.cargo, '')), '[^a-z0-9]+', '-', 'g')) in (
-        'diretor-ceo', 'dono', 'administrador',
         'coordenador-comercial', 'supervisor-comercial',
         'vendedor', 'assistente-vendas', 'home-office'
       )
