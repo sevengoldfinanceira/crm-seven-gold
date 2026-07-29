@@ -71,6 +71,37 @@ as $$
   select (now() at time zone 'America/Sao_Paulo')::date;
 $$;
 
+create or replace function public.ensure_weekday_appointment_race(
+  p_organization_id text default 'seven_gold'
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_today date := public.appointment_race_today_sp();
+  v_target integer;
+begin
+  if extract(isodow from v_today) not between 1 and 5 then
+    return;
+  end if;
+
+  select r.target
+  into v_target
+  from public.appointment_races r
+  where r.organization_id = p_organization_id
+    and r.race_date < v_today
+    and extract(isodow from r.race_date) between 1 and 5
+  order by r.race_date desc, r.updated_at desc
+  limit 1;
+
+  insert into public.appointment_races (organization_id, race_date, target, status, created_by)
+  values (p_organization_id, v_today, coalesce(v_target, 10), 'active', null)
+  on conflict (organization_id, race_date) do nothing;
+end;
+$$;
+
 create or replace function public.appointment_race_valid_counts(
   p_race_date date,
   p_target integer
@@ -175,6 +206,8 @@ declare
   v_race public.appointment_races%rowtype;
   v_participants jsonb := '[]'::jsonb;
 begin
+  perform public.ensure_weekday_appointment_race(p_organization_id);
+
   select *
   into v_race
   from public.appointment_races
@@ -230,6 +263,8 @@ declare
   v_race public.appointment_races%rowtype;
   v_winner record;
 begin
+  perform public.ensure_weekday_appointment_race(p_organization_id);
+
   select *
   into v_race
   from public.appointment_races
@@ -376,6 +411,7 @@ revoke all on public.appointment_races from public, anon, authenticated;
 grant select on public.appointment_races to authenticated;
 grant all on public.appointment_races to service_role;
 
+revoke all on function public.ensure_weekday_appointment_race(text) from public, anon, authenticated;
 revoke all on function public.get_daily_appointment_race(text) from public, anon, authenticated;
 revoke all on function public.finish_appointment_race_if_needed(text) from public, anon, authenticated;
 revoke all on function public.upsert_daily_appointment_race(integer, text) from public, anon, authenticated;

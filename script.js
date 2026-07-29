@@ -52,6 +52,8 @@ let appointmentRaceLastCounts = new Map();
 let appointmentRaceTimer = null;
 let appointmentRaceWinnerSeenKey = sessionStorage.getItem("seven-gold-race-winner-seen") || "";
 const appointmentRaceAvatarCache = new Map();
+const appointmentRaceAvatarPending = new Set();
+let appointmentRaceProfileAvatarPromise = null;
 let salesRecords = [];
 let salesUsers = [];
 let currentEditingSale = null;
@@ -1460,9 +1462,15 @@ const formatAppointmentRaceTime = (value) => {
   }
 };
 
+const getSaoPauloNow = () => new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+
+const isAppointmentRaceBusinessDay = (date = getSaoPauloNow()) => {
+  const day = date.getDay();
+  return day >= 1 && day <= 5;
+};
+
 const formatAppointmentRaceTimeLeft = () => {
-  const now = new Date();
-  const saoPauloNow = new Date(now.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+  const saoPauloNow = getSaoPauloNow();
   const midnight = new Date(saoPauloNow);
   midnight.setDate(midnight.getDate() + 1);
   midnight.setHours(0, 0, 0, 0);
@@ -1528,26 +1536,70 @@ const updateAppointmentRaceAvatarNodes = (key, avatarUrl) => {
   });
 };
 
+const loadAppointmentRaceProfileAvatars = () => {
+  if (appointmentRaceProfileAvatarPromise) return appointmentRaceProfileAvatarPromise;
+  const client = getClient();
+  if (!client?.auth) return Promise.resolve();
+
+  appointmentRaceProfileAvatarPromise = (async () => {
+    const { data: sessionData } = await client.auth.getSession();
+    const token = sessionData?.session?.access_token;
+    if (!token) return;
+
+    const response = await fetch("/api/permissions/save", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ list_user_avatars: true }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || result.ok !== true) {
+      throw new Error(result.error || "Não foi possível carregar as fotos dos colaboradores.");
+    }
+
+    (result.avatars || []).forEach((avatar) => {
+      const key = String(avatar?.id || "").trim();
+      const url = String(avatar?.url || "").trim();
+      if (!key || !url) return;
+      appointmentRaceAvatarCache.set(key, url);
+      updateAppointmentRaceAvatarNodes(key, url);
+    });
+  })().catch((error) => {
+    console.warn("[Corrida de Agendamentos] Não foi possível carregar fotos das contas:", error);
+  });
+
+  return appointmentRaceProfileAvatarPromise;
+};
+
 const hydrateAppointmentRaceAvatars = (participants = []) => {
   const client = getClient();
   if (!client) return;
 
-  participants.forEach((seller) => {
-    const key = getAppointmentRaceAvatarKey(seller);
-    if (!key || getAppointmentRaceDirectAvatarUrl(seller) || appointmentRaceAvatarCache.has(key)) return;
-    appointmentRaceAvatarCache.set(key, "");
+  const hydrateStorageFallback = () => {
+    participants.forEach((seller) => {
+      const key = getAppointmentRaceAvatarKey(seller);
+      if (!key || getAppointmentRaceDirectAvatarUrl(seller) || appointmentRaceAvatarCache.get(key) || appointmentRaceAvatarPending.has(key)) return;
+      appointmentRaceAvatarPending.add(key);
 
-    client.storage
-      .from(APPOINTMENT_RACE_AVATAR_BUCKET)
-      .download(`${key}/profile/avatar.jpg`)
-      .then(({ data, error }) => {
-        if (error || !data) return;
-        const avatarUrl = URL.createObjectURL(data);
-        appointmentRaceAvatarCache.set(key, avatarUrl);
-        updateAppointmentRaceAvatarNodes(key, avatarUrl);
-      })
-      .catch(() => {});
-  });
+      client.storage
+        .from(APPOINTMENT_RACE_AVATAR_BUCKET)
+        .download(`${key}/profile/avatar.jpg`)
+        .then(({ data, error }) => {
+          if (error || !data) return;
+          const avatarUrl = URL.createObjectURL(data);
+          appointmentRaceAvatarCache.set(key, avatarUrl);
+          updateAppointmentRaceAvatarNodes(key, avatarUrl);
+        })
+        .catch(() => {})
+        .finally(() => {
+          appointmentRaceAvatarPending.delete(key);
+        });
+    });
+  };
+
+  loadAppointmentRaceProfileAvatars().finally(hydrateStorageFallback);
 };
 
 const getAppointmentRaceCarTheme = (index = 0) => appointmentRaceCarThemes[index % appointmentRaceCarThemes.length];
@@ -1574,6 +1626,7 @@ const renderAppointmentRace = () => {
   if (configButton) configButton.hidden = !isAdmin;
 
   updateAppointmentRaceTimeLeft();
+  const raceBusinessDay = isAppointmentRaceBusinessDay();
 
   if (!race) {
     if (appointmentRaceTarget) appointmentRaceTarget.textContent = "--";
@@ -1584,15 +1637,19 @@ const renderAppointmentRace = () => {
     if (appointmentRaceWinnerBanner) appointmentRaceWinnerBanner.hidden = true;
     if (appointmentRaceEmpty) {
       appointmentRaceEmpty.hidden = false;
-      appointmentRaceEmpty.querySelector("strong").textContent = "Nenhuma corrida iniciada hoje.";
-      appointmentRaceEmpty.querySelector("span").textContent = isAdmin
-        ? "Clique em Configurar para iniciar a corrida diária."
-        : "Aguarde um administrador iniciar a corrida diária.";
+      appointmentRaceEmpty.querySelector("strong").textContent = raceBusinessDay
+        ? "Corrida automática aguardando a meta."
+        : "Corrida pausada no fim de semana.";
+      appointmentRaceEmpty.querySelector("span").textContent = raceBusinessDay
+        ? isAdmin
+          ? "Configure a meta uma vez para ela repetir automaticamente de segunda a sexta-feira."
+          : "A corrida diária será criada automaticamente em dias úteis."
+        : "A meta volta automaticamente no próximo dia útil, de segunda a sexta-feira.";
     }
     if (appointmentRaceTrackList) appointmentRaceTrackList.innerHTML = "";
     if (appointmentRaceRankingList) appointmentRaceRankingList.innerHTML = "";
     if (appointmentRaceRankingCount) appointmentRaceRankingCount.textContent = "0 participantes";
-    setAppointmentRaceStatus("");
+    setAppointmentRaceStatus(raceBusinessDay ? "" : "Corrida automática de segunda a sexta-feira.");
     return;
   }
 
