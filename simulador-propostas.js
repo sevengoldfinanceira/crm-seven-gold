@@ -1736,7 +1736,9 @@
       const maxOwnAllowed = Math.max(80 - effectiveEmb, 0);
 
       if (ownRangeSlider) {
-        ownRangeSlider.max = maxOwnAllowed;
+        if (String(ownRangeSlider.max) !== String(maxOwnAllowed)) {
+          ownRangeSlider.max = maxOwnAllowed;
+        }
         const currentOwn = parseFloat(ownRangeSlider.value) || 0;
         if (currentOwn > maxOwnAllowed) {
           syncOwnBidFromPercentage(maxOwnAllowed, 'clamp');
@@ -1771,12 +1773,15 @@
       const currentEmb = incEmbedded ? (parseFloat(embRangeSlider?.value || 0)) : 0;
       const maxOwnAllowed = Math.max(80 - currentEmb, 0);
 
+      if (ownRangeSlider && String(ownRangeSlider.max) !== String(maxOwnAllowed)) {
+        ownRangeSlider.max = maxOwnAllowed;
+      }
+
       const clampedPct = Math.min(Math.max(parseFloat(pct) || 0, 0), maxOwnAllowed);
       const displayPct = formatPctDisplay(clampedPct);
 
-      if (ownRangeSlider) {
-        ownRangeSlider.max = maxOwnAllowed;
-        if (source !== 'slider') ownRangeSlider.value = clampedPct;
+      if (ownRangeSlider && source !== 'slider') {
+        ownRangeSlider.value = clampedPct;
       }
       if (ownBadgeEl) ownBadgeEl.textContent = displayPct;
       if (ownPctInput && source !== 'pctInput') ownPctInput.value = displayPct;
