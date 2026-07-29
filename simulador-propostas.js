@@ -1115,11 +1115,13 @@
     const finalInstFormatted = formatCurrency(finalInstValue);
     const halfInstFormatted = formatCurrency(finalInstValue * 0.5);
 
-    const savedBidPercent = proposal.bid_percentage ?? proposal.fixed_bid_percentage ?? 30;
+    const rawBidPct = proposal.bid_percentage ?? proposal.fixed_bid_percentage ?? 30;
+    const savedBidPercent = parseFloat(String(rawBidPct).replace(/[^\d.]/g, '')) || 30;
     const savedBidAmount = proposal.bid_amount ?? (creditValue * (savedBidPercent / 100));
     const savedBidAmountFormatted = formatCurrency(savedBidAmount);
 
-    const savedOwnBidPercent = proposal.own_bid_percentage ?? 0;
+    const rawOwnBidPct = proposal.own_bid_percentage ?? 0;
+    const savedOwnBidPercent = parseFloat(String(rawOwnBidPct).replace(/[^\d.]/g, '')) || 0;
     const savedOwnBidAmount = proposal.own_bid_amount ?? (creditValue * (savedOwnBidPercent / 100));
     const savedOwnBidAmountFormatted = formatCurrency(savedOwnBidAmount);
 
@@ -1817,7 +1819,9 @@
     };
 
     if (embRangeSlider) {
-      embRangeSlider.addEventListener('input', (e) => syncEmbeddedBidFromPercentage(e.target.value, 'slider'));
+      const handleEmbSlider = (e) => syncEmbeddedBidFromPercentage(e.target.value, 'slider');
+      embRangeSlider.addEventListener('input', handleEmbSlider);
+      embRangeSlider.addEventListener('change', handleEmbSlider);
     }
     if (embPctInput) {
       embPctInput.addEventListener('input', (e) => {
@@ -1830,7 +1834,9 @@
     }
 
     if (ownRangeSlider) {
-      ownRangeSlider.addEventListener('input', (e) => syncOwnBidFromPercentage(e.target.value, 'slider'));
+      const handleOwnSlider = (e) => syncOwnBidFromPercentage(e.target.value, 'slider');
+      ownRangeSlider.addEventListener('input', handleOwnSlider);
+      ownRangeSlider.addEventListener('change', handleOwnSlider);
     }
     if (ownPctInput) {
       ownPctInput.addEventListener('input', (e) => {
