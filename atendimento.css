@@ -146,7 +146,9 @@ body { font-family: Inter, sans-serif; background: var(--page); color: var(--ink
   color: #fff;
 }
 
-.service-user-actions svg {
+.service-user-actions svg,
+.service-user-actions i {
+  order: -1;
   flex: 0 0 auto;
   width: 14px;
   height: 14px;

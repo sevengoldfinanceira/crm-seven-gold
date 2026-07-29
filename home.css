@@ -12162,7 +12162,9 @@ body.theme-dark .company-module-grid>a:hover {
   background: rgba(212, 175, 55, .18);
 }
 
-.empresa-topbar-panels svg {
+.empresa-topbar-panels svg,
+.empresa-topbar-panels i {
+  order: -1;
   width: 16px;
   height: 16px;
   color: currentColor;
