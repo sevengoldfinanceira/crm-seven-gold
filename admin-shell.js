@@ -66,7 +66,7 @@
         <img src="assets/icons/seven-gold-g7.png?v=20260714" alt="" />
       </a>
       <a class="empresa-topbar-panels" href="painel.html" title="Voltar aos painéis">
-        <i data-lucide="layout-grid"></i>
+        <i data-lucide="arrow-right"></i>
         <span>Voltar aos painéis</span>
       </a>
       <nav class="empresa-topbar-nav" aria-label="Navegação da empresa">
