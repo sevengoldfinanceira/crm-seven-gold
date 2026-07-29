@@ -1119,6 +1119,10 @@
     const savedBidAmount = proposal.bid_amount ?? (creditValue * (savedBidPercent / 100));
     const savedBidAmountFormatted = formatCurrency(savedBidAmount);
 
+    const savedOwnBidPercent = proposal.own_bid_percentage ?? 0;
+    const savedOwnBidAmount = proposal.own_bid_amount ?? (creditValue * (savedOwnBidPercent / 100));
+    const savedOwnBidAmountFormatted = formatCurrency(savedOwnBidAmount);
+
     // Switch active tab in atendimento.html
     const tabs = document.querySelectorAll('[data-service-tab]');
     tabs.forEach(t => t.classList.remove('active'));
@@ -1169,16 +1173,16 @@
                 <div class="pf-form-header-icon">
                   <i data-lucide="user-check" style="width:22px; height:22px; color:#D8B34A;"></i>
                 </div>
-                <h3 class="pf-form-title">Dados do Cliente & Lance</h3>
+                <h3 class="pf-form-title">Informações do Cliente & Lance</h3>
               </div>
 
-              <form id="pf-complementary-form" class="pf-form-body">
-                <!-- Nome Completo -->
+              <form id="proposta-final-form" onsubmit="return false;" style="display:flex; flex-direction:column; gap:16px;">
+                <!-- Nome do Cliente -->
                 <div class="simulador-form-group">
-                  <label for="pf-client-name">Nome Completo do Cliente <span class="req">*</span></label>
+                  <label for="pf-client-name">Nome Completo do Cliente</label>
                   <div class="pf-input-wrapper">
                     <i data-lucide="user" class="pf-input-icon"></i>
-                    <input type="text" id="pf-client-name" class="simulador-input pf-input-with-icon" placeholder="Ex: João da Silva" value="${proposal.client_name || proposal.nome || ''}" required />
+                    <input type="text" id="pf-client-name" class="simulador-input pf-input-with-icon" placeholder="Ex: João da Silva Santos" value="${proposal.client_name || proposal.nome || ''}" />
                   </div>
                 </div>
 
@@ -1226,30 +1230,72 @@
 
                 <!-- Área de Lance -->
                 <div class="pf-bid-section-box">
-                  <label class="pf-bid-toggle-header">
+                  <label class="pf-bid-toggle-header" style="display:flex; align-items:center; gap:10px; cursor:pointer;">
                     <input type="checkbox" id="pf-include-bid-toggle" ${proposal.include_bid !== false ? 'checked' : ''} class="pf-checkbox-custom" />
-                    <span class="pf-bid-toggle-title">Incluir Oferta / Pretensão de Lance nesta Proposta</span>
+                    <span class="pf-bid-toggle-title" style="font-weight:800; color:#0F172A;">Incluir Oferta / Pretensão de Lance nesta Proposta</span>
                   </label>
 
-                  <div id="pf-bid-controls-wrapper" style="display: ${proposal.include_bid !== false ? 'block' : 'none'};">
-                    <div class="pf-bid-slider-header">
-                      <label for="pf-embedded-bid-range" class="pf-bid-slider-label">
-                        <i data-lucide="sliders-horizontal" style="width:16px; height:16px; color:#D8B34A;"></i>
-                        Lance Embutido / Pretendido (%)
+                  <div id="pf-bid-controls-wrapper" style="display: ${proposal.include_bid !== false ? 'block' : 'none'}; margin-top:14px;">
+                    
+                    <!-- Sub-Seção 1: Lance Embutido -->
+                    <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:12px; padding:14px 16px; margin-bottom:12px;">
+                      <label class="pf-bid-subtoggle-header" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                        <input type="checkbox" id="pf-embedded-bid-toggle" ${proposal.include_embedded_bid !== false ? 'checked' : ''} class="pf-checkbox-custom" />
+                        <span style="font-weight:700; color:#0F172A; font-size:0.9rem;">Incluir Lance Embutido (Abatido da Carta)</span>
                       </label>
-                      <span id="pf-embedded-bid-badge" class="pf-bid-badge">${savedBidPercent}%</span>
+
+                      <div id="pf-embedded-bid-block" style="display: ${proposal.include_embedded_bid !== false ? 'block' : 'none'}; margin-top:12px;">
+                        <div class="pf-bid-slider-header">
+                          <label for="pf-embedded-bid-range" class="pf-bid-slider-label">
+                            <i data-lucide="sliders-horizontal" style="width:16px; height:16px; color:#D8B34A;"></i>
+                            Lance Embutido (%)
+                          </label>
+                          <span id="pf-embedded-bid-badge" class="pf-bid-badge">${savedBidPercent}%</span>
+                        </div>
+
+                        <input type="range" id="pf-embedded-bid-range" min="0" max="50" step="0.5" value="${savedBidPercent}" class="pf-range-slider" />
+
+                        <div class="pf-grid-2col pf-bid-values-grid">
+                          <div class="simulador-form-group">
+                            <label for="pf-embedded-bid" class="pf-sublabel">Porcentagem (%)</label>
+                            <input type="text" id="pf-embedded-bid" class="simulador-input pf-input-centered" value="${savedBidPercent}%" />
+                          </div>
+                          <div class="simulador-form-group">
+                            <label for="pf-bid-amount" class="pf-sublabel">Valor em R$ (Calculado)</label>
+                            <input type="text" id="pf-bid-amount" class="simulador-input brl-mask pf-input-bold-dark" placeholder="R$ 0,00" value="${savedBidAmountFormatted}" />
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
-                    <input type="range" id="pf-embedded-bid-range" min="0" max="50" step="0.5" value="${savedBidPercent}" class="pf-range-slider" />
+                    <!-- Sub-Seção 2: Lance Próprio / Livre -->
+                    <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:12px; padding:14px 16px; margin-bottom:12px;">
+                      <label class="pf-bid-subtoggle-header" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                        <input type="checkbox" id="pf-own-bid-toggle" ${proposal.include_own_bid ? 'checked' : ''} class="pf-checkbox-custom" />
+                        <span style="font-weight:700; color:#0F172A; font-size:0.9rem;">Incluir também Lance Próprio / Livre (Recurso Próprio do Bolso)</span>
+                      </label>
 
-                    <div class="pf-grid-2col pf-bid-values-grid">
-                      <div class="simulador-form-group">
-                        <label for="pf-embedded-bid" class="pf-sublabel">Porcentagem (%)</label>
-                        <input type="text" id="pf-embedded-bid" class="simulador-input pf-input-centered" value="${savedBidPercent}%" />
-                      </div>
-                      <div class="simulador-form-group">
-                        <label for="pf-bid-amount" class="pf-sublabel">Valor em R$ (Calculado)</label>
-                        <input type="text" id="pf-bid-amount" class="simulador-input brl-mask pf-input-bold-dark" placeholder="R$ 0,00" value="${savedBidAmountFormatted}" />
+                      <div id="pf-own-bid-block" style="display: ${proposal.include_own_bid ? 'block' : 'none'}; margin-top:12px;">
+                        <div class="pf-bid-slider-header">
+                          <label for="pf-own-bid-range" class="pf-bid-slider-label">
+                            <i data-lucide="sliders-horizontal" style="width:16px; height:16px; color:#D8B34A;"></i>
+                            Lance Próprio / Livre (%)
+                          </label>
+                          <span id="pf-own-bid-badge" class="pf-bid-badge">${savedOwnBidPercent}%</span>
+                        </div>
+
+                        <input type="range" id="pf-own-bid-range" min="0" max="50" step="0.5" value="${savedOwnBidPercent}" class="pf-range-slider" />
+
+                        <div class="pf-grid-2col pf-bid-values-grid">
+                          <div class="simulador-form-group">
+                            <label for="pf-own-bid" class="pf-sublabel">Porcentagem (%)</label>
+                            <input type="text" id="pf-own-bid" class="simulador-input pf-input-centered" value="${savedOwnBidPercent}%" />
+                          </div>
+                          <div class="simulador-form-group">
+                            <label for="pf-own-bid-amount" class="pf-sublabel">Valor em R$ (Calculado)</label>
+                            <input type="text" id="pf-own-bid-amount" class="simulador-input brl-mask pf-input-bold-dark" placeholder="R$ 0,00" value="${savedOwnBidAmountFormatted}" />
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -1343,7 +1389,7 @@
                   </div>
                   <div class="pf-summary-item-content">
                     <span class="pf-summary-label">PRAZO TOTAL</span>
-                    <strong class="pf-summary-value pf-val-dark">${formatTermMonthsYears(proposal.total_term_months)}</strong>
+                    <strong class="pf-summary-value pf-val-dark">${proposal.total_months || proposal.prazo || 180} Meses</strong>
                   </div>
                 </div>
               </div>
@@ -1389,21 +1435,62 @@
       const clientPhone = document.getElementById('pf-client-phone')?.value || '(00) 00000-0000';
       const propType = document.getElementById('pf-property-type')?.value || 'Imóvel Residencial';
       const showPct = document.getElementById('pf-show-percentage-toggle')?.checked || false;
-      const bidAmount = document.getElementById('pf-bid-amount')?.value || 'R$ 0,00';
-      const embeddedBid = document.getElementById('pf-embedded-bid')?.value || '30%';
       const validityVal = document.getElementById('pf-validity')?.value ? new Date(document.getElementById('pf-validity').value + 'T00:00:00').toLocaleDateString('pt-BR') : '15 dias';
       const notesVal = document.getElementById('pf-notes')?.value?.trim() || '';
 
-      const includeBid = document.getElementById('pf-include-bid-toggle')?.checked ?? true;
+      const includeBidMain = document.getElementById('pf-include-bid-toggle')?.checked ?? true;
+      const includeEmbedded = includeBidMain && (document.getElementById('pf-embedded-bid-toggle')?.checked ?? true);
+      const includeOwn = includeBidMain && (document.getElementById('pf-own-bid-toggle')?.checked ?? false);
 
-      let lanceText = `${bidAmount}`;
-      if (showPct) {
-        lanceText += ` (${embeddedBid})`;
+      const parseMoney = (str) => {
+        if (!str) return 0;
+        const num = parseFloat(String(str).replace(/[^\d,]/g, '').replace(',', '.'));
+        return isNaN(num) ? 0 : num;
+      };
+
+      const embAmountBrl = includeEmbedded ? (parseMoney(document.getElementById('pf-bid-amount')?.value) || (creditValue * (parseFloat(document.getElementById('pf-embedded-bid-range')?.value || 0) / 100))) : 0;
+      const embPct = includeEmbedded ? (parseFloat(document.getElementById('pf-embedded-bid-range')?.value) || 0) : 0;
+
+      const ownAmountBrl = includeOwn ? (parseMoney(document.getElementById('pf-own-bid-amount')?.value) || (creditValue * (parseFloat(document.getElementById('pf-own-bid-range')?.value || 0) / 100))) : 0;
+      const ownPct = includeOwn ? (parseFloat(document.getElementById('pf-own-bid-range')?.value) || 0) : 0;
+
+      const totalBidNumeric = embAmountBrl + ownAmountBrl;
+      const totalBidPct = embPct + ownPct;
+
+      let bidTitle = "Valor do Lance Embutido";
+      let bidSubText = "(Adiantamento de Parcelas)";
+      let lanceText = formatCurrency(totalBidNumeric);
+
+      if (includeEmbedded && includeOwn) {
+        bidTitle = "Valor do Lance Misto";
+        bidSubText = "(Embutido + Recurso Próprio)";
+        if (showPct) {
+          lanceText = `${formatCurrency(totalBidNumeric)} (${totalBidPct.toFixed(1)}% — ${embPct.toFixed(1)}% Embutido + ${ownPct.toFixed(1)}% Livre)`;
+        } else {
+          lanceText = `${formatCurrency(totalBidNumeric)} (${formatCurrency(embAmountBrl)} Embutido + ${formatCurrency(ownAmountBrl)} Livre)`;
+        }
+      } else if (includeEmbedded) {
+        bidTitle = "Valor do Lance Embutido";
+        bidSubText = "(Adiantamento de Parcelas)";
+        if (showPct) {
+          lanceText = `${formatCurrency(embAmountBrl)} (${embPct.toFixed(1)}%)`;
+        } else {
+          lanceText = formatCurrency(embAmountBrl);
+        }
+      } else if (includeOwn) {
+        bidTitle = "Valor do Lance Livre";
+        bidSubText = "(Recurso Próprio do Bolso)";
+        if (showPct) {
+          lanceText = `${formatCurrency(ownAmountBrl)} (${ownPct.toFixed(1)}%)`;
+        } else {
+          lanceText = formatCurrency(ownAmountBrl);
+        }
       }
 
-      // Valor líquido para o imóvel = crédito - lance
-      const bidNumeric = includeBid ? (parseFloat(String(bidAmount).replace(/[^\d,]/g, '').replace(',', '.')) || 0) : 0;
-      const netPropertyValue = Math.max((proposal.credit_value || 0) - bidNumeric, 0);
+      const hasAnyBid = includeBidMain && (includeEmbedded || includeOwn);
+
+      // Valor líquido para o imóvel = crédito - lance embutido
+      const netPropertyValue = Math.max(creditValue - embAmountBrl, 0);
       const netPropertyFormatted = formatCurrency(netPropertyValue);
 
       const sheetEl = document.getElementById('proposta-final-a4-sheet');
@@ -1535,12 +1622,12 @@
                 </td>
                 <td style="padding:13px 18px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#050505; font-size:0.96rem;">${creditFormatted}</td>
               </tr>
-              ${includeBid ? `
+              ${hasAnyBid ? `
               <tr>
                 <td style="padding:13px 18px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:10px;">
                     <i data-lucide="gavel" style="width:16px; height:16px; color:#B98220;"></i>
-                    <span>Valor do Lance <span style="font-size:0.75em; font-weight:400; color:#9ca3af;">(Adiantamento de Parcelas)</span></span>
+                    <span>${bidTitle} <span style="font-size:0.75em; font-weight:400; color:#9ca3af;">${bidSubText}</span></span>
                   </div>
                 </td>
                 <td style="padding:13px 18px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#050505; font-size:0.96rem;">${lanceText}</td>
@@ -1576,170 +1663,182 @@
               <tr>
                 <td style="padding:13px 18px; border-bottom:1px solid #E4DEE8; background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:10px;">
-                    <i data-lucide="percent" style="width:16px; height:16px; color:#B98220;"></i>
-                    <span style="white-space:nowrap;">Valor da Parcela Reduzida (50% Meia Parcela)</span>
+                    <i data-lucide="trending-down" style="width:16px; height:16px; color:#B98220;"></i>
+                    <span>Valor da Parcela Reduzida (50%)</span>
                   </div>
                 </td>
-                <td style="padding:13px 18px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#050505; font-size:0.96rem;">${halfInstFormatted}</td>
+                <td style="padding:13px 18px; border-bottom:1px solid #E4DEE8; font-weight:800; color:#10B981; font-size:0.96rem;">${halfInstFormatted}</td>
               </tr>
               <tr>
                 <td style="padding:13px 18px; background:#FAF9FB; color:#706A78; font-weight:500;">
                   <div style="display:flex; align-items:center; gap:10px;">
                     <i data-lucide="calendar" style="width:16px; height:16px; color:#B98220;"></i>
-                    <span>Prazo de Pagamento do Plano</span>
+                    <span>Prazo Total</span>
                   </div>
                 </td>
-                <td style="padding:13px 18px; font-weight:800; color:#050505;">${formatTermMonthsYears(proposal.total_term_months)}</td>
+                <td style="padding:13px 18px; font-weight:800; color:#050505; font-size:0.96rem;">${proposal.total_months || proposal.prazo || 180} Meses</td>
               </tr>
             </tbody>
           </table>
 
           ${notesVal ? `
-          <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:14px; padding:20px 24px; font-size:0.86rem;">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
-              <div style="width:28px; height:28px; border-radius:50%; background:#0A0A0A; display:flex; align-items:center; justify-content:center; color:#C9A84C; flex-shrink:0;">
-                <i data-lucide="file-check" style="width:15px; height:15px;"></i>
-              </div>
-              <strong style="color:#0A0A0A; font-size:0.86rem; letter-spacing:0.03em; text-transform:uppercase;">OBSERVAÇÕES E CONDIÇÕES COMERCIAIS</strong>
+          <div style="background:#FAF9FB; border:1px solid #E4DEE8; border-radius:14px; padding:18px 22px;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <i data-lucide="info" style="width:16px; height:16px; color:#B98220;"></i>
+              <strong style="color:#0A0A0A; font-size:0.84rem; letter-spacing:0.02em; text-transform:uppercase;">OBSERVAÇÕES E CONDIÇÕES</strong>
             </div>
-            
-            <p style="margin:0 0 12px; color:#17111F; font-size:0.88rem; line-height:1.5;">${notesVal}</p>
-            
-            <div style="margin-top:12px; padding-top:12px; border-top:1px dashed #E4DEE8; font-size:0.76rem; color:#706A78; font-weight:600; line-height:1.5;">
-              <div>** Sujeito a análise e aprovação de crédito.</div>
-              <div>** Esta proposta é uma simulação, não garantindo qualquer espécie de obrigação entre as partes.</div>
-            </div>
+            <p style="margin:0; font-size:0.84rem; color:#524C5A; line-height:1.5; white-space:pre-wrap;">${notesVal}</p>
           </div>
-          ` : `
-          <div style="padding-top:4px; font-size:0.76rem; color:#706A78; font-weight:600; line-height:1.5;">
-            <div>** Sujeito a análise e aprovação de crédito.</div>
-            <div>** Esta proposta é uma simulação, não garantindo qualquer espécie de obrigação entre as partes.</div>
-          </div>
-          `}
+          ` : ''}
 
-          <div class="pf-a4-footer" style="border-top:1.5px solid #E8B138; padding-top:18px; display:grid; grid-template-columns:1fr 1px 1fr; gap:16px; align-items:center; font-size:0.78rem; color:#706A78; margin-top:auto;">
-            <div style="display:flex; align-items:center; justify-content:flex-start;">
-              <div style="background:#050505; padding:6px 12px; border-radius:8px; border:1px solid #D8B34A; display:inline-flex; align-items:center; box-shadow:0 4px 12px rgba(0,0,0,0.25);">
-                <img src="assets/icons/seven-gold-black-bg.jpg" alt="Seven Gold Financeira" style="height:48px; max-width:220px; object-fit:contain; border-radius:4px;" />
-              </div>
-            </div>
-
-            <div style="background:#E4DEE8; height:44px;"></div>
-
-            <div style="text-align:right; font-size:0.76rem; color:#706A78; display:flex; flex-direction:column; gap:4px;">
-              <div style="display:flex; align-items:center; justify-content:flex-end; gap:5px;">
-                <i data-lucide="instagram" style="width:13px; height:13px; color:#C9A84C;"></i>
-                <span>Instagram: @sevengoldfinanceira</span>
-              </div>
-              <div style="display:flex; align-items:center; justify-content:flex-end; gap:5px;">
-                <i data-lucide="globe" style="width:13px; height:13px; color:#C9A84C;"></i>
-                <span>www.sevengoldfinanceira.com.br</span>
-              </div>
-              <div style="display:flex; align-items:center; justify-content:flex-end; gap:5px;">
-                <i data-lucide="building" style="width:13px; height:13px; color:#B98220;"></i>
-                <span>CNPJ 66.347.779/0001-24</span>
-              </div>
-            </div>
+          <div style="border-top:1px solid #E4DEE8; padding-top:18px; display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#8C8594;">
+            <span>Proposta Comercial gerada por <strong>Seven Gold Financeira</strong></span>
+            <span>Documento para simples consulta comercial</span>
           </div>
         </div>
       `;
 
-      if (window.lucide && typeof window.lucide.createIcons === 'function') {
-        window.lucide.createIcons();
-      }
+      if (window.lucide) window.lucide.createIcons();
     }
 
-    // Bidirectional Range Slider <-> Percentage Input <-> Money Value Input
-    const rangeSlider = document.getElementById('pf-embedded-bid-range');
-    const badgeEl = document.getElementById('pf-embedded-bid-badge');
-    const pctInput = document.getElementById('pf-embedded-bid');
-    const moneyInput = document.getElementById('pf-bid-amount');
-    const creditVal = proposal.credit_value || 0;
+    // Initialize A4 Sheet rendering
+    updateA4Sheet();
 
-    const formatPctDisplay = (num) => {
-      const roundNum = Math.round(num * 100) / 100;
-      return `${roundNum}%`;
-    };
+    // Embedded Bid Range & Inputs
+    const embRangeSlider = document.getElementById('pf-embedded-bid-range');
+    const embBadgeEl = document.getElementById('pf-embedded-bid-badge');
+    const embPctInput = document.getElementById('pf-embedded-bid');
+    const embMoneyInput = document.getElementById('pf-bid-amount');
 
-    // Sync from Percentage
-    const syncFromPercentage = (pct, source) => {
+    // Own Bid Range & Inputs
+    const ownRangeSlider = document.getElementById('pf-own-bid-range');
+    const ownBadgeEl = document.getElementById('pf-own-bid-badge');
+    const ownPctInput = document.getElementById('pf-own-bid');
+    const ownMoneyInput = document.getElementById('pf-own-bid-amount');
+
+    // Helper: Sync Embedded Bid
+    const syncEmbeddedBidFromPercentage = (pct, source) => {
       const clampedPct = Math.min(Math.max(parseFloat(pct) || 0, 0), 50);
       const displayPct = formatPctDisplay(clampedPct);
 
-      if (rangeSlider && source !== 'slider') rangeSlider.value = clampedPct;
-      if (badgeEl) badgeEl.textContent = displayPct;
-      if (pctInput && source !== 'pctInput') pctInput.value = displayPct;
+      if (embRangeSlider && source !== 'slider') embRangeSlider.value = clampedPct;
+      if (embBadgeEl) embBadgeEl.textContent = displayPct;
+      if (embPctInput && source !== 'pctInput') embPctInput.value = displayPct;
 
-      if (moneyInput && creditVal > 0 && source !== 'moneyInput') {
-        const calculatedBrl = creditVal * (clampedPct / 100);
-        moneyInput.value = formatCurrency(calculatedBrl);
+      if (embMoneyInput && creditValue > 0 && source !== 'moneyInput') {
+        const calculatedBrl = creditValue * (clampedPct / 100);
+        embMoneyInput.value = formatCurrency(calculatedBrl);
       }
       updateA4Sheet();
     };
 
-    // Sync from Money
-    const syncFromMoney = (rawVal) => {
+    const syncEmbeddedBidFromMoney = (rawVal) => {
       const digits = String(rawVal).replace(/\D/g, '');
       if (!digits) {
-        syncFromPercentage(0, 'moneyInput');
+        syncEmbeddedBidFromPercentage(0, 'moneyInput');
         return;
       }
       const valMoney = parseFloat(digits) / 100;
-
-      if (creditVal > 0) {
-        const maxMoney = creditVal * 0.50; // Máximo 50%
+      if (creditValue > 0) {
+        const maxMoney = creditValue * 0.50;
         const clampedMoney = Math.min(valMoney, maxMoney);
-        if (moneyInput) {
-          moneyInput.value = formatCurrency(clampedMoney);
-        }
-        const calcPct = Math.min(Math.max((clampedMoney / creditVal) * 100, 0), 50);
-        syncFromPercentage(calcPct, 'moneyInput');
+        if (embMoneyInput) embMoneyInput.value = formatCurrency(clampedMoney);
+        const calcPct = Math.min(Math.max((clampedMoney / creditValue) * 100, 0), 50);
+        syncEmbeddedBidFromPercentage(calcPct, 'moneyInput');
       } else {
-        if (moneyInput) {
-          moneyInput.value = formatCurrency(valMoney);
-        }
+        if (embMoneyInput) embMoneyInput.value = formatCurrency(valMoney);
         updateA4Sheet();
       }
     };
 
-    if (rangeSlider) {
-      rangeSlider.addEventListener('input', (e) => {
-        syncFromPercentage(e.target.value, 'slider');
-      });
-    }
+    // Helper: Sync Own Bid
+    const syncOwnBidFromPercentage = (pct, source) => {
+      const clampedPct = Math.min(Math.max(parseFloat(pct) || 0, 0), 50);
+      const displayPct = formatPctDisplay(clampedPct);
 
-    if (pctInput) {
-      pctInput.addEventListener('input', (e) => {
+      if (ownRangeSlider && source !== 'slider') ownRangeSlider.value = clampedPct;
+      if (ownBadgeEl) ownBadgeEl.textContent = displayPct;
+      if (ownPctInput && source !== 'pctInput') ownPctInput.value = displayPct;
+
+      if (ownMoneyInput && creditValue > 0 && source !== 'moneyInput') {
+        const calculatedBrl = creditValue * (clampedPct / 100);
+        ownMoneyInput.value = formatCurrency(calculatedBrl);
+      }
+      updateA4Sheet();
+    };
+
+    const syncOwnBidFromMoney = (rawVal) => {
+      const digits = String(rawVal).replace(/\D/g, '');
+      if (!digits) {
+        syncOwnBidFromPercentage(0, 'moneyInput');
+        return;
+      }
+      const valMoney = parseFloat(digits) / 100;
+      if (creditValue > 0) {
+        const maxMoney = creditValue * 0.50;
+        const clampedMoney = Math.min(valMoney, maxMoney);
+        if (ownMoneyInput) ownMoneyInput.value = formatCurrency(clampedMoney);
+        const calcPct = Math.min(Math.max((clampedMoney / creditValue) * 100, 0), 50);
+        syncOwnBidFromPercentage(calcPct, 'moneyInput');
+      } else {
+        if (ownMoneyInput) ownMoneyInput.value = formatCurrency(valMoney);
+        updateA4Sheet();
+      }
+    };
+
+    if (embRangeSlider) {
+      embRangeSlider.addEventListener('input', (e) => syncEmbeddedBidFromPercentage(e.target.value, 'slider'));
+    }
+    if (embPctInput) {
+      embPctInput.addEventListener('input', (e) => {
         const raw = e.target.value.replace(/,/g, '.').replace(/[^\d.]/g, '');
-        const val = parseFloat(raw) || 0;
-        syncFromPercentage(val, 'pctInput');
+        syncEmbeddedBidFromPercentage(parseFloat(raw) || 0, 'pctInput');
+      });
+    }
+    if (embMoneyInput) {
+      embMoneyInput.addEventListener('input', (e) => syncEmbeddedBidFromMoney(e.target.value));
+    }
+
+    if (ownRangeSlider) {
+      ownRangeSlider.addEventListener('input', (e) => syncOwnBidFromPercentage(e.target.value, 'slider'));
+    }
+    if (ownPctInput) {
+      ownPctInput.addEventListener('input', (e) => {
+        const raw = e.target.value.replace(/,/g, '.').replace(/[^\d.]/g, '');
+        syncOwnBidFromPercentage(parseFloat(raw) || 0, 'pctInput');
+      });
+    }
+    if (ownMoneyInput) {
+      ownMoneyInput.addEventListener('input', (e) => syncOwnBidFromMoney(e.target.value));
+    }
+
+    const includeMainBidToggle = document.getElementById('pf-include-bid-toggle');
+    const embeddedBidToggle = document.getElementById('pf-embedded-bid-toggle');
+    const ownBidToggle = document.getElementById('pf-own-bid-toggle');
+
+    if (includeMainBidToggle) {
+      includeMainBidToggle.addEventListener('change', () => {
+        const wrapper = document.getElementById('pf-bid-controls-wrapper');
+        if (wrapper) wrapper.style.display = includeMainBidToggle.checked ? 'block' : 'none';
+        updateA4Sheet();
       });
     }
 
-    if (moneyInput) {
-      moneyInput.addEventListener('input', (e) => {
-        syncFromMoney(e.target.value);
+    if (embeddedBidToggle) {
+      embeddedBidToggle.addEventListener('change', () => {
+        const block = document.getElementById('pf-embedded-bid-block');
+        if (block) block.style.display = embeddedBidToggle.checked ? 'block' : 'none';
+        updateA4Sheet();
       });
     }
 
-    // Live Formatters for CPF and Phone/WhatsApp
-    const formatCpfOnly = (val) => {
-      const digits = String(val).replace(/\D/g, '').slice(0, 11);
-      if (!digits) return '';
-      if (digits.length <= 3) return digits;
-      if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
-      if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
-      return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
-    };
-
-    const formatPhone = (val) => {
-      const digits = String(val).replace(/\D/g, '').slice(0, 11);
-      if (!digits) return '';
-      if (digits.length <= 2) return `(${digits}`;
-      if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-      if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
-      return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-    };
+    if (ownBidToggle) {
+      ownBidToggle.addEventListener('change', () => {
+        const block = document.getElementById('pf-own-bid-block');
+        if (block) block.style.display = ownBidToggle.checked ? 'block' : 'none';
+        updateA4Sheet();
+      });
+    }
 
     const cpfInputEl = document.getElementById('pf-client-cpf');
     if (cpfInputEl) {
@@ -1760,7 +1859,6 @@
       });
     }
 
-    // Toggle bid controls visibility based on pf-include-bid-toggle
     const toggleBidControlsVisibility = () => {
       const includeBid = document.getElementById('pf-include-bid-toggle')?.checked ?? true;
       const wrapper = document.getElementById('pf-bid-controls-wrapper');
@@ -1770,33 +1868,26 @@
     };
 
     // Attach listeners for live update of A4 sheet
-    ['pf-client-name', 'pf-property-type', 'pf-bid-amount', 'pf-embedded-bid', 'pf-show-percentage-toggle', 'pf-include-bid-toggle', 'pf-validity', 'pf-notes'].forEach(id => {
+    ['pf-client-name', 'pf-property-type', 'pf-show-percentage-toggle', 'pf-validity', 'pf-notes'].forEach(id => {
       const inputEl = document.getElementById(id);
       if (inputEl) {
         inputEl.addEventListener('input', () => {
           toggleBidControlsVisibility();
           updateA4Sheet();
         });
-        inputEl.addEventListener('change', () => {
-          toggleBidControlsVisibility();
-          updateA4Sheet();
-        });
       }
     });
 
-    toggleBidControlsVisibility();
-    updateA4Sheet();
-
-    // Attach action button handlers
-    document.getElementById('pf-btn-back')?.addEventListener('click', () => {
-      const tabs = document.querySelectorAll('[data-service-tab]');
-      tabs.forEach(t => t.classList.remove('active'));
-      const simNavBtn = document.querySelector('[data-service-tab="simulador"]');
-      if (simNavBtn) simNavBtn.classList.add('active');
-      document.querySelectorAll('[data-service-tab-content]').forEach(c => {
-        c.style.display = c.dataset.serviceTabContent === 'simulador' ? 'block' : 'none';
-      });
-    });
+    const btnBack = document.getElementById('pf-btn-back');
+    if (btnBack) {
+      btnBack.onclick = () => {
+        const simNavBtn = document.querySelector('[data-service-tab="simulador"]');
+        if (simNavBtn) simNavBtn.classList.add('active');
+        document.querySelectorAll('[data-service-tab-content]').forEach(c => {
+          c.style.display = c.dataset.serviceTabContent === 'simulador' ? 'block' : 'none';
+        });
+      };
+    }
 
     const saveProposalAndNavigate = async (showAlert = false) => {
       try {
@@ -1806,10 +1897,19 @@
         const notesVal = (document.getElementById('pf-notes')?.value || '').trim();
         const propType = (document.getElementById('pf-property-type')?.value || '').trim();
         const validityDate = (document.getElementById('pf-validity')?.value || '').trim();
+
         const includeBid = document.getElementById('pf-include-bid-toggle')?.checked ?? true;
+        const includeEmbeddedBid = includeBid && (document.getElementById('pf-embedded-bid-toggle')?.checked ?? true);
+        const includeOwnBid = includeBid && (document.getElementById('pf-own-bid-toggle')?.checked ?? false);
+
         const bidPercent = parseFloat(document.getElementById('pf-embedded-bid-range')?.value || 30);
         const bidAmountStr = document.getElementById('pf-bid-amount')?.value || '';
         const bidAmount = parseCurrency(bidAmountStr) || ((proposal.credit_value || proposal.credito || 0) * (bidPercent / 100));
+
+        const ownBidPercent = parseFloat(document.getElementById('pf-own-bid-range')?.value || 0);
+        const ownBidAmountStr = document.getElementById('pf-own-bid-amount')?.value || '';
+        const ownBidAmount = parseCurrency(ownBidAmountStr) || ((proposal.credit_value || proposal.credito || 0) * (ownBidPercent / 100));
+
         const showPercentages = document.getElementById('pf-show-percentage-toggle')?.checked ?? false;
 
         const productName = proposal.product_name || proposal.produto || 'Imóveis (AUTOCON)';
@@ -1821,7 +1921,6 @@
         const existingProposal = existingId ? currentList.find(c => String(c.id) === String(existingId)) : null;
         const clientId = existingProposal ? existingProposal.id : (existingId || ('cl-' + Date.now()));
 
-        // Retain current editing ID for future saves in the same view session
         window.__currentEditingClientId = clientId;
 
         const updatedClientRecord = {
@@ -1851,9 +1950,13 @@
             property_type: propType,
             validity_date: validityDate,
             include_bid: includeBid,
+            include_embedded_bid: includeEmbeddedBid,
+            include_own_bid: includeOwnBid,
             bid_percentage: bidPercent,
             fixed_bid_percentage: bidPercent,
             bid_amount: bidAmount,
+            own_bid_percentage: ownBidPercent,
+            own_bid_amount: ownBidAmount,
             show_percentages: showPercentages,
             consultant_name: consultantName
           }
