@@ -1950,13 +1950,34 @@
     const btnBack = document.getElementById('pf-btn-back');
     if (btnBack) {
       btnBack.onclick = () => {
+        const pfContainer = document.getElementById('proposta-final-container');
+        const simContainer = document.querySelector('[data-service-tab-content="simulador"]');
+        if (pfContainer) pfContainer.style.display = 'none';
+        if (simContainer) simContainer.style.display = 'block';
+
+        const serviceTabs = document.querySelectorAll('[data-service-tab]');
+        serviceTabs.forEach(t => t.classList.remove('active'));
         const simNavBtn = document.querySelector('[data-service-tab="simulador"]');
         if (simNavBtn) simNavBtn.classList.add('active');
-        document.querySelectorAll('[data-service-tab-content]').forEach(c => {
-          c.style.display = c.dataset.serviceTabContent === 'simulador' ? 'block' : 'none';
-        });
+
+        if (window.__currentEditingClientId) {
+          document.querySelectorAll('.simulador-tab-btn').forEach(b => b.classList.remove('active'));
+          const propostasBtn = document.querySelector('[data-subtab="propostas"]');
+          if (propostasBtn) propostasBtn.classList.add('active');
+
+          document.querySelectorAll('.simulador-subtab-content').forEach(c => c.style.display = 'none');
+          const subtabPropostas = document.getElementById('subtab-propostas');
+          if (subtabPropostas) subtabPropostas.style.display = 'block';
+          renderSavedProposalsTab();
+        }
       };
     }
+
+    const parseMoneyValue = (str) => {
+      if (!str) return 0;
+      const digits = String(str).replace(/\D/g, '');
+      return digits ? parseFloat(digits) / 100 : 0;
+    };
 
     const saveProposalAndNavigate = async (showAlert = false) => {
       try {
@@ -1973,11 +1994,11 @@
 
         const bidPercent = parseFloat(document.getElementById('pf-embedded-bid-range')?.value || 30);
         const bidAmountStr = document.getElementById('pf-bid-amount')?.value || '';
-        const bidAmount = parseCurrency(bidAmountStr) || ((proposal.credit_value || proposal.credito || 0) * (bidPercent / 100));
+        const bidAmount = parseMoneyValue(bidAmountStr) || ((proposal.credit_value || proposal.credito || 0) * (bidPercent / 100));
 
         const ownBidPercent = parseFloat(document.getElementById('pf-own-bid-range')?.value || 0);
         const ownBidAmountStr = document.getElementById('pf-own-bid-amount')?.value || '';
-        const ownBidAmount = parseCurrency(ownBidAmountStr) || ((proposal.credit_value || proposal.credito || 0) * (ownBidPercent / 100));
+        const ownBidAmount = parseMoneyValue(ownBidAmountStr) || ((proposal.credit_value || proposal.credito || 0) * (ownBidPercent / 100));
 
         const showPercentages = document.getElementById('pf-show-percentage-toggle')?.checked ?? false;
 
