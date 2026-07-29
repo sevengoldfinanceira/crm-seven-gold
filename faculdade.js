@@ -354,8 +354,16 @@
               <h1 style="color:#fff; font-size:1.5rem; margin:0;">Faculdade Seven Gold</h1>
               <p style="color:#94a3b8; font-size:0.84rem; margin:2px 0 0;">Plataforma de capacitação, onboarding e certificação de colaboradores.</p>
             </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <a href="painel.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #f8fafc; font-size: 0.78rem; font-weight: 700; text-decoration: none;">
+              <i data-lucide="layout-grid" style="width: 14px; height: 14px;"></i>
+              <span>Voltar aos Painéis</span>
+            </a>
+            <button type="button" data-logout data-logout-redirect="index.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; color: #ef4444; font-size: 0.78rem; font-weight: 700; cursor: pointer;">
+              <i data-lucide="log-out" style="width: 14px; height: 14px;"></i>
+              <span>Sair</span>
+            </button>
           </div>
-          <a href="painel.html" class="bordero-btn-secondary" style="height: fit-content; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;"><i data-lucide="home"></i> Voltar ao Painel</a>
         </header>
 
         <!-- Top Sub-Tabs Bar & Search Box -->
