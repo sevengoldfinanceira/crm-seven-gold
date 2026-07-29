@@ -10846,6 +10846,13 @@ body.theme-dark .appointment-race-settings-form .ghost-button {
 }
 
 /* Corrida de Agendamentos - visual premium Seven Gold */
+.tab-content[data-tab="corrida"] {
+  min-height: 100vh;
+  padding: 0;
+  overflow: hidden;
+  background: var(--sg-page, #F6F7FB);
+}
+
 .appointment-race {
   --sg-gold-main: #E8B138;
   --sg-gold-light: #F5D874;
@@ -10859,8 +10866,8 @@ body.theme-dark .appointment-race-settings-form .ghost-button {
   --sg-muted: #64748B;
   --sg-border: #E6EAF2;
   --sg-gold-gradient: linear-gradient(135deg, #906820 0%, #D1992C 30%, #F5D874 55%, #E8B138 75%, #B98220 100%);
-  min-height: calc(100vh - 44px);
-  padding: 14px;
+  min-height: 100vh;
+  padding: 8px 10px;
   background: linear-gradient(180deg, #FFFFFF 0%, var(--sg-page) 44%, #F9FAFC 100%);
   color: var(--sg-text);
 }
@@ -10881,9 +10888,9 @@ body.theme-dark .appointment-race {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 8px;
-  padding: 12px 16px;
+  gap: 12px;
+  margin-bottom: 6px;
+  padding: 8px 12px;
   border: 1px solid var(--sg-border);
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.94);
@@ -10893,14 +10900,14 @@ body.theme-dark .appointment-race {
 .appointment-race-title-group {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 }
 
 .appointment-race-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -10912,8 +10919,8 @@ body.theme-dark .appointment-race {
 }
 
 .appointment-race-icon svg {
-  width: 24px;
-  height: 24px;
+  width: 21px;
+  height: 21px;
 }
 
 .appointment-race-kicker {
@@ -10928,32 +10935,32 @@ body.theme-dark .appointment-race {
 .appointment-race h1 {
   margin: 0;
   color: var(--sg-text);
-  font-size: 1.85rem;
+  font-size: 1.52rem;
   line-height: 1.05;
   font-weight: 950;
 }
 
 .appointment-race-title-group p:last-child {
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   color: var(--sg-muted);
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   font-weight: 800;
 }
 
 .appointment-race-config-btn {
-  min-height: 40px;
-  padding: 0 14px;
+  min-height: 34px;
+  padding: 0 12px;
   border: 0;
   border-radius: 12px;
   color: #FFFFFF;
   background: var(--sg-gold-gradient);
   box-shadow: 0 10px 22px rgba(144, 104, 32, 0.22);
-  font-size: 0.86rem;
+  font-size: 0.78rem;
 }
 
 .appointment-race-config-btn svg {
-  width: 17px;
-  height: 17px;
+  width: 15px;
+  height: 15px;
   stroke-width: 2.4;
 }
 
@@ -10965,14 +10972,14 @@ body.theme-dark .appointment-race {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 30px;
-  margin: 0 0 8px;
-  padding: 6px 12px;
+  min-height: 24px;
+  margin: 0 0 6px;
+  padding: 4px 10px;
   border: 1px solid rgba(232, 177, 56, 0.35);
   border-radius: 999px;
   color: var(--sg-gold-dark);
   background: linear-gradient(135deg, rgba(245, 216, 116, 0.18), rgba(255, 255, 255, 0.82));
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   font-weight: 900;
   text-align: center;
 }
@@ -11008,16 +11015,16 @@ body.theme-dark .appointment-race {
 .appointment-race-summary {
   display: grid;
   grid-template-columns: repeat(4, minmax(150px, 1fr));
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .appointment-race-stat {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 76px;
-  padding: 10px 12px;
+  gap: 8px;
+  min-height: 58px;
+  padding: 8px 10px;
   border: 1px solid var(--sg-border);
   border-radius: 16px;
   background: var(--sg-surface);
@@ -11029,8 +11036,8 @@ body.theme-dark .appointment-race {
 }
 
 .appointment-race-stat > .appointment-race-stat-icon {
-  width: 42px;
-  height: 42px;
+  width: 34px;
+  height: 34px;
   margin: 0;
   border-radius: 12px;
   display: inline-flex;
@@ -11044,8 +11051,8 @@ body.theme-dark .appointment-race {
 }
 
 .appointment-race-stat > .appointment-race-stat-icon svg {
-  width: 21px;
-  height: 21px;
+  width: 18px;
+  height: 18px;
 }
 
 .appointment-race-stat > div {
@@ -11054,7 +11061,7 @@ body.theme-dark .appointment-race {
 
 .appointment-race-stat > div > span {
   display: block;
-  margin: 0 0 4px;
+  margin: 0 0 3px;
   color: var(--sg-muted);
   font-size: 0.63rem;
   font-weight: 950;
@@ -11065,16 +11072,16 @@ body.theme-dark .appointment-race {
 .appointment-race-stat strong {
   display: block;
   color: var(--sg-text);
-  font-size: 1.35rem;
+  font-size: 1.12rem;
   line-height: 1;
   font-weight: 950;
 }
 
 .appointment-race-stat small {
   display: block;
-  margin-top: 4px;
+  margin-top: 3px;
   color: var(--sg-muted);
-  font-size: 0.72rem;
+  font-size: 0.66rem;
   font-weight: 800;
 }
 
@@ -11091,8 +11098,8 @@ body.theme-dark .appointment-race {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 0 0 8px;
-  padding: 9px 12px;
+  margin: 0 0 6px;
+  padding: 7px 10px;
   border: 1px solid rgba(232, 177, 56, 0.42);
   border-radius: 14px;
   background: linear-gradient(135deg, #FFFFFF, #FFF4CA);
@@ -11133,40 +11140,49 @@ body.theme-dark .appointment-race {
 
 .appointment-race-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) 270px;
+  gap: 10px;
   align-items: stretch;
 }
 
 .appointment-race-tracks,
 .appointment-race-ranking {
   border: 1px solid var(--sg-border);
-  border-radius: 18px;
+  border-radius: 16px;
   background: var(--sg-surface);
   box-shadow: 0 12px 30px rgba(17, 24, 39, 0.07);
 }
 
 .appointment-race-tracks {
   position: relative;
-  min-height: 330px;
-  padding: 12px 66px 12px 14px;
+  min-height: 0;
+  padding: 8px 54px 8px 10px;
   overflow: hidden;
 }
 
 .appointment-race-empty {
-  display: grid;
-  place-items: center;
-  min-height: 220px;
+  display: flex;
+  min-height: 120px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   color: var(--sg-muted);
   text-align: center;
 }
 
 .appointment-race-empty strong {
   display: block;
-  margin-bottom: 8px;
+  margin: 0;
   color: var(--sg-text);
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 950;
+}
+
+.appointment-race-empty span {
+  display: block;
+  max-width: 520px;
+  line-height: 1.35;
 }
 
 .appointment-race-track-list {
@@ -11177,11 +11193,11 @@ body.theme-dark .appointment-race {
 
 .appointment-race-track {
   display: grid;
-  grid-template-columns: 132px minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: 118px minmax(0, 1fr);
+  gap: 10px;
   align-items: center;
-  min-height: 62px;
-  padding: 5px 0;
+  min-height: 50px;
+  padding: 3px 0;
   border: 0;
   border-bottom: 1px solid #EEF2F7;
   border-radius: 0;
@@ -11208,24 +11224,24 @@ body.theme-dark .appointment-race {
 
 .appointment-race-seller {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-columns: 25px minmax(0, 1fr);
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   min-width: 0;
 }
 
 .appointment-race-lane-code {
   position: relative;
-  width: 28px;
-  height: 42px;
-  border-radius: 9px;
+  width: 25px;
+  height: 34px;
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--sg-gold-dark);
   background: linear-gradient(180deg, #FFF7D7, #FFFFFF);
   border: 1px solid rgba(232, 177, 56, 0.28);
-  font-size: 0.66rem;
+  font-size: 0.62rem;
   font-weight: 950;
   overflow: hidden;
 }
@@ -11248,7 +11264,7 @@ body.theme-dark .appointment-race {
 .appointment-race-seller-copy strong {
   display: block;
   color: var(--sg-text);
-  font-size: 0.84rem;
+  font-size: 0.78rem;
   font-weight: 950;
   white-space: nowrap;
   overflow: hidden;
@@ -11257,9 +11273,9 @@ body.theme-dark .appointment-race {
 
 .appointment-race-seller-copy span {
   display: block;
-  margin-top: 3px;
+  margin-top: 1px;
   color: var(--car-primary, var(--sg-gold-mid));
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   font-weight: 950;
 }
 
@@ -11273,7 +11289,7 @@ body.theme-dark .appointment-race {
   gap: 8px;
   margin-bottom: 0;
   color: var(--sg-muted);
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 850;
 }
 
@@ -11284,7 +11300,7 @@ body.theme-dark .appointment-race {
 
 .appointment-race-lane {
   position: relative;
-  height: 46px;
+  height: 38px;
   border: 0;
   border-radius: 0;
   overflow: visible;
@@ -11321,8 +11337,8 @@ body.theme-dark .appointment-race {
   position: absolute;
   left: var(--race-car-left, 6%);
   top: 50%;
-  width: 132px;
-  height: 50px;
+  width: 112px;
+  height: 42px;
   transform: translate(-50%, -50%);
   transition: left 0.5s ease;
   z-index: 3;
@@ -11330,10 +11346,10 @@ body.theme-dark .appointment-race {
 
 .appointment-race-car-shadow {
   position: absolute;
-  left: 12px;
-  right: 12px;
+  left: 10px;
+  right: 10px;
   bottom: 2px;
-  height: 10px;
+  height: 8px;
   border-radius: 50%;
   background: radial-gradient(ellipse, rgba(17, 17, 17, 0.22) 0%, rgba(17, 17, 17, 0.08) 52%, transparent 72%);
   filter: blur(2px);
@@ -11343,9 +11359,9 @@ body.theme-dark .appointment-race {
   position: absolute;
   left: 6px;
   right: 6px;
-  top: 17px;
-  height: 24px;
-  border-radius: 16px 32px 13px 18px;
+  top: 14px;
+  height: 21px;
+  border-radius: 14px 28px 12px 16px;
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.42), transparent 34%),
     linear-gradient(90deg, var(--car-dark, var(--sg-gold-dark)) 0%, var(--car-primary, var(--sg-gold-mid)) 48%, var(--car-light, var(--sg-gold-light)) 100%);
@@ -11355,10 +11371,10 @@ body.theme-dark .appointment-race {
 
 .appointment-race-car-tail {
   position: absolute;
-  left: -6px;
-  top: -7px;
-  width: 22px;
-  height: 22px;
+  left: -5px;
+  top: -6px;
+  width: 19px;
+  height: 19px;
   border-radius: 6px 6px 3px 3px;
   background: linear-gradient(135deg, var(--car-dark, var(--sg-gold-dark)), var(--car-primary, var(--sg-gold-mid)));
   transform: skewX(-12deg);
@@ -11366,10 +11382,10 @@ body.theme-dark .appointment-race {
 
 .appointment-race-car-nose {
   position: absolute;
-  right: -14px;
-  top: 6px;
-  width: 40px;
-  height: 14px;
+  right: -12px;
+  top: 5px;
+  width: 34px;
+  height: 13px;
   clip-path: polygon(0 0, 100% 50%, 0 100%);
   background: linear-gradient(90deg, var(--car-primary, var(--sg-gold-mid)), var(--car-light, var(--sg-gold-light)));
   border-radius: 12px;
@@ -11377,10 +11393,10 @@ body.theme-dark .appointment-race {
 
 .appointment-race-car-cockpit {
   position: absolute;
-  left: 46px;
-  top: -16px;
-  width: 34px;
-  height: 34px;
+  left: 39px;
+  top: -14px;
+  width: 29px;
+  height: 29px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
@@ -11417,10 +11433,10 @@ body.theme-dark .appointment-race {
 
 .appointment-race-car-number {
   position: absolute;
-  left: 60px;
-  top: 9px;
-  min-width: 25px;
-  height: 15px;
+  left: 52px;
+  top: 8px;
+  min-width: 22px;
+  height: 13px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
@@ -11428,15 +11444,15 @@ body.theme-dark .appointment-race {
   color: #FFFFFF;
   background: rgba(17, 17, 17, 0.32);
   border: 1px solid rgba(255, 255, 255, 0.36);
-  font-size: 0.58rem;
+  font-size: 0.52rem;
   font-weight: 950;
 }
 
 .appointment-race-car-wheel {
   position: absolute;
-  bottom: -7px;
-  width: 21px;
-  height: 21px;
+  bottom: -6px;
+  width: 18px;
+  height: 18px;
   border-radius: 999px;
   background:
     radial-gradient(circle, #F5D874 0 16%, #111111 17% 48%, #2F2F2F 49% 68%, #111111 69%);
@@ -11445,11 +11461,11 @@ body.theme-dark .appointment-race {
 }
 
 .appointment-race-car-wheel--rear {
-  left: 17px;
+  left: 14px;
 }
 
 .appointment-race-car-wheel--front {
-  right: 18px;
+  right: 15px;
 }
 
 .appointment-race-car-boost {
@@ -11473,14 +11489,14 @@ body.theme-dark .appointment-race {
 
 .appointment-race-finish-marker {
   position: absolute;
-  top: 36px;
-  right: 22px;
-  bottom: 20px;
-  width: 24px;
+  top: 26px;
+  right: 17px;
+  bottom: 14px;
+  width: 22px;
   z-index: 2;
   border-radius: 3px;
   background:
-    conic-gradient(#111111 25%, #FFFFFF 0 50%, #111111 0 75%, #FFFFFF 0) 0 0 / 12px 12px;
+    conic-gradient(#111111 25%, #FFFFFF 0 50%, #111111 0 75%, #FFFFFF 0) 0 0 / 11px 11px;
   box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.18), 0 12px 20px rgba(17, 24, 39, 0.12);
 }
 
@@ -11491,66 +11507,66 @@ body.theme-dark .appointment-race {
 .appointment-race-finish-marker span {
   position: absolute;
   left: 50%;
-  top: -27px;
+  top: -24px;
   transform: translateX(-50%);
-  min-width: 74px;
-  padding: 6px 8px;
+  min-width: 68px;
+  padding: 5px 7px;
   border-radius: 8px;
   color: #FFFFFF;
   background: #111111;
   border: 2px solid var(--sg-gold-main);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 950;
   text-align: center;
   box-shadow: 0 8px 18px rgba(17, 24, 39, 0.18);
 }
 
 .appointment-race-ranking {
-  padding: 14px;
+  padding: 10px;
 }
 
 .appointment-race-ranking-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
 .appointment-race-ranking-header > span {
   color: var(--sg-text);
-  font-size: 0.96rem;
+  font-size: 0.9rem;
   font-weight: 950;
 }
 
 .appointment-race-ranking-header strong {
   width: auto;
   min-width: 0;
-  height: 28px;
-  padding: 0 10px;
+  height: 24px;
+  padding: 0 8px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--sg-gold-dark);
   background: #FFF4CA;
-  font-size: 0.72rem;
+  font-size: 0.66rem;
   font-weight: 950;
   white-space: nowrap;
 }
 
 .appointment-race-ranking-list {
   display: grid;
-  gap: 7px;
+  gap: 6px;
 }
 
 .appointment-race-ranking-item {
   display: grid;
-  grid-template-columns: 30px 36px minmax(0, 1fr) auto;
+  grid-template-columns: 27px 32px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px;
-  min-height: 50px;
-  padding: 7px 8px;
+  gap: 7px;
+  min-height: 44px;
+  padding: 6px 7px;
   border: 1px solid #E9EDF5;
   border-radius: 13px;
   background: #FFFFFF;
@@ -11564,15 +11580,15 @@ body.theme-dark .appointment-race {
 }
 
 .appointment-race-ranking-position {
-  width: 29px;
-  height: 29px;
+  width: 26px;
+  height: 26px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: #475569;
   background: #F1F5F9;
-  font-size: 0.74rem;
+  font-size: 0.68rem;
   font-weight: 950;
 }
 
@@ -11583,11 +11599,11 @@ body.theme-dark .appointment-race {
 }
 
 .appointment-race-ranking-photo {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border: 2px solid #FFFFFF;
   box-shadow: 0 0 0 1px rgba(232, 177, 56, 0.28), 0 10px 18px rgba(17, 24, 39, 0.1);
-  font-size: 0.72rem;
+  font-size: 0.66rem;
 }
 
 .appointment-race-ranking-person {
@@ -11597,7 +11613,7 @@ body.theme-dark .appointment-race {
 .appointment-race-ranking-person strong {
   display: block;
   color: var(--sg-text);
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   font-weight: 950;
   white-space: nowrap;
   overflow: hidden;
@@ -11606,15 +11622,15 @@ body.theme-dark .appointment-race {
 
 .appointment-race-ranking-person small {
   display: block;
-  margin-top: 2px;
+  margin-top: 1px;
   color: var(--sg-muted);
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 800;
 }
 
 .appointment-race-ranking-score {
   color: var(--sg-gold-dark);
-  font-size: 1.02rem;
+  font-size: 0.92rem;
   font-weight: 950;
 }
 
@@ -11684,7 +11700,7 @@ body.theme-dark .appointment-race-settings-form .ghost-button {
 
 @media (min-width: 1181px) {
   .appointment-race {
-    height: calc(100vh - 44px);
+    height: 100vh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -11701,7 +11717,7 @@ body.theme-dark .appointment-race-settings-form .ghost-button {
   }
 
   .appointment-race-ranking-list {
-    max-height: calc(100vh - 360px);
+    max-height: calc(100vh - 285px);
     overflow: auto;
     padding-right: 2px;
   }
