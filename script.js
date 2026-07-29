@@ -28,6 +28,8 @@ const appointmentRaceEmpty = document.querySelector("[data-race-empty]");
 const appointmentRaceTrackList = document.querySelector("[data-race-track-list]");
 const appointmentRaceRankingList = document.querySelector("[data-race-ranking-list]");
 const appointmentRaceRankingCount = document.querySelector("[data-race-ranking-count]");
+const appointmentRaceFinishMarker = document.querySelector("[data-race-finish-marker]");
+const appointmentRaceFinishLabel = document.querySelector("[data-race-finish-label]");
 const appointmentRaceSettingsModal = document.querySelector("[data-race-settings-modal]");
 const appointmentRaceSettingsForm = document.querySelector("[data-race-settings-form]");
 const appointmentRaceTargetInput = document.querySelector("[data-race-target-input]");
@@ -49,6 +51,7 @@ let appointmentRaceRealtimeChannel = null;
 let appointmentRaceLastCounts = new Map();
 let appointmentRaceTimer = null;
 let appointmentRaceWinnerSeenKey = sessionStorage.getItem("seven-gold-race-winner-seen") || "";
+const appointmentRaceAvatarCache = new Map();
 let salesRecords = [];
 let salesUsers = [];
 let currentEditingSale = null;
@@ -1420,6 +1423,15 @@ function shouldSeeAllLeads(crmUser) {
 }
 
 const APPOINTMENT_RACE_ORG_ID = "seven_gold";
+const APPOINTMENT_RACE_AVATAR_BUCKET = "company-documents";
+const appointmentRaceCarThemes = [
+  { primary: "#D1992C", light: "#F5D874", dark: "#906820", shadow: "rgba(209, 153, 44, 0.28)" },
+  { primary: "#2563EB", light: "#60A5FA", dark: "#1D4ED8", shadow: "rgba(37, 99, 235, 0.24)" },
+  { primary: "#DC2626", light: "#F87171", dark: "#991B1B", shadow: "rgba(220, 38, 38, 0.22)" },
+  { primary: "#16A34A", light: "#86EFAC", dark: "#166534", shadow: "rgba(22, 163, 74, 0.22)" },
+  { primary: "#F59E0B", light: "#FDE68A", dark: "#B45309", shadow: "rgba(245, 158, 11, 0.24)" },
+  { primary: "#0F766E", light: "#5EEAD4", dark: "#115E59", shadow: "rgba(15, 118, 110, 0.22)" },
+];
 
 const getAppointmentRaceUser = () => window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
 
@@ -1465,6 +1477,81 @@ const getAppointmentRaceInitials = (name = "") => {
   return (parts[0]?.[0] || "S") + (parts[1]?.[0] || parts[0]?.[1] || "G");
 };
 
+const getAppointmentRaceAvatarKey = (seller = {}) => String(seller.user_id || seller.id || seller.email || seller.name || "").trim();
+
+const getAppointmentRaceDirectAvatarUrl = (seller = {}) => {
+  const url = seller.avatar_url
+    || seller.avatarUrl
+    || seller.photo_url
+    || seller.photoUrl
+    || seller.foto_url
+    || seller.fotoUrl
+    || seller.foto
+    || seller.picture
+    || seller.image_url
+    || "";
+  return String(url || "").trim();
+};
+
+const getAppointmentRaceAvatarUrl = (seller = {}) => {
+  const directUrl = getAppointmentRaceDirectAvatarUrl(seller);
+  if (directUrl) return directUrl;
+  const key = getAppointmentRaceAvatarKey(seller);
+  return key ? (appointmentRaceAvatarCache.get(key) || "") : "";
+};
+
+const renderAppointmentRaceAvatar = (seller = {}, className = "appointment-race-person-photo") => {
+  const avatarUrl = getAppointmentRaceAvatarUrl(seller);
+  const key = getAppointmentRaceAvatarKey(seller);
+  const initials = escapeHtml(getAppointmentRaceInitials(seller.name || seller.email).toUpperCase());
+  const name = escapeHtml(seller.name || "Vendedor");
+  const keyAttr = key ? ` data-race-avatar-id="${escapeHtml(key)}"` : "";
+  const photoClass = `${className}${avatarUrl ? " has-photo" : ""}`;
+
+  if (avatarUrl) {
+    return `<span class="${photoClass}"${keyAttr}><img src="${escapeHtml(avatarUrl)}" alt="${name}"></span>`;
+  }
+
+  return `<span class="${photoClass}"${keyAttr}>${initials}</span>`;
+};
+
+const updateAppointmentRaceAvatarNodes = (key, avatarUrl) => {
+  if (!key || !avatarUrl) return;
+  document.querySelectorAll("[data-race-avatar-id]").forEach((element) => {
+    if (element.dataset.raceAvatarId !== key) return;
+    const img = document.createElement("img");
+    img.src = avatarUrl;
+    img.alt = element.getAttribute("aria-label") || "Vendedor";
+    element.textContent = "";
+    element.classList.add("has-photo");
+    element.append(img);
+  });
+};
+
+const hydrateAppointmentRaceAvatars = (participants = []) => {
+  const client = getClient();
+  if (!client) return;
+
+  participants.forEach((seller) => {
+    const key = getAppointmentRaceAvatarKey(seller);
+    if (!key || getAppointmentRaceDirectAvatarUrl(seller) || appointmentRaceAvatarCache.has(key)) return;
+    appointmentRaceAvatarCache.set(key, "");
+
+    client.storage
+      .from(APPOINTMENT_RACE_AVATAR_BUCKET)
+      .download(`${key}/profile/avatar.jpg`)
+      .then(({ data, error }) => {
+        if (error || !data) return;
+        const avatarUrl = URL.createObjectURL(data);
+        appointmentRaceAvatarCache.set(key, avatarUrl);
+        updateAppointmentRaceAvatarNodes(key, avatarUrl);
+      })
+      .catch(() => {});
+  });
+};
+
+const getAppointmentRaceCarTheme = (index = 0) => appointmentRaceCarThemes[index % appointmentRaceCarThemes.length];
+
 const getAppointmentRaceMedal = (index) => {
   if (index === 0) return "1º";
   if (index === 1) return "2º";
@@ -1493,6 +1580,7 @@ const renderAppointmentRace = () => {
     if (appointmentRaceParticipants) appointmentRaceParticipants.textContent = "0";
     if (appointmentRaceWinner) appointmentRaceWinner.textContent = "--";
     if (appointmentRaceWinnerTime) appointmentRaceWinnerTime.textContent = "corrida não iniciada";
+    if (appointmentRaceFinishMarker) appointmentRaceFinishMarker.hidden = true;
     if (appointmentRaceWinnerBanner) appointmentRaceWinnerBanner.hidden = true;
     if (appointmentRaceEmpty) {
       appointmentRaceEmpty.hidden = false;
@@ -1503,7 +1591,7 @@ const renderAppointmentRace = () => {
     }
     if (appointmentRaceTrackList) appointmentRaceTrackList.innerHTML = "";
     if (appointmentRaceRankingList) appointmentRaceRankingList.innerHTML = "";
-    if (appointmentRaceRankingCount) appointmentRaceRankingCount.textContent = "0";
+    if (appointmentRaceRankingCount) appointmentRaceRankingCount.textContent = "0 participantes";
     setAppointmentRaceStatus("");
     return;
   }
@@ -1511,17 +1599,39 @@ const renderAppointmentRace = () => {
   const target = Number(race.target || 0);
   const winnerId = race.winner_user_id ? String(race.winner_user_id) : "";
   const winner = participants.find((item) => String(item.user_id) === winnerId);
+  const leader = winner || participants[0] || null;
   const winnerKey = winnerId && race.won_at ? `${race.id}:${winnerId}:${race.won_at}` : "";
 
   if (appointmentRaceTarget) appointmentRaceTarget.textContent = target || "--";
   if (appointmentRaceParticipants) appointmentRaceParticipants.textContent = participants.length;
-  if (appointmentRaceWinner) appointmentRaceWinner.textContent = winner?.name || (race.status === "finished" ? "Definido" : "--");
-  if (appointmentRaceWinnerTime) appointmentRaceWinnerTime.textContent = winner ? `às ${formatAppointmentRaceTime(race.won_at)}` : "em andamento";
+  if (appointmentRaceWinner) appointmentRaceWinner.textContent = leader?.name || (race.status === "finished" ? "Definido" : "--");
+  if (appointmentRaceWinnerTime) {
+    const leaderCount = Number(leader?.count || 0);
+    appointmentRaceWinnerTime.textContent = leader
+      ? `${leaderCount} agendamento${leaderCount === 1 ? "" : "s"}`
+      : "em andamento";
+  }
+  if (appointmentRaceFinishMarker) appointmentRaceFinishMarker.hidden = participants.length === 0;
+  if (appointmentRaceFinishLabel) appointmentRaceFinishLabel.textContent = target ? `Meta ${target}` : "Meta diária";
 
   if (appointmentRaceWinnerBanner) {
     if (winner) {
       appointmentRaceWinnerBanner.hidden = false;
-      appointmentRaceWinnerBanner.innerHTML = `<span>🏆</span><strong>${escapeHtml(winner.name)} venceu a corrida de hoje!</strong><small>Meta atingida às ${formatAppointmentRaceTime(race.won_at)}.</small>`;
+      appointmentRaceWinnerBanner.innerHTML = `
+        <span class="appointment-race-banner-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 21h8"/>
+            <path d="M12 17v4"/>
+            <path d="M7 4h10v4a5 5 0 0 1-10 0V4Z"/>
+            <path d="M5 5H3v2a4 4 0 0 0 4 4"/>
+            <path d="M19 5h2v2a4 4 0 0 1-4 4"/>
+          </svg>
+        </span>
+        <div>
+          <strong>${escapeHtml(winner.name)} venceu a corrida de hoje!</strong>
+          <small>Meta atingida às ${formatAppointmentRaceTime(race.won_at)}.</small>
+        </div>
+      `;
       if (winnerKey && appointmentRaceWinnerSeenKey !== winnerKey) {
         appointmentRaceWinnerBanner.classList.add("is-new-winner");
         setTimeout(() => appointmentRaceWinnerBanner.classList.remove("is-new-winner"), 1800);
@@ -1549,28 +1659,48 @@ const renderAppointmentRace = () => {
       const missing = Math.max(0, Number(seller.missing || 0));
       const previous = appointmentRaceLastCounts.get(String(seller.user_id)) || 0;
       const bumped = count > previous;
+      const theme = getAppointmentRaceCarTheme(index);
+      const carPosition = Math.min(94, Math.max(6, progress));
+      const progressLabel = target ? `${count}/${target}` : `${count}`;
       appointmentRaceLastCounts.set(String(seller.user_id), count);
 
       const track = document.createElement("article");
-      track.className = `appointment-race-track${winnerId && String(seller.user_id) === winnerId ? " is-winner" : ""}${bumped ? " is-bumped" : ""}`;
+      track.className = `appointment-race-track${index === 0 ? " is-leader" : ""}${winnerId && String(seller.user_id) === winnerId ? " is-winner" : ""}${bumped ? " is-bumped" : ""}`;
+      track.style.setProperty("--race-progress", `${progress}%`);
+      track.style.setProperty("--race-car-left", `${carPosition}%`);
+      track.style.setProperty("--car-primary", theme.primary);
+      track.style.setProperty("--car-light", theme.light);
+      track.style.setProperty("--car-dark", theme.dark);
+      track.style.setProperty("--car-shadow", theme.shadow);
       track.innerHTML = `
         <div class="appointment-race-seller">
-          <span class="appointment-race-avatar">${escapeHtml(getAppointmentRaceInitials(seller.name).toUpperCase())}</span>
-          <div>
+          <span class="appointment-race-lane-code">${String(index + 1).padStart(2, "0")}</span>
+          <div class="appointment-race-seller-copy">
             <strong>${escapeHtml(seller.name || "Vendedor")}</strong>
-            <small>${escapeHtml(seller.role || seller.email || "")}</small>
+            <span>${progressLabel}</span>
           </div>
-          <mark>${getAppointmentRaceMedal(index)}</mark>
         </div>
         <div class="appointment-race-progress-area">
           <div class="appointment-race-track-meta">
-            <strong>${count} de ${target} agendamentos</strong>
-            <span>${missing > 0 ? `Faltam ${missing} para chegar` : "Meta atingida"}</span>
+            <span>${missing > 0 ? `Faltam ${missing} para a meta` : "Meta atingida"}</span>
+            <strong>${Math.round(progress)}%</strong>
           </div>
-          <div class="appointment-race-lane">
-            <span class="appointment-race-lane-fill" style="width:${progress}%"></span>
-            <span class="appointment-race-runner" style="left:${progress}%">${bumped ? "+1" : ""}</span>
-            <span class="appointment-race-finish" aria-hidden="true"></span>
+          <div class="appointment-race-lane" aria-label="${escapeHtml(`${seller.name || "Vendedor"}: ${progressLabel}`)}">
+            <span class="appointment-race-lane-fill"></span>
+            <span class="appointment-race-car" aria-hidden="true">
+              <span class="appointment-race-car-shadow"></span>
+              <span class="appointment-race-car-body">
+                <span class="appointment-race-car-tail"></span>
+                <span class="appointment-race-car-cockpit">
+                  ${renderAppointmentRaceAvatar(seller, "appointment-race-car-photo")}
+                </span>
+                <span class="appointment-race-car-number">${String(index + 1).padStart(2, "0")}</span>
+                <span class="appointment-race-car-nose"></span>
+                <span class="appointment-race-car-wheel appointment-race-car-wheel--rear"></span>
+                <span class="appointment-race-car-wheel appointment-race-car-wheel--front"></span>
+              </span>
+              ${bumped ? '<span class="appointment-race-car-boost">+1</span>' : ""}
+            </span>
           </div>
         </div>
       `;
@@ -1581,25 +1711,39 @@ const renderAppointmentRace = () => {
   if (appointmentRaceRankingList) {
     appointmentRaceRankingList.innerHTML = "";
     participants.slice(0, 8).forEach((seller, index) => {
+      const count = Number(seller.count || 0);
+      const progressLabel = target ? `${count}/${target}` : `${count}`;
       const item = document.createElement("div");
-      item.className = `appointment-race-ranking-item${winnerId && String(seller.user_id) === winnerId ? " is-winner" : ""}`;
+      item.className = `appointment-race-ranking-item${index === 0 ? " is-leader" : ""}${winnerId && String(seller.user_id) === winnerId ? " is-winner" : ""}`;
       item.innerHTML = `
-        <span>${getAppointmentRaceMedal(index)}</span>
-        <strong>${escapeHtml(seller.name || "Vendedor")}</strong>
-        <small>${Number(seller.count || 0)} ag.</small>
+        <span class="appointment-race-ranking-position">${getAppointmentRaceMedal(index)}</span>
+        ${renderAppointmentRaceAvatar(seller, "appointment-race-ranking-photo")}
+        <span class="appointment-race-ranking-person">
+          <strong>${escapeHtml(seller.name || "Vendedor")}</strong>
+          <small>${progressLabel}</small>
+        </span>
+        <strong class="appointment-race-ranking-score">${count}</strong>
       `;
       appointmentRaceRankingList.append(item);
     });
-    if (appointmentRaceRankingCount) appointmentRaceRankingCount.textContent = participants.length;
+    if (appointmentRaceRankingCount) {
+      appointmentRaceRankingCount.textContent = `${participants.length} participante${participants.length === 1 ? "" : "s"}`;
+    }
   }
 
+  hydrateAppointmentRaceAvatars(participants);
+
+  const leaderCount = Number(leader?.count || 0);
+  const leaderMissing = Math.max(0, target - leaderCount);
   setAppointmentRaceStatus(
     race.status === "finished"
-      ? "Corrida finalizada com vencedor salvo no banco."
+      ? `${winner?.name || "O líder"} atingiu a meta e a corrida foi finalizada.`
       : race.status === "cancelled"
         ? "Corrida encerrada para hoje."
-        : participants.some((item) => Number(item.count || 0) > 0)
-          ? "Corrida em andamento em tempo real."
+        : leader && leaderCount > 0
+          ? leaderMissing > 0
+            ? `Corrida em andamento - faltam ${leaderMissing} agendamento${leaderMissing === 1 ? "" : "s"} para o líder alcançar a meta.`
+            : `${leader.name || "O líder"} já alcançou a meta diária.`
           : "Corrida ativa, aguardando os primeiros agendamentos de hoje."
   );
 };
@@ -3998,23 +4142,23 @@ const renderDashboardCharts = ({ receivedLeads, inService, totalAppointments, cl
   };
 
   const statusColors = {
-    lead_recebido: "#6366f1",
+    lead_recebido: "#B98220",
     primeiro_contato: "#ea580c",
     agendamento: "#2563eb",
     cliente_em_loja: "#ca8a04",
-    proposta_enviada: "#7c3aed",
+    proposta_enviada: "#B98220",
     venda_fechada: "#10b981",
     cancelado: "#ef4444",
     nao_quer: "#ef4444",
     "não_quer": "#ef4444",
     nao_tem_interesse: "#f97316",
     perdido: "#dc2626",
-    em_aprovacao: "#8b5cf6",
+    em_aprovacao: "#D4AF37",
   };
 
   if (funnelEl) {
     const steps = [
-      { label: "Recebidos", value: receivedLeads, color: "#7C3AED", gradient: "linear-gradient(135deg, #7C3AED, #5B5FEF)", icon: "users" },
+      { label: "Recebidos", value: receivedLeads, color: "#B98220", gradient: "linear-gradient(135deg, #B98220, #D4AF37)", icon: "users" },
       { label: "Atendidos", value: inService, color: "#EA580C", gradient: "linear-gradient(135deg, #FF7A1A, #EA580C)", icon: "headphones" },
       { label: "Agendamentos", value: totalAppointments, color: "#2563EB", gradient: "linear-gradient(135deg, #3B82F6, #2563EB)", icon: "calendar" },
       { label: "Em Loja", value: clientsInStore, color: "#D97706", gradient: "linear-gradient(135deg, #FBBF24, #D97706)", icon: "store" },
@@ -4100,13 +4244,13 @@ const renderDashboardCharts = ({ receivedLeads, inService, totalAppointments, cl
     });
 
     const softBg = {
-      lead_recebido: { bg: "#EEF2FF", fg: "#5B4BFF" },
+      lead_recebido: { bg: "#FFF8E6", fg: "#B98220" },
       venda_fechada: { bg: "#D1FAE5", fg: "#059669" },
       agendamento: { bg: "#DBEAFE", fg: "#2563EB" },
       cliente_em_loja: { bg: "#FEF3C7", fg: "#D97706" },
       primeiro_contato: { bg: "#FFEDD5", fg: "#F97316" },
-      proposta_enviada: { bg: "#F5F3FF", fg: "#7C3AED" },
-      em_aprovacao: { bg: "#F5F3FF", fg: "#8B5CF6" },
+      proposta_enviada: { bg: "#FFF8E6", fg: "#B98220" },
+      em_aprovacao: { bg: "#FFF8E6", fg: "#D4AF37" },
       cancelado: { bg: "#FEE2E2", fg: "#EF4444" },
     };
 
@@ -5982,7 +6126,7 @@ const getTagColors = (tag) => {
     { bg: "#fef2f2", text: "#b91c1c", border: "#fee2e2" }, // red
     { bg: "#ecfdf5", text: "#047857", border: "#d1fae5" }, // green
     { bg: "#fffbeb", text: "#b45309", border: "#fef3c7" }, // yellow/amber
-    { bg: "#faf5ff", text: "#6d28d9", border: "#f3e8ff" }, // purple
+    { bg: "#FFF8E6", text: "#B98220", border: "#FFF2CC" }, // gold
     { bg: "#fdf2f8", text: "#be185d", border: "#fce7f3" }, // pink
     { bg: "#f0fdfa", text: "#0f766e", border: "#ccfbf1" }, // teal
   ];
