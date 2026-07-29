@@ -579,7 +579,7 @@
   }
 }
 
-/* Overlay de Transição / Animação de 1 Segundo dos 4 Módulos */
+/* Overlay de Transição / Animação de 0,5 Segundo dos 4 Módulos */
 .sg-transition-overlay {
   position: fixed;
   top: 0;

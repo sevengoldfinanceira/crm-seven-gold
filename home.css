@@ -18897,7 +18897,7 @@ body.theme-dark .admin-btn-icon{border-color:rgba(255,255,255,.1);background:#21
   margin-top: auto !important;
 }
 
-/* Overlay Global de Transição / Animação de 1 Segundo (Entrada & Saída de Módulos) */
+/* Overlay Global de Transição / Animação de 0,5 Segundo (Entrada & Saída de Módulos) */
 .sg-transition-overlay {
   position: fixed !important;
   top: 0 !important;
@@ -18978,7 +18978,7 @@ body.theme-dark .admin-btn-icon{border-color:rgba(255,255,255,.1);background:#21
 }
 
 .sg-transition-progress-fill {
-  width: 0% !important;
+  width: 0%;
   height: 100% !important;
   background: linear-gradient(90deg, #D8B34A, #E8B138, #F4D76A) !important;
   border-radius: 4px !important;

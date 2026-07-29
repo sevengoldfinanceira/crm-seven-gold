@@ -1,3 +1,79 @@
+const SG_PANEL_TRANSITION_DURATION_MS = 500;
+
+function sgGetCurrentPage() {
+  return window.location.pathname.split("/").pop() || "index.html";
+}
+
+function sgGetTargetPage(target) {
+  try {
+    return new URL(target, window.location.href).pathname.split("/").pop() || "index.html";
+  } catch {
+    return String(target || "").split(/[?#]/)[0].split("/").pop() || "index.html";
+  }
+}
+
+function sgIsPanelsTarget(target) {
+  const page = sgGetTargetPage(target);
+  return page === "painel.html" || page === "painel";
+}
+
+function sgEnsureTransitionOverlay() {
+  let overlay = document.getElementById("sg-module-transition-overlay");
+  if (!overlay && document.body) {
+    overlay = document.createElement("div");
+    overlay.id = "sg-module-transition-overlay";
+    overlay.className = "sg-transition-overlay";
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.innerHTML = `
+      <div class="sg-transition-content">
+        <div class="sg-transition-logo-wrapper">
+          <img src="assets/icons/seven-gold-logo-completa.png" alt="Seven Gold Financeira" class="sg-transition-logo" />
+        </div>
+        <div class="sg-transition-status">
+          <span class="sg-transition-kicker">CARREGANDO AMBIENTE</span>
+          <h3 id="sg-transition-title" class="sg-transition-title">Acessando...</h3>
+        </div>
+        <div class="sg-transition-progress-bar">
+          <div class="sg-transition-progress-fill"></div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
+  return overlay;
+}
+
+function sgResetTransitionProgress(overlay) {
+  const fill = overlay?.querySelector(".sg-transition-progress-fill");
+  if (!fill) return;
+  fill.style.animation = "none";
+  void fill.offsetWidth;
+  fill.style.animation = "";
+}
+
+function sgStartTransition(title) {
+  const overlay = sgEnsureTransitionOverlay();
+  const statusTitle = document.getElementById("sg-transition-title");
+  if (statusTitle) statusTitle.textContent = title;
+  if (overlay) {
+    sgResetTransitionProgress(overlay);
+    overlay.classList.add("active");
+  }
+  return overlay;
+}
+
+function sgNavigateWithPanelsTransition(target, title = "Acessando Painéis...") {
+  if (!sgIsPanelsTarget(target)) {
+    window.location.href = target;
+    return;
+  }
+
+  sgStartTransition(title);
+  setTimeout(() => {
+    window.location.href = target;
+  }, SG_PANEL_TRANSITION_DURATION_MS);
+}
+
 (function () {
   const actionButtonStylesheetId = "seven-gold-action-button-alignment";
   if (!document.getElementById(actionButtonStylesheetId)) {
@@ -364,7 +440,7 @@
         const portalUser = await requirePortalAuthorization(data.session);
         if (!portalUser) return;
 
-        window.location.href = target;
+        sgNavigateWithPanelsTransition(target);
       });
     });
 
@@ -496,7 +572,7 @@
           const target = getTarget(form);
           const portalUser = await requirePortalAuthorization(data.session);
           if (!portalUser) return;
-          window.location.href = target;
+          sgNavigateWithPanelsTransition(target);
         });
       }
     }
@@ -591,7 +667,7 @@
 
     const portalUser = await requirePortalAuthorization(session);
     if (!portalUser) return true;
-    window.location.href = next;
+    sgNavigateWithPanelsTransition(next);
     return true;
   };
 
@@ -716,47 +792,22 @@
   });
 })();
 
-// Animação Global de 1 Segundo para Entrada & Retorno dos Módulos aos Painéis
+// Animação Global de 0,5 segundo para entrada e retorno aos painéis
 function setupGlobalModuleTransitions() {
-  const ensureOverlay = () => {
-    let overlay = document.getElementById("sg-module-transition-overlay");
-    if (!overlay && document.body) {
-      overlay = document.createElement("div");
-      overlay.id = "sg-module-transition-overlay";
-      overlay.className = "sg-transition-overlay";
-      overlay.setAttribute("aria-hidden", "true");
-      overlay.innerHTML = `
-        <div class="sg-transition-content">
-          <div class="sg-transition-logo-wrapper">
-            <img src="assets/icons/seven-gold-logo-completa.png" alt="Seven Gold Financeira" class="sg-transition-logo" />
-          </div>
-          <div class="sg-transition-status">
-            <span class="sg-transition-kicker">CARREGANDO AMBIENTE</span>
-            <h3 id="sg-transition-title" class="sg-transition-title">Acessando...</h3>
-          </div>
-          <div class="sg-transition-progress-bar">
-            <div class="sg-transition-progress-fill"></div>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-    }
-    return overlay;
-  };
+  if (window.__sevenGoldModuleTransitionsReady) return;
+  window.__sevenGoldModuleTransitionsReady = true;
 
   const initArrivalTransition = () => {
-    const overlay = ensureOverlay();
-    const currentPage = getCurrentPage();
+    const overlay = sgEnsureTransitionOverlay();
+    const currentPage = sgGetCurrentPage();
 
     if ((currentPage === "painel.html" || currentPage === "painel") && sessionStorage.getItem("sg_returning_from_module") === "true") {
       sessionStorage.removeItem("sg_returning_from_module");
-      const statusTitle = document.getElementById("sg-transition-title");
-      if (statusTitle) statusTitle.textContent = "Retornando aos Painéis...";
-      if (overlay) overlay.classList.add("active");
+      sgStartTransition("Retornando aos Painéis...");
 
       setTimeout(() => {
         if (overlay) overlay.classList.remove("active");
-      }, 500);
+      }, SG_PANEL_TRANSITION_DURATION_MS);
     }
   };
 
@@ -779,23 +830,11 @@ function setupGlobalModuleTransitions() {
 
     sessionStorage.setItem("sg_returning_from_module", "true");
 
-    const overlay = ensureOverlay();
-    const statusTitle = document.getElementById("sg-transition-title");
-    if (statusTitle) statusTitle.textContent = "Retornando aos Painéis...";
-
-    if (overlay) {
-      const fill = overlay.querySelector(".sg-transition-progress-fill");
-      if (fill) {
-        fill.style.animation = "none";
-        void fill.offsetWidth;
-        fill.style.animation = "";
-      }
-      overlay.classList.add("active");
-    }
+    sgStartTransition("Retornando aos Painéis...");
 
     setTimeout(() => {
       window.location.href = href;
-    }, 500);
+    }, SG_PANEL_TRANSITION_DURATION_MS);
   }, true);
 }
 
