@@ -1543,18 +1543,18 @@
                 </div>
                 <strong style="color:#0A0A0A; font-size:0.86rem; letter-spacing:0.02em; text-transform:uppercase; white-space:nowrap;">DADOS DA PROPOSTA</strong>
               </div>
-              <div style="display:flex; flex-direction:column; gap:10px; font-size:0.86rem; color:#706A78;">
+              <div style="display:flex; flex-direction:column; gap:9px; font-size:0.81rem; color:#706A78;">
                 <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                   <i data-lucide="user-check" style="width:15px; height:15px; color:#B98220; flex-shrink:0;"></i>
-                  <span style="min-width:0; word-break:break-word;"><strong style="color:#17111F;">Nome do Consultor:</strong> ${consultantName}</span>
+                  <span style="min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><strong style="color:#17111F;">Nome do Consultor:</strong> ${consultantName}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                   <i data-lucide="mail" style="width:15px; height:15px; color:#B98220; flex-shrink:0;"></i>
-                  <span style="min-width:0; word-break:break-word;"><strong style="color:#17111F;">E-mail:</strong> ${consultantEmail}</span>
+                  <span style="min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><strong style="color:#17111F;">E-mail:</strong> ${consultantEmail}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                   <i data-lucide="briefcase" style="width:15px; height:15px; color:#B98220; flex-shrink:0;"></i>
-                  <span style="min-width:0; word-break:break-word;"><strong style="color:#17111F;">Cargo:</strong> ${consultantRole}</span>
+                  <span style="min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><strong style="color:#17111F;">Cargo:</strong> ${consultantRole}</span>
                 </div>
               </div>
             </div>
@@ -1567,22 +1567,22 @@
                 </div>
                 <strong style="color:#0A0A0A; font-size:0.86rem; letter-spacing:0.02em; text-transform:uppercase; white-space:nowrap;">DADOS DO CLIENTE</strong>
               </div>
-              <div style="display:flex; flex-direction:column; gap:10px; font-size:0.86rem; color:#706A78;">
+              <div style="display:flex; flex-direction:column; gap:9px; font-size:0.81rem; color:#706A78;">
                 <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                   <i data-lucide="contact" style="width:15px; height:15px; color:#B98220; flex-shrink:0;"></i>
-                  <span style="min-width:0; word-break:break-word;"><strong style="color:#17111F;">Nome:</strong> ${clientName}</span>
+                  <span style="min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><strong style="color:#17111F;">Nome:</strong> ${clientName}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                   <i data-lucide="credit-card" style="width:15px; height:15px; color:#B98220; flex-shrink:0;"></i>
-                  <span style="min-width:0; word-break:break-word;"><strong style="color:#17111F;">CPF:</strong> ${clientCpf}</span>
+                  <span style="min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><strong style="color:#17111F;">CPF:</strong> ${clientCpf}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                   <i data-lucide="phone" style="width:15px; height:15px; color:#B98220; flex-shrink:0;"></i>
-                  <span style="min-width:0; word-break:break-word;"><strong style="color:#17111F;">Telefone:</strong> ${clientPhone}</span>
+                  <span style="min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><strong style="color:#17111F;">Telefone:</strong> ${clientPhone}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                   <i data-lucide="home" style="width:15px; height:15px; color:#B98220; flex-shrink:0;"></i>
-                  <span style="min-width:0; word-break:break-word;"><strong style="color:#17111F;">Tipo de Bem:</strong> ${propType}</span>
+                  <span style="min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><strong style="color:#17111F;">Tipo de Bem:</strong> ${propType}</span>
                 </div>
               </div>
             </div>
