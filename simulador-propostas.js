@@ -332,7 +332,7 @@
                 <thead>
                   <tr>
                     <th>CLIENTE / CONTATO</th>
-                    <th>PRODUTO / GRUPO & COTA</th>
+                    <th>TABELA</th>
                     <th>VALOR DE CRÉDITO</th>
                     <th>ENTRADA / PARCELA</th>
                     <th>DATA DA PROPOSTA</th>
@@ -397,7 +397,7 @@
                 <thead>
                   <tr>
                     <th>CLIENTE / CONTATO</th>
-                    <th>PRODUTO / GRUPO & COTA</th>
+                    <th>TABELA</th>
                     <th>VALOR DE CRÉDITO</th>
                     <th>ENTRADA / PARCELA</th>
                     <th>FECHAMENTO</th>
@@ -2081,6 +2081,29 @@
     }
   ];
 
+  function formatTableDisplay(rawProduct, groupCota) {
+    if (!rawProduct) return "AUTOCON";
+
+    const codMatch = rawProduct.match(/(?:COD|Tabela|TAB|#|\bCod\b)\s*(\d+)/i);
+    if (codMatch && codMatch[1]) {
+      return `AUTOCON ${codMatch[1]}`;
+    }
+
+    const autoconNumMatch = rawProduct.match(/AUTOCON\s*(?:[I|V|X]+)?\s*(\d+)/i);
+    if (autoconNumMatch && autoconNumMatch[1]) {
+      return `AUTOCON ${autoconNumMatch[1]}`;
+    }
+
+    if (groupCota) {
+      const gMatch = groupCota.match(/(\d+)/);
+      if (gMatch && gMatch[1]) {
+        return `AUTOCON ${gMatch[1]}`;
+      }
+    }
+
+    return "AUTOCON";
+  }
+
   function getSavedProposalsList() {
     try {
       const stored = localStorage.getItem("seven_gold_saved_proposals");
@@ -2261,8 +2284,7 @@
           </td>
           <td>
             <div class="closed-product-cell">
-              <strong style="color:#0f172a; font-size:0.85rem;">${proposal.produto || "Consórcio"}</strong>
-              <span style="color:#64748b; font-size:0.75rem;">${proposal.grupo_cota || "—"}</span>
+              <strong style="color:#0f172a; font-size:0.85rem;">${formatTableDisplay(proposal.produto, proposal.grupo_cota)}</strong>
             </div>
           </td>
           <td>
@@ -2456,8 +2478,7 @@
           </td>
           <td>
             <div class="closed-product-cell">
-              <strong style="color:#0f172a; font-size:0.85rem;">${client.produto || "Consórcio"}</strong>
-              <span style="color:#64748b; font-size:0.75rem;">${client.grupo_cota || "—"}</span>
+              <strong style="color:#0f172a; font-size:0.85rem;">${formatTableDisplay(client.produto, client.grupo_cota)}</strong>
             </div>
           </td>
           <td>
