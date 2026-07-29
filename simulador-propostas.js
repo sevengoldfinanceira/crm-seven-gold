@@ -1182,7 +1182,7 @@
                     <label for="pf-client-cpf">CPF do Cliente</label>
                     <div class="pf-input-wrapper">
                       <i data-lucide="contact" class="pf-input-icon"></i>
-                      <input type="text" id="pf-client-cpf" class="simulador-input pf-input-with-icon" placeholder="000.000.000-00" value="${proposal.client_cpf || proposal.cpf_cnpj || ''}" />
+                      <input type="text" id="pf-client-cpf" class="simulador-input pf-input-with-icon" placeholder="000.000.000-00" maxlength="14" value="${proposal.client_cpf || proposal.cpf_cnpj || ''}" />
                     </div>
                   </div>
                   <div class="simulador-form-group">
@@ -1716,19 +1716,14 @@
       });
     }
 
-    // Live Formatters for CPF/CNPJ and Phone/WhatsApp
-    const formatCpfCnpj = (val) => {
-      const digits = String(val).replace(/\D/g, '').slice(0, 14);
+    // Live Formatters for CPF and Phone/WhatsApp
+    const formatCpfOnly = (val) => {
+      const digits = String(val).replace(/\D/g, '').slice(0, 11);
       if (!digits) return '';
-      if (digits.length <= 11) {
-        if (digits.length <= 3) return digits;
-        if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
-        if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
-        return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
-      } else {
-        if (digits.length <= 12) return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8)}`;
-        return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-${digits.slice(12)}`;
-      }
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+      if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+      return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
     };
 
     const formatPhone = (val) => {
@@ -1742,8 +1737,11 @@
 
     const cpfInputEl = document.getElementById('pf-client-cpf');
     if (cpfInputEl) {
+      if (cpfInputEl.value) {
+        cpfInputEl.value = formatCpfOnly(cpfInputEl.value);
+      }
       cpfInputEl.addEventListener('input', (e) => {
-        e.target.value = formatCpfCnpj(e.target.value);
+        e.target.value = formatCpfOnly(e.target.value);
         updateA4Sheet();
       });
     }
