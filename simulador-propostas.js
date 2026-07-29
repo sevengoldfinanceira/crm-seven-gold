@@ -1718,41 +1718,37 @@
     const ownPctInput = document.getElementById('pf-own-bid');
     const ownMoneyInput = document.getElementById('pf-own-bid-amount');
 
-    // Helper: Update max limits for own bid slider
-    const updateBidCaps = () => {
+    // Helper: Sync Embedded Bid
+    const syncEmbeddedBidFromPercentage = (pct, source) => {
+      const numPct = Math.min(Math.max(parseFloat(String(pct).replace(/,/g, '.').replace(/[^\d.]/g, '')) || 0, 0), 50);
+      const displayPct = numPct > 0 ? `${numPct}%` : '0%';
+
+      if (embRangeSlider && source !== 'slider') {
+        embRangeSlider.value = numPct;
+      }
+      if (embBadgeEl) {
+        embBadgeEl.textContent = displayPct;
+      }
+      if (embPctInput && source !== 'pctInput') {
+        embPctInput.value = displayPct;
+      }
+      if (embMoneyInput && creditValue > 0 && source !== 'moneyInput') {
+        embMoneyInput.value = formatCurrency(creditValue * (numPct / 100));
+      }
+
+      // Check max allowed for Own Bid (total sum cannot exceed 80%)
       const incEmbedded = document.getElementById('pf-embedded-bid-toggle')?.checked !== false;
-      const embPct = incEmbedded ? (parseFloat(embRangeSlider?.value) || 0) : 0;
-      const maxOwn = Math.max(80 - embPct, 0);
+      const effectiveEmb = incEmbedded ? numPct : 0;
+      const maxOwn = Math.max(80 - effectiveEmb, 0);
 
       if (ownRangeSlider) {
         ownRangeSlider.max = maxOwn;
         const currentOwn = parseFloat(ownRangeSlider.value) || 0;
         if (currentOwn > maxOwn) {
-          ownRangeSlider.value = maxOwn;
-          if (ownBadgeEl) ownBadgeEl.textContent = formatPctDisplay(maxOwn);
-          if (ownPctInput) ownPctInput.value = formatPctDisplay(maxOwn);
-          if (ownMoneyInput && creditValue > 0) {
-            ownMoneyInput.value = formatCurrency(creditValue * (maxOwn / 100));
-          }
+          syncOwnBidFromPercentage(maxOwn, 'clamp');
         }
       }
-    };
 
-    // Helper: Sync Embedded Bid
-    const syncEmbeddedBidFromPercentage = (pct, source) => {
-      const numPct = parseFloat(String(pct).replace(/[^\d.]/g, '')) || 0;
-      const clampedPct = Math.min(Math.max(numPct, 0), 50);
-      const displayPct = formatPctDisplay(clampedPct);
-
-      if (embRangeSlider && source !== 'slider') embRangeSlider.value = clampedPct;
-      if (embBadgeEl) embBadgeEl.textContent = displayPct;
-      if (embPctInput && source !== 'pctInput') embPctInput.value = displayPct;
-
-      if (embMoneyInput && creditValue > 0 && source !== 'moneyInput') {
-        embMoneyInput.value = formatCurrency(creditValue * (clampedPct / 100));
-      }
-
-      updateBidCaps();
       updateA4Sheet();
     };
 
@@ -1763,14 +1759,12 @@
         return;
       }
       const valMoney = parseFloat(digits) / 100;
+      if (embMoneyInput) embMoneyInput.value = formatCurrency(valMoney);
+
       if (creditValue > 0) {
-        const maxMoney = creditValue * 0.50;
-        const clampedMoney = Math.min(valMoney, maxMoney);
-        if (embMoneyInput) embMoneyInput.value = formatCurrency(clampedMoney);
-        const calcPct = Math.min(Math.max((clampedMoney / creditValue) * 100, 0), 50);
+        const calcPct = Math.min(Math.max((valMoney / creditValue) * 100, 0), 50);
         syncEmbeddedBidFromPercentage(calcPct, 'moneyInput');
       } else {
-        if (embMoneyInput) embMoneyInput.value = formatCurrency(valMoney);
         updateA4Sheet();
       }
     };
@@ -1781,19 +1775,23 @@
       const currentEmb = incEmbedded ? (parseFloat(embRangeSlider?.value) || 0) : 0;
       const maxOwnAllowed = Math.max(80 - currentEmb, 0);
 
-      const numPct = parseFloat(String(pct).replace(/[^\d.]/g, '')) || 0;
-      const clampedPct = Math.min(Math.max(numPct, 0), maxOwnAllowed);
-      const displayPct = formatPctDisplay(clampedPct);
+      const numPct = Math.min(Math.max(parseFloat(String(pct).replace(/,/g, '.').replace(/[^\d.]/g, '')) || 0, 0), maxOwnAllowed);
+      const displayPct = numPct > 0 ? `${numPct}%` : '0%';
 
       if (ownRangeSlider) {
         ownRangeSlider.max = maxOwnAllowed;
-        if (source !== 'slider') ownRangeSlider.value = clampedPct;
+        if (source !== 'slider') {
+          ownRangeSlider.value = numPct;
+        }
       }
-      if (ownBadgeEl) ownBadgeEl.textContent = displayPct;
-      if (ownPctInput && source !== 'pctInput') ownPctInput.value = displayPct;
-
+      if (ownBadgeEl) {
+        ownBadgeEl.textContent = displayPct;
+      }
+      if (ownPctInput && source !== 'pctInput') {
+        ownPctInput.value = displayPct;
+      }
       if (ownMoneyInput && creditValue > 0 && source !== 'moneyInput') {
-        ownMoneyInput.value = formatCurrency(creditValue * (clampedPct / 100));
+        ownMoneyInput.value = formatCurrency(creditValue * (numPct / 100));
       }
 
       updateA4Sheet();
@@ -1806,18 +1804,16 @@
         return;
       }
       const valMoney = parseFloat(digits) / 100;
-      if (creditValue > 0) {
-        const incEmbedded = document.getElementById('pf-embedded-bid-toggle')?.checked !== false;
-        const currentEmb = incEmbedded ? (parseFloat(embRangeSlider?.value) || 0) : 0;
-        const maxOwnPct = Math.max(80 - currentEmb, 0);
+      if (ownMoneyInput) ownMoneyInput.value = formatCurrency(valMoney);
 
-        const maxMoney = creditValue * (maxOwnPct / 100);
-        const clampedMoney = Math.min(valMoney, maxMoney);
-        if (ownMoneyInput) ownMoneyInput.value = formatCurrency(clampedMoney);
-        const calcPct = Math.min(Math.max((clampedMoney / creditValue) * 100, 0), maxOwnPct);
+      const incEmbedded = document.getElementById('pf-embedded-bid-toggle')?.checked !== false;
+      const currentEmb = incEmbedded ? (parseFloat(embRangeSlider?.value) || 0) : 0;
+      const maxOwnPct = Math.max(80 - currentEmb, 0);
+
+      if (creditValue > 0) {
+        const calcPct = Math.min(Math.max((valMoney / creditValue) * 100, 0), maxOwnPct);
         syncOwnBidFromPercentage(calcPct, 'moneyInput');
       } else {
-        if (ownMoneyInput) ownMoneyInput.value = formatCurrency(valMoney);
         updateA4Sheet();
       }
     };
@@ -1868,7 +1864,7 @@
       embeddedBidToggle.addEventListener('change', () => {
         const block = document.getElementById('pf-embedded-bid-block');
         if (block) block.style.display = embeddedBidToggle.checked ? 'block' : 'none';
-        updateA4Sheet();
+        syncEmbeddedBidFromPercentage(embRangeSlider?.value || 0, 'toggle');
       });
     }
 
@@ -1876,7 +1872,7 @@
       ownBidToggle.addEventListener('change', () => {
         const block = document.getElementById('pf-own-bid-block');
         if (block) block.style.display = ownBidToggle.checked ? 'block' : 'none';
-        updateA4Sheet();
+        syncOwnBidFromPercentage(ownRangeSlider?.value || 0, 'toggle');
       });
     }
 
