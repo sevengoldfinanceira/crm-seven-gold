@@ -386,7 +386,7 @@
                 <option value="Em Análise">Em Análise</option>
                 <option value="Contemplado">Contemplado</option>
               </select>
-              <button type="button" class="simulador-btn-submit" id="btn-add-closed-client" style="width:auto; padding:10px 18px; margin:0;">
+              <button type="button" class="btn-add-closed-gold" id="btn-add-closed-client">
                 <i data-lucide="user-plus"></i> Novo Cliente Fechado
               </button>
             </div>

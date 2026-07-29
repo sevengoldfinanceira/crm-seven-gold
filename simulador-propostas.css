@@ -1940,6 +1940,42 @@ select.simulador-input option {
   background: #F8FAFC;
   outline: none;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.closed-filter-select:focus {
+  border-color: #D8B34A;
+  box-shadow: 0 0 0 3px rgba(216, 179, 74, 0.15);
+}
+
+.btn-add-closed-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #D8B34A 0%, #B89228 100%);
+  color: #0F172A;
+  font-weight: 800;
+  font-size: 0.86rem;
+  padding: 10px 18px;
+  border: 1px solid #D8B34A;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(216, 179, 74, 0.25);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-add-closed-gold:hover {
+  background: linear-gradient(135deg, #E5BF54 0%, #C49B2C 100%);
+  box-shadow: 0 6px 16px rgba(216, 179, 74, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-add-closed-gold svg,
+.btn-add-closed-gold i {
+  width: 16px;
+  height: 16px;
+  color: #0F172A;
 }
 
 /* Table */
