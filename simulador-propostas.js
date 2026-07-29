@@ -336,7 +336,6 @@
                     <th>VALOR DE CRÉDITO</th>
                     <th>ENTRADA / PARCELA</th>
                     <th>DATA DA PROPOSTA</th>
-                    <th>STATUS</th>
                     <th style="text-align: right;">AÇÕES</th>
                   </tr>
                 </thead>
@@ -2236,7 +2235,7 @@
     if (filtered.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="7" style="text-align:center; padding:40px; color:#64748b;">
+          <td colspan="6" style="text-align:center; padding:40px; color:#64748b;">
             Nenhuma proposta salva encontrada. As propostas geradas no simulador aparecerão aqui!
           </td>
         </tr>
@@ -2248,7 +2247,6 @@
       const initial = (proposal.nome || "P").charAt(0).toUpperCase();
       const statusText = proposal.status || "Em Aberto";
       const isClosedContract = statusText === "Assinado" || statusText === "Contratado";
-      const statusClass = isClosedContract ? "badge-signed" : "badge-analysis";
 
       return `
         <tr>
@@ -2278,9 +2276,6 @@
           </td>
           <td style="color:#475569; font-size:0.82rem; font-weight:600;">
             ${proposal.data_fechamento ? new Date(proposal.data_fechamento + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}
-          </td>
-          <td>
-            <span class="closed-status-badge ${statusClass}">${statusText}</span>
           </td>
           <td style="text-align: right;">
             <div class="closed-actions-row">
