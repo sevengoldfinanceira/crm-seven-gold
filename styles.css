@@ -10948,14 +10948,15 @@ body.theme-dark .appointment-race {
 }
 
 .appointment-race-config-btn {
-  min-height: 34px;
-  padding: 0 12px;
+  min-height: 42px;
+  padding: 0 16px;
   border: 0;
-  border-radius: 12px;
-  color: #FFFFFF;
-  background: var(--sg-gold-gradient);
-  box-shadow: 0 10px 22px rgba(144, 104, 32, 0.22);
-  font-size: 0.78rem;
+  border-radius: 8px;
+  color: #050505;
+  background: #D8AD3D;
+  box-shadow: 0 8px 18px rgba(232, 177, 56, 0.3);
+  font-size: 0.82rem;
+  font-weight: 800;
 }
 
 .appointment-race-config-btn svg {
@@ -10965,7 +10966,8 @@ body.theme-dark .appointment-race {
 }
 
 .appointment-race-config-btn:hover {
-  box-shadow: 0 22px 42px rgba(144, 104, 32, 0.3);
+  background: #D8AD3D;
+  box-shadow: 0 10px 20px rgba(232, 177, 56, 0.34);
 }
 
 .appointment-race-status {
