@@ -291,7 +291,64 @@
           </div>
         </div>
 
-        <!-- Sub-tab 2: Clientes (Visível a todos) -->
+        <!-- Sub-tab 2: Propostas Salvas -->
+        <div class="simulador-subtab-content" id="subtab-propostas" style="display:none;">
+          <div class="closed-clients-panel">
+            <div class="closed-clients-kpi-grid">
+              <div class="closed-kpi-card">
+                <div class="closed-kpi-icon gold"><i data-lucide="file-text"></i></div>
+                <div class="closed-kpi-info">
+                  <span class="closed-kpi-label">TOTAL DE PROPOSTAS</span>
+                  <strong class="closed-kpi-value" id="kpi-proposals-total">0</strong>
+                </div>
+              </div>
+              <div class="closed-kpi-card">
+                <div class="closed-kpi-icon green"><i data-lucide="badge-dollar-sign"></i></div>
+                <div class="closed-kpi-info">
+                  <span class="closed-kpi-label">CRÉDITO EM PROPOSTAS</span>
+                  <strong class="closed-kpi-value" id="kpi-proposals-credit">R$ 0,00</strong>
+                </div>
+              </div>
+              <div class="closed-kpi-card">
+                <div class="closed-kpi-icon blue"><i data-lucide="clock"></i></div>
+                <div class="closed-kpi-info">
+                  <span class="closed-kpi-label">PROPOSTAS EM ABERTO</span>
+                  <strong class="closed-kpi-value" id="kpi-proposals-open">0</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filter & Search Bar -->
+            <div class="closed-clients-filter-bar">
+              <div class="closed-search-input-box">
+                <i data-lucide="search" class="closed-search-icon"></i>
+                <input type="text" id="proposals-search-input" placeholder="Buscar proposta por cliente, CPF/CNPJ ou produto..." />
+              </div>
+            </div>
+
+            <!-- Proposals Table -->
+            <div class="closed-clients-table-wrapper">
+              <table class="closed-clients-table">
+                <thead>
+                  <tr>
+                    <th>CLIENTE / CONTATO</th>
+                    <th>PRODUTO / GRUPO & COTA</th>
+                    <th>VALOR DE CRÉDITO</th>
+                    <th>ENTRADA / PARCELA</th>
+                    <th>DATA DA PROPOSTA</th>
+                    <th>STATUS</th>
+                    <th style="text-align: right;">AÇÕES</th>
+                  </tr>
+                </thead>
+                <tbody id="saved-proposals-tbody">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub-tab 3: Clientes (Contratos Fechados) -->
         <div class="simulador-subtab-content" id="subtab-clientes" style="display:none;">
           <div class="closed-clients-panel">
             <div class="closed-clients-kpi-grid">
@@ -442,15 +499,18 @@
 
         if (targetSubtab === 'tabelas') fetchActiveTablesList();
         if (targetSubtab === 'configuracoes') loadActiveTableInfo();
+        if (targetSubtab === 'propostas') renderSavedProposalsTab();
         if (targetSubtab === 'clientes') renderClosedClientsTab();
       });
     });
 
-    // Pre-initialize closed clients list and fetch Supabase records
+    // Pre-initialize lists and fetch Supabase records
+    renderSavedProposalsTab();
     renderClosedClientsTab();
     fetchSupabaseProposals();
 
-    // Search and status filter listeners for closed clients
+    // Search and status filter listeners for proposals and closed clients
+    document.getElementById('proposals-search-input')?.addEventListener('input', () => renderSavedProposalsTab());
     document.getElementById('closed-search-input')?.addEventListener('input', () => renderClosedClientsTab());
     document.getElementById('closed-filter-status')?.addEventListener('change', () => renderClosedClientsTab());
 
@@ -1752,11 +1812,11 @@
         const productName = proposal.product_name || proposal.produto || 'Imóveis (AUTOCON)';
 
         const todayStr = new Date().toISOString().slice(0, 10);
-        const currentList = getClosedClientsList();
+        const currentList = getSavedProposalsList();
 
         const existingId = window.__currentEditingClientId;
-        const existingClient = existingId ? currentList.find(c => String(c.id) === String(existingId)) : null;
-        const clientId = existingClient ? existingClient.id : (existingId || ('cl-' + Date.now()));
+        const existingProposal = existingId ? currentList.find(c => String(c.id) === String(existingId)) : null;
+        const clientId = existingProposal ? existingProposal.id : (existingId || ('cl-' + Date.now()));
 
         // Retain current editing ID for future saves in the same view session
         window.__currentEditingClientId = clientId;
@@ -1773,11 +1833,11 @@
           grupo_cota: (proposal.group_number && proposal.quota_number) 
             ? `Grupo ${proposal.group_number} / Cota ${proposal.quota_number}` 
             : (proposal.grupo_cota || 'G7-VIP'),
-          data_fechamento: existingClient ? existingClient.data_fechamento : todayStr,
-          status: existingClient ? existingClient.status : 'Assinado',
+          data_fechamento: existingProposal ? existingProposal.data_fechamento : todayStr,
+          status: existingProposal ? existingProposal.status : 'Em Aberto',
           consultor: consultantName || 'Seven Gold',
           observacao: notesVal,
-          documentos_obrigatorios: existingClient ? (existingClient.documentos_obrigatorios || {}) : {},
+          documentos_obrigatorios: existingProposal ? (existingProposal.documentos_obrigatorios || {}) : {},
           proposal_config: {
             ...proposal,
             client_id: clientId,
@@ -1796,14 +1856,14 @@
           }
         };
 
-        if (existingClient) {
+        if (existingProposal) {
           const idx = currentList.findIndex(c => String(c.id) === String(clientId));
           if (idx !== -1) currentList[idx] = updatedClientRecord;
         } else {
           currentList.unshift(updatedClientRecord);
         }
 
-        saveClosedClientsList(currentList);
+        saveSavedProposalsList(currentList);
 
         // Async sync to Supabase database
         saveProposalToSupabase(updatedClientRecord);
@@ -1812,11 +1872,11 @@
           alert(`✅ Todos os dados da proposta de "${clientName}" foram salvos no sistema e no Supabase!`);
         }
 
-        // Switch to Clientes subtab in topbar
-        const clientesNavBtn = document.querySelector('[data-subtab="clientes"]');
-        if (clientesNavBtn) {
+        // Switch to Propostas subtab in topbar
+        const propostasNavBtn = document.querySelector('[data-subtab="propostas"]');
+        if (propostasNavBtn) {
           document.querySelectorAll('.simulador-tab-btn').forEach(b => b.classList.remove('active'));
-          clientesNavBtn.classList.add('active');
+          propostasNavBtn.classList.add('active');
 
           const simContainer = document.querySelector('[data-service-tab-content="simulador"]');
           const pfContainer = document.getElementById('proposta-final-container');
@@ -1824,10 +1884,10 @@
           if (pfContainer) pfContainer.style.display = 'none';
 
           document.querySelectorAll('.simulador-subtab-content').forEach(c => c.style.display = 'none');
-          const activeContent = document.getElementById('subtab-clientes');
+          const activeContent = document.getElementById('subtab-propostas');
           if (activeContent) activeContent.style.display = 'block';
 
-          renderClosedClientsTab();
+          renderSavedProposalsTab();
         }
       } catch (err) {
         console.error("Erro ao salvar proposta:", err);
@@ -2022,6 +2082,30 @@
     }
   ];
 
+  function getSavedProposalsList() {
+    try {
+      const stored = localStorage.getItem("seven_gold_saved_proposals");
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    const legacyList = localStorage.getItem("seven_gold_closed_clients");
+    if (legacyList) {
+      try {
+        const parsed = JSON.parse(legacyList);
+        localStorage.setItem("seven_gold_saved_proposals", JSON.stringify(parsed));
+        return parsed;
+      } catch (e) {}
+    }
+    return [];
+  }
+
+  function saveSavedProposalsList(list) {
+    localStorage.setItem("seven_gold_saved_proposals", JSON.stringify(list));
+  }
+
   function getClosedClientsList() {
     try {
       const stored = localStorage.getItem("seven_gold_closed_clients");
@@ -2071,7 +2155,7 @@
       if (!client) return;
       const { data, error } = await client.from('crm_propostas').select('*').order('created_at', { ascending: false });
       if (data && data.length > 0) {
-        const supabaseClients = data.map(row => ({
+        const supabaseRecords = data.map(row => ({
           id: row.id || ('cl-' + Date.now()),
           nome: row.nome_cliente || row.nome || 'Cliente',
           cpf_cnpj: row.cpf_cnpj || 'N/A',
@@ -2082,32 +2166,221 @@
           parcela: Number(row.parcela || 0),
           grupo_cota: row.grupo_cota || 'G7-VIP',
           data_fechamento: row.data_fechamento || new Date().toISOString().slice(0, 10),
-          status: row.status || 'Assinado',
+          status: row.status || 'Em Aberto',
           consultor: row.consultor || 'Seven Gold',
           observacao: row.observacao || '',
           documentos_obrigatorios: row.documentos_obrigatorios || {},
           proposal_config: row.proposal_config || null
         }));
 
-        // Merge: retain all local proposals and overlay Supabase updates without discarding newly created local items
-        const localList = getClosedClientsList();
-        const mergedList = [...localList];
+        const localProposals = getSavedProposalsList();
+        const mergedProposals = [...localProposals];
 
-        supabaseClients.forEach(sbClient => {
-          const idx = mergedList.findIndex(l => String(l.id) === String(sbClient.id));
+        supabaseRecords.forEach(sbClient => {
+          const idx = mergedProposals.findIndex(l => String(l.id) === String(sbClient.id));
           if (idx !== -1) {
-            mergedList[idx] = { ...mergedList[idx], ...sbClient };
+            mergedProposals[idx] = { ...mergedProposals[idx], ...sbClient };
           } else {
-            mergedList.push(sbClient);
+            mergedProposals.push(sbClient);
           }
         });
 
-        saveClosedClientsList(mergedList);
+        saveSavedProposalsList(mergedProposals);
+        renderSavedProposalsTab();
+
+        const localClosed = getClosedClientsList();
+        const mergedClosed = [...localClosed];
+        supabaseRecords.filter(r => r.status === 'Assinado' || r.status === 'Contemplado').forEach(sbClient => {
+          const idx = mergedClosed.findIndex(l => String(l.id) === String(sbClient.id));
+          if (idx !== -1) {
+            mergedClosed[idx] = { ...mergedClosed[idx], ...sbClient };
+          } else {
+            mergedClosed.push(sbClient);
+          }
+        });
+        saveClosedClientsList(mergedClosed);
         renderClosedClientsTab();
       }
     } catch (e) {
       console.warn("Aviso ao carregar propostas do Supabase:", e);
     }
+  }
+
+  function renderSavedProposalsTab() {
+    const tbody = document.getElementById("saved-proposals-tbody");
+    if (!tbody) return;
+
+    const searchVal = (document.getElementById("proposals-search-input")?.value || "").toLowerCase().trim();
+    const allProposals = getSavedProposalsList();
+
+    const filtered = allProposals.filter(p => {
+      return !searchVal || 
+        (p.nome && p.nome.toLowerCase().includes(searchVal)) || 
+        (p.cpf_cnpj && p.cpf_cnpj.toLowerCase().includes(searchVal)) || 
+        (p.produto && p.produto.toLowerCase().includes(searchVal)) ||
+        (p.grupo_cota && p.grupo_cota.toLowerCase().includes(searchVal));
+    });
+
+    const totalProposals = allProposals.length;
+    const totalCredit = allProposals.reduce((acc, curr) => acc + Number(curr.credito || 0), 0);
+    const openProposals = allProposals.filter(p => p.status !== "Assinado" && p.status !== "Contemplado").length;
+
+    const kpiTotalEl = document.getElementById("kpi-proposals-total");
+    const kpiCreditEl = document.getElementById("kpi-proposals-credit");
+    const kpiOpenEl = document.getElementById("kpi-proposals-open");
+
+    if (kpiTotalEl) kpiTotalEl.textContent = totalProposals;
+    if (kpiCreditEl) kpiCreditEl.textContent = formatCurrency(totalCredit);
+    if (kpiOpenEl) kpiOpenEl.textContent = openProposals;
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align:center; padding:40px; color:#64748b;">
+            Nenhuma proposta salva encontrada. As propostas geradas no simulador aparecerão aqui!
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(proposal => {
+      const initial = (proposal.nome || "P").charAt(0).toUpperCase();
+      const statusText = proposal.status || "Em Aberto";
+      const statusClass = (statusText === "Assinado" || statusText === "Contratado") ? "badge-signed" : "badge-analysis";
+
+      return `
+        <tr>
+          <td>
+            <div class="closed-client-name-cell">
+              <span class="closed-client-avatar" style="background:#0F172A; color:#D8B34A;">${initial}</span>
+              <div class="closed-client-details">
+                <strong class="closed-client-title">${proposal.nome}</strong>
+                <span class="closed-client-sub">${proposal.cpf_cnpj || "CPF/CNPJ N/A"} • ${proposal.telefone || "Tel N/A"}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="closed-product-cell">
+              <strong style="color:#0f172a; font-size:0.85rem;">${proposal.produto || "Consórcio"}</strong>
+              <span style="color:#64748b; font-size:0.75rem;">${proposal.grupo_cota || "—"}</span>
+            </div>
+          </td>
+          <td>
+            <strong style="color:#10b981; font-weight:800; font-size:0.92rem;">${formatCurrency(proposal.credito)}</strong>
+          </td>
+          <td>
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <span style="color:#0f172a; font-size:0.82rem; font-weight:700;">Entrada: ${formatCurrency(proposal.entrada)}</span>
+              <span style="color:#64748b; font-size:0.75rem;">Parcela: ${formatCurrency(proposal.parcela)}</span>
+            </div>
+          </td>
+          <td style="color:#475569; font-size:0.82rem; font-weight:600;">
+            ${proposal.data_fechamento ? new Date(proposal.data_fechamento + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}
+          </td>
+          <td>
+            <span class="closed-status-badge ${statusClass}">${statusText}</span>
+          </td>
+          <td style="text-align: right;">
+            <div class="closed-actions-row">
+              <button type="button" class="btn-closed-action a4" data-open-proposal-a4="${proposal.id}" title="Editar / Visualizar Proposta A4">
+                <i data-lucide="file-text"></i> A4
+              </button>
+              <button type="button" class="btn-closed-action docs" style="background:#D8B34A; color:#0F172A; font-weight:800;" data-convert-client="${proposal.id}" title="Transformar Proposta em Cliente Contratado">
+                <i data-lucide="user-check"></i> Fechar Contrato
+              </button>
+              <button type="button" class="btn-closed-action delete" data-delete-proposal="${proposal.id}" title="Excluir Proposta">
+                <i data-lucide="trash-2"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    if (window.lucide) window.lucide.createIcons();
+
+    tbody.querySelectorAll("[data-open-proposal-a4]").forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.dataset.openProposalA4;
+        const proposal = allProposals.find(p => p.id === id);
+        if (!proposal) return;
+
+        const proposalPayload = proposal.proposal_config || {
+          product_name: proposal.produto || "Imóveis (AUTOCON)",
+          credit_value: Number(proposal.credito || 0),
+          first_installment: Number(proposal.entrada || 0),
+          final_installment_value: Number(proposal.parcela || 0),
+          total_months: 180,
+          bid_amount: Number(proposal.entrada || 0),
+          bid_percentage: proposal.credito > 0 ? ((Number(proposal.entrada) / Number(proposal.credito)) * 100).toFixed(2) : "0",
+          group_number: proposal.grupo_cota ? proposal.grupo_cota.split('/')[0] : '—',
+          quota_number: proposal.grupo_cota ? proposal.grupo_cota.split('/')[1] : '—'
+        };
+
+        proposalPayload.client_id = proposal.id;
+        proposalPayload.client_name = proposal.nome;
+        proposalPayload.client_cpf = proposal.cpf_cnpj;
+        proposalPayload.client_phone = proposal.telefone;
+        proposalPayload.notes = proposal.observacao || '';
+        proposalPayload.consultant_name = proposal.consultor;
+
+        openMontarPropostaFinal(proposalPayload, proposal.id);
+      };
+    });
+
+    tbody.querySelectorAll("[data-convert-client]").forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.dataset.convertClient;
+        const proposal = allProposals.find(p => p.id === id);
+        if (!proposal) return;
+
+        if (!confirm(`Deseja fechar contrato com o cliente "${proposal.nome}"? Ele será promovido para a aba de Clientes Fechados para inclusão dos documentos obrigatórios.`)) return;
+
+        proposal.status = "Assinado";
+        saveSavedProposalsList(allProposals);
+
+        const closedList = getClosedClientsList();
+        const existingIdx = closedList.findIndex(c => String(c.id) === String(proposal.id));
+        if (existingIdx !== -1) {
+          closedList[existingIdx] = { ...closedList[existingIdx], ...proposal, status: "Assinado" };
+        } else {
+          closedList.unshift({ ...proposal, status: "Assinado" });
+        }
+        saveClosedClientsList(closedList);
+        saveProposalToSupabase({ ...proposal, status: "Assinado" });
+
+        alert(`🎉 Parabéns! O contrato de "${proposal.nome}" foi fechado. Redirecionando para anexar os documentos obrigatórios...`);
+
+        const clientesNavBtn = document.querySelector('[data-subtab="clientes"]');
+        if (clientesNavBtn) {
+          document.querySelectorAll('.simulador-tab-btn').forEach(b => b.classList.remove('active'));
+          clientesNavBtn.classList.add('active');
+
+          const simContainer = document.querySelector('[data-service-tab-content="simulador"]');
+          const pfContainer = document.getElementById('proposta-final-container');
+          if (simContainer) simContainer.style.display = 'block';
+          if (pfContainer) pfContainer.style.display = 'none';
+
+          document.querySelectorAll('.simulador-subtab-content').forEach(c => c.style.display = 'none');
+          const activeContent = document.getElementById('subtab-clientes');
+          if (activeContent) activeContent.style.display = 'block';
+
+          renderClosedClientsTab();
+          openClientDocsModal(proposal.id);
+        }
+      };
+    });
+
+    tbody.querySelectorAll("[data-delete-proposal]").forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.dataset.deleteProposal;
+        if (!confirm("Deseja realmente excluir esta proposta?")) return;
+        const updated = allProposals.filter(p => p.id !== id);
+        saveSavedProposalsList(updated);
+        renderSavedProposalsTab();
+      };
+    });
   }
 
   function renderClosedClientsTab() {
