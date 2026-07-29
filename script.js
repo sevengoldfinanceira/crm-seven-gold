@@ -6737,6 +6737,21 @@ const loadLeads = async () => {
       openEditLeadModal(requestedLead);
     }
   }
+
+  // Smoothly fade out initial CRM loader screen when leads & data are ready
+  hideCrmInitialLoader();
+};
+
+const hideCrmInitialLoader = () => {
+  const loader = document.getElementById("crm-initial-loader");
+  if (loader && !loader.classList.contains("fade-out")) {
+    loader.classList.add("fade-out");
+    setTimeout(() => {
+      if (loader && loader.parentNode) {
+        loader.parentNode.removeChild(loader);
+      }
+    }, 600);
+  }
 };
 
 const setupDragAndDrop = () => {
@@ -7730,12 +7745,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   loadLeads();
+  // Safety timeout fallback to ensure loader disappears even on slow connection
+  setTimeout(hideCrmInitialLoader, 6000);
 });
 
 document.addEventListener("crm-authorized", async () => {
   window.currentCrmUser = window.crmUser || window.sevenGoldCrmSession?.crmUser;
   await loadCommercialProductions();
-  loadLeads();
+  await loadLeads();
+  hideCrmInitialLoader();
   const hash = window.location.hash.replace("#", "") || "pipeline";
   if (hash === "calendario") {
     loadAppointments();
