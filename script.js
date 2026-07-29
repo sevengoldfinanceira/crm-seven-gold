@@ -7695,6 +7695,7 @@ const switchTab = () => {
   document.querySelectorAll(".tab-content").forEach((section) => {
     section.style.display = section.dataset.tab === activeTab ? "" : "none";
   });
+  document.body.classList.toggle("crm-race-active", activeTab === "corrida");
 
   navItems.forEach((item) => {
     const isActive = item.getAttribute("href") === "#" + activeTab;
