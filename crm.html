@@ -83,7 +83,7 @@
             </span>
             <span class="nav-label">Corrida</span>
           </a>
-          <a class="nav-item nav-item-external" href="https://www.google.com/maps/@-23.6944,-46.5654,13z?hl=pt-BR" target="_blank" rel="noopener noreferrer" title="Abrir Google Maps em São Bernardo do Campo" aria-label="Abrir o site do Google Maps em nova aba, na região de São Bernardo do Campo" data-tooltip="Google Maps - São Bernardo do Campo" data-external-nav="google-maps">
+          <a class="nav-item nav-item-fixed nav-item-maps" href="#mapas" data-permission-key="mapas" title="Google Maps em São Bernardo do Campo" aria-label="Abrir Google Maps no painel, na região de São Bernardo do Campo" data-tooltip="Google Maps - São Bernardo do Campo" data-fixed-nav="google-maps">
             <span class="nav-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="width: 20px; height: 20px; display: block;">
                 <path fill="#EA4335" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
@@ -91,13 +91,6 @@
               </svg>
             </span>
             <span class="nav-label">Google Maps</span>
-            <span class="nav-external-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                <polyline points="15 3 21 3 21 9"/>
-                <line x1="10" y1="14" x2="21" y2="3"/>
-              </svg>
-            </span>
           </a>
           <a class="nav-item" href="#vendas" data-permission-key="vendas">
             <span class="nav-icon" aria-hidden="true">
@@ -1182,6 +1175,17 @@
             </footer>
           </form>
         </dialog>
+
+        <!-- Google Maps -->
+        <section class="tab-content crm-maps-tab" data-tab="mapas" style="display:none;">
+          <iframe
+            class="crm-maps-frame"
+            title="Google Maps - São Bernardo do Campo"
+            src="https://www.google.com/maps?q=S%C3%A3o%20Bernardo%20do%20Campo%2C%20SP&z=13&output=embed"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
+        </section>
 
         <!-- Vendas -->
         <section class="tab-content" data-tab="vendas" style="display:none;">

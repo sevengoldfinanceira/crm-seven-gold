@@ -8273,6 +8273,7 @@ const tabTitleMap = {
   feed: "Feed",
   calendario: "Calendario",
   corrida: "Corrida",
+  mapas: "Google Maps",
   vendas: "Vendas",
   financeiro: "Comissões",
   equipe: "Minha equipe",
@@ -8635,7 +8636,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const switchTab = () => {
   const hash = window.location.hash.replace("#", "") || "pipeline";
-  const validTabs = ["dashboard", "pipeline", "feed", "calendario", "corrida", "vendas", "financeiro", "equipe", "perfil"];
+  const validTabs = ["dashboard", "pipeline", "feed", "calendario", "corrida", "mapas", "vendas", "financeiro", "equipe", "perfil"];
   const activeTab = validTabs.includes(hash) ? hash : "pipeline";
 
   const userRole = window.userRole || (window.sevenGoldCrmSession?.userRole);
@@ -8655,6 +8656,7 @@ const switchTab = () => {
     section.style.display = section.dataset.tab === activeTab ? "" : "none";
   });
   document.body.classList.toggle("crm-race-active", activeTab === "corrida");
+  document.body.classList.toggle("crm-maps-active", activeTab === "mapas");
   if (activeTab !== "corrida") {
     cleanupAppointmentRaceAnimations({ stopTimer: true });
   }
@@ -8755,7 +8757,7 @@ const dashboardMetricOrderKey = "sevenGoldDashboardMetricOrder";
 const sidebarNavOrderKey = "sevenGoldSidebarNavOrder";
 
 const saveSidebarNavOrder = (navList) => {
-  const order = Array.from(navList.querySelectorAll(".nav-item:not(.nav-item-external)"))
+  const order = Array.from(navList.querySelectorAll(".nav-item:not(.nav-item-fixed)"))
     .map((item) => item.dataset.permissionKey || item.getAttribute("href"))
     .filter(Boolean);
   try {
@@ -8770,8 +8772,8 @@ const setupSidebarNavDrag = () => {
   if (!navList || navList.dataset.dragReady === "true") return;
   navList.dataset.dragReady = "true";
 
-  const placeExternalNavItems = () => {
-    const mapsItem = navList.querySelector('[data-external-nav="google-maps"]');
+  const placeFixedNavItems = () => {
+    const mapsItem = navList.querySelector('[data-fixed-nav="google-maps"]');
     const raceItem = navList.querySelector('[data-permission-key="corrida"]');
     if (mapsItem && raceItem && raceItem.nextElementSibling !== mapsItem) {
       raceItem.insertAdjacentElement("afterend", mapsItem);
@@ -8779,12 +8781,12 @@ const setupSidebarNavDrag = () => {
   };
 
   const items = Array.from(navList.querySelectorAll(".nav-item"));
-  const sortableItems = items.filter((item) => !item.classList.contains("nav-item-external"));
+  const sortableItems = items.filter((item) => !item.classList.contains("nav-item-fixed"));
   sortableItems.forEach((item) => {
     item.draggable = true;
   });
   items
-    .filter((item) => item.classList.contains("nav-item-external"))
+    .filter((item) => item.classList.contains("nav-item-fixed"))
     .forEach((item) => {
       item.draggable = false;
     });
@@ -8807,13 +8809,13 @@ const setupSidebarNavDrag = () => {
   } catch (error) {
     console.warn("Não foi possível restaurar a ordem das abas:", error);
   }
-  placeExternalNavItems();
+  placeFixedNavItems();
 
   let draggedItem = null;
 
   navList.addEventListener("dragstart", (event) => {
     const item = event.target.closest?.(".nav-item");
-    if (!item || item.classList.contains("nav-item-external")) return;
+    if (!item || item.classList.contains("nav-item-fixed")) return;
     draggedItem = item;
     navList.classList.add("is-nav-reordering");
     item.classList.add("is-nav-dragging");
@@ -8826,7 +8828,7 @@ const setupSidebarNavDrag = () => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
     const targetItem = event.target.closest?.(".nav-item");
-    if (!targetItem || targetItem === draggedItem || targetItem.classList.contains("nav-item-external")) return;
+    if (!targetItem || targetItem === draggedItem || targetItem.classList.contains("nav-item-fixed")) return;
 
     const targetRect = targetItem.getBoundingClientRect();
     const insertAfter = event.clientY > targetRect.top + targetRect.height / 2;
@@ -8843,7 +8845,7 @@ const setupSidebarNavDrag = () => {
     draggedItem?.classList.remove("is-nav-dragging");
     navList.classList.remove("is-nav-reordering");
     draggedItem = null;
-    placeExternalNavItems();
+    placeFixedNavItems();
     saveSidebarNavOrder(navList);
   });
 };

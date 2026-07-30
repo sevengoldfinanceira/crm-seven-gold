@@ -3687,17 +3687,16 @@ body.theme-dark .crm-workspace {
   color: #E8B138 !important;
 }
 
-.nav-item-external {
+.nav-item-maps {
   position: relative;
-  padding-right: 10px;
   border: 1px solid rgba(232, 177, 56, 0.18);
   background: rgba(232, 177, 56, 0.04);
   color: #ffffff !important;
   transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
 }
 
-.nav-item-external:hover,
-.nav-item-external:focus-visible {
+.nav-item-maps:hover,
+.nav-item-maps:focus-visible {
   background: rgba(232, 177, 56, 0.16) !important;
   border-color: rgba(232, 177, 56, 0.72);
   color: #ffffff !important;
@@ -3705,44 +3704,48 @@ body.theme-dark .crm-workspace {
   outline: none;
 }
 
-.nav-item-external.active {
-  background: rgba(232, 177, 56, 0.04) !important;
-  color: #ffffff !important;
-  box-shadow: none !important;
-}
-
-.nav-item-external .nav-label {
-  flex: 1 1 auto;
-}
-
-.nav-item-external .nav-external-icon {
-  display: grid;
-  flex: 0 0 auto;
-  place-items: center;
-  margin-left: auto;
-  color: rgba(255, 255, 255, 0.76);
-  transition: color 0.2s ease, transform 0.2s ease;
-}
-
-.nav-item-external:hover .nav-external-icon,
-.nav-item-external:focus-visible .nav-external-icon {
-  color: #E8B138;
-  transform: translate(1px, -1px);
-}
-
-.nav-item-external:hover .nav-icon svg,
-.nav-item-external:focus-visible .nav-icon svg {
+.nav-item-maps:hover .nav-icon svg,
+.nav-item-maps:focus-visible .nav-icon svg {
   filter: drop-shadow(0 0 6px rgba(232, 177, 56, 0.42));
 }
 
-body.sidebar-collapsed .nav-item-external .nav-external-icon {
-  display: none;
-}
-
-body.sidebar-collapsed .nav-item.nav-item-external::after {
+body.sidebar-collapsed .nav-item.nav-item-maps::after {
   background: #15120a;
   border-color: rgba(232, 177, 56, 0.45);
   color: #ffffff;
+}
+
+body.crm-maps-active {
+  overflow: hidden;
+}
+
+body.crm-maps-active .crm-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100vh;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #ffffff !important;
+}
+
+.tab-content[data-tab="mapas"] {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.crm-maps-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  background: #ffffff;
 }
 
 /* User Box refinement */

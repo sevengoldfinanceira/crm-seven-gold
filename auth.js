@@ -271,6 +271,10 @@ function sgNavigateWithPanelsTransition(target, title = "Acessando Painéis...")
       return true;
     }
 
+    if (["mapas", "google-maps"].includes(normalizedArea)) {
+      return true;
+    }
+
     if (isAdminRole(role)) {
       return true;
     }
