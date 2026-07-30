@@ -1,170 +1,454 @@
 <!doctype html>
-<html lang="pt-BR" style="background-color:#000000">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Seven Gold | Comissões</title>
-    <link rel="icon" href="assets/icons/seven-gold-g7.png?v=ms760q4g" />
+    <title>Seven Gold | Minhas comissões</title>
+    <link rel="icon" href="assets/icons/seven-gold-g7.png?v=ms760q4h" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script>document.documentElement.dataset.adminSidebar=localStorage.getItem("seven-gold-admin-sidebar-collapsed")==="true"?"collapsed":"expanded";</script>
-    <link rel="stylesheet" href="home.css?v=ms760q4g" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="home.css?v=ms760q4h" />
+    <link rel="stylesheet" href="styles.css?v=ms760q4h" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#F7F6F2" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <link rel="apple-touch-icon" href="/assets/icons/seven-gold-g7.png?v=ms760q4g" />
+    <link rel="apple-touch-icon" href="/assets/icons/seven-gold-g7.png?v=ms760q4h" />
+    <style>
+      body.commission-body {
+        background-color: #F7F6F2 !important;
+        color: #161616 !important;
+        font-family: 'Inter', sans-serif !important;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+      
+      .seller-commissions-shell {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 24px 20px 60px;
+      }
+
+      /* Top Tabs */
+      .seller-top-tabs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid #E2E8F0;
+      }
+
+      .seller-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: transparent;
+        border: 0;
+        border-bottom: 3px solid transparent;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #64748B;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-radius: 8px 8px 0 0;
+      }
+
+      .seller-tab-btn:hover {
+        color: #161616;
+      }
+
+      .seller-tab-btn.active {
+        color: #B98220;
+        border-bottom-color: #E8B138;
+        background: #FFFFFF;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.02);
+      }
+
+      .seller-tab-btn svg {
+        width: 18px;
+        height: 18px;
+        stroke-width: 2.3;
+      }
+
+      /* Header Row */
+      .seller-header-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+      }
+
+      .seller-title-group h1 {
+        margin: 0 0 6px 0;
+        font-size: 2rem;
+        font-weight: 850;
+        color: #161616;
+        letter-spacing: -0.03em;
+      }
+
+      .seller-title-group p {
+        margin: 0;
+        font-size: 0.92rem;
+        color: #64748B;
+        font-weight: 500;
+      }
+
+      .seller-period-wrapper {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 10px 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      }
+
+      .seller-period-wrapper svg {
+        color: #64748B;
+        width: 18px;
+        height: 18px;
+      }
+
+      .seller-period-select {
+        border: 0;
+        background: transparent;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #161616;
+        outline: none;
+        cursor: pointer;
+        padding-right: 8px;
+      }
+
+      /* Summary Cards Row (Apenas 2 Cards) */
+      .seller-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+        margin-bottom: 28px;
+      }
+
+      @media (max-width: 768px) {
+        .seller-summary-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .seller-summary-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 20px;
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.03);
+      }
+
+      .seller-icon-circle {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+      }
+
+      .seller-icon-circle.gold {
+        background: #FEF9C3;
+        color: #B98220;
+      }
+
+      .seller-icon-circle.green {
+        background: #DCFCE7;
+        color: #16A34A;
+      }
+
+      .seller-icon-circle svg {
+        width: 28px;
+        height: 28px;
+        stroke-width: 2.2;
+      }
+
+      .seller-summary-body {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .seller-summary-title {
+        font-size: 0.88rem;
+        font-weight: 750;
+        color: #64748B;
+      }
+
+      .seller-summary-number {
+        font-size: 2.1rem;
+        font-weight: 900;
+        color: #161616;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+      }
+
+      .seller-summary-number.text-green {
+        color: #15803D;
+      }
+
+      .seller-summary-sub {
+        font-size: 0.86rem;
+        color: #64748B;
+        font-weight: 500;
+        margin-top: 2px;
+      }
+
+      /* Card da Tabela: Minhas vendas */
+      .seller-table-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 24px;
+        padding: 28px;
+        box-shadow: 0 6px 24px rgba(15, 23, 42, 0.03);
+      }
+
+      .seller-table-card h2 {
+        margin: 0 0 20px 0;
+        font-size: 1.25rem;
+        font-weight: 850;
+        color: #161616;
+      }
+
+      .seller-table-box {
+        border: 1px solid #F1F5F9;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 20px;
+      }
+
+      .seller-vendas-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+      }
+
+      .seller-vendas-table th {
+        background: #FAFAFA;
+        padding: 14px 24px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: #475569;
+        border-bottom: 1px solid #F1F5F9;
+      }
+
+      .seller-vendas-table td {
+        padding: 18px 24px;
+        font-size: 0.92rem;
+        color: #334155;
+        border-bottom: 1px solid #F1F5F9;
+      }
+
+      .seller-vendas-table tbody tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .seller-vendas-table td.client-cell {
+        font-weight: 850;
+        color: #161616;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 800;
+      }
+
+      .status-pill.a-receber {
+        background: #FFFBEB;
+        color: #D97706;
+        border: 1px solid #FDE68A;
+      }
+
+      .status-pill.pago {
+        background: #F0FDF4;
+        color: #16A34A;
+        border: 1px solid #BBF7D0;
+      }
+
+      .seller-table-footer {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        padding-top: 12px;
+      }
+
+      .total-label {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #161616;
+      }
+
+      .total-value {
+        font-size: 1.75rem;
+        font-weight: 950;
+        color: #15803D;
+        letter-spacing: -0.03em;
+      }
+
+      /* Dark mode override safety */
+      body.theme-dark {
+        background-color: #0F172A !important;
+        color: #F8FAFC !important;
+      }
+      body.theme-dark .seller-tab-btn.active,
+      body.theme-dark .seller-period-wrapper,
+      body.theme-dark .seller-summary-card,
+      body.theme-dark .seller-table-card {
+        background-color: #1E293B !important;
+        border-color: #334155 !important;
+      }
+      body.theme-dark .seller-title-group h1,
+      body.theme-dark .seller-summary-number,
+      body.theme-dark .seller-table-card h2,
+      body.theme-dark .seller-vendas-table td.client-cell,
+      body.theme-dark .total-label {
+        color: #F8FAFC !important;
+      }
+    </style>
   </head>
   <body class="commission-body" data-require-auth data-permission-area="comissoes" data-login-page="index.html" data-allowed-roles="dono,administrador,coordenador,supervisor,home_office,vendedor,financeiro" data-denied-redirect="empresa.html" data-unified-admin>
-    <script>(function(){if((localStorage.getItem("seven-gold-theme")||"light")==="dark")document.body.classList.add("theme-dark");})();</script>
+    <main class="seller-commissions-shell">
+      <!-- Top Navigation Tabs -->
+      <nav class="seller-top-tabs" aria-label="Navegação de comissões">
+        <button type="button" class="seller-tab-btn active" data-tab-target="commissions">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Minhas comissões</span>
+        </button>
+        <button type="button" class="seller-tab-btn" data-tab-target="history">
+          <i data-lucide="calendar"></i>
+          <span>Histórico de pagamentos</span>
+        </button>
+      </nav>
 
-    <main class="commission-shell commission-premium-shell">
-      <header class="commission-premium-header">
-        <div class="commission-title-block">
-          <span class="commission-title-icon"><i data-lucide="percent"></i></span>
-          <div>
-            <p class="commission-eyebrow">ESTRUTURA COMERCIAL</p>
-            <h1>Comissões</h1>
-            <p>Estruturas de comissão por nível e categoria.<br>Consulte os percentuais de cada tabela.</p>
+      <!-- Panel 1: Minhas comissões -->
+      <section id="panel-commissions">
+        <header class="seller-header-row">
+          <div class="seller-title-group">
+            <h1>Minhas comissões</h1>
+            <p>Acompanhe suas vendas e o valor disponível para receber.</p>
           </div>
-        </div>
-        <div class="commission-header-decoration" aria-hidden="true">
-          <span class="commission-deco-line"></span>
-          <span class="commission-deco-circle"></span>
-          <span class="commission-deco-percent">%</span>
-        </div>
-        <nav class="commission-category-tabs" aria-label="Categorias de comissão">
-          <button type="button" class="active" data-commission-area="commercial"><i data-lucide="briefcase"></i> Comercial</button>
-          <button type="button" data-commission-area="strategic"><i data-lucide="trophy"></i> Expansão / Estratégico</button>
-          <button type="button" data-commission-area="other"><i data-lucide="layout-grid"></i> Outros departamentos</button>
-          <button type="button" data-commission-area="strategic"><i data-lucide="shield"></i> Tabelas estratégicas</button>
-        </nav>
-      </header>
-
-      <section class="commission-area active" data-commission-panel="commercial">
-        <div class="commission-level-grid">
-          <article class="commission-level-card">
-            <span class="commission-level-icon"><i data-lucide="headphones"></i></span>
-            <span class="commission-level-number">Nível 01</span>
-            <h2>Home Office</h2>
-            <p class="commission-level-range"><strong>0,15%</strong> até <strong>0,75%</strong></p>
-            <p class="commission-level-sub">Mín. até Máx.</p>
-          </article>
-          <article class="commission-level-card">
-            <span class="commission-level-icon"><i data-lucide="clipboard-check"></i></span>
-            <span class="commission-level-number">Nível 02</span>
-            <h2>Assistente de Vendas</h2>
-            <p class="commission-level-range"><strong>0,10%</strong> até <strong>0,25%</strong></p>
-            <p class="commission-level-sub">Mín. até Máx.</p>
-          </article>
-          <article class="commission-level-card">
-            <span class="commission-level-icon"><i data-lucide="briefcase-business"></i></span>
-            <span class="commission-level-number">Nível 03</span>
-            <h2>Consultor de Vendas</h2>
-            <p class="commission-level-range"><strong>0,55%</strong> até <strong>2,55%</strong></p>
-            <p class="commission-level-sub">Mín. até Máx.</p>
-          </article>
-          <article class="commission-level-card">
-            <span class="commission-level-icon"><i data-lucide="users-round"></i></span>
-            <span class="commission-level-number">Nível 04</span>
-            <h2>Coordenador</h2>
-            <p class="commission-level-range"><strong>0,15%</strong> até <strong>0,75%</strong></p>
-            <p class="commission-level-sub">Mín. até Máx.</p>
-          </article>
-          <article class="commission-level-card">
-            <span class="commission-level-icon"><i data-lucide="shield-check"></i></span>
-            <span class="commission-level-number">Nível 05</span>
-            <h2>Supervisor</h2>
-            <p class="commission-level-range"><strong>0,20%</strong> até <strong>0,85%</strong></p>
-            <p class="commission-level-sub">Mín. até Máx.</p>
-          </article>
-        </div>
-
-        <div class="commission-stats-row">
-          <div class="commission-stats-grid">
-            <div class="commission-stat-card">
-              <span class="commission-stat-icon stat-icon-table"><i data-lucide="file-text"></i></span>
-              <div class="commission-stat-content">
-                <strong>7 tabelas</strong>
-                <p>Tab 01 até Tab 07</p>
-              </div>
-            </div>
-            <div class="commission-stat-card">
-              <span class="commission-stat-icon stat-icon-levels"><i data-lucide="users"></i></span>
-              <div class="commission-stat-content">
-                <strong>5 níveis comerciais</strong>
-                <p>Home Office até Supervisor</p>
-              </div>
-            </div>
-            <div class="commission-stat-card">
-              <span class="commission-stat-icon stat-icon-payment"><i data-lucide="circle-dollar-sign"></i></span>
-              <div class="commission-stat-content">
-                <strong>Pagamento</strong>
-                <p>Sobre vendas confirmadas</p>
-              </div>
-            </div>
+          <div class="seller-period-wrapper">
+            <i data-lucide="calendar"></i>
+            <select id="period-filter" class="seller-period-select" aria-label="Filtrar por período">
+              <option value="este_mes" selected>Este mês</option>
+              <option value="mes_passado">Mês passado</option>
+              <option value="ultimos_3_meses">Últimos 3 meses</option>
+              <option value="este_ano">Este ano</option>
+              <option value="todo_periodo">Todo o período</option>
+            </select>
           </div>
-          <button type="button" class="commission-export-button" data-commission-file title="Arquivo para exportação será adicionado posteriormente"><i data-lucide="file-down"></i> Exportar PDF</button>
-        </div>
+        </header>
 
-        <section class="commission-table-section">
-          <div class="commission-table-card">
-            <div class="commission-table-toolbar" data-admin-only>
-              <button type="button" class="commission-edit-toggle" data-toggle-edit><i data-lucide="pencil"></i> Editar valores</button>
-              <button type="button" class="commission-save-btn" data-save-commissions hidden><i data-lucide="check"></i> Salvar alterações</button>
-              <button type="button" class="commission-cancel-btn" data-cancel-edit hidden><i data-lucide="x"></i> Cancelar</button>
-              <span class="commission-edit-status" data-edit-status></span>
+        <!-- Summary Cards (Apenas 2 Cards) -->
+        <section class="seller-summary-grid">
+          <!-- Card 1: Vendas realizadas -->
+          <article class="seller-summary-card">
+            <div class="seller-icon-circle gold">
+              <i data-lucide="shopping-cart"></i>
             </div>
-            <div class="commission-table-scroll">
-              <table class="commission-data-table">
-                <thead>
-                  <tr>
-                    <th>TABELA</th>
-                    <th><i data-lucide="headphones"></i> HOME OFFICE</th>
-                    <th><i data-lucide="clipboard-check"></i> ASSIST. DE VENDAS</th>
-                    <th><i data-lucide="briefcase-business"></i> CONSULTOR DE VENDAS</th>
-                    <th><i data-lucide="users-round"></i> COORDENADOR</th>
-                    <th><i data-lucide="shield-check"></i> SUPERVISOR</th>
-                  </tr>
-                </thead>
-                <tbody data-commission-table-body></tbody>
-              </table>
+            <div class="seller-summary-body">
+              <span class="seller-summary-title">Vendas realizadas</span>
+              <strong id="stat-sales-count" class="seller-summary-number">0</strong>
+              <span id="stat-sales-total" class="seller-summary-sub">R$ 0,00 vendidos</span>
             </div>
-            <p class="commission-table-note"><i data-lucide="info"></i> Pagamento sobre vendas efetuadas, confirmadas e checadas. Valores referentes à comissão / repasse de cada nível.</p>
-          </div>
+          </article>
+
+          <!-- Card 2: Comissão a receber -->
+          <article class="seller-summary-card">
+            <div class="seller-icon-circle green">
+              <i data-lucide="banknote"></i>
+            </div>
+            <div class="seller-summary-body">
+              <span class="seller-summary-title">Comissão a receber</span>
+              <strong id="stat-commission-pending" class="seller-summary-number text-green">R$ 0,00</strong>
+              <span class="seller-summary-sub">Disponível para pagamento</span>
+            </div>
+          </article>
         </section>
 
-        <article class="commission-strategic-callout">
-          <span class="commission-strategic-icon"><i data-lucide="crown"></i></span>
-          <div>
-            <p>Expansão Seven Gold</p>
-            <h2>Níveis Estratégicos e Expansão</h2>
-            <span>Acesse as tabelas de Representante Junior, Representante Pleno, Submaster e outras estruturas estratégicas da empresa.</span>
+        <!-- Main Card: Minhas vendas -->
+        <section class="seller-table-card">
+          <h2>Minhas vendas</h2>
+          <div class="seller-table-box">
+            <table class="seller-vendas-table">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Valor da venda</th>
+                  <th>Comissão</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="sales-table-body">
+                <!-- Rows injected dynamically by JS -->
+              </tbody>
+            </table>
           </div>
-          <button type="button" data-open-strategic>Acessar tabelas estratégicas <i data-lucide="arrow-right"></i></button>
-        </article>
+          <div class="seller-table-footer">
+            <span class="total-label">Total a receber:</span>
+            <strong id="table-total-receber" class="total-value">R$ 0,00</strong>
+          </div>
+        </section>
       </section>
 
-      <section class="commission-area" data-commission-panel="strategic" hidden>
-        <div class="commission-subarea-heading"><button type="button" data-back-commercial><i data-lucide="arrow-left"></i> Voltar ao Comercial</button><div><p>Expansão e parcerias</p><h2>Níveis Estratégicos</h2><span>Área reservada para estruturas superiores e parceiros da empresa.</span></div></div>
-        <div class="strategic-level-tabs" data-strategic-tabs></div>
-        <div class="commission-table-card strategic-table-card">
-          <div class="commission-section-heading"><div><span data-strategic-kicker>Estratégico</span><h2 data-strategic-title>Representante Junior</h2></div><button type="button" class="commission-export-button" data-strategic-file title="Arquivo para exportação será adicionado posteriormente"><i data-lucide="file-down"></i> PDF</button></div>
-          <div class="commission-table-scroll"><table class="commission-data-table strategic-grid-table"><thead data-strategic-head></thead><tbody data-strategic-body></tbody></table></div>
-          <p class="commission-table-note" data-strategic-note></p>
-        </div>
-      </section>
+      <!-- Panel 2: Histórico de pagamentos -->
+      <section id="panel-history" style="display: none;">
+        <header class="seller-header-row">
+          <div class="seller-title-group">
+            <h1>Histórico de pagamentos</h1>
+            <p>Registro de repasses e comprovantes de comissões pagas.</p>
+          </div>
+        </header>
 
-      <section class="commission-area" data-commission-panel="other" hidden>
-        <div class="commission-empty-area"><i data-lucide="layers-3"></i><h2>Outros departamentos</h2><p>Estrutura visual preparada para novas categorias de comissão.</p></div>
+        <section class="seller-table-card">
+          <h2>Pagamentos efetuados</h2>
+          <div class="seller-table-box">
+            <table class="seller-vendas-table">
+              <thead>
+                <tr>
+                  <th>Nº do Borderô</th>
+                  <th>Data do Pagamento</th>
+                  <th>Valor Pago</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="history-table-body">
+                <tr>
+                  <td colspan="4" style="text-align: center; padding: 24px; color: #64748B;">
+                    Nenhum pagamento registrado no período.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
       </section>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
-    <script src="auth.js?v=ms760q4g"></script>
-    <script src="comissoes.js?v=ms760q4g"></script>
-    <script src="/admin-shell.js?v=ms760q4g"></script>
+    <script src="auth.js?v=ms760q4h"></script>
+    <script src="comissoes.js?v=ms760q4h"></script>
+    <script src="/admin-shell.js?v=ms760q4h"></script>
     <script src="/pwa.js"></script>
   </body>
 </html>
