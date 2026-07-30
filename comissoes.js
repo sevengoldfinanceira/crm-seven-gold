@@ -160,11 +160,70 @@
     }
   };
 
+  // Calculadora de comissões
+  const initCommissionCalculator = () => {
+    const creditInput = document.getElementById("calc-credit-input");
+    const levelSelect = document.getElementById("calc-level-select");
+    const pctInput = document.getElementById("calc-pct-input");
+
+    const resultCommission = document.getElementById("calc-result-commission");
+    const resultPct = document.getElementById("calc-result-pct");
+    const resultCredit = document.getElementById("calc-result-credit");
+    const refTbody = document.getElementById("calc-reference-tbody");
+
+    const updateCalculator = () => {
+      if (!creditInput || !pctInput) return;
+      let credit = parseFloat(creditInput.value) || 0;
+      let pct = parseFloat(pctInput.value) || 0;
+
+      let commVal = credit * (pct / 100);
+
+      if (resultCommission) resultCommission.textContent = formatCurrency(commVal);
+      if (resultPct) resultPct.textContent = `${pct.toFixed(2).replace(".", ",")}%`;
+      if (resultCredit) resultCredit.textContent = formatCurrency(credit);
+    };
+
+    if (levelSelect) {
+      levelSelect.addEventListener("change", () => {
+        if (levelSelect.value !== "custom") {
+          pctInput.value = levelSelect.value;
+          updateCalculator();
+        }
+      });
+    }
+
+    if (creditInput) creditInput.addEventListener("input", updateCalculator);
+    if (pctInput) {
+      pctInput.addEventListener("input", () => {
+        if (levelSelect) levelSelect.value = "custom";
+        updateCalculator();
+      });
+    }
+
+    if (refTbody) {
+      refTbody.innerHTML = "";
+      const tiers = [30000, 50000, 100000, 250000, 500000, 1000000];
+      tiers.forEach((val) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="client-cell">${formatCurrency(val)}</td>
+          <td>${formatCurrency(val * 0.0055)}</td>
+          <td>${formatCurrency(val * 0.015)}</td>
+          <td>${formatCurrency(val * 0.025)}</td>
+        `;
+        refTbody.appendChild(tr);
+      });
+    }
+
+    updateCalculator();
+  };
+
   // Alternância de abas
   const initTabs = () => {
     const tabBtns = document.querySelectorAll("[data-tab-target]");
     const panelCommissions = document.getElementById("panel-commissions");
     const panelHistory = document.getElementById("panel-history");
+    const panelCalculator = document.getElementById("panel-calculator");
 
     tabBtns.forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -175,9 +234,15 @@
         if (target === "commissions") {
           if (panelCommissions) panelCommissions.style.display = "block";
           if (panelHistory) panelHistory.style.display = "none";
+          if (panelCalculator) panelCalculator.style.display = "none";
         } else if (target === "history") {
           if (panelCommissions) panelCommissions.style.display = "none";
           if (panelHistory) panelHistory.style.display = "block";
+          if (panelCalculator) panelCalculator.style.display = "none";
+        } else if (target === "calculator") {
+          if (panelCommissions) panelCommissions.style.display = "none";
+          if (panelHistory) panelHistory.style.display = "none";
+          if (panelCalculator) panelCalculator.style.display = "block";
         }
       });
     });
@@ -185,6 +250,7 @@
 
   const init = () => {
     initTabs();
+    initCommissionCalculator();
 
     const periodFilter = document.getElementById("period-filter");
     if (periodFilter) {

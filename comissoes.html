@@ -337,6 +337,10 @@
           <i data-lucide="calendar"></i>
           <span>Histórico de pagamentos</span>
         </button>
+        <button type="button" class="seller-tab-btn" data-tab-target="calculator">
+          <i data-lucide="calculator"></i>
+          <span>Calculadora de comissões</span>
+        </button>
       </nav>
 
       <!-- Panel 1: Minhas comissões -->
@@ -437,6 +441,88 @@
                     Nenhum pagamento registrado no período.
                   </td>
                 </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- Panel 3: Calculadora de comissões -->
+      <section id="panel-calculator" style="display: none;">
+        <header class="seller-header-row">
+          <div class="seller-title-group">
+            <h1>Calculadora de comissões</h1>
+            <p>Simule o valor da sua comissão com base no crédito vendido e percentual aplicável.</p>
+          </div>
+        </header>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 28px;">
+          <!-- Calculator Inputs Card -->
+          <section class="seller-table-card">
+            <h2>Simulador de comissão</h2>
+            <div style="display: flex; flex-direction: column; gap: 18px; margin-top: 14px;">
+              <div>
+                <label style="display: block; font-size: 0.88rem; font-weight: 750; color: #475569; margin-bottom: 6px;">Valor do Crédito / Venda (R$)</label>
+                <input type="number" id="calc-credit-input" value="100000" step="1000" min="0" style="width: 100%; padding: 12px 16px; border: 1px solid #CBD5E1; border-radius: 12px; font-size: 1.1rem; font-weight: 800; color: #161616; background: #FFFFFF; outline: none;" />
+              </div>
+
+              <div>
+                <label style="display: block; font-size: 0.88rem; font-weight: 750; color: #475569; margin-bottom: 6px;">Cargo / Tabela de Comissão</label>
+                <select id="calc-level-select" style="width: 100%; padding: 12px 16px; border: 1px solid #CBD5E1; border-radius: 12px; font-size: 0.95rem; font-weight: 700; color: #161616; background: #FFFFFF; outline: none;">
+                  <option value="1.5" selected>Consultor de Vendas (1,50%)</option>
+                  <option value="0.55">Home Office (0,55%)</option>
+                  <option value="0.20">Assistente de Vendas (0,20%)</option>
+                  <option value="0.55">Coordenador (0,55%)</option>
+                  <option value="0.65">Supervisor (0,65%)</option>
+                  <option value="2.50">Representante Pleno (2,50%)</option>
+                  <option value="custom">Outro (Personalizado)</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="display: block; font-size: 0.88rem; font-weight: 750; color: #475569; margin-bottom: 6px;">Percentual de Comissão (%)</label>
+                <input type="number" id="calc-pct-input" value="1.5" step="0.05" min="0" max="100" style="width: 100%; padding: 12px 16px; border: 1px solid #CBD5E1; border-radius: 12px; font-size: 1.1rem; font-weight: 800; color: #B98220; background: #FFFFFF; outline: none;" />
+              </div>
+            </div>
+          </section>
+
+          <!-- Calculator Result Card -->
+          <section class="seller-table-card" style="background: linear-gradient(135deg, #FFFFFF 0%, #FAFAFA 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border: 2px solid #E8B138; position: relative;">
+            <div style="position: absolute; top: 16px; right: 16px; background: #FEF9C3; color: #B98220; padding: 4px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 800;">
+              Resultado Estimado
+            </div>
+
+            <span style="font-size: 0.92rem; font-weight: 750; color: #64748B; margin-top: 10px;">Comissão a Receber</span>
+            <strong id="calc-result-commission" style="font-size: 2.8rem; font-weight: 950; color: #15803D; margin: 10px 0; letter-spacing: -0.03em;">R$ 1.500,00</strong>
+
+            <div style="display: flex; gap: 16px; margin-top: 10px; width: 100%; justify-content: center; flex-wrap: wrap;">
+              <div style="background: #F1F5F9; padding: 10px 18px; border-radius: 12px; min-width: 120px;">
+                <span style="font-size: 0.75rem; color: #64748B; font-weight: 700; display: block;">Percentual</span>
+                <strong id="calc-result-pct" style="font-size: 1.05rem; font-weight: 850; color: #B98220;">1,50%</strong>
+              </div>
+              <div style="background: #F1F5F9; padding: 10px 18px; border-radius: 12px; min-width: 160px;">
+                <span style="font-size: 0.75rem; color: #64748B; font-weight: 700; display: block;">Crédito Simulado</span>
+                <strong id="calc-result-credit" style="font-size: 1.05rem; font-weight: 850; color: #161616;">R$ 100.000,00</strong>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Pre-calculated Reference Table -->
+        <section class="seller-table-card">
+          <h2>Tabela Rápida de Simulação por Faixas de Crédito</h2>
+          <div class="seller-table-box">
+            <table class="seller-vendas-table">
+              <thead>
+                <tr>
+                  <th>Valor do Crédito</th>
+                  <th>0,55% (Home Office)</th>
+                  <th>1,50% (Consultor)</th>
+                  <th>2,50% (Representante)</th>
+                </tr>
+              </thead>
+              <tbody id="calc-reference-tbody">
+                <!-- Dynamic pre-calculated rows -->
               </tbody>
             </table>
           </div>

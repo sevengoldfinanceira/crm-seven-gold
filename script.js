@@ -8117,7 +8117,66 @@ const loadCrmSellerCommissions = async () => {
   if (tableTotalEl) tableTotalEl.textContent = formatCurrency(pendingCommissionTotal);
 };
 
+const initCrmCommissionCalculator = () => {
+  const creditInput = document.getElementById("crm-calc-credit-input");
+  const levelSelect = document.getElementById("crm-calc-level-select");
+  const pctInput = document.getElementById("crm-calc-pct-input");
+
+  const resultCommission = document.getElementById("crm-calc-result-commission");
+  const resultPct = document.getElementById("crm-calc-result-pct");
+  const resultCredit = document.getElementById("crm-calc-result-credit");
+  const refTbody = document.getElementById("crm-calc-reference-tbody");
+
+  const updateCalculator = () => {
+    if (!creditInput || !pctInput) return;
+    let credit = parseFloat(creditInput.value) || 0;
+    let pct = parseFloat(pctInput.value) || 0;
+
+    let commVal = credit * (pct / 100);
+
+    if (resultCommission) resultCommission.textContent = formatCurrency(commVal);
+    if (resultPct) resultPct.textContent = `${pct.toFixed(2).replace(".", ",")}%`;
+    if (resultCredit) resultCredit.textContent = formatCurrency(credit);
+  };
+
+  if (levelSelect) {
+    levelSelect.addEventListener("change", () => {
+      if (levelSelect.value !== "custom") {
+        pctInput.value = levelSelect.value;
+        updateCalculator();
+      }
+    });
+  }
+
+  if (creditInput) creditInput.addEventListener("input", updateCalculator);
+  if (pctInput) {
+    pctInput.addEventListener("input", () => {
+      if (levelSelect) levelSelect.value = "custom";
+      updateCalculator();
+    });
+  }
+
+  if (refTbody) {
+    refTbody.innerHTML = "";
+    const tiers = [30000, 50000, 100000, 250000, 500000, 1000000];
+    tiers.forEach((val) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="client-cell">${formatCurrency(val)}</td>
+        <td>${formatCurrency(val * 0.0055)}</td>
+        <td>${formatCurrency(val * 0.015)}</td>
+        <td>${formatCurrency(val * 0.025)}</td>
+      `;
+      refTbody.appendChild(tr);
+    });
+  }
+
+  updateCalculator();
+};
+
 document.addEventListener("DOMContentLoaded", () => {
+  initCrmCommissionCalculator();
+
   const periodFilter = document.getElementById("crm-period-filter");
   if (periodFilter) {
     periodFilter.addEventListener("change", loadCrmSellerCommissions);
@@ -8132,12 +8191,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const pComm = document.getElementById("crm-panel-commissions");
       const pHist = document.getElementById("crm-panel-history");
+      const pCalc = document.getElementById("crm-panel-calculator");
+
       if (target === "commissions") {
         if (pComm) pComm.style.display = "block";
         if (pHist) pHist.style.display = "none";
+        if (pCalc) pCalc.style.display = "none";
       } else if (target === "history") {
         if (pComm) pComm.style.display = "none";
         if (pHist) pHist.style.display = "block";
+        if (pCalc) pCalc.style.display = "none";
+      } else if (target === "calculator") {
+        if (pComm) pComm.style.display = "none";
+        if (pHist) pHist.style.display = "none";
+        if (pCalc) pCalc.style.display = "block";
       }
     });
   });
