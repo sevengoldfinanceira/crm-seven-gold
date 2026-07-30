@@ -12974,3 +12974,430 @@ body.theme-dark .sales-history-list article {
   100% { width: 100%; }
 }
 
+/* ==========================================================================
+   FEED DE VENDAS (MURAL DE CONQUISTAS) - SEVEN GOLD THEME
+   ========================================================================== */
+.feed-page {
+  padding: 20px 10px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.feed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.feed-title-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.feed-title-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: #FFFDF5;
+  border: 1.5px solid rgba(185, 130, 32, 0.25);
+  color: #B98220;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 10px 24px rgba(185, 130, 32, 0.12);
+}
+
+.feed-title-icon svg {
+  width: 28px;
+  height: 28px;
+  stroke-width: 2.2;
+}
+
+.feed-kicker {
+  margin: 0 0 4px;
+  color: #B98220;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.feed-title-group h1 {
+  margin: 0;
+  color: #0F172A;
+  font-size: clamp(1.85rem, 2.5vw, 2.35rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -.03em;
+}
+
+.feed-title-group p {
+  margin: 4px 0 0;
+  color: #64748B;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.feed-stats-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #FFFDF5;
+  border: 1px solid rgba(185, 130, 32, 0.25);
+  border-radius: 999px;
+  color: #B98220;
+  font-size: 0.85rem;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(185, 130, 32, 0.08);
+}
+
+.feed-posts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* CARD DE VENDA NO FEED */
+.feed-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feed-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
+  border-color: rgba(185, 130, 32, 0.3);
+}
+
+/* TOP: FOTO DE PERFIL DO VENDEDOR GRANDE + NOME DO VENDEDOR APENAS */
+.feed-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.feed-avatar-large {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 3px solid #D4AF37;
+  box-shadow: 0 8px 24px rgba(185, 130, 32, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #B98220, #E8B138);
+  color: #FFFFFF;
+  font-size: 1.6rem;
+  font-weight: 900;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.feed-avatar-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.feed-seller-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.feed-seller-name {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 850;
+  color: #0F172A;
+  letter-spacing: -0.02em;
+}
+
+.feed-post-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #64748B;
+  background: #F8FAFC;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid #E2E8F0;
+}
+
+/* MIDDLE: VALOR DA COTA */
+.feed-card-cota {
+  margin: 20px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #FFFDF5 0%, #FAF4E3 100%);
+  border: 1.5px solid rgba(185, 130, 32, 0.3);
+  border-radius: 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  box-shadow: inset 0 2px 6px rgba(185, 130, 32, 0.04);
+}
+
+.feed-cota-label {
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #B98220;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.feed-cota-value {
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 950;
+  color: #0F172A;
+  letter-spacing: -0.04em;
+}
+
+/* BOTTOM: REAÇÕES E COMENTÁRIOS */
+.feed-card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+/* BARRA DE REAÇÕES */
+.feed-reactions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px;
+  background: #F8FAFC;
+  border-radius: 14px;
+  border: 1px solid #E2E8F0;
+}
+
+.feed-reaction-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 750;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  user-select: none;
+}
+
+.feed-reaction-btn:hover {
+  border-color: rgba(185, 130, 32, 0.4);
+  background: #FFFDF5;
+  transform: translateY(-1px);
+}
+
+.feed-reaction-btn.is-active {
+  background: #FFFDF5;
+  border-color: #B98220;
+  color: #B98220;
+  box-shadow: 0 4px 12px rgba(185, 130, 32, 0.18);
+}
+
+.feed-reaction-btn .reaction-count {
+  font-weight: 800;
+  font-size: 0.78rem;
+}
+
+/* ESPAÇO DE COMENTÁRIOS */
+.feed-comments-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.feed-comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.feed-comment-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #F8FAFC;
+  border-radius: 14px;
+  border: 1px solid #F1F5F9;
+  font-size: 0.82rem;
+}
+
+.feed-comment-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #B98220, #E8B138);
+  color: #FFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.feed-comment-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.feed-comment-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.feed-comment-user {
+  font-weight: 800;
+  color: #0F172A;
+  font-size: 0.8rem;
+}
+
+.feed-comment-text {
+  color: #334155;
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+.feed-comment-time {
+  font-size: 0.68rem;
+  color: #94A3B8;
+  margin-top: 2px;
+}
+
+/* FORMULÁRIO DE COMENTÁRIO */
+.feed-comment-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.feed-comment-input {
+  flex: 1;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  font-size: 0.83rem;
+  background: #FFFFFF;
+  color: #0F172A;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.feed-comment-input:focus {
+  border-color: #B98220;
+  box-shadow: 0 0 0 3px rgba(185, 130, 32, 0.15);
+}
+
+.feed-comment-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 18px;
+  background: linear-gradient(135deg, #B98220, #D4AF37);
+  border: 0;
+  border-radius: 12px;
+  color: #FFFFFF;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(185, 130, 32, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.feed-comment-submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(185, 130, 32, 0.3);
+}
+
+/* THEME DARK COMPATIBILITY */
+body.theme-dark .feed-title-group h1,
+body.theme-dark .feed-seller-name,
+body.theme-dark .feed-cota-value,
+body.theme-dark .feed-comment-user {
+  color: #F8FAFC;
+}
+
+body.theme-dark .feed-card {
+  background: #111827;
+  border-color: #1F2937;
+}
+
+body.theme-dark .feed-card-header {
+  border-bottom-color: #1F2937;
+}
+
+body.theme-dark .feed-card-cota {
+  background: rgba(212, 175, 55, 0.08);
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+body.theme-dark .feed-reactions-bar,
+body.theme-dark .feed-comment-item {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+body.theme-dark .feed-reaction-btn {
+  background: #0F172A;
+  border-color: #334155;
+  color: #94A3B8;
+}
+
+body.theme-dark .feed-reaction-btn.is-active {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #B98220;
+  color: #E8B138;
+}
+
+body.theme-dark .feed-comment-input {
+  background: #0F172A;
+  border-color: #334155;
+  color: #F8FAFC;
+}
+
+body.theme-dark .feed-post-time {
+  background: #1E293B;
+  border-color: #334155;
+  color: #94A3B8;
+}
+

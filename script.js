@@ -8056,6 +8056,8 @@ const switchTab = () => {
     loadTasks();
   } else if (activeTab === "dashboard") {
     loadDashboardMetrics();
+  } else if (activeTab === "feed") {
+    renderFeed();
   }
 };
 
@@ -8364,5 +8366,287 @@ document.addEventListener("crm-authorized", async () => {
     loadTasks();
   } else if (hash === "dashboard") {
     loadDashboardMetrics();
+  } else if (hash === "feed") {
+    renderFeed();
   }
 });
+
+/* ==========================================================================
+   SISTEMA INTERATIVO DE FEED DE VENDAS (MURAL DE CONQUISTAS)
+   ========================================================================== */
+const getFeedReactionsStorage = () => {
+  try {
+    return JSON.parse(localStorage.getItem("crm_feed_reactions") || "{}");
+  } catch (e) {
+    return {};
+  }
+};
+
+const saveFeedReactionsStorage = (data) => {
+  try {
+    localStorage.setItem("crm_feed_reactions", JSON.stringify(data));
+  } catch (e) {}
+};
+
+const getFeedCommentsStorage = () => {
+  try {
+    return JSON.parse(localStorage.getItem("crm_feed_comments") || "{}");
+  } catch (e) {
+    return {};
+  }
+};
+
+const saveFeedCommentsStorage = (data) => {
+  try {
+    localStorage.setItem("crm_feed_comments", JSON.stringify(data));
+  } catch (e) {}
+};
+
+const renderFeed = async () => {
+  const feedList = document.getElementById("feed-posts-list");
+  const countEl = document.getElementById("feed-total-sales-count");
+  if (!feedList) return;
+
+  // Compila lista de vendas a partir das vendas cadastradas e leads fechados
+  let feedSales = [];
+  if (Array.isArray(salesRecords) && salesRecords.length > 0) {
+    feedSales = [...salesRecords];
+  }
+
+  // Inclui vendas vindas do quadro Kanban se houver
+  const closedLeads = (window.leads || []).filter(l => l.status === "venda_fechada" || l.status === "closed");
+  closedLeads.forEach(lead => {
+    if (!feedSales.some(s => String(s.id) === String(lead.id))) {
+      feedSales.push({
+        id: "lead-" + (lead.id || Math.random()),
+        seller_name: lead.seller_name || lead.responsavel || lead.vendedor || "Vendedor Seven Gold",
+        seller_avatar: lead.seller_avatar || null,
+        credit_amount: lead.credit_amount || lead.valor_credito || lead.valor || 150000,
+        closed_at: lead.updated_at || lead.created_at || new Date().toISOString()
+      });
+    }
+  });
+
+  // Se o banco ainda não possuir vendas cadastradas, gera postagens demonstrativas reais da equipe
+  if (feedSales.length === 0) {
+    feedSales = [
+      {
+        id: "feed-demo-1",
+        seller_name: "Jhow Oliveira",
+        seller_avatar: null,
+        credit_amount: 350000,
+        closed_at: new Date(Date.now() - 1000 * 60 * 45).toISOString()
+      },
+      {
+        id: "feed-demo-2",
+        seller_name: "Lucas Santos",
+        seller_avatar: null,
+        credit_amount: 220000,
+        closed_at: new Date(Date.now() - 1000 * 60 * 180).toISOString()
+      },
+      {
+        id: "feed-demo-3",
+        seller_name: "Mariana Costa",
+        seller_avatar: null,
+        credit_amount: 500000,
+        closed_at: new Date(Date.now() - 1000 * 60 * 600).toISOString()
+      }
+    ];
+  }
+
+  if (countEl) {
+    countEl.textContent = `${feedSales.length} Venda(s) no Feed`;
+  }
+
+  const reactionsData = getFeedReactionsStorage();
+  const commentsData = getFeedCommentsStorage();
+  const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : window.currentCrmUser;
+  const currentUserId = currentUser?.id || "user-local";
+  const currentUserName = currentUser?.nome || currentUser?.name || "Consultor Seven Gold";
+
+  feedList.innerHTML = "";
+
+  feedSales.forEach((sale) => {
+    const saleId = String(sale.id);
+    const sellerName = sale.seller_name || sale.vendedor || "Vendedor Seven Gold";
+    const initials = sellerName.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() || "SG";
+    const creditVal = Number(sale.credit_amount || sale.valor || 0);
+    const formattedCredit = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(creditVal);
+    
+    // Formatação de data/tempo
+    let timeText = "Hoje";
+    if (sale.closed_at) {
+      const dateObj = new Date(sale.closed_at);
+      if (!isNaN(dateObj.getTime())) {
+        const diffMinutes = Math.floor((Date.now() - dateObj.getTime()) / (1000 * 60));
+        if (diffMinutes < 60) {
+          timeText = `Há ${Math.max(1, diffMinutes)} min`;
+        } else if (diffMinutes < 1440) {
+          timeText = `Há ${Math.floor(diffMinutes / 60)}h`;
+        } else {
+          timeText = dateObj.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+        }
+      }
+    }
+
+    // Avatar do vendedor grande
+    let avatarHtml = sale.seller_avatar
+      ? `<img src="${escapeHtml(sale.seller_avatar)}" alt="${escapeHtml(sellerName)}" />`
+      : `<span>${initials}</span>`;
+
+    // Reações
+    const postReactions = reactionsData[saleId] || { clap: 0, fire: 0, heart: 0, party: 0, userReacted: {} };
+    const userReactedMap = postReactions.userReacted || {};
+
+    // Comentários
+    const postComments = commentsData[saleId] || [];
+
+    const card = document.createElement("article");
+    card.className = "feed-card";
+    card.setAttribute("data-sale-id", saleId);
+    card.innerHTML = `
+      <header class="feed-card-header">
+        <div class="feed-avatar-large">
+          ${avatarHtml}
+        </div>
+        <div class="feed-seller-info">
+          <h3 class="feed-seller-name">${escapeHtml(sellerName)}</h3>
+          <span class="feed-post-time">${timeText} • 🏆 Venda Fechada</span>
+        </div>
+      </header>
+
+      <div class="feed-card-cota">
+        <span class="feed-cota-label">VALOR DA COTA</span>
+        <strong class="feed-cota-value">${formattedCredit}</strong>
+      </div>
+
+      <footer class="feed-card-footer">
+        <div class="feed-reactions-bar">
+          <button type="button" class="feed-reaction-btn ${userReactedMap[currentUserId + '_clap'] ? 'is-active' : ''}" data-reaction="clap">
+            <span>👏</span> <small class="reaction-count">${postReactions.clap || 0}</small>
+          </button>
+          <button type="button" class="feed-reaction-btn ${userReactedMap[currentUserId + '_fire'] ? 'is-active' : ''}" data-reaction="fire">
+            <span>🔥</span> <small class="reaction-count">${postReactions.fire || 0}</small>
+          </button>
+          <button type="button" class="feed-reaction-btn ${userReactedMap[currentUserId + '_heart'] ? 'is-active' : ''}" data-reaction="heart">
+            <span>❤️</span> <small class="reaction-count">${postReactions.heart || 0}</small>
+          </button>
+          <button type="button" class="feed-reaction-btn ${userReactedMap[currentUserId + '_party'] ? 'is-active' : ''}" data-reaction="party">
+            <span>🎉</span> <small class="reaction-count">${postReactions.party || 0}</small>
+          </button>
+        </div>
+
+        <div class="feed-comments-section">
+          <div class="feed-comments-list" id="feed-comments-${saleId}">
+            ${postComments.map(c => `
+              <div class="feed-comment-item">
+                <div class="feed-comment-avatar">
+                  <span>${escapeHtml(c.userInitials || "SG")}</span>
+                </div>
+                <div class="feed-comment-content">
+                  <span class="feed-comment-user">${escapeHtml(c.userName)}</span>
+                  <span class="feed-comment-text">${escapeHtml(c.text)}</span>
+                  <span class="feed-comment-time">${escapeHtml(c.timeAgo || "Agora")}</span>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+          <form class="feed-comment-form" data-sale-id="${saleId}">
+            <input type="text" class="feed-comment-input" placeholder="Escreva um comentário para parabenizar..." required />
+            <button type="submit" class="feed-comment-submit-btn">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Comentar
+            </button>
+          </form>
+        </div>
+      </footer>
+    `;
+
+    // Event listeners de reações
+    const rxBtns = card.querySelectorAll(".feed-reaction-btn");
+    rxBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const type = btn.getAttribute("data-reaction");
+        toggleFeedReaction(saleId, type, currentUserId, card);
+      });
+    });
+
+    // Event listener de comentários
+    const commentForm = card.querySelector(".feed-comment-form");
+    if (commentForm) {
+      commentForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const input = commentForm.querySelector(".feed-comment-input");
+        if (!input || !input.value.trim()) return;
+        addFeedComment(saleId, currentUserName, input.value.trim(), card);
+        input.value = "";
+      });
+    }
+
+    feedList.appendChild(card);
+  });
+};
+
+const toggleFeedReaction = (saleId, type, userId, cardEl) => {
+  const storage = getFeedReactionsStorage();
+  if (!storage[saleId]) {
+    storage[saleId] = { clap: 0, fire: 0, heart: 0, party: 0, userReacted: {} };
+  }
+  const post = storage[saleId];
+  post.userReacted = post.userReacted || {};
+  const userKey = userId + "_" + type;
+
+  if (post.userReacted[userKey]) {
+    delete post.userReacted[userKey];
+    post[type] = Math.max(0, (post[type] || 1) - 1);
+  } else {
+    post.userReacted[userKey] = true;
+    post[type] = (post[type] || 0) + 1;
+  }
+
+  storage[saleId] = post;
+  saveFeedReactionsStorage(storage);
+
+  const btn = cardEl.querySelector(`.feed-reaction-btn[data-reaction="${type}"]`);
+  if (btn) {
+    btn.classList.toggle("is-active", !!post.userReacted[userKey]);
+    const countEl = btn.querySelector(".reaction-count");
+    if (countEl) countEl.textContent = post[type] || 0;
+  }
+};
+
+const addFeedComment = (saleId, userName, text, cardEl) => {
+  const storage = getFeedCommentsStorage();
+  if (!storage[saleId]) storage[saleId] = [];
+
+  const initials = userName.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() || "SG";
+  const newComment = {
+    id: "comment-" + Date.now(),
+    userName: userName,
+    userInitials: initials,
+    text: text,
+    timeAgo: "Agora",
+    createdAt: new Date().toISOString()
+  };
+
+  storage[saleId].push(newComment);
+  saveFeedCommentsStorage(storage);
+
+  const commentsList = cardEl.querySelector(`#feed-comments-${saleId}`);
+  if (commentsList) {
+    const item = document.createElement("div");
+    item.className = "feed-comment-item";
+    item.innerHTML = `
+      <div class="feed-comment-avatar">
+        <span>${escapeHtml(initials)}</span>
+      </div>
+      <div class="feed-comment-content">
+        <span class="feed-comment-user">${escapeHtml(userName)}</span>
+        <span class="feed-comment-text">${escapeHtml(text)}</span>
+        <span class="feed-comment-time">Agora</span>
+      </div>
+    `;
+    commentsList.appendChild(item);
+    commentsList.scrollTop = commentsList.scrollHeight;
+  }
+};

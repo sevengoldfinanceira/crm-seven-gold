@@ -857,11 +857,30 @@
 
         <!-- Feed -->
         <section class="tab-content" data-tab="feed" style="display:none;">
-          <div class="empty-tab-state">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-bottom: 16px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            <h2>Feed</h2>
-            <p>Em breve.</p>
-          </div>
+          <section class="feed-page" aria-labelledby="feed-title">
+            <header class="feed-header">
+              <div class="feed-title-group">
+                <span class="feed-title-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  </svg>
+                </span>
+                <div>
+                  <p class="feed-kicker">Mural de Conquistas</p>
+                  <h1 id="feed-title">Feed de Vendas</h1>
+                  <p>Comemore as conquistas do time, reaja às vendas e deixe suas felicitações!</p>
+                </div>
+              </div>
+              <div class="feed-stats-pill">
+                <span class="feed-stats-icon">🔥</span>
+                <span id="feed-total-sales-count">Vendas no Feed</span>
+              </div>
+            </header>
+
+            <div class="feed-posts-container" id="feed-posts-list">
+              <!-- Feed cards carregados dinamicamente via JS -->
+            </div>
+          </section>
         </section>
 
         <!-- Calendario -->
