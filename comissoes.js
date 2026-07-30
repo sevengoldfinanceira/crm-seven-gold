@@ -218,38 +218,37 @@
     updateCalculator();
   };
 
-  // Alternância de abas
-  const initTabs = () => {
-    const tabBtns = document.querySelectorAll("[data-tab-target]");
+  // Alternância de abas com delegação global de eventos
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-tab-target]");
+    if (!btn) return;
+
+    const target = btn.getAttribute("data-tab-target");
+    if (!target) return;
+
+    document.querySelectorAll("[data-tab-target]").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+
     const panelCommissions = document.getElementById("panel-commissions");
     const panelHistory = document.getElementById("panel-history");
     const panelCalculator = document.getElementById("panel-calculator");
 
-    tabBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const target = btn.getAttribute("data-tab-target");
-        tabBtns.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        if (target === "commissions") {
-          if (panelCommissions) panelCommissions.style.display = "block";
-          if (panelHistory) panelHistory.style.display = "none";
-          if (panelCalculator) panelCalculator.style.display = "none";
-        } else if (target === "history") {
-          if (panelCommissions) panelCommissions.style.display = "none";
-          if (panelHistory) panelHistory.style.display = "block";
-          if (panelCalculator) panelCalculator.style.display = "none";
-        } else if (target === "calculator") {
-          if (panelCommissions) panelCommissions.style.display = "none";
-          if (panelHistory) panelHistory.style.display = "none";
-          if (panelCalculator) panelCalculator.style.display = "block";
-        }
-      });
-    });
-  };
+    if (target === "commissions") {
+      if (panelCommissions) panelCommissions.style.display = "block";
+      if (panelHistory) panelHistory.style.display = "none";
+      if (panelCalculator) panelCalculator.style.display = "none";
+    } else if (target === "history") {
+      if (panelCommissions) panelCommissions.style.display = "none";
+      if (panelHistory) panelHistory.style.display = "block";
+      if (panelCalculator) panelCalculator.style.display = "none";
+    } else if (target === "calculator") {
+      if (panelCommissions) panelCommissions.style.display = "none";
+      if (panelHistory) panelHistory.style.display = "none";
+      if (panelCalculator) panelCalculator.style.display = "block";
+    }
+  });
 
   const init = () => {
-    initTabs();
     initCommissionCalculator();
 
     const periodFilter = document.getElementById("period-filter");

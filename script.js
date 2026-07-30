@@ -8182,31 +8182,33 @@ document.addEventListener("DOMContentLoaded", () => {
     periodFilter.addEventListener("change", loadCrmSellerCommissions);
   }
 
-  const tabBtns = document.querySelectorAll("[data-crm-tab-target]");
-  tabBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const target = btn.getAttribute("data-crm-tab-target");
-      tabBtns.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-crm-tab-target]");
+    if (!btn) return;
 
-      const pComm = document.getElementById("crm-panel-commissions");
-      const pHist = document.getElementById("crm-panel-history");
-      const pCalc = document.getElementById("crm-panel-calculator");
+    const target = btn.getAttribute("data-crm-tab-target");
+    if (!target) return;
 
-      if (target === "commissions") {
-        if (pComm) pComm.style.display = "block";
-        if (pHist) pHist.style.display = "none";
-        if (pCalc) pCalc.style.display = "none";
-      } else if (target === "history") {
-        if (pComm) pComm.style.display = "none";
-        if (pHist) pHist.style.display = "block";
-        if (pCalc) pCalc.style.display = "none";
-      } else if (target === "calculator") {
-        if (pComm) pComm.style.display = "none";
-        if (pHist) pHist.style.display = "none";
-        if (pCalc) pCalc.style.display = "block";
-      }
-    });
+    document.querySelectorAll("[data-crm-tab-target]").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    const pComm = document.getElementById("crm-panel-commissions");
+    const pHist = document.getElementById("crm-panel-history");
+    const pCalc = document.getElementById("crm-panel-calculator");
+
+    if (target === "commissions") {
+      if (pComm) pComm.style.display = "block";
+      if (pHist) pHist.style.display = "none";
+      if (pCalc) pCalc.style.display = "none";
+    } else if (target === "history") {
+      if (pComm) pComm.style.display = "none";
+      if (pHist) pHist.style.display = "block";
+      if (pCalc) pCalc.style.display = "none";
+    } else if (target === "calculator") {
+      if (pComm) pComm.style.display = "none";
+      if (pHist) pHist.style.display = "none";
+      if (pCalc) pCalc.style.display = "block";
+    }
   });
 });
 
