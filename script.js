@@ -7998,7 +7998,7 @@ const tabTitleMap = {
   calendario: "Calendario",
   corrida: "Corrida",
   vendas: "Vendas",
-  financeiro: "Minhas comissões",
+  financeiro: "Comissões",
   equipe: "Minha equipe",
   perfil: "Meu perfil",
 };
