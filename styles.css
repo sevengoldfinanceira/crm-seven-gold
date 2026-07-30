@@ -7143,13 +7143,18 @@ body.theme-dark .pipeline-header .pipeline-title-copy h1 {
 }
 
 .dash-funnel-v2 {
+  --funnel-metrics-width: 148px;
+  --funnel-metrics-gap: 12px;
   display: flex !important;
   flex-direction: column !important;
   width: 100% !important;
 }
 
 .dash-funnel-v2-header {
-  display: flex !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) var(--funnel-metrics-width) !important;
+  column-gap: var(--funnel-metrics-gap) !important;
+  align-items: end !important;
   width: 100% !important;
   margin-bottom: 8px !important;
   border-bottom: 1px solid #E5E7EB !important;
@@ -7161,9 +7166,9 @@ body.theme-dark .pipeline-header .pipeline-title-copy h1 {
 }
 
 .dash-funnel-v2-header-metrics {
-  width: 110px !important;
+  width: 100% !important;
   display: grid !important;
-  grid-template-columns: 55px 45px !important;
+  grid-template-columns: 76px 64px !important;
   gap: 8px !important;
   flex-shrink: 0 !important;
 }
@@ -7175,6 +7180,7 @@ body.theme-dark .pipeline-header .pipeline-title-copy h1 {
   text-transform: uppercase !important;
   letter-spacing: 0.03em !important;
   text-align: center !important;
+  white-space: nowrap !important;
 }
 
 .dash-funnel-v2-rows {
@@ -7185,13 +7191,26 @@ body.theme-dark .pipeline-header .pipeline-title-copy h1 {
 }
 
 .dash-funnel-v2-row {
-  display: flex !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) var(--funnel-metrics-width) !important;
+  column-gap: var(--funnel-metrics-gap) !important;
   align-items: center !important;
   width: 100% !important;
   height: 42px !important;
 }
 
 .dash-funnel-v2-row::before {
+  display: none !important;
+}
+
+.dash-funnel-v2-track {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.dash-funnel-v2-track::before {
   content: '' !important;
   flex: 1 !important;
   height: 0 !important;
@@ -7223,6 +7242,7 @@ body.theme-dark .pipeline-header .pipeline-title-copy h1 {
 }
 
 .dash-funnel-v2-dotted {
+  display: block !important;
   flex: 1 !important;
   height: 0 !important;
   border-top: 2px dashed var(--stage-color) !important;
@@ -7232,9 +7252,9 @@ body.theme-dark .pipeline-header .pipeline-title-copy h1 {
 }
 
 .dash-funnel-v2-metrics-row {
-  width: 110px !important;
+  width: 100% !important;
   display: grid !important;
-  grid-template-columns: 55px 45px !important;
+  grid-template-columns: 76px 64px !important;
   align-items: center !important;
   gap: 8px !important;
   flex-shrink: 0 !important;
@@ -7246,6 +7266,7 @@ body.theme-dark .pipeline-header .pipeline-title-copy h1 {
   text-align: center !important;
   display: block !important;
   width: 100% !important;
+  font-variant-numeric: tabular-nums !important;
 }
 
 .dash-funnel-v2-metric-pct {
@@ -7257,6 +7278,24 @@ body.theme-dark .pipeline-header .pipeline-title-copy h1 {
   width: 100% !important;
   box-sizing: border-box !important;
   justify-self: center !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+@media (max-width: 520px) {
+  .dash-funnel-v2 {
+    --funnel-metrics-width: 134px;
+    --funnel-metrics-gap: 8px;
+  }
+
+  .dash-funnel-v2-header-metrics,
+  .dash-funnel-v2-metrics-row {
+    grid-template-columns: 68px 58px !important;
+    gap: 8px !important;
+  }
+
+  .dash-funnel-v2-header-metrics span {
+    font-size: 0.58rem !important;
+  }
 }
 
 /* Conversion stage items */

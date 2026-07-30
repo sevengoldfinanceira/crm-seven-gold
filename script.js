@@ -4865,13 +4865,15 @@ const renderDashboardCharts = ({ receivedLeads, inService, totalAppointments, cl
       const pct = ((step.value / maxVal) * 100).toFixed(0);
       funnelHTML += `
         <div class="dash-funnel-v2-row" style="--stage-color: ${step.color}; --stage-width: ${widths[i]}%;">
-          <div class="dash-funnel-v2-piece" style="background: ${step.gradient}; width: calc(${widths[i]}% * 0.8);">
-            <div class="dash-funnel-v2-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${step.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${iconPaths[step.icon]}</svg>
+          <div class="dash-funnel-v2-track">
+            <div class="dash-funnel-v2-piece" style="background: ${step.gradient}; width: calc(${widths[i]}% * 0.8);">
+              <div class="dash-funnel-v2-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${step.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${iconPaths[step.icon]}</svg>
+              </div>
+              <span class="dash-funnel-v2-label">${step.label}</span>
             </div>
-            <span class="dash-funnel-v2-label">${step.label}</span>
+            <div class="dash-funnel-v2-dotted" style="border-color: ${step.color};"></div>
           </div>
-          <div class="dash-funnel-v2-dotted" style="border-color: ${step.color};"></div>
           <div class="dash-funnel-v2-metrics-row">
             <span class="dash-funnel-v2-metric-value" style="color: ${step.color};">${step.value}</span>
             <span class="dash-funnel-v2-metric-pct" style="background: ${step.color}12; color: ${step.color}; border: 1px solid ${step.color}22;">${pct}%</span>
