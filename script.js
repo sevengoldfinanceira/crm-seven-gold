@@ -7996,7 +7996,6 @@ const tabTitleMap = {
   pipeline: "Pipeline",
   tarefas: "Tarefas",
   feed: "Feed",
-  chat: "Chat / Atendimento",
   calendario: "Calendario",
   corrida: "Corrida",
   vendas: "Vendas",
@@ -8008,7 +8007,7 @@ const tabTitleMap = {
 
 const switchTab = () => {
   const hash = window.location.hash.replace("#", "") || "pipeline";
-  const validTabs = ["dashboard", "pipeline", "tarefas", "feed", "chat", "calendario", "corrida", "vendas", "financeiro", "cadastro", "equipe", "perfil"];
+  const validTabs = ["dashboard", "pipeline", "tarefas", "feed", "calendario", "corrida", "vendas", "financeiro", "cadastro", "equipe", "perfil"];
   const activeTab = validTabs.includes(hash) ? hash : "pipeline";
 
   const userRole = window.userRole || (window.sevenGoldCrmSession?.userRole);

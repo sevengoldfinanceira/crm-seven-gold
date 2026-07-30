@@ -275,8 +275,6 @@ function sgNavigateWithPanelsTransition(target, title = "Acessando Painéis...")
       return true;
     }
 
-    if (areaKey === "chat") return true;
-
     if (cachedPermissions && typeof cachedPermissions[areaKey] === "boolean") {
       return cachedPermissions[areaKey];
     }
