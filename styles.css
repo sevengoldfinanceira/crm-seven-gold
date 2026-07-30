@@ -10903,6 +10903,41 @@ body.theme-dark #pipeline-search-input:focus {
   margin: 0;
 }
 
+.appointment-race-fixed-target {
+  min-height: 78px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  padding: 10px 16px;
+  border: 1px solid rgba(232, 177, 56, 0.38);
+  border-radius: 18px;
+  background: #FFF9E7;
+}
+
+.appointment-race-fixed-target > span,
+.appointment-race-fixed-target > strong,
+.appointment-race-fixed-target > small {
+  display: block;
+}
+
+.appointment-race-fixed-target > span {
+  color: #334155;
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.appointment-race-fixed-target > strong {
+  color: #906820;
+  font-size: 1.12rem;
+  font-weight: 950;
+}
+
+.appointment-race-fixed-target > small {
+  color: #64748B;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
 .appointment-race-modal-status {
   min-height: 20px;
   margin: 0 0 16px;

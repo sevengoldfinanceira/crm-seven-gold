@@ -22,9 +22,11 @@ const appointmentRaceSubtitle = document.querySelector("[data-race-subtitle]");
 const appointmentRaceViewButtons = document.querySelectorAll("[data-race-view-mode]");
 const appointmentRaceStatus = document.querySelector("[data-race-status]");
 const appointmentRaceTarget = document.querySelector("[data-race-target]");
+const appointmentRaceTargetPeriod = document.querySelector("[data-race-target-period]");
 const appointmentRaceTargetUnit = document.querySelector("[data-race-target-unit]");
 const appointmentRaceParticipants = document.querySelector("[data-race-participants]");
 const appointmentRaceTimeLeft = document.querySelector("[data-race-time-left]");
+const appointmentRaceTimeCaption = document.querySelector("[data-race-time-caption]");
 const appointmentRaceWinner = document.querySelector("[data-race-winner]");
 const appointmentRaceWinnerTime = document.querySelector("[data-race-winner-time]");
 const appointmentRaceWinnerBanner = document.querySelector("[data-race-winner-banner]");
@@ -39,7 +41,6 @@ const appointmentRaceSettingsModal = document.querySelector("[data-race-settings
 const appointmentRaceSettingsForm = document.querySelector("[data-race-settings-form]");
 const appointmentRaceTargetInput = document.querySelector("[data-race-target-input]");
 const appointmentRaceAppointmentTargetInput = document.querySelector("[data-race-appointment-target-input]") || appointmentRaceTargetInput;
-const appointmentRaceClosedTargetInput = document.querySelector("[data-race-closed-target-input]");
 const appointmentRaceModalStatus = document.querySelector("[data-race-modal-status]");
 const salesModal = document.querySelector("[data-sales-modal]");
 const salesForm = document.querySelector("[data-sales-form]");
@@ -1447,7 +1448,11 @@ const APPOINTMENT_RACE_MODE_COPY = {
     label: "Agendamentos",
     title: "Corrida de Agendamentos",
     subtitle: "Quem chega primeiro à meta de hoje?",
+    targetPeriod: "Meta diária",
     targetUnit: "agendamentos por vendedor",
+    timeCaption: "até meia-noite",
+    periodGoalLabel: "meta diária",
+    periodReference: "hoje",
     progressUnit: "agendamentos",
     pointSingular: "agendamento",
     pointPlural: "agendamentos",
@@ -1460,14 +1465,18 @@ const APPOINTMENT_RACE_MODE_COPY = {
   closed_clients: {
     label: "Vendas",
     title: "Corrida de Vendas",
-    subtitle: "Quem realiza mais vendas checadas hoje?",
-    targetUnit: "vendas checadas por vendedor",
+    subtitle: "Quem fecha primeiro a venda da semana?",
+    targetPeriod: "Meta semanal",
+    targetUnit: "venda checada por vendedor",
+    timeCaption: "até o fim da semana",
+    periodGoalLabel: "meta semanal",
+    periodReference: "nesta semana",
     progressUnit: "vendas",
     pointSingular: "venda",
     pointPlural: "vendas",
     missingSingular: "venda",
     missingPlural: "vendas",
-    emptyStatus: "Corrida ativa, aguardando as primeiras vendas checadas de hoje.",
+    emptyStatus: "Corrida ativa, aguardando a primeira venda checada desta semana.",
     leaderStatusUnitSingular: "venda",
     leaderStatusUnitPlural: "vendas",
   },
@@ -1501,7 +1510,7 @@ const formatAppointmentRaceMetric = (count = 0, singular = "", plural = "") => {
 
 const getAppointmentRaceSelectedTarget = (race = null) => {
   const mode = getAppointmentRaceMode(race);
-  const fallback = mode === "closed_clients" ? 5 : 10;
+  const fallback = mode === "closed_clients" ? 1 : 10;
   const modeTarget = mode === "closed_clients" ? race?.closed_clients_target : race?.appointment_target;
   return Number(modeTarget || race?.selected_target || race?.target || fallback);
 };
@@ -1511,7 +1520,9 @@ const updateAppointmentRaceStaticText = (modeOrRace = APPOINTMENT_RACE_DEFAULT_M
   const mode = typeof modeOrRace === "string" ? normalizeAppointmentRaceMode(modeOrRace) : getAppointmentRaceMode(modeOrRace);
   if (appointmentRaceTitle) appointmentRaceTitle.textContent = copy.title;
   if (appointmentRaceSubtitle) appointmentRaceSubtitle.textContent = copy.subtitle;
+  if (appointmentRaceTargetPeriod) appointmentRaceTargetPeriod.textContent = copy.targetPeriod;
   if (appointmentRaceTargetUnit) appointmentRaceTargetUnit.textContent = copy.targetUnit;
+  if (appointmentRaceTimeCaption) appointmentRaceTimeCaption.textContent = copy.timeCaption;
   appointmentRaceViewButtons.forEach((button) => {
     const isActive = button.dataset.raceViewMode === mode;
     button.classList.toggle("is-active", isActive);
@@ -1556,13 +1567,20 @@ const isAppointmentRaceBusinessDay = (date = getSaoPauloNow()) => {
 };
 
 const formatAppointmentRaceTimeLeft = () => {
-  const saoPauloNow = getSaoPauloNow();
-  const midnight = new Date(saoPauloNow);
-  midnight.setDate(midnight.getDate() + 1);
-  midnight.setHours(0, 0, 0, 0);
-  const diff = Math.max(0, midnight.getTime() - saoPauloNow.getTime());
+  const race = appointmentRaceState?.race || null;
+  const periodEnd = race?.period_ends_at ? new Date(race.period_ends_at) : null;
+  const hasPeriodEnd = periodEnd && Number.isFinite(periodEnd.getTime());
+  const fallbackNow = getSaoPauloNow();
+  const fallbackEnd = new Date(fallbackNow);
+  fallbackEnd.setDate(fallbackEnd.getDate() + 1);
+  fallbackEnd.setHours(0, 0, 0, 0);
+  const diff = Math.max(0, (hasPeriodEnd ? periodEnd.getTime() - Date.now() : fallbackEnd.getTime() - fallbackNow.getTime()));
+  const days = Math.floor(diff / 86400000);
   const hours = Math.floor(diff / 3600000);
   const minutes = Math.floor((diff % 3600000) / 60000);
+  if (getAppointmentRaceMode(race) === "closed_clients" && days > 0) {
+    return `${days}d ${String(hours % 24).padStart(2, "0")}h`;
+  }
   return `${String(hours).padStart(2, "0")}h ${String(minutes).padStart(2, "0")}m`;
 };
 
@@ -2200,7 +2218,7 @@ const renderAppointmentRace = () => {
           </svg>
         </span>
         <div>
-          <strong>${escapeHtml(winner.name)} venceu a corrida de hoje!</strong>
+          <strong>${escapeHtml(winner.name)} venceu a corrida ${copy.periodReference}!</strong>
           <small>Meta atingida às ${formatAppointmentRaceTime(race.won_at)}.</small>
         </div>
       `;
@@ -2358,11 +2376,11 @@ const renderAppointmentRace = () => {
     race.status === "finished"
       ? `${winner?.name || "O líder"} atingiu a meta e a corrida foi finalizada.`
       : race.status === "cancelled"
-        ? "Corrida encerrada para hoje."
+        ? `Corrida encerrada ${copy.periodReference}.`
         : leader && leaderCount > 0
           ? leaderMissing > 0
             ? `Corrida em andamento - faltam ${leaderMissing} ${leaderMissing === 1 ? copy.missingSingular : copy.missingPlural} para o líder alcançar a meta.`
-            : `${leader.name || "O líder"} já alcançou a meta diária.`
+            : `${leader.name || "O líder"} já alcançou a ${copy.periodGoalLabel}.`
           : copy.emptyStatus
   );
 };
@@ -2476,9 +2494,7 @@ const openAppointmentRaceSettings = () => {
   const race = appointmentRaceState?.race || null;
   const mode = getAppointmentRaceMode(race);
   const appointmentTarget = Number(race?.appointment_target || (mode === "appointments" ? race?.target : 10) || 10);
-  const closedClientsTarget = Number(race?.closed_clients_target || (mode === "closed_clients" ? race?.target : 5) || 5);
   if (appointmentRaceAppointmentTargetInput) appointmentRaceAppointmentTargetInput.value = appointmentTarget;
-  if (appointmentRaceClosedTargetInput) appointmentRaceClosedTargetInput.value = closedClientsTarget;
   setAppointmentRaceModalStatus("");
   if (typeof appointmentRaceSettingsModal?.showModal === "function") {
     appointmentRaceSettingsModal.showModal();
@@ -2492,11 +2508,9 @@ const closeAppointmentRaceSettings = () => {
 const getAppointmentRaceFormConfig = () => {
   const mode = normalizeAppointmentRaceMode(appointmentRaceViewMode);
   const appointmentTarget = Number.parseInt(appointmentRaceAppointmentTargetInput?.value || "0", 10);
-  const closedClientsTarget = Number.parseInt(appointmentRaceClosedTargetInput?.value || "0", 10);
   return {
     mode,
     appointmentTarget,
-    closedClientsTarget,
   };
 };
 
@@ -2506,10 +2520,6 @@ const runAppointmentRaceAdminAction = async (action) => {
   const config = getAppointmentRaceFormConfig();
   if (!Number.isInteger(config.appointmentTarget) || config.appointmentTarget <= 0) {
     setAppointmentRaceModalStatus("Informe uma meta de agendamentos maior que zero.", "error");
-    return;
-  }
-  if (!Number.isInteger(config.closedClientsTarget) || config.closedClientsTarget <= 0) {
-    setAppointmentRaceModalStatus("Informe uma meta de vendas checadas maior que zero.", "error");
     return;
   }
   try {
@@ -2527,7 +2537,6 @@ const runAppointmentRaceAdminAction = async (action) => {
         action,
         mode: config.mode,
         appointment_target: config.appointmentTarget,
-        sales_target: config.closedClientsTarget,
       }),
     });
     const result = await response.json().catch(() => ({}));
@@ -6221,11 +6230,13 @@ appointmentRaceSettingsForm?.addEventListener("submit", (event) => {
   runAppointmentRaceAdminAction("save_targets");
 });
 document.querySelector("[data-race-restart]")?.addEventListener("click", () => {
-  if (!confirm("Reiniciar a corrida de hoje e remover o vencedor atual?")) return;
+  const copy = getAppointmentRaceCopy(appointmentRaceViewMode);
+  if (!confirm(`Reiniciar a corrida ${copy.periodReference} e remover o vencedor atual?`)) return;
   runAppointmentRaceAdminAction("restart");
 });
 document.querySelector("[data-race-cancel]")?.addEventListener("click", () => {
-  if (!confirm("Encerrar a corrida de hoje?")) return;
+  const copy = getAppointmentRaceCopy(appointmentRaceViewMode);
+  if (!confirm(`Encerrar a corrida ${copy.periodReference}?`)) return;
   runAppointmentRaceAdminAction("cancel");
 });
 

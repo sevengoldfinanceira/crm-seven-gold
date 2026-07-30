@@ -3,11 +3,11 @@ const { getAuthorizedCrmUser, normalizeEmail, normalizeRole } = require('../../l
 
 const ORGANIZATION_IDS = {
   appointments: 'seven_gold',
-  closed_clients: 'seven_gold_sales',
+  closed_clients: 'seven_gold_sales_weekly',
 };
 const DEFAULT_TARGETS = {
   appointments: 10,
-  closed_clients: 5,
+  closed_clients: 1,
 };
 const MODES = new Set(Object.keys(ORGANIZATION_IDS));
 const PARTICIPANT_ROLES = new Set([
@@ -45,6 +45,23 @@ const getSaoPauloDayRange = (dateKey) => ({
   start: new Date(`${dateKey}T03:00:00.000Z`).toISOString(),
   end: new Date(new Date(`${dateKey}T03:00:00.000Z`).getTime() + 24 * 60 * 60 * 1000).toISOString(),
 });
+
+const getSaoPauloWeekRange = (dateKey) => {
+  const anchor = new Date(`${dateKey}T12:00:00.000Z`);
+  const daysSinceMonday = (anchor.getUTCDay() + 6) % 7;
+  const startDate = new Date(anchor);
+  startDate.setUTCDate(anchor.getUTCDate() - daysSinceMonday);
+  const endDate = new Date(startDate);
+  endDate.setUTCDate(startDate.getUTCDate() + 7);
+  const startKey = startDate.toISOString().slice(0, 10);
+  const endKey = endDate.toISOString().slice(0, 10);
+  return {
+    startKey,
+    endKey,
+    start: new Date(`${startKey}T03:00:00.000Z`).toISOString(),
+    end: new Date(`${endKey}T03:00:00.000Z`).toISOString(),
+  };
+};
 
 const getClientKey = ({ leadId, phone, name }) => {
   if (leadId) return `lead:${leadId}`;
@@ -150,10 +167,9 @@ const loadAppointmentPoints = async (participants, dateKey) => {
   return pointsByUser;
 };
 
-const loadSalesPoints = async (dateKey) => {
-  const { start, end } = getSaoPauloDayRange(dateKey);
+const loadSalesPoints = async ({ startKey, endKey, start, end }) => {
   const fields = 'seller_id,lead_id,client_name,client_phone,checked_at,closed_at,closed_time,created_at,status';
-  const [checkedToday, legacyChecked] = await Promise.all([
+  const [checkedThisWeek, legacyChecked] = await Promise.all([
     supabase
       .from('sales')
       .select(fields)
@@ -167,16 +183,18 @@ const loadSalesPoints = async (dateKey) => {
       .eq('organization_id', ORGANIZATION_IDS.appointments)
       .eq('status', 'checked')
       .is('checked_at', null)
-      .eq('closed_at', dateKey),
+      .gte('closed_at', startKey)
+      .lt('closed_at', endKey),
   ]);
-  if (checkedToday.error) throw checkedToday.error;
+  if (checkedThisWeek.error) throw checkedThisWeek.error;
   if (legacyChecked.error) throw legacyChecked.error;
 
   const pointsByUser = new Map();
-  [...(checkedToday.data || []), ...(legacyChecked.data || [])].forEach((sale) => {
+  [...(checkedThisWeek.data || []), ...(legacyChecked.data || [])].forEach((sale) => {
     const pointAt = sale.checked_at
       || (sale.closed_at ? `${sale.closed_at}T${sale.closed_time || '00:00:00'}-03:00` : sale.created_at);
-    if (!pointAt || getSaoPauloDateKey(pointAt) !== dateKey) return;
+    const pointDateKey = pointAt ? getSaoPauloDateKey(pointAt) : '';
+    if (!pointDateKey || pointDateKey < startKey || pointDateKey >= endKey) return;
     const clientKey = getClientKey({
       leadId: sale.lead_id,
       phone: sale.client_phone,
@@ -219,23 +237,25 @@ const getTargets = (rows) => ({
     rows.find((row) => row.organization_id === ORGANIZATION_IDS.appointments)?.target
       || DEFAULT_TARGETS.appointments
   )),
-  closed_clients: Math.max(1, Number(
-    rows.find((row) => row.organization_id === ORGANIZATION_IDS.closed_clients)?.target
-      || DEFAULT_TARGETS.closed_clients
-  )),
+  closed_clients: DEFAULT_TARGETS.closed_clients,
 });
 
 const buildRaceState = async (mode) => {
-  const raceDate = getSaoPauloDateKey();
-  const [participants, rows] = await Promise.all([loadParticipants(), loadRaceRows(raceDate)]);
+  const todayDateKey = getSaoPauloDateKey();
+  const salesWeek = getSaoPauloWeekRange(todayDateKey);
+  const dayRange = getSaoPauloDayRange(todayDateKey);
+  const period = mode === 'closed_clients'
+    ? { raceDate: salesWeek.startKey, start: salesWeek.start, end: salesWeek.end }
+    : { raceDate: todayDateKey, ...dayRange };
+  const [participants, rows] = await Promise.all([loadParticipants(), loadRaceRows(todayDateKey)]);
   const targets = getTargets(rows);
   const target = targets[mode];
   const pointsByUser = mode === 'closed_clients'
-    ? await loadSalesPoints(raceDate)
-    : await loadAppointmentPoints(participants, raceDate);
+    ? await loadSalesPoints(salesWeek)
+    : await loadAppointmentPoints(participants, todayDateKey);
   const rankedParticipants = buildParticipants(participants, pointsByUser, target);
   const storedRace = rows.find((row) => (
-    row.organization_id === ORGANIZATION_IDS[mode] && row.race_date === raceDate
+    row.organization_id === ORGANIZATION_IDS[mode] && row.race_date === period.raceDate
   )) || null;
   const winner = storedRace?.status === 'cancelled'
     ? null
@@ -247,10 +267,13 @@ const buildRaceState = async (mode) => {
   return {
     race: {
       ...(storedRace || {}),
-      id: storedRace?.id || `${ORGANIZATION_IDS[mode]}:${raceDate}`,
+      id: storedRace?.id || `${ORGANIZATION_IDS[mode]}:${period.raceDate}`,
       organization_id: ORGANIZATION_IDS[mode],
-      race_date: raceDate,
+      race_date: period.raceDate,
       race_mode: mode,
+      period_type: mode === 'closed_clients' ? 'week' : 'day',
+      period_starts_at: period.start,
+      period_ends_at: period.end,
       target,
       selected_target: target,
       appointment_target: targets.appointments,
@@ -261,7 +284,7 @@ const buildRaceState = async (mode) => {
     },
     participants: rankedParticipants,
     server_now: new Date().toISOString(),
-    race_date: raceDate,
+    race_date: period.raceDate,
   };
 };
 
@@ -290,38 +313,28 @@ const handleAdminAction = async (req, authorization) => {
   const action = String(payload.action || '');
   const mode = MODES.has(payload.mode) ? payload.mode : 'appointments';
   const appointmentTarget = Number.parseInt(payload.appointment_target, 10);
-  const salesTarget = Number.parseInt(payload.sales_target, 10);
-  if (!Number.isInteger(appointmentTarget) || appointmentTarget <= 0) {
+  const requiresAppointmentTarget = action === 'save_targets' || mode === 'appointments';
+  if (requiresAppointmentTarget && (!Number.isInteger(appointmentTarget) || appointmentTarget <= 0)) {
     return { status: 400, body: { ok: false, error: 'Informe uma meta de agendamentos maior que zero.' } };
   }
-  if (!Number.isInteger(salesTarget) || salesTarget <= 0) {
-    return { status: 400, body: { ok: false, error: 'Informe uma meta de vendas checadas maior que zero.' } };
-  }
 
-  const raceDate = getSaoPauloDateKey();
+  const todayDateKey = getSaoPauloDateKey();
+  const salesWeek = getSaoPauloWeekRange(todayDateKey);
+  const raceDate = mode === 'closed_clients' ? salesWeek.startKey : todayDateKey;
   const createdBy = authorization.user.auth_user_id;
   if (action === 'save_targets') {
-    await Promise.all([
-      upsertRace({
-        organizationId: ORGANIZATION_IDS.appointments,
-        raceDate,
-        target: appointmentTarget,
-        status: 'active',
-        createdBy,
-      }),
-      upsertRace({
-        organizationId: ORGANIZATION_IDS.closed_clients,
-        raceDate,
-        target: salesTarget,
-        status: 'active',
-        createdBy,
-      }),
-    ]);
+    await upsertRace({
+      organizationId: ORGANIZATION_IDS.appointments,
+      raceDate: todayDateKey,
+      target: appointmentTarget,
+      status: 'active',
+      createdBy,
+    });
   } else if (action === 'restart') {
     await upsertRace({
       organizationId: ORGANIZATION_IDS[mode],
       raceDate,
-      target: mode === 'closed_clients' ? salesTarget : appointmentTarget,
+      target: mode === 'closed_clients' ? DEFAULT_TARGETS.closed_clients : appointmentTarget,
       status: 'active',
       createdBy,
     });
@@ -329,7 +342,7 @@ const handleAdminAction = async (req, authorization) => {
     await upsertRace({
       organizationId: ORGANIZATION_IDS[mode],
       raceDate,
-      target: mode === 'closed_clients' ? salesTarget : appointmentTarget,
+      target: mode === 'closed_clients' ? DEFAULT_TARGETS.closed_clients : appointmentTarget,
       status: 'cancelled',
       createdBy,
     });

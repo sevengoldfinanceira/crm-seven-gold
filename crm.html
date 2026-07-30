@@ -1050,7 +1050,7 @@
                   </svg>
                 </span>
                 <div>
-                  <span>Meta diária</span>
+                  <span data-race-target-period>Meta diária</span>
                   <strong data-race-target>--</strong>
                   <small data-race-target-unit>agendamentos por vendedor</small>
                 </div>
@@ -1079,7 +1079,7 @@
                 <div>
                   <span>Tempo restante</span>
                   <strong data-race-time-left>--</strong>
-                  <small>até meia-noite</small>
+                  <small data-race-time-caption>até meia-noite</small>
                 </div>
               </article>
               <article class="appointment-race-stat appointment-race-stat--winner">
@@ -1137,7 +1137,7 @@
               <div>
                 <p class="appointment-race-kicker">Configuração</p>
                 <h2 data-race-settings-title>Configurar corridas</h2>
-                <span data-race-settings-description>Ajuste as metas diárias das duas modalidades.</span>
+                <span data-race-settings-description>Ajuste a meta diária de agendamentos.</span>
               </div>
               <button type="button" class="modal-close-button" data-race-close-settings aria-label="Fechar">×</button>
             </header>
@@ -1146,10 +1146,11 @@
                 <span>Meta diária de agendamentos</span>
                 <input type="number" min="1" step="1" value="10" data-race-target-input data-race-appointment-target-input />
               </label>
-              <label>
-                <span>Meta diária de vendas checadas</span>
-                <input type="number" min="1" step="1" value="5" data-race-closed-target-input />
-              </label>
+              <div class="appointment-race-fixed-target" aria-label="Meta semanal fixa de vendas">
+                <span>Meta semanal de vendas</span>
+                <strong>1 venda</strong>
+                <small>Fixa por vendedor, de segunda a domingo.</small>
+              </div>
             </div>
             <p class="appointment-race-modal-status" data-race-modal-status></p>
             <footer>
