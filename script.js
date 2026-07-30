@@ -19,7 +19,7 @@ const calendarStatConfirmed = document.querySelector("[data-calendar-stat-confir
 const calendarStatStore = document.querySelector("[data-calendar-stat-store]");
 const appointmentRaceTitle = document.querySelector("[data-race-title]");
 const appointmentRaceSubtitle = document.querySelector("[data-race-subtitle]");
-const appointmentRaceModeLabel = document.querySelector("[data-race-mode-label]");
+const appointmentRaceViewButtons = document.querySelectorAll("[data-race-view-mode]");
 const appointmentRaceStatus = document.querySelector("[data-race-status]");
 const appointmentRaceTarget = document.querySelector("[data-race-target]");
 const appointmentRaceTargetUnit = document.querySelector("[data-race-target-unit]");
@@ -40,9 +40,6 @@ const appointmentRaceSettingsForm = document.querySelector("[data-race-settings-
 const appointmentRaceTargetInput = document.querySelector("[data-race-target-input]");
 const appointmentRaceAppointmentTargetInput = document.querySelector("[data-race-appointment-target-input]") || appointmentRaceTargetInput;
 const appointmentRaceClosedTargetInput = document.querySelector("[data-race-closed-target-input]");
-const appointmentRaceModeInputs = document.querySelectorAll("[data-race-mode-input]");
-const appointmentRaceSettingsTitle = document.querySelector("[data-race-settings-title]");
-const appointmentRaceSettingsDescription = document.querySelector("[data-race-settings-description]");
 const appointmentRaceModalStatus = document.querySelector("[data-race-modal-status]");
 const salesModal = document.querySelector("[data-sales-modal]");
 const salesForm = document.querySelector("[data-sales-form]");
@@ -67,7 +64,10 @@ let appointmentRaceLastLeaderId = "";
 let appointmentRaceLastMode = "";
 const appointmentRaceAnimationTimers = new Set();
 let appointmentRaceTimer = null;
+let appointmentRacePollTimer = null;
 let appointmentRaceWinnerSeenKey = sessionStorage.getItem("seven-gold-race-winner-seen") || "";
+let appointmentRaceViewMode = sessionStorage.getItem("seven-gold-race-view-mode") || "appointments";
+let appointmentRaceLoadRequestId = 0;
 const appointmentRaceAvatarCache = new Map();
 const appointmentRaceAvatarPending = new Set();
 let appointmentRaceProfileAvatarPromise = null;
@@ -1430,7 +1430,6 @@ function shouldSeeAllLeads(crmUser) {
   return isAdminRole(crmUser.cargo) || isManagerRole(crmUser.cargo);
 }
 
-const APPOINTMENT_RACE_ORG_ID = "seven_gold";
 const APPOINTMENT_RACE_AVATAR_BUCKET = "company-documents";
 const APPOINTMENT_RACE_MOVE_MS = 900;
 const APPOINTMENT_RACE_GOAL_MS = 2500;
@@ -1454,18 +1453,18 @@ const APPOINTMENT_RACE_MODE_COPY = {
     leaderStatusUnitPlural: "agendamentos",
   },
   closed_clients: {
-    label: "Clientes fechados",
-    title: "Corrida de Clientes Fechados",
-    subtitle: "Quem fecha mais clientes hoje?",
-    targetUnit: "clientes fechados por vendedor",
-    progressUnit: "clientes fechados",
-    pointSingular: "cliente fechado",
-    pointPlural: "clientes fechados",
-    missingSingular: "cliente",
-    missingPlural: "clientes",
-    emptyStatus: "Corrida ativa, aguardando os primeiros clientes fechados de hoje.",
-    leaderStatusUnitSingular: "cliente fechado",
-    leaderStatusUnitPlural: "clientes fechados",
+    label: "Vendas",
+    title: "Corrida de Vendas",
+    subtitle: "Quem realiza mais vendas checadas hoje?",
+    targetUnit: "vendas checadas por vendedor",
+    progressUnit: "vendas",
+    pointSingular: "venda",
+    pointPlural: "vendas",
+    missingSingular: "venda",
+    missingPlural: "vendas",
+    emptyStatus: "Corrida ativa, aguardando as primeiras vendas checadas de hoje.",
+    leaderStatusUnitSingular: "venda",
+    leaderStatusUnitPlural: "vendas",
   },
 };
 const appointmentRaceCarThemes = [
@@ -1480,8 +1479,10 @@ const appointmentRaceCarThemes = [
 const normalizeAppointmentRaceMode = (mode = "") =>
   APPOINTMENT_RACE_MODE_COPY[mode] ? mode : APPOINTMENT_RACE_DEFAULT_MODE;
 
+appointmentRaceViewMode = normalizeAppointmentRaceMode(appointmentRaceViewMode);
+
 const getAppointmentRaceMode = (race = null) =>
-  normalizeAppointmentRaceMode(race?.race_mode || appointmentRaceState?.race?.race_mode || APPOINTMENT_RACE_DEFAULT_MODE);
+  normalizeAppointmentRaceMode(race?.race_mode || appointmentRaceState?.race?.race_mode || appointmentRaceViewMode);
 
 const getAppointmentRaceCopy = (modeOrRace = APPOINTMENT_RACE_DEFAULT_MODE) => {
   const mode = typeof modeOrRace === "string" ? normalizeAppointmentRaceMode(modeOrRace) : getAppointmentRaceMode(modeOrRace);
@@ -1502,14 +1503,16 @@ const getAppointmentRaceSelectedTarget = (race = null) => {
 
 const updateAppointmentRaceStaticText = (modeOrRace = APPOINTMENT_RACE_DEFAULT_MODE) => {
   const copy = getAppointmentRaceCopy(modeOrRace);
+  const mode = typeof modeOrRace === "string" ? normalizeAppointmentRaceMode(modeOrRace) : getAppointmentRaceMode(modeOrRace);
   if (appointmentRaceTitle) appointmentRaceTitle.textContent = copy.title;
   if (appointmentRaceSubtitle) appointmentRaceSubtitle.textContent = copy.subtitle;
-  if (appointmentRaceModeLabel) appointmentRaceModeLabel.textContent = copy.label;
   if (appointmentRaceTargetUnit) appointmentRaceTargetUnit.textContent = copy.targetUnit;
-  if (appointmentRaceSettingsTitle) appointmentRaceSettingsTitle.textContent = copy.title;
-  if (appointmentRaceSettingsDescription) {
-    appointmentRaceSettingsDescription.textContent = "Escolha o tipo e ajuste metas separadas para repetir automaticamente de segunda a sexta-feira.";
-  }
+  appointmentRaceViewButtons.forEach((button) => {
+    const isActive = button.dataset.raceViewMode === mode;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-selected", String(isActive));
+    button.tabIndex = isActive ? 0 : -1;
+  });
   return copy;
 };
 
@@ -1637,6 +1640,10 @@ const cleanupAppointmentRaceAnimations = ({ stopTimer = false, resetSnapshot = f
   if (stopTimer && appointmentRaceTimer) {
     window.clearInterval(appointmentRaceTimer);
     appointmentRaceTimer = null;
+  }
+  if (stopTimer && appointmentRacePollTimer) {
+    window.clearInterval(appointmentRacePollTimer);
+    appointmentRacePollTimer = null;
   }
   if (stopTimer && appointmentRaceRealtimeRefreshTimer) {
     window.clearTimeout(appointmentRaceRealtimeRefreshTimer);
@@ -2280,119 +2287,30 @@ const renderAppointmentRace = () => {
   );
 };
 
-const reconcileAppointmentRaceAppointmentCounts = async (client, state) => {
-  const race = state?.race || null;
-  if (!race || getAppointmentRaceMode(race) !== "appointments") return state;
-
-  const raceDate = String(race.race_date || state?.race_date || "").trim();
-  const participants = Array.isArray(state?.participants) ? state.participants : [];
-  if (!raceDate || !participants.length) return state;
-
-  const rangeStart = new Date(`${raceDate}T03:00:00.000Z`);
-  const rangeEnd = new Date(rangeStart.getTime() + 24 * 60 * 60 * 1000);
-  const baseFields = "lead_id,telefone_cliente,nome_cliente,usuario_id,nome_usuario,status,created_at";
-  let result = await client
-    .from("appointments")
-    .select(`${baseFields},assigned_to_email,assigned_to_name`)
-    .gte("created_at", rangeStart.toISOString())
-    .lt("created_at", rangeEnd.toISOString());
-
-  if (result.error && /assigned_to_(email|name)/i.test(result.error.message || "")) {
-    result = await client
-      .from("appointments")
-      .select(baseFields)
-      .gte("created_at", rangeStart.toISOString())
-      .lt("created_at", rangeEnd.toISOString());
-  }
-  if (result.error) {
-    console.warn("[Corrida] Não foi possível reconciliar os agendamentos do dia:", result.error);
-    return state;
-  }
-
-  const normalizeName = (value = "") => String(value || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toLowerCase();
-  const participantByEmail = new Map();
-  const participantByName = new Map();
-  participants.forEach((participant) => {
-    const email = normalizeAppointmentRaceEmail(participant.email || participant.user_email);
-    const name = normalizeName(participant.name || participant.user_name);
-    if (email) participantByEmail.set(email, participant);
-    if (name && !participantByName.has(name)) participantByName.set(name, participant);
-  });
-
-  const pointsByUser = new Map();
-  (result.data || []).forEach((appointment) => {
-    const status = String(appointment.status || "").trim().toLowerCase();
-    if (["cancelado", "cancelled", "deleted", "excluido"].includes(status)) return;
-
-    const assignedEmail = normalizeAppointmentRaceEmail(appointment.assigned_to_email);
-    const assignedName = normalizeName(appointment.assigned_to_name || appointment.nome_usuario);
-    const participant = participantByEmail.get(assignedEmail) || participantByName.get(assignedName);
-    if (!participant) return;
-
-    const phone = String(appointment.telefone_cliente || "").replace(/\D/g, "");
-    const clientName = normalizeName(appointment.nome_cliente);
-    const clientKey = appointment.lead_id
-      ? `lead:${appointment.lead_id}`
-      : phone
-        ? `phone:${phone}`
-        : clientName
-          ? `name:${clientName}`
-          : "";
-    if (!clientKey) return;
-
-    const userId = String(participant.user_id || participant.id || participant.email || "");
-    if (!userId) return;
-    if (!pointsByUser.has(userId)) pointsByUser.set(userId, new Map());
-    const sellerPoints = pointsByUser.get(userId);
-    const pointAt = String(appointment.created_at || "");
-    const previousPointAt = sellerPoints.get(clientKey);
-    if (!previousPointAt || pointAt < previousPointAt) sellerPoints.set(clientKey, pointAt);
-  });
-
-  const target = getAppointmentRaceSelectedTarget(race);
-  const reconciledParticipants = participants.map((participant) => {
-    const userId = String(participant.user_id || participant.id || participant.email || "");
-    const pointTimes = Array.from(pointsByUser.get(userId)?.values() || []).sort();
-    const count = pointTimes.length;
-    return {
-      ...participant,
-      count,
-      progress: getAppointmentRaceVisualProgress(count, target),
-      missing: Math.max(0, target - count),
-      latest_point_at: pointTimes[count - 1] || null,
-      completion_at: target > 0 && count >= target ? pointTimes[target - 1] || null : null,
-    };
-  }).sort((left, right) => {
-    const countDifference = Number(right.count || 0) - Number(left.count || 0);
-    if (countDifference) return countDifference;
-    const leftTime = left.completion_at || left.latest_point_at || "";
-    const rightTime = right.completion_at || right.latest_point_at || "";
-    if (leftTime && rightTime && leftTime !== rightTime) return leftTime.localeCompare(rightTime);
-    if (leftTime && !rightTime) return -1;
-    if (!leftTime && rightTime) return 1;
-    return String(left.name || "").localeCompare(String(right.name || ""), "pt-BR");
-  });
-
-  return { ...state, participants: reconciledParticipants };
-};
-
 const loadAppointmentRace = async ({ silent = false } = {}) => {
   const client = getClient();
   if (!client) {
     setAppointmentRaceStatus("Supabase não configurado.", "error");
     return;
   }
+  const requestedMode = appointmentRaceViewMode;
+  const requestId = ++appointmentRaceLoadRequestId;
   if (!silent) setAppointmentRaceStatus("Carregando corrida...");
   try {
-    const { data, error } = await client.rpc("finish_appointment_race_if_needed", {
-      p_organization_id: APPOINTMENT_RACE_ORG_ID,
+    const { data: sessionData } = await client.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+    if (!accessToken) throw new Error("Sessão inválida ou expirada.");
+    const response = await fetch(`/api/race?mode=${encodeURIComponent(requestedMode)}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
-    if (error) throw error;
-    appointmentRaceState = await reconcileAppointmentRaceAppointmentCounts(client, data || null);
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || result.ok !== true) {
+      throw new Error(result.error || "Não foi possível carregar a corrida.");
+    }
+    if (requestId !== appointmentRaceLoadRequestId || requestedMode !== appointmentRaceViewMode) return;
+    appointmentRaceState = result.state || null;
     if (isAppointmentRaceViewVisible()) {
       appointmentRaceNeedsRefresh = false;
       renderAppointmentRace();
@@ -2400,10 +2318,11 @@ const loadAppointmentRace = async ({ silent = false } = {}) => {
       appointmentRaceNeedsRefresh = true;
     }
   } catch (error) {
+    if (requestId !== appointmentRaceLoadRequestId || requestedMode !== appointmentRaceViewMode) return;
     console.error("[Corrida] Erro ao carregar:", error);
     appointmentRaceState = null;
     renderAppointmentRace();
-    setAppointmentRaceStatus("Execute as migrações SQL da Corrida no Supabase para ativar esta tela.", "error");
+    setAppointmentRaceStatus(error.message || "Não foi possível carregar a corrida.", "error");
   }
 };
 
@@ -2429,6 +2348,9 @@ const ensureAppointmentRaceRealtime = () => {
     .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, () => {
       scheduleAppointmentRaceRealtimeRefresh();
     })
+    .on("postgres_changes", { event: "*", schema: "public", table: "sales" }, () => {
+      scheduleAppointmentRaceRealtimeRefresh();
+    })
     .on("postgres_changes", { event: "*", schema: "public", table: "appointment_races" }, () => {
       scheduleAppointmentRaceRealtimeRefresh();
     })
@@ -2443,11 +2365,30 @@ const ensureAppointmentRaceRealtime = () => {
 
 const initAppointmentRace = () => {
   appointmentRaceNeedsRefresh = false;
+  updateAppointmentRaceStaticText(appointmentRaceViewMode);
   updateAppointmentRaceTimeLeft();
   if (!appointmentRaceTimer) {
     appointmentRaceTimer = setInterval(updateAppointmentRaceTimeLeft, 60000);
   }
+  if (!appointmentRacePollTimer) {
+    appointmentRacePollTimer = setInterval(() => {
+      if (isAppointmentRaceViewVisible()) loadAppointmentRace({ silent: true });
+    }, 5000);
+  }
   ensureAppointmentRaceRealtime();
+  loadAppointmentRace();
+};
+
+const selectAppointmentRaceView = (mode) => {
+  const nextMode = normalizeAppointmentRaceMode(mode);
+  if (nextMode === appointmentRaceViewMode) return;
+  appointmentRaceViewMode = nextMode;
+  try {
+    sessionStorage.setItem("seven-gold-race-view-mode", nextMode);
+  } catch (_) {}
+  cleanupAppointmentRaceAnimations({ resetSnapshot: true });
+  updateAppointmentRaceStaticText(nextMode);
+  setAppointmentRaceStatus("Carregando corrida...");
   loadAppointmentRace();
 };
 
@@ -2456,12 +2397,8 @@ const openAppointmentRaceSettings = () => {
   const mode = getAppointmentRaceMode(race);
   const appointmentTarget = Number(race?.appointment_target || (mode === "appointments" ? race?.target : 10) || 10);
   const closedClientsTarget = Number(race?.closed_clients_target || (mode === "closed_clients" ? race?.target : 5) || 5);
-  appointmentRaceModeInputs.forEach((input) => {
-    input.checked = input.value === mode;
-  });
   if (appointmentRaceAppointmentTargetInput) appointmentRaceAppointmentTargetInput.value = appointmentTarget;
   if (appointmentRaceClosedTargetInput) appointmentRaceClosedTargetInput.value = closedClientsTarget;
-  updateAppointmentRaceStaticText(mode);
   setAppointmentRaceModalStatus("");
   if (typeof appointmentRaceSettingsModal?.showModal === "function") {
     appointmentRaceSettingsModal.showModal();
@@ -2473,16 +2410,13 @@ const closeAppointmentRaceSettings = () => {
 };
 
 const getAppointmentRaceFormConfig = () => {
-  const selectedMode = Array.from(appointmentRaceModeInputs || []).find((input) => input.checked)?.value || getAppointmentRaceMode();
-  const mode = normalizeAppointmentRaceMode(selectedMode);
+  const mode = normalizeAppointmentRaceMode(appointmentRaceViewMode);
   const appointmentTarget = Number.parseInt(appointmentRaceAppointmentTargetInput?.value || "0", 10);
   const closedClientsTarget = Number.parseInt(appointmentRaceClosedTargetInput?.value || "0", 10);
-  const selectedTarget = mode === "closed_clients" ? closedClientsTarget : appointmentTarget;
   return {
     mode,
     appointmentTarget,
     closedClientsTarget,
-    selectedTarget,
   };
 };
 
@@ -2495,15 +2429,32 @@ const runAppointmentRaceAdminAction = async (action) => {
     return;
   }
   if (!Number.isInteger(config.closedClientsTarget) || config.closedClientsTarget <= 0) {
-    setAppointmentRaceModalStatus("Informe uma meta de clientes fechados maior que zero.", "error");
+    setAppointmentRaceModalStatus("Informe uma meta de vendas checadas maior que zero.", "error");
     return;
   }
   try {
     setAppointmentRaceModalStatus("Salvando...");
-    const { data, error } = await action(client, config);
-    if (error) throw error;
-    appointmentRaceState = data || null;
-    renderAppointmentRace();
+    const { data: sessionData } = await client.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+    if (!accessToken) throw new Error("Sessão inválida ou expirada.");
+    const response = await fetch("/api/race", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        action,
+        mode: config.mode,
+        appointment_target: config.appointmentTarget,
+        sales_target: config.closedClientsTarget,
+      }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || result.ok !== true) {
+      throw new Error(result.error || "Não foi possível salvar.");
+    }
+    await loadAppointmentRace({ silent: true });
     setAppointmentRaceModalStatus("Alteração salva.", "success");
     setTimeout(closeAppointmentRaceSettings, 450);
   } catch (error) {
@@ -6180,44 +6131,22 @@ appointmentRaceSettingsModal?.addEventListener("cancel", (event) => {
   event.preventDefault();
   closeAppointmentRaceSettings();
 });
-appointmentRaceModeInputs.forEach((input) => {
-  input.addEventListener("change", () => {
-    if (!input.checked) return;
-    const copy = getAppointmentRaceCopy(input.value);
-    if (appointmentRaceSettingsTitle) appointmentRaceSettingsTitle.textContent = copy.title;
+appointmentRaceViewButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    selectAppointmentRaceView(button.dataset.raceViewMode);
   });
 });
 appointmentRaceSettingsForm?.addEventListener("submit", (event) => {
   event.preventDefault();
-  runAppointmentRaceAdminAction((client, config) =>
-    client.rpc("upsert_daily_appointment_race", {
-      p_target: config.selectedTarget,
-      p_organization_id: APPOINTMENT_RACE_ORG_ID,
-      p_race_mode: config.mode,
-      p_appointment_target: config.appointmentTarget,
-      p_closed_clients_target: config.closedClientsTarget,
-    })
-  );
+  runAppointmentRaceAdminAction("save_targets");
 });
 document.querySelector("[data-race-restart]")?.addEventListener("click", () => {
   if (!confirm("Reiniciar a corrida de hoje e remover o vencedor atual?")) return;
-  runAppointmentRaceAdminAction((client, config) =>
-    client.rpc("restart_daily_appointment_race", {
-      p_target: config.selectedTarget || null,
-      p_organization_id: APPOINTMENT_RACE_ORG_ID,
-      p_race_mode: config.mode,
-      p_appointment_target: config.appointmentTarget,
-      p_closed_clients_target: config.closedClientsTarget,
-    })
-  );
+  runAppointmentRaceAdminAction("restart");
 });
 document.querySelector("[data-race-cancel]")?.addEventListener("click", () => {
   if (!confirm("Encerrar a corrida de hoje?")) return;
-  runAppointmentRaceAdminAction((client) =>
-    client.rpc("cancel_daily_appointment_race", {
-      p_organization_id: APPOINTMENT_RACE_ORG_ID,
-    })
-  );
+  runAppointmentRaceAdminAction("cancel");
 });
 
 document.querySelector("[data-sales-open-modal]")?.addEventListener("click", () => openSalesModal());

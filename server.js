@@ -23,6 +23,7 @@ loadRoute("/api/leads/update-stage", "./api/leads");
 loadRoute("/api/leads/assignees", "./api/leads");
 loadRoute("/api/appointments/list", "./api/appointments");
 loadRoute("/api/appointments/create", "./api/appointments");
+loadRoute("/api/race", "./api/race");
 loadRoute("/api/tasks/list", "./api/tasks");
 loadRoute("/api/tasks/create", "./api/tasks");
 loadRoute("/api/tasks/update", "./api/tasks");

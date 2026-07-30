@@ -11168,19 +11168,58 @@ body.theme-dark .appointment-race {
   font-weight: 800;
 }
 
-.appointment-race-mode-badge {
+.appointment-race-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  width: min(660px, 100%);
+  min-height: 42px;
+  margin: 0 auto 8px;
+  padding: 4px;
+  border: 1px solid var(--sg-border);
+  border-radius: 8px;
+  background: #FFFFFF;
+  box-shadow: 0 8px 22px rgba(17, 24, 39, 0.06);
+}
+
+.appointment-race-tab {
   display: inline-flex;
   align-items: center;
-  min-height: 24px;
-  margin-top: 7px;
-  padding: 0 10px;
-  border: 1px solid rgba(232, 177, 56, 0.38);
-  border-radius: 999px;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--sg-muted);
+  background: transparent;
+  font-size: 0.76rem;
+  font-weight: 900;
+  transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.appointment-race-tab svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  stroke-width: 2.3;
+}
+
+.appointment-race-tab:hover {
   color: var(--sg-gold-dark);
-  background: #FFF8DC;
-  font-size: 0.68rem;
-  font-weight: 950;
-  line-height: 1;
+  background: #FFF9E8;
+}
+
+.appointment-race-tab.is-active {
+  color: #111111;
+  background: #E8B138;
+  box-shadow: 0 5px 12px rgba(232, 177, 56, 0.24);
+}
+
+.appointment-race-tab:focus-visible {
+  outline: 2px solid var(--sg-gold-dark);
+  outline-offset: 2px;
 }
 
 .appointment-race-config-btn {
@@ -12148,6 +12187,7 @@ body.theme-dark .appointment-race-stat > div > span {
 }
 
 body.theme-dark .appointment-race-hero,
+body.theme-dark .appointment-race-tabs,
 body.theme-dark .appointment-race-stat,
 body.theme-dark .appointment-race-tracks,
 body.theme-dark .appointment-race-ranking,
@@ -12361,6 +12401,15 @@ body.theme-dark .appointment-race-settings-form .ghost-button {
   .appointment-race-actions,
   .appointment-race-config-btn {
     width: 100%;
+  }
+
+  .appointment-race-tabs {
+    width: 100%;
+  }
+
+  .appointment-race-tab {
+    padding: 0 8px;
+    font-size: 0.68rem;
   }
 
   .appointment-race-config-btn {
