@@ -1838,6 +1838,23 @@
               color: #15803D;
             }
 
+            #crm-panel-calculator .crm-commission-simulator-row {
+              justify-content: flex-start;
+              margin: 0;
+            }
+
+            #crm-panel-calculator .crm-commission-simulator-card {
+              width: min(100%, 760px);
+            }
+
+            #crm-panel-calculator .crm-commission-simulator-fields {
+              grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            #crm-panel-calculator #crm-commission-profile-field {
+              grid-column: 1 / -1;
+            }
+
             @media (max-width: 768px) {
               .crm-commission-simulator-row {
                 justify-content: stretch;
@@ -1845,6 +1862,14 @@
 
               .crm-commission-simulator-card {
                 width: 100%;
+              }
+
+              #crm-panel-calculator .crm-commission-simulator-fields {
+                grid-template-columns: 1fr;
+              }
+
+              #crm-panel-calculator #crm-commission-profile-field {
+                grid-column: auto;
               }
             }
 
@@ -1981,6 +2006,10 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 <span>Histórico de pagamentos</span>
               </button>
+              <button type="button" class="crm-seller-tab-btn" data-crm-tab-target="calculator" onclick="switchCommissionSubTab('calculator')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><path d="M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14v4M8 18h.01M12 18h.01"/></svg>
+                <span>Calculadora de comissões</span>
+              </button>
             </nav>
 
             <!-- Panel 1: Minhas comissões -->
@@ -2026,49 +2055,6 @@
                     <strong id="crm-stat-commission-pending" class="crm-seller-summary-number text-green">R$ 0,00</strong>
                     <span class="crm-seller-summary-sub">Disponível para pagamento</span>
                   </div>
-                </article>
-              </section>
-
-              <section class="crm-commission-simulator-row" aria-label="Simulação de comissão">
-                <article class="crm-commission-simulator-card" data-crm-commission-simulator>
-                  <header class="crm-commission-simulator-head">
-                    <span class="crm-commission-simulator-icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
-                    </span>
-                    <div class="crm-commission-simulator-copy">
-                      <h2>Simular comissão</h2>
-                      <p>Informe o crédito e escolha uma tabela.</p>
-                    </div>
-                  </header>
-                  <div class="crm-commission-simulator-fields">
-                    <div class="crm-commission-simulator-field" id="crm-commission-profile-field" hidden>
-                      <label for="crm-commission-profile-select">Simular comissão de</label>
-                      <select id="crm-commission-profile-select" disabled>
-                        <option value="">Carregando cargos e vendedores...</option>
-                      </select>
-                    </div>
-                    <div class="crm-commission-simulator-field">
-                      <label for="crm-commission-credit-input">Valor do crédito</label>
-                      <input type="text" id="crm-commission-credit-input" inputmode="numeric" autocomplete="off" placeholder="R$ 100.000,00" />
-                    </div>
-                    <div class="crm-commission-simulator-field">
-                      <label for="crm-commission-table-select">Tabela de comissão</label>
-                      <select id="crm-commission-table-select" disabled>
-                        <option value="">Carregando tabelas...</option>
-                      </select>
-                    </div>
-                  </div>
-                  <dl class="crm-commission-simulator-results">
-                    <div>
-                      <dt>Percentual aplicado</dt>
-                      <dd id="crm-commission-result-percent">--</dd>
-                    </div>
-                    <div class="is-commission">
-                      <dt>Comissão estimada</dt>
-                      <dd id="crm-commission-result-amount">--</dd>
-                    </div>
-                  </dl>
-                  <p id="crm-commission-simulator-status" class="crm-commission-simulator-status" aria-live="polite">Carregando tabelas...</p>
                 </article>
               </section>
 
@@ -2127,6 +2113,59 @@
                     </tbody>
                   </table>
                 </div>
+              </section>
+            </section>
+
+            <!-- Panel 3: Calculadora de comissões -->
+            <section id="crm-panel-calculator" style="display: none;">
+              <header class="crm-seller-header-row">
+                <div class="crm-seller-title-group">
+                  <h1>Calculadora de comissões</h1>
+                  <p>Simule sua comissão usando os percentuais cadastrados para cada tabela.</p>
+                </div>
+              </header>
+
+              <section class="crm-commission-simulator-row" aria-label="Simulação de comissão">
+                <article class="crm-commission-simulator-card" data-crm-commission-simulator>
+                  <header class="crm-commission-simulator-head">
+                    <span class="crm-commission-simulator-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+                    </span>
+                    <div class="crm-commission-simulator-copy">
+                      <h2>Simular comissão</h2>
+                      <p>Informe o crédito e escolha uma tabela.</p>
+                    </div>
+                  </header>
+                  <div class="crm-commission-simulator-fields">
+                    <div class="crm-commission-simulator-field" id="crm-commission-profile-field" hidden>
+                      <label for="crm-commission-profile-select">Simular comissão de</label>
+                      <select id="crm-commission-profile-select" disabled>
+                        <option value="">Carregando cargos e vendedores...</option>
+                      </select>
+                    </div>
+                    <div class="crm-commission-simulator-field">
+                      <label for="crm-commission-credit-input">Valor do crédito</label>
+                      <input type="text" id="crm-commission-credit-input" inputmode="numeric" autocomplete="off" placeholder="R$ 100.000,00" />
+                    </div>
+                    <div class="crm-commission-simulator-field">
+                      <label for="crm-commission-table-select">Tabela de comissão</label>
+                      <select id="crm-commission-table-select" disabled>
+                        <option value="">Carregando tabelas...</option>
+                      </select>
+                    </div>
+                  </div>
+                  <dl class="crm-commission-simulator-results">
+                    <div>
+                      <dt>Percentual aplicado</dt>
+                      <dd id="crm-commission-result-percent">--</dd>
+                    </div>
+                    <div class="is-commission">
+                      <dt>Comissão estimada</dt>
+                      <dd id="crm-commission-result-amount">--</dd>
+                    </div>
+                  </dl>
+                  <p id="crm-commission-simulator-status" class="crm-commission-simulator-status" aria-live="polite">Carregando tabelas...</p>
+                </article>
               </section>
             </section>
           </main>
