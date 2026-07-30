@@ -17,8 +17,12 @@ const calendarStatus = document.querySelector("[data-calendar-status]");
 const calendarStatTotal = document.querySelector("[data-calendar-stat-total]");
 const calendarStatConfirmed = document.querySelector("[data-calendar-stat-confirmed]");
 const calendarStatStore = document.querySelector("[data-calendar-stat-store]");
+const appointmentRaceTitle = document.querySelector("[data-race-title]");
+const appointmentRaceSubtitle = document.querySelector("[data-race-subtitle]");
+const appointmentRaceModeLabel = document.querySelector("[data-race-mode-label]");
 const appointmentRaceStatus = document.querySelector("[data-race-status]");
 const appointmentRaceTarget = document.querySelector("[data-race-target]");
+const appointmentRaceTargetUnit = document.querySelector("[data-race-target-unit]");
 const appointmentRaceParticipants = document.querySelector("[data-race-participants]");
 const appointmentRaceTimeLeft = document.querySelector("[data-race-time-left]");
 const appointmentRaceWinner = document.querySelector("[data-race-winner]");
@@ -34,6 +38,11 @@ const appointmentRaceFloatingCrown = document.querySelector("[data-race-floating
 const appointmentRaceSettingsModal = document.querySelector("[data-race-settings-modal]");
 const appointmentRaceSettingsForm = document.querySelector("[data-race-settings-form]");
 const appointmentRaceTargetInput = document.querySelector("[data-race-target-input]");
+const appointmentRaceAppointmentTargetInput = document.querySelector("[data-race-appointment-target-input]") || appointmentRaceTargetInput;
+const appointmentRaceClosedTargetInput = document.querySelector("[data-race-closed-target-input]");
+const appointmentRaceModeInputs = document.querySelectorAll("[data-race-mode-input]");
+const appointmentRaceSettingsTitle = document.querySelector("[data-race-settings-title]");
+const appointmentRaceSettingsDescription = document.querySelector("[data-race-settings-description]");
 const appointmentRaceModalStatus = document.querySelector("[data-race-modal-status]");
 const salesModal = document.querySelector("[data-sales-modal]");
 const salesForm = document.querySelector("[data-sales-form]");
@@ -49,10 +58,13 @@ let calendarAppointments = [];
 let appointmentResolution = null;
 let appointmentRaceState = null;
 let appointmentRaceRealtimeChannel = null;
+let appointmentRaceRealtimeRefreshTimer = null;
+let appointmentRaceNeedsRefresh = false;
 let appointmentRaceLastCounts = new Map();
 let appointmentRaceHasCountSnapshot = false;
 let appointmentRaceCurrentRaceKey = "";
 let appointmentRaceLastLeaderId = "";
+let appointmentRaceLastMode = "";
 const appointmentRaceAnimationTimers = new Set();
 let appointmentRaceTimer = null;
 let appointmentRaceWinnerSeenKey = sessionStorage.getItem("seven-gold-race-winner-seen") || "";
@@ -851,15 +863,6 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
   if (submitButton) submitButton.textContent = "Salvar Alteracoes";
   if (deleteBtn) deleteBtn.style.display = "block";
 
-  const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
-  const isCeo = currentCrmUser && ["diretor-ceo", "dono"].includes(normalizeRole(currentCrmUser.cargo));
-  const deleteHistoryLabel = document.getElementById("delete-lead-history-label");
-  const deleteHistoryCheckbox = document.getElementById("delete-lead-history-checkbox");
-  if (deleteHistoryCheckbox) deleteHistoryCheckbox.checked = false;
-  if (deleteHistoryLabel) {
-    deleteHistoryLabel.style.display = isCeo ? "flex" : "none";
-  }
-
   leadForm.dataset.mode = "edit";
   leadForm.dataset.leadId = lead.id;
   leadForm.dataset.originalStatus = lead.status || "lead_recebido";
@@ -1276,16 +1279,10 @@ document.getElementById("delete-lead-modal-btn")?.addEventListener("click", asyn
   const leadId = leadForm?.dataset.leadId;
   if (!leadId) return;
 
-  const deleteHistoryCheckbox = document.getElementById("delete-lead-history-checkbox");
-  const deleteHistory = deleteHistoryCheckbox ? deleteHistoryCheckbox.checked : false;
-
-  let confirmMsg = "Tem certeza que deseja excluir este lead permanentemente?";
-  if (deleteHistory) {
-    confirmMsg = "ATENÇÃO: Isso removerá permanentemente este lead E todo o seu histórico no sistema (mensagens, tarefas, agendamentos, etc). Tem certeza?";
-  }
+  const confirmMsg = "Tem certeza que deseja excluir este lead permanentemente? O histórico e todos os agendamentos vinculados também serão removidos.";
 
   if (confirm(confirmMsg)) {
-    const success = await deleteLead(leadId, deleteHistory);
+    const success = await deleteLead(leadId);
     if (success) {
       modal?.close();
       await loadLeads();
@@ -1436,6 +1433,37 @@ const APPOINTMENT_RACE_GOAL_MS = 2500;
 const APPOINTMENT_RACE_START_POSITION = 6;
 const APPOINTMENT_RACE_FINISH_POSITION = 94;
 const APPOINTMENT_RACE_GOAL_POSITION = 97;
+const APPOINTMENT_RACE_DEFAULT_MODE = "appointments";
+const APPOINTMENT_RACE_MODE_COPY = {
+  appointments: {
+    label: "Agendamentos",
+    title: "Corrida de Agendamentos",
+    subtitle: "Quem chega primeiro à meta de hoje?",
+    targetUnit: "agendamentos por vendedor",
+    progressUnit: "agendamentos",
+    pointSingular: "agendamento",
+    pointPlural: "agendamentos",
+    missingSingular: "agendamento",
+    missingPlural: "agendamentos",
+    emptyStatus: "Corrida ativa, aguardando os primeiros agendamentos de hoje.",
+    leaderStatusUnitSingular: "agendamento",
+    leaderStatusUnitPlural: "agendamentos",
+  },
+  closed_clients: {
+    label: "Clientes fechados",
+    title: "Corrida de Clientes Fechados",
+    subtitle: "Quem fecha mais clientes hoje?",
+    targetUnit: "clientes fechados por vendedor",
+    progressUnit: "clientes fechados",
+    pointSingular: "cliente fechado",
+    pointPlural: "clientes fechados",
+    missingSingular: "cliente",
+    missingPlural: "clientes",
+    emptyStatus: "Corrida ativa, aguardando os primeiros clientes fechados de hoje.",
+    leaderStatusUnitSingular: "cliente fechado",
+    leaderStatusUnitPlural: "clientes fechados",
+  },
+};
 const appointmentRaceCarThemes = [
   { primary: "#D1992C", light: "#F5D874", dark: "#906820", shadow: "rgba(209, 153, 44, 0.28)" },
   { primary: "#2563EB", light: "#60A5FA", dark: "#1D4ED8", shadow: "rgba(37, 99, 235, 0.24)" },
@@ -1444,6 +1472,42 @@ const appointmentRaceCarThemes = [
   { primary: "#F59E0B", light: "#FDE68A", dark: "#B45309", shadow: "rgba(245, 158, 11, 0.24)" },
   { primary: "#0F766E", light: "#5EEAD4", dark: "#115E59", shadow: "rgba(15, 118, 110, 0.22)" },
 ];
+
+const normalizeAppointmentRaceMode = (mode = "") =>
+  APPOINTMENT_RACE_MODE_COPY[mode] ? mode : APPOINTMENT_RACE_DEFAULT_MODE;
+
+const getAppointmentRaceMode = (race = null) =>
+  normalizeAppointmentRaceMode(race?.race_mode || appointmentRaceState?.race?.race_mode || APPOINTMENT_RACE_DEFAULT_MODE);
+
+const getAppointmentRaceCopy = (modeOrRace = APPOINTMENT_RACE_DEFAULT_MODE) => {
+  const mode = typeof modeOrRace === "string" ? normalizeAppointmentRaceMode(modeOrRace) : getAppointmentRaceMode(modeOrRace);
+  return APPOINTMENT_RACE_MODE_COPY[mode] || APPOINTMENT_RACE_MODE_COPY[APPOINTMENT_RACE_DEFAULT_MODE];
+};
+
+const formatAppointmentRaceMetric = (count = 0, singular = "", plural = "") => {
+  const safeCount = Number(count || 0);
+  return `${safeCount} ${safeCount === 1 ? singular : plural}`;
+};
+
+const getAppointmentRaceSelectedTarget = (race = null) => {
+  const mode = getAppointmentRaceMode(race);
+  const fallback = mode === "closed_clients" ? 5 : 10;
+  const modeTarget = mode === "closed_clients" ? race?.closed_clients_target : race?.appointment_target;
+  return Number(modeTarget || race?.selected_target || race?.target || fallback);
+};
+
+const updateAppointmentRaceStaticText = (modeOrRace = APPOINTMENT_RACE_DEFAULT_MODE) => {
+  const copy = getAppointmentRaceCopy(modeOrRace);
+  if (appointmentRaceTitle) appointmentRaceTitle.textContent = copy.title;
+  if (appointmentRaceSubtitle) appointmentRaceSubtitle.textContent = copy.subtitle;
+  if (appointmentRaceModeLabel) appointmentRaceModeLabel.textContent = copy.label;
+  if (appointmentRaceTargetUnit) appointmentRaceTargetUnit.textContent = copy.targetUnit;
+  if (appointmentRaceSettingsTitle) appointmentRaceSettingsTitle.textContent = copy.title;
+  if (appointmentRaceSettingsDescription) {
+    appointmentRaceSettingsDescription.textContent = "Escolha o tipo e ajuste metas separadas para repetir automaticamente de segunda a sexta-feira.";
+  }
+  return copy;
+};
 
 const getAppointmentRaceUser = () => window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
 
@@ -1498,15 +1562,51 @@ const prefersReducedAppointmentRaceMotion = () => {
   }
 };
 
-const getAppointmentRaceKey = (race = null) =>
-  String(race?.id || race?.race_date || appointmentRaceState?.race_date || "").trim();
+const getAppointmentRaceKey = (race = null) => {
+  const baseKey = String(race?.id || race?.race_date || appointmentRaceState?.race_date || "").trim();
+  return baseKey ? `${baseKey}:${getAppointmentRaceMode(race)}` : "";
+};
+
+const getAppointmentRaceSnapshotStorageKey = (race = null) => {
+  const raceKey = getAppointmentRaceKey(race);
+  return raceKey ? `seven-gold-race-counts:${raceKey}` : "";
+};
+
+const loadAppointmentRaceCountSnapshot = (race = null) => {
+  const storageKey = getAppointmentRaceSnapshotStorageKey(race);
+  if (!storageKey) return new Map();
+  try {
+    const parsed = JSON.parse(localStorage.getItem(storageKey) || "{}");
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return new Map();
+    return new Map(
+      Object.entries(parsed)
+        .filter(([userId, count]) => userId && Number.isFinite(Number(count)))
+        .map(([userId, count]) => [String(userId), Number(count)])
+    );
+  } catch (_) {
+    return new Map();
+  }
+};
+
+const saveAppointmentRaceCountSnapshot = (race, counts) => {
+  const storageKey = getAppointmentRaceSnapshotStorageKey(race);
+  if (!storageKey) return;
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(Object.fromEntries(counts)));
+  } catch (_) {}
+};
+
+const isAppointmentRaceViewVisible = () => {
+  const activeTab = window.location.hash.replace("#", "") || "pipeline";
+  return activeTab === "corrida" && !document.hidden;
+};
 
 const resetAppointmentRaceSnapshotIfNeeded = (race = null) => {
   const raceKey = getAppointmentRaceKey(race);
   if (!raceKey || raceKey === appointmentRaceCurrentRaceKey) return;
   appointmentRaceCurrentRaceKey = raceKey;
-  appointmentRaceLastCounts = new Map();
-  appointmentRaceHasCountSnapshot = false;
+  appointmentRaceLastCounts = loadAppointmentRaceCountSnapshot(race);
+  appointmentRaceHasCountSnapshot = true;
   appointmentRaceLastLeaderId = "";
 };
 
@@ -1534,11 +1634,16 @@ const cleanupAppointmentRaceAnimations = ({ stopTimer = false, resetSnapshot = f
     window.clearInterval(appointmentRaceTimer);
     appointmentRaceTimer = null;
   }
+  if (stopTimer && appointmentRaceRealtimeRefreshTimer) {
+    window.clearTimeout(appointmentRaceRealtimeRefreshTimer);
+    appointmentRaceRealtimeRefreshTimer = null;
+  }
   if (resetSnapshot) {
     appointmentRaceCurrentRaceKey = "";
     appointmentRaceLastCounts = new Map();
     appointmentRaceHasCountSnapshot = false;
     appointmentRaceLastLeaderId = "";
+    appointmentRaceLastMode = "";
   }
 };
 
@@ -1556,21 +1661,22 @@ const getAppointmentRaceCarPosition = (count = 0, target = 0) => {
   return APPOINTMENT_RACE_START_POSITION + ((APPOINTMENT_RACE_FINISH_POSITION - APPOINTMENT_RACE_START_POSITION) * progress) / 100;
 };
 
-const getAppointmentRaceCountView = (count = 0, target = 0) => {
+const getAppointmentRaceCountView = (count = 0, target = 0, modeOrRace = APPOINTMENT_RACE_DEFAULT_MODE) => {
+  const copy = getAppointmentRaceCopy(modeOrRace);
   const safeCount = Number(count || 0);
   const safeTarget = Number(target || 0);
   const progress = getAppointmentRaceVisualProgress(safeCount, safeTarget);
   const missing = Math.max(0, safeTarget - safeCount);
   return {
     progress,
-    progressLabel: safeTarget ? `${safeCount}/${safeTarget}` : `${safeCount}`,
-    missingLabel: missing > 0 ? `Faltam ${missing} para a meta` : "Meta atingida",
+    progressLabel: safeTarget ? `${safeCount}/${safeTarget} ${copy.progressUnit}` : `${safeCount} ${copy.progressUnit}`,
+    missingLabel: missing > 0 ? `Faltam ${missing} ${missing === 1 ? copy.missingSingular : copy.missingPlural} para a meta` : "Meta atingida",
     percentLabel: `${Math.round(progress)}%`,
   };
 };
 
-const updateAppointmentRaceCountNodes = (userId, count, target) => {
-  const view = getAppointmentRaceCountView(count, target);
+const updateAppointmentRaceCountNodes = (userId, count, target, modeOrRace = appointmentRaceState?.race || APPOINTMENT_RACE_DEFAULT_MODE) => {
+  const view = getAppointmentRaceCountView(count, target, modeOrRace);
   appointmentRaceTrackList?.querySelectorAll(".appointment-race-track").forEach((track) => {
     if (String(track.dataset.raceUserId || "") !== String(userId)) return;
     if (Number(track.dataset.raceTargetCount || count) !== Number(count || 0)) return;
@@ -1675,7 +1781,7 @@ const positionAppointmentRaceCrown = (userId, { position = null, large = false, 
   }
 };
 
-const animateAppointmentRaceAdvance = ({ userId, count, target, finalProgress, finalPosition, isLeader }) => {
+const animateAppointmentRaceAdvance = ({ userId, count, target, finalProgress, finalPosition, isLeader, mode }) => {
   if (prefersReducedAppointmentRaceMotion()) {
     const track = findAppointmentRaceTrack(userId);
     if (track) {
@@ -1683,7 +1789,7 @@ const animateAppointmentRaceAdvance = ({ userId, count, target, finalProgress, f
       track.style.setProperty("--race-car-left", `${finalPosition}%`);
       track.dataset.raceCarLeft = String(finalPosition);
     }
-    updateAppointmentRaceCountNodes(userId, count, target);
+    updateAppointmentRaceCountNodes(userId, count, target, mode);
     if (isLeader) positionAppointmentRaceCrown(userId, { position: finalPosition });
     return;
   }
@@ -1698,7 +1804,7 @@ const animateAppointmentRaceAdvance = ({ userId, count, target, finalProgress, f
       track.style.setProperty("--race-car-left", `${finalPosition}%`);
       track.dataset.raceCarLeft = String(finalPosition);
       if (isLeader) positionAppointmentRaceCrown(userId, { position: finalPosition });
-      setAppointmentRaceAnimationTimer(() => updateAppointmentRaceCountNodes(userId, count, target), Math.round(APPOINTMENT_RACE_MOVE_MS * 0.35));
+      setAppointmentRaceAnimationTimer(() => updateAppointmentRaceCountNodes(userId, count, target, mode), Math.round(APPOINTMENT_RACE_MOVE_MS * 0.35));
       setAppointmentRaceAnimationTimer(() => track.classList.remove("is-advancing"), APPOINTMENT_RACE_MOVE_MS + 80);
     });
   });
@@ -1730,8 +1836,9 @@ const createAppointmentRaceConfetti = (userId, carPosition) => {
   setAppointmentRaceAnimationTimer(() => burst.remove(), 1500);
 };
 
-const showAppointmentRaceGoalToast = (seller, count) => {
+const showAppointmentRaceGoalToast = (seller, count, modeOrRace = appointmentRaceState?.race || APPOINTMENT_RACE_DEFAULT_MODE) => {
   if (!appointmentRaceTrackList) return;
+  const copy = getAppointmentRaceCopy(modeOrRace);
   document.querySelectorAll(".appointment-race-goal-toast").forEach((node) => node.remove());
   const toast = document.createElement("section");
   toast.className = "appointment-race-goal-toast";
@@ -1739,8 +1846,8 @@ const showAppointmentRaceGoalToast = (seller, count) => {
   toast.innerHTML = `
     ${renderAppointmentRaceAvatar(seller, "appointment-race-goal-photo")}
     <span>
-      <strong>🏆 META BATIDA!</strong>
-      <small>${escapeHtml(seller.name || "Vendedor")} alcançou ${Number(count || 0)} agendamentos</small>
+      <strong>META BATIDA!</strong>
+      <small>${escapeHtml(seller.name || "Vendedor")} alcançou ${escapeHtml(formatAppointmentRaceMetric(count, copy.pointSingular, copy.pointPlural))}</small>
     </span>
   `;
   appointmentRaceTrackList.closest(".appointment-race-tracks")?.append(toast);
@@ -1748,7 +1855,7 @@ const showAppointmentRaceGoalToast = (seller, count) => {
   setAppointmentRaceAnimationTimer(() => toast.remove(), APPOINTMENT_RACE_GOAL_MS);
 };
 
-const triggerAppointmentRaceGoalCelebration = ({ seller, userId, count, finalPosition }) => {
+const triggerAppointmentRaceGoalCelebration = ({ seller, userId, count, finalPosition, mode }) => {
   if (prefersReducedAppointmentRaceMotion()) return;
   setAppointmentRaceAnimationTimer(() => {
     const track = findAppointmentRaceTrack(userId);
@@ -1758,7 +1865,7 @@ const triggerAppointmentRaceGoalCelebration = ({ seller, userId, count, finalPos
     rankingItem?.classList.add("is-goal-celebrating");
     positionAppointmentRaceCrown(userId, { position: finalPosition, large: true });
     createAppointmentRaceConfetti(userId, finalPosition);
-    showAppointmentRaceGoalToast(seller, count);
+    showAppointmentRaceGoalToast(seller, count, mode);
     setAppointmentRaceAnimationTimer(() => {
       track?.classList.remove("is-goal-celebrating");
       rankingItem?.classList.remove("is-goal-celebrating");
@@ -1886,7 +1993,7 @@ const loadAppointmentRaceProfileAvatars = () => {
     });
   })().catch((error) => {
     appointmentRaceProfileAvatarPromise = null;
-    console.warn("[Corrida de Agendamentos] Não foi possível carregar fotos das contas:", error);
+    console.warn("[Corrida] Não foi possível carregar fotos das contas:", error);
   });
 
   return appointmentRaceProfileAvatarPromise;
@@ -1940,6 +2047,8 @@ const updateAppointmentRaceTimeLeft = () => {
 
 const renderAppointmentRace = () => {
   const race = appointmentRaceState?.race || null;
+  const mode = getAppointmentRaceMode(race);
+  const copy = updateAppointmentRaceStaticText(race || mode);
   const participants = getAppointmentRaceVisibleParticipants(
     Array.isArray(appointmentRaceState?.participants) ? appointmentRaceState.participants : []
   );
@@ -1972,13 +2081,14 @@ const renderAppointmentRace = () => {
   }
 
   resetAppointmentRaceSnapshotIfNeeded(race);
-  const target = Number(race.target || 0);
+  appointmentRaceLastMode = mode;
+  const target = getAppointmentRaceSelectedTarget(race);
   const winnerId = race.winner_user_id ? String(race.winner_user_id) : "";
   const winner = participants.find((item) => String(item.user_id) === winnerId);
   const leader = winner || participants[0] || null;
   const leaderId = leader ? String(leader.user_id || leader.id || leader.email || leader.name || "") : "";
   const leaderChanged = Boolean(appointmentRaceHasCountSnapshot && appointmentRaceLastLeaderId && leaderId && leaderId !== appointmentRaceLastLeaderId);
-  const winnerKey = winnerId && race.won_at ? `${race.id}:${winnerId}:${race.won_at}` : "";
+  const winnerKey = winnerId && race.won_at ? `${race.id}:${mode}:${winnerId}:${race.won_at}` : "";
 
   if (appointmentRaceTarget) appointmentRaceTarget.textContent = target || "--";
   if (appointmentRaceParticipants) appointmentRaceParticipants.textContent = participants.length;
@@ -1986,7 +2096,7 @@ const renderAppointmentRace = () => {
   if (appointmentRaceWinnerTime) {
     const leaderCount = Number(leader?.count || 0);
     appointmentRaceWinnerTime.textContent = leader
-      ? `${leaderCount} agendamento${leaderCount === 1 ? "" : "s"}`
+      ? formatAppointmentRaceMetric(leaderCount, copy.leaderStatusUnitSingular, copy.leaderStatusUnitPlural)
       : "em andamento";
   }
   if (appointmentRaceFinishMarker) appointmentRaceFinishMarker.hidden = participants.length === 0;
@@ -2039,12 +2149,12 @@ const renderAppointmentRace = () => {
       const count = Number(seller.count || 0);
       const previousCountValue = appointmentRaceLastCounts.get(userId);
       const hasPreviousCount = appointmentRaceHasCountSnapshot && previousCountValue !== undefined;
-      const previousCount = hasPreviousCount ? Number(previousCountValue || 0) : count;
-      const bumped = hasPreviousCount && count > previousCount;
+      const previousCount = hasPreviousCount ? Number(previousCountValue || 0) : (appointmentRaceHasCountSnapshot ? 0 : count);
+      const bumped = appointmentRaceHasCountSnapshot && count > previousCount;
       const shouldAnimateAdvance = bumped && !motionReduced;
       const initialCount = shouldAnimateAdvance ? previousCount : count;
-      const initialView = getAppointmentRaceCountView(initialCount, target);
-      const finalView = getAppointmentRaceCountView(count, target);
+      const initialView = getAppointmentRaceCountView(initialCount, target, mode);
+      const finalView = getAppointmentRaceCountView(count, target, mode);
       const initialPosition = shouldAnimateAdvance ? getAppointmentRaceCarPosition(previousCount, target) : getAppointmentRaceCarPosition(count, target);
       const finalPosition = getAppointmentRaceCarPosition(count, target);
       const reachedGoalNow = target > 0 && bumped && previousCount < target && count >= target;
@@ -2054,10 +2164,10 @@ const renderAppointmentRace = () => {
       if (shouldCelebrateGoal) {
         markAppointmentRaceGoalCelebrated(race, userId);
         celebratedGoalUsers.add(userId);
-        goalEvents.push({ seller, userId, count, finalPosition });
+        goalEvents.push({ seller, userId, count, finalPosition, mode });
       }
       if (shouldAnimateAdvance) {
-        advanceEvents.push({ userId, count, target, finalProgress: finalView.progress, finalPosition, initialPosition });
+        advanceEvents.push({ userId, count, target, finalProgress: finalView.progress, finalPosition, initialPosition, mode });
       }
 
       const track = document.createElement("article");
@@ -2115,10 +2225,10 @@ const renderAppointmentRace = () => {
       const count = Number(seller.count || 0);
       const previousCountValue = appointmentRaceLastCounts.get(userId);
       const hasPreviousCount = appointmentRaceHasCountSnapshot && previousCountValue !== undefined;
-      const previousCount = hasPreviousCount ? Number(previousCountValue || 0) : count;
-      const shouldAnimateAdvance = hasPreviousCount && count > previousCount && !motionReduced;
+      const previousCount = hasPreviousCount ? Number(previousCountValue || 0) : (appointmentRaceHasCountSnapshot ? 0 : count);
+      const shouldAnimateAdvance = appointmentRaceHasCountSnapshot && count > previousCount && !motionReduced;
       const visibleCount = shouldAnimateAdvance ? previousCount : count;
-      const view = getAppointmentRaceCountView(visibleCount, target);
+      const view = getAppointmentRaceCountView(visibleCount, target, mode);
       const item = document.createElement("div");
       item.className = `appointment-race-ranking-item${index === 0 ? " is-leader" : ""}${winnerId && String(seller.user_id) === winnerId ? " is-winner" : ""}${goalEvents.some((event) => event.userId === userId) ? " is-goal-celebrating" : ""}`;
       item.dataset.raceUserId = userId;
@@ -2153,6 +2263,7 @@ const renderAppointmentRace = () => {
   appointmentRaceLastCounts = nextCountSnapshot;
   appointmentRaceHasCountSnapshot = true;
   appointmentRaceLastLeaderId = leaderId;
+  saveAppointmentRaceCountSnapshot(race, nextCountSnapshot);
 
   hydrateAppointmentRaceAvatars(participants);
 
@@ -2165,10 +2276,110 @@ const renderAppointmentRace = () => {
         ? "Corrida encerrada para hoje."
         : leader && leaderCount > 0
           ? leaderMissing > 0
-            ? `Corrida em andamento - faltam ${leaderMissing} agendamento${leaderMissing === 1 ? "" : "s"} para o líder alcançar a meta.`
+            ? `Corrida em andamento - faltam ${leaderMissing} ${leaderMissing === 1 ? copy.missingSingular : copy.missingPlural} para o líder alcançar a meta.`
             : `${leader.name || "O líder"} já alcançou a meta diária.`
-          : "Corrida ativa, aguardando os primeiros agendamentos de hoje."
+          : copy.emptyStatus
   );
+};
+
+const reconcileAppointmentRaceAppointmentCounts = async (client, state) => {
+  const race = state?.race || null;
+  if (!race || getAppointmentRaceMode(race) !== "appointments") return state;
+
+  const raceDate = String(race.race_date || state?.race_date || "").trim();
+  const participants = Array.isArray(state?.participants) ? state.participants : [];
+  if (!raceDate || !participants.length) return state;
+
+  const rangeStart = new Date(`${raceDate}T03:00:00.000Z`);
+  const rangeEnd = new Date(rangeStart.getTime() + 24 * 60 * 60 * 1000);
+  const baseFields = "lead_id,telefone_cliente,nome_cliente,usuario_id,nome_usuario,status,created_at";
+  let result = await client
+    .from("appointments")
+    .select(`${baseFields},assigned_to_email,assigned_to_name`)
+    .gte("created_at", rangeStart.toISOString())
+    .lt("created_at", rangeEnd.toISOString());
+
+  if (result.error && /assigned_to_(email|name)/i.test(result.error.message || "")) {
+    result = await client
+      .from("appointments")
+      .select(baseFields)
+      .gte("created_at", rangeStart.toISOString())
+      .lt("created_at", rangeEnd.toISOString());
+  }
+  if (result.error) {
+    console.warn("[Corrida] Não foi possível reconciliar os agendamentos do dia:", result.error);
+    return state;
+  }
+
+  const normalizeName = (value = "") => String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+  const participantByEmail = new Map();
+  const participantByName = new Map();
+  participants.forEach((participant) => {
+    const email = normalizeAppointmentRaceEmail(participant.email || participant.user_email);
+    const name = normalizeName(participant.name || participant.user_name);
+    if (email) participantByEmail.set(email, participant);
+    if (name && !participantByName.has(name)) participantByName.set(name, participant);
+  });
+
+  const pointsByUser = new Map();
+  (result.data || []).forEach((appointment) => {
+    const status = String(appointment.status || "").trim().toLowerCase();
+    if (["cancelado", "cancelled", "deleted", "excluido"].includes(status)) return;
+
+    const assignedEmail = normalizeAppointmentRaceEmail(appointment.assigned_to_email);
+    const assignedName = normalizeName(appointment.assigned_to_name || appointment.nome_usuario);
+    const participant = participantByEmail.get(assignedEmail) || participantByName.get(assignedName);
+    if (!participant) return;
+
+    const phone = String(appointment.telefone_cliente || "").replace(/\D/g, "");
+    const clientName = normalizeName(appointment.nome_cliente);
+    const clientKey = appointment.lead_id
+      ? `lead:${appointment.lead_id}`
+      : phone
+        ? `phone:${phone}`
+        : clientName
+          ? `name:${clientName}`
+          : "";
+    if (!clientKey) return;
+
+    const userId = String(participant.user_id || participant.id || participant.email || "");
+    if (!userId) return;
+    if (!pointsByUser.has(userId)) pointsByUser.set(userId, new Map());
+    const sellerPoints = pointsByUser.get(userId);
+    const pointAt = String(appointment.created_at || "");
+    const previousPointAt = sellerPoints.get(clientKey);
+    if (!previousPointAt || pointAt < previousPointAt) sellerPoints.set(clientKey, pointAt);
+  });
+
+  const target = getAppointmentRaceSelectedTarget(race);
+  const reconciledParticipants = participants.map((participant) => {
+    const userId = String(participant.user_id || participant.id || participant.email || "");
+    const pointTimes = Array.from(pointsByUser.get(userId)?.values() || []).sort();
+    const count = pointTimes.length;
+    return {
+      ...participant,
+      count,
+      progress: getAppointmentRaceVisualProgress(count, target),
+      missing: Math.max(0, target - count),
+      latest_point_at: pointTimes[count - 1] || null,
+      completion_at: target > 0 && count >= target ? pointTimes[target - 1] || null : null,
+    };
+  }).sort((left, right) => {
+    const countDifference = Number(right.count || 0) - Number(left.count || 0);
+    if (countDifference) return countDifference;
+    const leftTime = left.completion_at || left.latest_point_at || "";
+    const rightTime = right.completion_at || right.latest_point_at || "";
+    if (leftTime && rightTime && leftTime !== rightTime) return leftTime.localeCompare(rightTime);
+    if (leftTime && !rightTime) return -1;
+    if (!leftTime && rightTime) return 1;
+    return String(left.name || "").localeCompare(String(right.name || ""), "pt-BR");
+  });
+
+  return { ...state, participants: reconciledParticipants };
 };
 
 const loadAppointmentRace = async ({ silent = false } = {}) => {
@@ -2183,14 +2394,33 @@ const loadAppointmentRace = async ({ silent = false } = {}) => {
       p_organization_id: APPOINTMENT_RACE_ORG_ID,
     });
     if (error) throw error;
-    appointmentRaceState = data || null;
-    renderAppointmentRace();
+    appointmentRaceState = await reconcileAppointmentRaceAppointmentCounts(client, data || null);
+    if (isAppointmentRaceViewVisible()) {
+      appointmentRaceNeedsRefresh = false;
+      renderAppointmentRace();
+    } else {
+      appointmentRaceNeedsRefresh = true;
+    }
   } catch (error) {
-    console.error("[Corrida de Agendamentos] Erro ao carregar:", error);
+    console.error("[Corrida] Erro ao carregar:", error);
     appointmentRaceState = null;
     renderAppointmentRace();
-    setAppointmentRaceStatus("Execute o SQL da Corrida de Agendamentos no Supabase para ativar esta tela.", "error");
+    setAppointmentRaceStatus("Execute as migrações SQL da Corrida no Supabase para ativar esta tela.", "error");
   }
+};
+
+const scheduleAppointmentRaceRealtimeRefresh = () => {
+  if (!isAppointmentRaceViewVisible()) {
+    appointmentRaceNeedsRefresh = true;
+    return;
+  }
+  if (appointmentRaceRealtimeRefreshTimer) {
+    window.clearTimeout(appointmentRaceRealtimeRefreshTimer);
+  }
+  appointmentRaceRealtimeRefreshTimer = window.setTimeout(() => {
+    appointmentRaceRealtimeRefreshTimer = null;
+    loadAppointmentRace({ silent: true });
+  }, 120);
 };
 
 const ensureAppointmentRaceRealtime = () => {
@@ -2199,10 +2429,10 @@ const ensureAppointmentRaceRealtime = () => {
   appointmentRaceRealtimeChannel = client
     .channel("appointment-race-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, () => {
-      loadAppointmentRace({ silent: true });
+      scheduleAppointmentRaceRealtimeRefresh();
     })
     .on("postgres_changes", { event: "*", schema: "public", table: "appointment_races" }, () => {
-      loadAppointmentRace({ silent: true });
+      scheduleAppointmentRaceRealtimeRefresh();
     })
     .subscribe((status) => {
       if (status === "SUBSCRIBED") {
@@ -2214,6 +2444,7 @@ const ensureAppointmentRaceRealtime = () => {
 };
 
 const initAppointmentRace = () => {
+  appointmentRaceNeedsRefresh = false;
   updateAppointmentRaceTimeLeft();
   if (!appointmentRaceTimer) {
     appointmentRaceTimer = setInterval(updateAppointmentRaceTimeLeft, 60000);
@@ -2224,7 +2455,15 @@ const initAppointmentRace = () => {
 
 const openAppointmentRaceSettings = () => {
   const race = appointmentRaceState?.race || null;
-  if (appointmentRaceTargetInput) appointmentRaceTargetInput.value = race?.target || 10;
+  const mode = getAppointmentRaceMode(race);
+  const appointmentTarget = Number(race?.appointment_target || (mode === "appointments" ? race?.target : 10) || 10);
+  const closedClientsTarget = Number(race?.closed_clients_target || (mode === "closed_clients" ? race?.target : 5) || 5);
+  appointmentRaceModeInputs.forEach((input) => {
+    input.checked = input.value === mode;
+  });
+  if (appointmentRaceAppointmentTargetInput) appointmentRaceAppointmentTargetInput.value = appointmentTarget;
+  if (appointmentRaceClosedTargetInput) appointmentRaceClosedTargetInput.value = closedClientsTarget;
+  updateAppointmentRaceStaticText(mode);
   setAppointmentRaceModalStatus("");
   if (typeof appointmentRaceSettingsModal?.showModal === "function") {
     appointmentRaceSettingsModal.showModal();
@@ -2235,20 +2474,42 @@ const closeAppointmentRaceSettings = () => {
   appointmentRaceSettingsModal?.close();
 };
 
+const getAppointmentRaceFormConfig = () => {
+  const selectedMode = Array.from(appointmentRaceModeInputs || []).find((input) => input.checked)?.value || getAppointmentRaceMode();
+  const mode = normalizeAppointmentRaceMode(selectedMode);
+  const appointmentTarget = Number.parseInt(appointmentRaceAppointmentTargetInput?.value || "0", 10);
+  const closedClientsTarget = Number.parseInt(appointmentRaceClosedTargetInput?.value || "0", 10);
+  const selectedTarget = mode === "closed_clients" ? closedClientsTarget : appointmentTarget;
+  return {
+    mode,
+    appointmentTarget,
+    closedClientsTarget,
+    selectedTarget,
+  };
+};
+
 const runAppointmentRaceAdminAction = async (action) => {
   const client = getClient();
   if (!client) return;
-  const target = Number(appointmentRaceTargetInput?.value || 0);
+  const config = getAppointmentRaceFormConfig();
+  if (!Number.isInteger(config.appointmentTarget) || config.appointmentTarget <= 0) {
+    setAppointmentRaceModalStatus("Informe uma meta de agendamentos maior que zero.", "error");
+    return;
+  }
+  if (!Number.isInteger(config.closedClientsTarget) || config.closedClientsTarget <= 0) {
+    setAppointmentRaceModalStatus("Informe uma meta de clientes fechados maior que zero.", "error");
+    return;
+  }
   try {
     setAppointmentRaceModalStatus("Salvando...");
-    const { data, error } = await action(client, target);
+    const { data, error } = await action(client, config);
     if (error) throw error;
     appointmentRaceState = data || null;
     renderAppointmentRace();
     setAppointmentRaceModalStatus("Alteração salva.", "success");
     setTimeout(closeAppointmentRaceSettings, 450);
   } catch (error) {
-    console.error("[Corrida de Agendamentos] Erro na ação admin:", error);
+    console.error("[Corrida] Erro na ação admin:", error);
     setAppointmentRaceModalStatus(error.message || "Não foi possível salvar.", "error");
   }
 };
@@ -5919,21 +6180,34 @@ appointmentRaceSettingsModal?.addEventListener("cancel", (event) => {
   event.preventDefault();
   closeAppointmentRaceSettings();
 });
+appointmentRaceModeInputs.forEach((input) => {
+  input.addEventListener("change", () => {
+    if (!input.checked) return;
+    const copy = getAppointmentRaceCopy(input.value);
+    if (appointmentRaceSettingsTitle) appointmentRaceSettingsTitle.textContent = copy.title;
+  });
+});
 appointmentRaceSettingsForm?.addEventListener("submit", (event) => {
   event.preventDefault();
-  runAppointmentRaceAdminAction((client, target) =>
+  runAppointmentRaceAdminAction((client, config) =>
     client.rpc("upsert_daily_appointment_race", {
-      p_target: target,
+      p_target: config.selectedTarget,
       p_organization_id: APPOINTMENT_RACE_ORG_ID,
+      p_race_mode: config.mode,
+      p_appointment_target: config.appointmentTarget,
+      p_closed_clients_target: config.closedClientsTarget,
     })
   );
 });
 document.querySelector("[data-race-restart]")?.addEventListener("click", () => {
   if (!confirm("Reiniciar a corrida de hoje e remover o vencedor atual?")) return;
-  runAppointmentRaceAdminAction((client, target) =>
+  runAppointmentRaceAdminAction((client, config) =>
     client.rpc("restart_daily_appointment_race", {
-      p_target: target || null,
+      p_target: config.selectedTarget || null,
       p_organization_id: APPOINTMENT_RACE_ORG_ID,
+      p_race_mode: config.mode,
+      p_appointment_target: config.appointmentTarget,
+      p_closed_clients_target: config.closedClientsTarget,
     })
   );
 });
@@ -6083,7 +6357,7 @@ const formatDisplayPhone = (phoneStr) => {
   return phoneStr;
 };
 
-const deleteLead = async (leadId, deleteHistory = false) => {
+const deleteLead = async (leadId) => {
   if (!leadId) {
     return false;
   }
@@ -6096,7 +6370,7 @@ const deleteLead = async (leadId, deleteHistory = false) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sessionData?.session?.access_token}`,
       },
-      body: JSON.stringify({ id: leadId, delete_history: deleteHistory }),
+      body: JSON.stringify({ id: leadId }),
     });
 
     const result = await response.json();
@@ -7833,7 +8107,7 @@ const setupBulkActions = () => {
 
     if (leadIds.length === 0) return;
 
-    if (confirm(`Tem certeza que deseja excluir permanentemente os ${leadIds.length} leads selecionados?`)) {
+    if (confirm(`Tem certeza que deseja excluir permanentemente os ${leadIds.length} leads selecionados? Os históricos e todos os agendamentos vinculados também serão removidos.`)) {
       const client = getClient();
       if (!client) return;
 
@@ -8090,8 +8364,8 @@ const loadCrmSellerCommissions = async () => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td class="client-cell">${sale.client_name || sale.cliente || "Cliente"}</td>
-          <td>${formatCurrency(creditVal)}</td>
-          <td>${formatCurrency(commVal)}</td>
+          <td>${formatSalesCurrency(creditVal)}</td>
+          <td>${formatSalesCurrency(commVal)}</td>
           <td>
             <span class="crm-status-pill ${isPaid ? "pago" : "a-receber"}">
               • ${isPaid ? "Pago" : "A receber"}
@@ -8107,78 +8381,208 @@ const loadCrmSellerCommissions = async () => {
   if (salesCountEl) salesCountEl.textContent = salesCount;
 
   const salesTotalEl = document.getElementById("crm-stat-sales-total");
-  if (salesTotalEl) salesTotalEl.textContent = `${formatCurrency(totalSold)} vendidos`;
+  if (salesTotalEl) salesTotalEl.textContent = `${formatSalesCurrency(totalSold)} vendidos`;
 
   const commissionPendingEl = document.getElementById("crm-stat-commission-pending");
-  if (commissionPendingEl) commissionPendingEl.textContent = formatCurrency(pendingCommissionTotal);
+  if (commissionPendingEl) commissionPendingEl.textContent = formatSalesCurrency(pendingCommissionTotal);
 
   const tableTotalEl = document.getElementById("crm-table-total-receber");
-  if (tableTotalEl) tableTotalEl.textContent = formatCurrency(pendingCommissionTotal);
+  if (tableTotalEl) tableTotalEl.textContent = formatSalesCurrency(pendingCommissionTotal);
 };
 
 const initCrmCommissionCalculator = () => {
-  const creditInput = document.getElementById("crm-calc-credit-input");
-  const levelSelect = document.getElementById("crm-calc-level-select");
-  const pctInput = document.getElementById("crm-calc-pct-input");
+  const card = document.querySelector("[data-crm-commission-simulator]");
+  if (!card) return;
 
-  const resultCommission = document.getElementById("crm-calc-result-commission");
-  const resultPct = document.getElementById("crm-calc-result-pct");
-  const resultCredit = document.getElementById("crm-calc-result-credit");
+  const creditInput = document.getElementById("crm-commission-credit-input");
+  const profileField = document.getElementById("crm-commission-profile-field");
+  const profileSelect = document.getElementById("crm-commission-profile-select");
+  const tableSelect = document.getElementById("crm-commission-table-select");
+  const resultCommission = document.getElementById("crm-commission-result-amount");
+  const resultPct = document.getElementById("crm-commission-result-percent");
+  const statusEl = document.getElementById("crm-commission-simulator-status");
+  if (!creditInput || !profileField || !profileSelect || !tableSelect
+    || !resultCommission || !resultPct || !statusEl) return;
 
   const parseCurrencyDigits = (val) => {
     const digits = String(val || "").replace(/\D/g, "");
     if (!digits) return 0;
-    return parseFloat(digits) / 100;
+    const number = Number.parseFloat(digits) / 100;
+    return Number.isFinite(number) && number > 0 ? number : 0;
   };
 
   const applyCurrencyMask = (input) => {
     if (!input) return 0;
     const num = parseCurrencyDigits(input.value);
-    if (num === 0 && input.value.trim() === "") {
+    if (num === 0) {
+      input.value = "";
       return 0;
     }
-    input.value = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(num);
+    input.value = formatSalesCurrency(num);
     return num;
   };
 
-  const updateCalculator = () => {
-    if (!creditInput || !pctInput) return;
-    let credit = applyCurrencyMask(creditInput);
-    let pct = parseFloat(pctInput.value) || 0;
-
-    let commVal = credit * (pct / 100);
-
-    if (resultCommission) resultCommission.textContent = formatCurrency(commVal);
-    if (resultPct) resultPct.textContent = `${pct.toFixed(2).replace(".", ",")}%`;
-    if (resultCredit) resultCredit.textContent = formatCurrency(credit);
+  const formatPercentLabel = (value) => {
+    const percent = Number(value || 0);
+    if (!Number.isFinite(percent) || percent < 0) return "--";
+    return `${percent.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 4 })}%`;
   };
 
-  if (levelSelect) {
-    levelSelect.addEventListener("change", () => {
-      if (levelSelect.value !== "custom") {
-        pctInput.value = levelSelect.value;
-        updateCalculator();
-      }
-    });
-  }
+  const setStatus = (message = "", type = "") => {
+    statusEl.textContent = message;
+    statusEl.dataset.type = type;
+  };
 
-  if (creditInput) {
-    creditInput.addEventListener("input", updateCalculator);
-    creditInput.addEventListener("focus", () => {
-      if (creditInput.value.trim() === "") {
-        creditInput.value = "R$ 0,00";
-      }
-    });
-  }
+  const clearResult = () => {
+    resultPct.textContent = "--";
+    resultCommission.textContent = "--";
+  };
 
-  if (pctInput) {
-    pctInput.addEventListener("input", () => {
-      if (levelSelect) levelSelect.value = "custom";
+  const updateCalculator = () => {
+    const credit = parseCurrencyDigits(creditInput.value);
+    const selectedOption = tableSelect.selectedOptions?.[0];
+    const percent = Number(selectedOption?.dataset.percent || 0);
+    if (!credit || !tableSelect.value || !Number.isFinite(percent) || percent < 0) {
+      clearResult();
+      return;
+    }
+    const commission = Number((credit * (percent / 100)).toFixed(2));
+    resultPct.textContent = formatPercentLabel(percent);
+    resultCommission.textContent = formatSalesCurrency(commission);
+    setStatus("");
+  };
+
+  const renderProfileOptions = (result) => {
+    const options = result.options || {};
+    const levels = Array.isArray(options.levels) ? options.levels : [];
+    const sellers = Array.isArray(options.sellers) ? options.sellers : [];
+    profileField.hidden = result.canChooseProfile !== true;
+
+    if (profileField.hidden) {
+      profileSelect.innerHTML = "";
+      profileSelect.disabled = true;
+      return;
+    }
+
+    profileSelect.innerHTML = '<option value="">Selecione um cargo ou vendedor</option>';
+    if (levels.length) {
+      const group = document.createElement("optgroup");
+      group.label = "Cargos";
+      levels.forEach((level) => {
+        const option = document.createElement("option");
+        option.value = `level:${level.id}`;
+        option.textContent = level.name;
+        group.appendChild(option);
+      });
+      profileSelect.appendChild(group);
+    }
+    if (sellers.length) {
+      const group = document.createElement("optgroup");
+      group.label = "Vendedores";
+      sellers.forEach((seller) => {
+        const option = document.createElement("option");
+        option.value = `user:${seller.id}`;
+        option.textContent = `${seller.name} - ${seller.levelName}`;
+        group.appendChild(option);
+      });
+      profileSelect.appendChild(group);
+    }
+
+    profileSelect.value = result.selection?.value || "";
+    profileSelect.disabled = levels.length === 0 && sellers.length === 0;
+  };
+
+  const loadTables = async (profileValue = "") => {
+    if (card.dataset.loading === "true") return;
+    const client = getClient();
+    if (!client) {
+      tableSelect.innerHTML = '<option value="">Selecione uma tabela</option>';
+      tableSelect.disabled = true;
+      setStatus("Não foi possível carregar as tabelas agora.", "error");
+      clearResult();
+      return;
+    }
+
+    try {
+      card.dataset.loading = "true";
+      const previousOrder = tableSelect.selectedOptions?.[0]?.dataset.order || "";
+      tableSelect.disabled = true;
+      profileSelect.disabled = true;
+      tableSelect.innerHTML = '<option value="">Carregando tabelas...</option>';
+      setStatus("Carregando percentuais do administrativo...");
+      clearResult();
+
+      const { data: sessionData } = await client.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) throw new Error("Sessão não encontrada.");
+
+      const params = new URLSearchParams();
+      const [profileType, profileId] = String(profileValue || "").split(":");
+      if (profileType === "level" && profileId) params.set("target_level_id", profileId);
+      if (profileType === "user" && profileId) params.set("target_user_id", profileId);
+      const query = params.toString();
+      const response = await fetch(`/api/finance/commission-tables${query ? `?${query}` : ""}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result.ok !== true) {
+        throw new Error(result.error || "Não consegui carregar as tabelas de comissão.");
+      }
+
+      renderProfileOptions(result);
+      const tables = Array.isArray(result.tables) ? result.tables : [];
+      tableSelect.innerHTML = '<option value="">Selecione uma tabela</option>';
+      tables.forEach((table) => {
+        const option = document.createElement("option");
+        option.value = table.id;
+        option.dataset.order = String(table.order);
+        option.dataset.percent = String(table.percentage);
+        option.textContent = `${table.name} - ${formatPercentLabel(table.percentage)}`;
+        tableSelect.appendChild(option);
+      });
+
+      if (previousOrder) {
+        const matchingOption = Array.from(tableSelect.options)
+          .find((option) => option.dataset.order === previousOrder);
+        if (matchingOption) tableSelect.value = matchingOption.value;
+      }
+      tableSelect.disabled = tables.length === 0;
+      profileSelect.disabled = profileField.hidden || profileSelect.options.length <= 1;
+      const levelName = result.level?.name || "seu cargo";
+      setStatus(
+        tables.length === 7
+          ? `Percentuais de ${levelName} carregados.`
+          : `${tables.length} de 7 tabelas configuradas para ${levelName}.`,
+        tables.length === 7 ? "success" : "error"
+      );
+      updateCalculator();
+    } catch (error) {
+      console.error("[Comissões] Erro ao carregar tabelas de comissão:", error);
+      tableSelect.innerHTML = '<option value="">Selecione uma tabela</option>';
+      tableSelect.disabled = true;
+      profileSelect.disabled = profileField.hidden || profileSelect.options.length <= 1;
+      setStatus(error.message || "Não foi possível carregar as tabelas de comissão.", "error");
+      clearResult();
+    } finally {
+      delete card.dataset.loading;
+    }
+  };
+
+  if (card.dataset.ready !== "true") {
+    card.dataset.ready = "true";
+    creditInput.addEventListener("input", () => {
+      applyCurrencyMask(creditInput);
       updateCalculator();
     });
+    creditInput.addEventListener("blur", () => {
+      applyCurrencyMask(creditInput);
+      updateCalculator();
+    });
+    tableSelect.addEventListener("change", updateCalculator);
+    profileSelect.addEventListener("change", () => loadTables(profileSelect.value));
   }
 
-  updateCalculator();
+  loadTables();
 };
 
 window.switchCommissionSubTab = (target) => {
@@ -8281,11 +8685,17 @@ const switchTab = () => {
   } else if (activeTab === "feed") {
     renderFeed();
   } else if (activeTab === "financeiro") {
+    if (typeof initCrmCommissionCalculator === "function") initCrmCommissionCalculator();
     if (typeof loadCrmSellerCommissions === "function") loadCrmSellerCommissions();
   }
 };
 
 window.addEventListener("hashchange", switchTab);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && appointmentRaceNeedsRefresh && window.location.hash === "#corrida") {
+    initAppointmentRace();
+  }
+});
 
 const initLeadModalTabs = () => {
   const tabsContainer = document.querySelector(".lead-modal-tabs");
@@ -8315,10 +8725,6 @@ const initLeadModalTabs = () => {
         content.style.setProperty("display", "none", "important");
       });
 
-      const deleteHistoryLabel = document.getElementById("delete-lead-history-label");
-      const currentCrmUser = window.currentCrmUser || window.crmUser || window.sevenGoldCrmSession?.crmUser;
-      const isCeo = currentCrmUser && ["diretor-ceo", "dono"].includes(normalizeRole(currentCrmUser.cargo));
-
       // Map tabs to content divs
       if (targetTab === "dados") {
         const dadosContainer = document.getElementById("modal-lead-tab-dados");
@@ -8327,20 +8733,17 @@ const initLeadModalTabs = () => {
         const mode = leadForm?.dataset.mode;
         if (deleteButton && mode === "edit") {
           deleteButton.style.display = "block";
-          if (deleteHistoryLabel) deleteHistoryLabel.style.display = isCeo ? "flex" : "none";
         }
       } else if (targetTab === "tarefas") {
         const tasksContainer = document.getElementById("modal-lead-tasks-section");
         if (tasksContainer) tasksContainer.style.setProperty("display", "block", "important");
         if (submitButton) submitButton.style.display = "none";
         if (deleteButton) deleteButton.style.display = "none";
-        if (deleteHistoryLabel) deleteHistoryLabel.style.display = "none";
       } else if (targetTab === "historico") {
         const historyContainer = document.getElementById("modal-lead-history-section");
         if (historyContainer) historyContainer.style.setProperty("display", "block", "important");
         if (submitButton) submitButton.style.display = "none";
         if (deleteButton) deleteButton.style.display = "none";
-        if (deleteHistoryLabel) deleteHistoryLabel.style.display = "none";
       }
     });
   });
@@ -8350,7 +8753,7 @@ const dashboardMetricOrderKey = "sevenGoldDashboardMetricOrder";
 const sidebarNavOrderKey = "sevenGoldSidebarNavOrder";
 
 const saveSidebarNavOrder = (navList) => {
-  const order = Array.from(navList.querySelectorAll(".nav-item"))
+  const order = Array.from(navList.querySelectorAll(".nav-item:not(.nav-item-external)"))
     .map((item) => item.dataset.permissionKey || item.getAttribute("href"))
     .filter(Boolean);
   try {
@@ -8365,22 +8768,36 @@ const setupSidebarNavDrag = () => {
   if (!navList || navList.dataset.dragReady === "true") return;
   navList.dataset.dragReady = "true";
 
+  const placeExternalNavItems = () => {
+    const mapsItem = navList.querySelector('[data-external-nav="google-maps"]');
+    const raceItem = navList.querySelector('[data-permission-key="corrida"]');
+    if (mapsItem && raceItem && raceItem.nextElementSibling !== mapsItem) {
+      raceItem.insertAdjacentElement("afterend", mapsItem);
+    }
+  };
+
   const items = Array.from(navList.querySelectorAll(".nav-item"));
-  items.forEach((item) => {
+  const sortableItems = items.filter((item) => !item.classList.contains("nav-item-external"));
+  sortableItems.forEach((item) => {
     item.draggable = true;
   });
+  items
+    .filter((item) => item.classList.contains("nav-item-external"))
+    .forEach((item) => {
+      item.draggable = false;
+    });
 
   try {
     const savedOrder = JSON.parse(localStorage.getItem(sidebarNavOrderKey) || "[]");
     if (Array.isArray(savedOrder)) {
       const itemByKey = new Map(
-        items.map((item) => [item.dataset.permissionKey || item.getAttribute("href"), item])
+        sortableItems.map((item) => [item.dataset.permissionKey || item.getAttribute("href"), item])
       );
       savedOrder.forEach((key) => {
         const item = itemByKey.get(key);
         if (item) navList.append(item);
       });
-      items.forEach((item) => {
+      sortableItems.forEach((item) => {
         const key = item.dataset.permissionKey || item.getAttribute("href");
         if (!savedOrder.includes(key)) navList.append(item);
       });
@@ -8388,12 +8805,13 @@ const setupSidebarNavDrag = () => {
   } catch (error) {
     console.warn("Não foi possível restaurar a ordem das abas:", error);
   }
+  placeExternalNavItems();
 
   let draggedItem = null;
 
   navList.addEventListener("dragstart", (event) => {
     const item = event.target.closest?.(".nav-item");
-    if (!item) return;
+    if (!item || item.classList.contains("nav-item-external")) return;
     draggedItem = item;
     navList.classList.add("is-nav-reordering");
     item.classList.add("is-nav-dragging");
@@ -8406,7 +8824,7 @@ const setupSidebarNavDrag = () => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
     const targetItem = event.target.closest?.(".nav-item");
-    if (!targetItem || targetItem === draggedItem) return;
+    if (!targetItem || targetItem === draggedItem || targetItem.classList.contains("nav-item-external")) return;
 
     const targetRect = targetItem.getBoundingClientRect();
     const insertAfter = event.clientY > targetRect.top + targetRect.height / 2;
@@ -8423,6 +8841,7 @@ const setupSidebarNavDrag = () => {
     draggedItem?.classList.remove("is-nav-dragging");
     navList.classList.remove("is-nav-reordering");
     draggedItem = null;
+    placeExternalNavItems();
     saveSidebarNavOrder(navList);
   });
 };
@@ -8592,6 +9011,9 @@ document.addEventListener("crm-authorized", async () => {
     loadDashboardMetrics();
   } else if (hash === "feed") {
     renderFeed();
+  } else if (hash === "financeiro") {
+    initCrmCommissionCalculator();
+    loadCrmSellerCommissions();
   }
 });
 

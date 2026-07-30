@@ -1,4 +1,5 @@
 const companySettings = require('../../lib/server/finance/company-settings');
+const commissionTables = require('../../lib/server/finance/commission-tables');
 const generateBordero = require('../../lib/server/finance/generate');
 const listBorderos = require('../../lib/server/finance/list');
 const updateStatus = require('../../lib/server/finance/update-status');
@@ -9,7 +10,9 @@ module.exports = async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = url.pathname;
 
-  if (pathname.includes('/company-settings')) {
+  if (pathname.includes('/commission-tables')) {
+    return commissionTables(req, res);
+  } else if (pathname.includes('/company-settings')) {
     return companySettings(req, res);
   } else if (pathname.includes('/borderos/generate')) {
     return generateBordero(req, res);

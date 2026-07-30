@@ -5,7 +5,7 @@ create extension if not exists "pgcrypto";
 
 create table if not exists public.appointments (
   id uuid primary key default gen_random_uuid(),
-  lead_id uuid references public.leads(id) on delete set null,
+  lead_id uuid references public.leads(id) on delete cascade,
   nome_cliente text not null,
   telefone_cliente text,
   usuario_id uuid references auth.users(id) on delete set null,

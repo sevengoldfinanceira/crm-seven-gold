@@ -121,6 +121,13 @@ as $$
   with sellers as (
     select
       u.id::uuid as user_id,
+      (
+        select au.id
+        from auth.users au
+        where lower(trim(au.email)) = lower(trim(u.email))
+        order by au.created_at asc
+        limit 1
+      )::uuid as auth_user_id,
       coalesce(nullif(trim(u.nome), ''), u.email) as user_name,
       lower(trim(u.email)) as user_email,
       coalesce(u.cargo, '') as user_role
@@ -131,38 +138,37 @@ as $$
         'vendedor', 'assistente-vendas', 'home-office'
       )
   ),
-  valid_appointments as (
-    select distinct on (
-      a.usuario_id,
+  mapped_appointments as (
+    select
+      coalesce(assigned_seller.user_id, actor_seller.user_id) as user_id,
       coalesce(
         a.lead_id::text,
         nullif(regexp_replace(coalesce(a.telefone_cliente, ''), '\D', '', 'g'), ''),
-        lower(trim(coalesce(a.nome_cliente, '')))
-      )
-    )
-      a.usuario_id::uuid as user_id,
-      coalesce(
-        a.lead_id::text,
-        nullif(regexp_replace(coalesce(a.telefone_cliente, ''), '\D', '', 'g'), ''),
-        lower(trim(coalesce(a.nome_cliente, '')))
+        nullif(lower(trim(coalesce(a.nome_cliente, ''))), '')
       ) as client_key,
       a.created_at
     from public.appointments a
+    left join sellers assigned_seller
+      on assigned_seller.user_email = lower(trim(coalesce(a.assigned_to_email, '')))
+    left join sellers actor_seller
+      on actor_seller.auth_user_id = a.usuario_id
     where (a.created_at at time zone 'America/Sao_Paulo')::date = p_race_date
-      and a.usuario_id is not null
       and coalesce(lower(a.status), '') not in ('cancelado', 'cancelled', 'deleted', 'excluido')
-      and coalesce(
-        a.lead_id::text,
-        nullif(regexp_replace(coalesce(a.telefone_cliente, ''), '\D', '', 'g'), ''),
-        lower(trim(coalesce(a.nome_cliente, '')))
-      ) is not null
+  ),
+  valid_appointments as (
+    select distinct on (
+      a.user_id,
+      a.client_key
+    )
+      a.user_id,
+      a.client_key,
+      a.created_at
+    from mapped_appointments a
+    where a.user_id is not null
+      and a.client_key is not null
     order by
-      a.usuario_id,
-      coalesce(
-        a.lead_id::text,
-        nullif(regexp_replace(coalesce(a.telefone_cliente, ''), '\D', '', 'g'), ''),
-        lower(trim(coalesce(a.nome_cliente, '')))
-      ),
+      a.user_id,
+      a.client_key,
       a.created_at asc
   ),
   numbered as (

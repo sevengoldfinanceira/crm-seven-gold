@@ -160,70 +160,201 @@
     }
   };
 
-  // Calculadora de comissões com máscara de moeda em tempo real (sem limite de escala)
+  // Calculadora ligada à matriz de sete tabelas configurada no administrativo.
   const initCommissionCalculator = () => {
+    const card = document.querySelector("[data-commission-calculator]");
     const creditInput = document.getElementById("calc-credit-input");
-    const levelSelect = document.getElementById("calc-level-select");
-    const pctInput = document.getElementById("calc-pct-input");
-
+    const profileField = document.getElementById("calc-profile-field");
+    const profileSelect = document.getElementById("calc-profile-select");
+    const tableSelect = document.getElementById("calc-table-select");
     const resultCommission = document.getElementById("calc-result-commission");
     const resultPct = document.getElementById("calc-result-pct");
     const resultCredit = document.getElementById("calc-result-credit");
+    const statusEl = document.getElementById("calc-status");
+    if (!card || !creditInput || !profileField || !profileSelect || !tableSelect
+      || !resultCommission || !resultPct || !resultCredit || !statusEl) return;
 
     const parseCurrencyDigits = (val) => {
       const digits = String(val || "").replace(/\D/g, "");
       if (!digits) return 0;
-      return parseFloat(digits) / 100;
+      const number = Number.parseFloat(digits) / 100;
+      return Number.isFinite(number) && number > 0 ? number : 0;
     };
 
     const applyCurrencyMask = (input) => {
       if (!input) return 0;
       const num = parseCurrencyDigits(input.value);
-      if (num === 0 && input.value.trim() === "") {
+      if (num === 0) {
+        input.value = "";
         return 0;
       }
-      input.value = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(num);
+      input.value = formatCurrency(num);
       return num;
     };
 
-    const updateCalculator = () => {
-      if (!creditInput || !pctInput) return;
-      let credit = applyCurrencyMask(creditInput);
-      let pct = parseFloat(pctInput.value) || 0;
-
-      let commVal = credit * (pct / 100);
-
-      if (resultCommission) resultCommission.textContent = formatCurrency(commVal);
-      if (resultPct) resultPct.textContent = `${pct.toFixed(2).replace(".", ",")}%`;
-      if (resultCredit) resultCredit.textContent = formatCurrency(credit);
+    const formatPercent = (value) => {
+      const percent = Number(value || 0);
+      if (!Number.isFinite(percent) || percent < 0) return "--";
+      return `${percent.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 4 })}%`;
     };
 
-    if (levelSelect) {
-      levelSelect.addEventListener("change", () => {
-        if (levelSelect.value !== "custom") {
-          pctInput.value = levelSelect.value;
-          updateCalculator();
-        }
-      });
-    }
+    const setStatus = (message = "", type = "") => {
+      statusEl.textContent = message;
+      statusEl.dataset.type = type;
+    };
 
-    if (creditInput) {
+    const clearResult = () => {
+      resultCommission.textContent = "--";
+      resultPct.textContent = "--";
+      resultCredit.textContent = formatCurrency(parseCurrencyDigits(creditInput.value));
+    };
+
+    const updateCalculator = () => {
+      const credit = parseCurrencyDigits(creditInput.value);
+      const selectedOption = tableSelect.selectedOptions?.[0];
+      const percent = Number(selectedOption?.dataset.percent || 0);
+      resultCredit.textContent = formatCurrency(credit);
+
+      if (!credit || !tableSelect.value || !Number.isFinite(percent) || percent < 0) {
+        resultCommission.textContent = "--";
+        resultPct.textContent = "--";
+        return;
+      }
+
+      resultCommission.textContent = formatCurrency(Number((credit * (percent / 100)).toFixed(2)));
+      resultPct.textContent = formatPercent(percent);
+    };
+
+    const renderProfileOptions = (result) => {
+      const options = result.options || {};
+      const levels = Array.isArray(options.levels) ? options.levels : [];
+      const sellers = Array.isArray(options.sellers) ? options.sellers : [];
+      profileField.hidden = result.canChooseProfile !== true;
+
+      if (profileField.hidden) {
+        profileSelect.innerHTML = "";
+        profileSelect.disabled = true;
+        return;
+      }
+
+      profileSelect.innerHTML = '<option value="">Selecione um cargo ou vendedor</option>';
+      if (levels.length) {
+        const group = document.createElement("optgroup");
+        group.label = "Cargos";
+        levels.forEach((level) => {
+          const option = document.createElement("option");
+          option.value = `level:${level.id}`;
+          option.textContent = level.name;
+          group.appendChild(option);
+        });
+        profileSelect.appendChild(group);
+      }
+      if (sellers.length) {
+        const group = document.createElement("optgroup");
+        group.label = "Vendedores";
+        sellers.forEach((seller) => {
+          const option = document.createElement("option");
+          option.value = `user:${seller.id}`;
+          option.textContent = `${seller.name} - ${seller.levelName}`;
+          group.appendChild(option);
+        });
+        profileSelect.appendChild(group);
+      }
+
+      profileSelect.value = result.selection?.value || "";
+      profileSelect.disabled = levels.length === 0 && sellers.length === 0;
+    };
+
+    const loadTables = async (profileValue = "") => {
+      if (card.dataset.loading === "true") return;
+      const client = window.sevenGoldAuth;
+      if (!client) {
+        tableSelect.innerHTML = '<option value="">Selecione uma tabela</option>';
+        tableSelect.disabled = true;
+        setStatus("Não foi possível carregar as tabelas agora.", "error");
+        clearResult();
+        return;
+      }
+
+      try {
+        card.dataset.loading = "true";
+        const previousOrder = tableSelect.selectedOptions?.[0]?.dataset.order || "";
+        tableSelect.disabled = true;
+        profileSelect.disabled = true;
+        tableSelect.innerHTML = '<option value="">Carregando tabelas...</option>';
+        setStatus("Carregando percentuais do administrativo...");
+        clearResult();
+
+        const { data: sessionData } = await client.auth.getSession();
+        const token = sessionData?.session?.access_token;
+        if (!token) throw new Error("Sessão não encontrada.");
+
+        const params = new URLSearchParams();
+        const [profileType, profileId] = String(profileValue || "").split(":");
+        if (profileType === "level" && profileId) params.set("target_level_id", profileId);
+        if (profileType === "user" && profileId) params.set("target_user_id", profileId);
+        const query = params.toString();
+        const response = await fetch(`/api/finance/commission-tables${query ? `?${query}` : ""}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || result.ok !== true) {
+          throw new Error(result.error || "Não consegui carregar as tabelas de comissão.");
+        }
+
+        renderProfileOptions(result);
+        const tables = Array.isArray(result.tables) ? result.tables : [];
+        tableSelect.innerHTML = '<option value="">Selecione uma tabela</option>';
+        tables.forEach((table) => {
+          const option = document.createElement("option");
+          option.value = table.id;
+          option.dataset.order = String(table.order);
+          option.dataset.percent = String(table.percentage);
+          option.textContent = `${table.name} - ${formatPercent(table.percentage)}`;
+          tableSelect.appendChild(option);
+        });
+
+        if (previousOrder) {
+          const matchingOption = Array.from(tableSelect.options)
+            .find((option) => option.dataset.order === previousOrder);
+          if (matchingOption) tableSelect.value = matchingOption.value;
+        }
+
+        tableSelect.disabled = tables.length === 0;
+        profileSelect.disabled = profileField.hidden || profileSelect.options.length <= 1;
+        const levelName = result.level?.name || "seu cargo";
+        setStatus(
+          tables.length === 7
+            ? `Percentuais de ${levelName} carregados.`
+            : `${tables.length} de 7 tabelas configuradas para ${levelName}.`,
+          tables.length === 7 ? "success" : "error"
+        );
+        updateCalculator();
+      } catch (error) {
+        console.error("[Comissões] Erro ao carregar tabelas:", error);
+        tableSelect.innerHTML = '<option value="">Selecione uma tabela</option>';
+        tableSelect.disabled = true;
+        profileSelect.disabled = profileField.hidden || profileSelect.options.length <= 1;
+        setStatus(error.message || "Não foi possível carregar as tabelas.", "error");
+        clearResult();
+      } finally {
+        delete card.dataset.loading;
+      }
+    };
+
+    if (card.dataset.ready !== "true") {
+      card.dataset.ready = "true";
       creditInput.addEventListener("input", updateCalculator);
-      creditInput.addEventListener("focus", () => {
-        if (creditInput.value.trim() === "") {
-          creditInput.value = "R$ 0,00";
-        }
-      });
-    }
-
-    if (pctInput) {
-      pctInput.addEventListener("input", () => {
-        if (levelSelect) levelSelect.value = "custom";
+      creditInput.addEventListener("blur", () => {
+        applyCurrencyMask(creditInput);
         updateCalculator();
       });
+      tableSelect.addEventListener("change", updateCalculator);
+      profileSelect.addEventListener("change", () => loadTables(profileSelect.value));
     }
 
-    updateCalculator();
+    applyCurrencyMask(creditInput);
+    loadTables();
   };
 
   // Alternância de abas global

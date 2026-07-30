@@ -28,6 +28,7 @@ loadRoute("/api/tasks/create", "./api/tasks");
 loadRoute("/api/tasks/update", "./api/tasks");
 loadRoute("/api/productions/manage", "./api/productions/manage");
 loadRoute("/api/permissions/save", "./api/permissions/save");
+loadRoute("/api/finance/commission-tables", "./api/finance");
 loadRoute("/api/finance/company-settings", "./api/finance");
 loadRoute("/api/finance/borderos/generate", "./api/finance");
 loadRoute("/api/finance/borderos/list", "./api/finance");

@@ -83,6 +83,22 @@
             </span>
             <span class="nav-label">Corrida</span>
           </a>
+          <a class="nav-item nav-item-external" href="https://www.google.com/maps/search/?api=1&query=S%C3%A3o+Bernardo+do+Campo%2C+SP" target="_blank" rel="noopener noreferrer" title="Abrir São Bernardo do Campo" aria-label="Abrir Google Maps em nova aba para São Bernardo do Campo" data-tooltip="Abrir São Bernardo do Campo" data-external-nav="google-maps">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="width: 20px; height: 20px; display: block;">
+                <path fill="#EA4335" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle fill="#FFFFFF" cx="12" cy="9" r="2.5"/>
+              </svg>
+            </span>
+            <span class="nav-label">Google Maps</span>
+            <span class="nav-external-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+            </span>
+          </a>
           <a class="nav-item" href="#vendas" data-permission-key="vendas">
             <span class="nav-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/><path d="M14 6h6v6"/><path d="M3 21h18"/></svg>
@@ -998,8 +1014,9 @@
                 </span>
                 <div>
                   <p class="appointment-race-kicker">Competição diária</p>
-                  <h1 id="appointment-race-title">Corrida de Agendamentos</h1>
-                  <p>Quem chega primeiro à meta de hoje?</p>
+                  <h1 id="appointment-race-title" data-race-title>Corrida de Agendamentos</h1>
+                  <p data-race-subtitle>Quem chega primeiro à meta de hoje?</p>
+                  <span class="appointment-race-mode-badge" data-race-mode-label>Agendamentos</span>
                 </div>
               </div>
               <div class="appointment-race-actions">
@@ -1024,7 +1041,7 @@
                 <div>
                   <span>Meta diária</span>
                   <strong data-race-target>--</strong>
-                  <small>agendamentos por vendedor</small>
+                  <small data-race-target-unit>agendamentos por vendedor</small>
                 </div>
               </article>
               <article class="appointment-race-stat">
@@ -1108,15 +1125,55 @@
             <header>
               <div>
                 <p class="appointment-race-kicker">Configuração</p>
-                <h2>Corrida de Agendamentos</h2>
-                <span>Ajuste a meta para repetir automaticamente de segunda a sexta-feira.</span>
+                <h2 data-race-settings-title>Corrida de Agendamentos</h2>
+                <span data-race-settings-description>Escolha o tipo e ajuste as metas para repetir automaticamente de segunda a sexta-feira.</span>
               </div>
               <button type="button" class="modal-close-button" data-race-close-settings aria-label="Fechar">×</button>
             </header>
-            <label>
-              <span>Meta diária de agendamentos</span>
-              <input type="number" min="1" step="1" value="10" data-race-target-input />
-            </label>
+            <fieldset class="appointment-race-mode-field">
+              <legend>Tipo da corrida</legend>
+              <div class="appointment-race-mode-options" role="radiogroup" aria-label="Tipo da corrida">
+                <label class="appointment-race-mode-option">
+                  <input type="radio" name="appointment_race_mode" value="appointments" data-race-mode-input checked />
+                  <span class="appointment-race-mode-option-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2"/>
+                      <path d="M16 2v4M8 2v4M3 10h18"/>
+                    </svg>
+                  </span>
+                  <span>
+                    <strong>Agendamentos</strong>
+                    <small>Conta agendamentos válidos do dia.</small>
+                  </span>
+                </label>
+                <label class="appointment-race-mode-option">
+                  <input type="radio" name="appointment_race_mode" value="closed_clients" data-race-mode-input />
+                  <span class="appointment-race-mode-option-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M8 21h8"/>
+                      <path d="M12 17v4"/>
+                      <path d="M7 4h10v4a5 5 0 0 1-10 0V4Z"/>
+                      <path d="M5 5H3v2a4 4 0 0 0 4 4"/>
+                      <path d="M19 5h2v2a4 4 0 0 1-4 4"/>
+                    </svg>
+                  </span>
+                  <span>
+                    <strong>Clientes fechados</strong>
+                    <small>Conta vendas checadas do dia.</small>
+                  </span>
+                </label>
+              </div>
+            </fieldset>
+            <div class="appointment-race-target-grid">
+              <label>
+                <span>Meta diária de agendamentos</span>
+                <input type="number" min="1" step="1" value="10" data-race-target-input data-race-appointment-target-input />
+              </label>
+              <label>
+                <span>Meta diária de clientes fechados</span>
+                <input type="number" min="1" step="1" value="5" data-race-closed-target-input />
+              </label>
+            </div>
             <p class="appointment-race-modal-status" data-race-modal-status></p>
             <footer>
               <button type="button" class="ghost-button" data-race-cancel>Encerrar corrida</button>
@@ -1446,14 +1503,25 @@
               margin: 0 auto;
               padding: 20px 0 60px;
               font-family: 'Inter', sans-serif !important;
+              min-width: 0;
+            }
+
+            .tab-content[data-tab="financeiro"],
+            .crm-seller-commissions-shell,
+            #crm-panel-commissions {
+              width: 100%;
+              max-width: 100%;
+              min-width: 0;
             }
 
             .crm-seller-top-tabs {
               display: flex;
               align-items: center;
+              flex-wrap: wrap;
               gap: 8px;
               margin-bottom: 24px;
               border-bottom: 1px solid #E2E8F0;
+              min-width: 0;
             }
 
             .crm-seller-tab-btn {
@@ -1470,6 +1538,7 @@
               cursor: pointer;
               transition: all 0.2s ease;
               border-radius: 8px 8px 0 0;
+              min-width: 0;
             }
 
             .crm-seller-tab-btn * {
@@ -1557,6 +1626,11 @@
               .crm-seller-summary-grid {
                 grid-template-columns: 1fr;
               }
+
+              .crm-seller-tab-btn {
+                flex: 1 1 160px;
+                justify-content: center;
+              }
             }
 
             .crm-seller-summary-card {
@@ -1624,6 +1698,160 @@
               color: #64748B;
               font-weight: 500;
               margin-top: 2px;
+            }
+
+            .crm-commission-simulator-row {
+              display: flex;
+              justify-content: flex-end;
+              margin: -4px 0 28px;
+            }
+
+            .crm-commission-simulator-card {
+              width: min(100%, 420px);
+              background: #FFFFFF;
+              border: 1px solid #E2E8F0;
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: 0 6px 24px rgba(15, 23, 42, 0.04);
+            }
+
+            .crm-commission-simulator-head {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              margin-bottom: 16px;
+            }
+
+            .crm-commission-simulator-icon {
+              display: grid;
+              place-items: center;
+              width: 38px;
+              height: 38px;
+              border-radius: 12px;
+              background: #FEF9C3;
+              color: #B98220;
+              flex: 0 0 auto;
+            }
+
+            .crm-commission-simulator-icon svg {
+              width: 19px;
+              height: 19px;
+              stroke-width: 2.4;
+            }
+
+            .crm-commission-simulator-copy h2 {
+              margin: 0 0 3px;
+              color: #161616;
+              font-size: 1.02rem;
+              font-weight: 850;
+              letter-spacing: 0;
+            }
+
+            .crm-commission-simulator-copy p {
+              margin: 0;
+              color: #64748B;
+              font-size: 0.82rem;
+              font-weight: 600;
+            }
+
+            .crm-commission-simulator-fields {
+              display: grid;
+              gap: 12px;
+            }
+
+            .crm-commission-simulator-field label {
+              display: block;
+              margin-bottom: 6px;
+              color: #475569;
+              font-size: 0.78rem;
+              font-weight: 800;
+            }
+
+            .crm-commission-simulator-field input,
+            .crm-commission-simulator-field select {
+              width: 100%;
+              min-height: 42px;
+              border: 1px solid #CBD5E1;
+              border-radius: 10px;
+              background: #FFFFFF;
+              color: #161616;
+              padding: 0 12px;
+              font-size: 0.92rem;
+              font-weight: 750;
+              outline: none;
+              transition: border-color 0.18s ease, box-shadow 0.18s ease;
+            }
+
+            .crm-commission-simulator-field input:focus,
+            .crm-commission-simulator-field select:focus {
+              border-color: #E8B138;
+              box-shadow: 0 0 0 3px rgba(232, 177, 56, 0.16);
+            }
+
+            .crm-commission-simulator-results {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 10px;
+              margin: 16px 0 0;
+            }
+
+            .crm-commission-simulator-results div {
+              min-width: 0;
+              border: 1px solid #F1F5F9;
+              border-radius: 12px;
+              background: #FAFAFA;
+              padding: 11px 12px;
+            }
+
+            .crm-commission-simulator-results dt {
+              margin: 0 0 5px;
+              color: #64748B;
+              font-size: 0.72rem;
+              font-weight: 800;
+            }
+
+            .crm-commission-simulator-results dd {
+              margin: 0;
+              color: #B98220;
+              font-size: 1rem;
+              font-weight: 900;
+              overflow-wrap: anywhere;
+            }
+
+            .crm-commission-simulator-results .is-commission dd {
+              color: #15803D;
+            }
+
+            .crm-commission-simulator-status {
+              min-height: 17px;
+              margin: 11px 0 0;
+              color: #64748B;
+              font-size: 0.76rem;
+              font-weight: 700;
+            }
+
+            .crm-commission-simulator-status[data-type="error"] {
+              color: #B91C1C;
+            }
+
+            .crm-commission-simulator-status[data-type="success"] {
+              color: #15803D;
+            }
+
+            @media (max-width: 768px) {
+              .crm-commission-simulator-row {
+                justify-content: stretch;
+              }
+
+              .crm-commission-simulator-card {
+                width: 100%;
+              }
+            }
+
+            @media (max-width: 420px) {
+              .crm-commission-simulator-results {
+                grid-template-columns: 1fr;
+              }
             }
 
             /* Card da Tabela: Minhas vendas */
@@ -1727,12 +1955,14 @@
             body.theme-dark .crm-seller-tab-btn.active,
             body.theme-dark .crm-seller-period-wrapper,
             body.theme-dark .crm-seller-summary-card,
+            body.theme-dark .crm-commission-simulator-card,
             body.theme-dark .crm-seller-table-card {
               background-color: #1E293B !important;
               border-color: #334155 !important;
             }
             body.theme-dark .crm-seller-title-group h1,
             body.theme-dark .crm-seller-summary-number,
+            body.theme-dark .crm-commission-simulator-copy h2,
             body.theme-dark .crm-seller-table-card h2,
             body.theme-dark .crm-seller-vendas-table td.client-cell,
             body.theme-dark .crm-total-label {
@@ -1750,10 +1980,6 @@
               <button type="button" class="crm-seller-tab-btn" data-crm-tab-target="history" onclick="switchCommissionSubTab('history')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 <span>Histórico de pagamentos</span>
-              </button>
-              <button type="button" class="crm-seller-tab-btn" data-crm-tab-target="calculator" onclick="switchCommissionSubTab('calculator')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
-                <span>Calculadora de comissões</span>
               </button>
             </nav>
 
@@ -1800,6 +2026,49 @@
                     <strong id="crm-stat-commission-pending" class="crm-seller-summary-number text-green">R$ 0,00</strong>
                     <span class="crm-seller-summary-sub">Disponível para pagamento</span>
                   </div>
+                </article>
+              </section>
+
+              <section class="crm-commission-simulator-row" aria-label="Simulação de comissão">
+                <article class="crm-commission-simulator-card" data-crm-commission-simulator>
+                  <header class="crm-commission-simulator-head">
+                    <span class="crm-commission-simulator-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+                    </span>
+                    <div class="crm-commission-simulator-copy">
+                      <h2>Simular comissão</h2>
+                      <p>Informe o crédito e escolha uma tabela.</p>
+                    </div>
+                  </header>
+                  <div class="crm-commission-simulator-fields">
+                    <div class="crm-commission-simulator-field" id="crm-commission-profile-field" hidden>
+                      <label for="crm-commission-profile-select">Simular comissão de</label>
+                      <select id="crm-commission-profile-select" disabled>
+                        <option value="">Carregando cargos e vendedores...</option>
+                      </select>
+                    </div>
+                    <div class="crm-commission-simulator-field">
+                      <label for="crm-commission-credit-input">Valor do crédito</label>
+                      <input type="text" id="crm-commission-credit-input" inputmode="numeric" autocomplete="off" placeholder="R$ 100.000,00" />
+                    </div>
+                    <div class="crm-commission-simulator-field">
+                      <label for="crm-commission-table-select">Tabela de comissão</label>
+                      <select id="crm-commission-table-select" disabled>
+                        <option value="">Carregando tabelas...</option>
+                      </select>
+                    </div>
+                  </div>
+                  <dl class="crm-commission-simulator-results">
+                    <div>
+                      <dt>Percentual aplicado</dt>
+                      <dd id="crm-commission-result-percent">--</dd>
+                    </div>
+                    <div class="is-commission">
+                      <dt>Comissão estimada</dt>
+                      <dd id="crm-commission-result-amount">--</dd>
+                    </div>
+                  </dl>
+                  <p id="crm-commission-simulator-status" class="crm-commission-simulator-status" aria-live="polite">Carregando tabelas...</p>
                 </article>
               </section>
 
@@ -1859,69 +2128,6 @@
                   </table>
                 </div>
               </section>
-            </section>
-
-            <!-- Panel 3: Calculadora de comissões -->
-            <section id="crm-panel-calculator" style="display: none;">
-              <header class="crm-seller-header-row">
-                <div class="crm-seller-title-group">
-                  <h1>Calculadora de comissões</h1>
-                  <p>Simule o valor da sua comissão com base no crédito vendido e percentual aplicável.</p>
-                </div>
-              </header>
-
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 28px;">
-                <!-- Calculator Inputs Card -->
-                <section class="crm-seller-table-card">
-                  <h2>Simulador de comissão</h2>
-                  <div style="display: flex; flex-direction: column; gap: 18px; margin-top: 14px;">
-                    <div>
-                      <label style="display: block; font-size: 0.88rem; font-weight: 750; color: #475569; margin-bottom: 6px;">Valor do Crédito / Venda (R$)</label>
-                      <input type="text" id="crm-calc-credit-input" inputmode="numeric" value="R$ 100.000,00" placeholder="R$ 0,00" style="width: 100%; padding: 12px 16px; border: 1px solid #CBD5E1; border-radius: 12px; font-size: 1.1rem; font-weight: 800; color: #161616; background: #FFFFFF; outline: none;" />
-                    </div>
-
-                    <div>
-                      <label style="display: block; font-size: 0.88rem; font-weight: 750; color: #475569; margin-bottom: 6px;">Cargo / Tabela de Comissão</label>
-                      <select id="crm-calc-level-select" style="width: 100%; padding: 12px 16px; border: 1px solid #CBD5E1; border-radius: 12px; font-size: 0.95rem; font-weight: 700; color: #161616; background: #FFFFFF; outline: none;">
-                        <option value="1.5" selected>Consultor de Vendas (1,50%)</option>
-                        <option value="0.55">Home Office (0,55%)</option>
-                        <option value="0.20">Assistente de Vendas (0,20%)</option>
-                        <option value="0.55">Coordenador (0,55%)</option>
-                        <option value="0.65">Supervisor (0,65%)</option>
-                        <option value="2.50">Representante Pleno (2,50%)</option>
-                        <option value="custom">Outro (Personalizado)</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label style="display: block; font-size: 0.88rem; font-weight: 750; color: #475569; margin-bottom: 6px;">Percentual de Comissão (%)</label>
-                      <input type="number" id="crm-calc-pct-input" value="1.5" step="0.05" min="0" max="100" style="width: 100%; padding: 12px 16px; border: 1px solid #CBD5E1; border-radius: 12px; font-size: 1.1rem; font-weight: 800; color: #B98220; background: #FFFFFF; outline: none;" />
-                    </div>
-                  </div>
-                </section>
-
-                <!-- Calculator Result Card -->
-                <section class="crm-seller-table-card" style="background: linear-gradient(135deg, #FFFFFF 0%, #FAFAFA 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border: 2px solid #E8B138; position: relative;">
-                  <div style="position: absolute; top: 16px; right: 16px; background: #FEF9C3; color: #B98220; padding: 4px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 800;">
-                    Resultado Estimado
-                  </div>
-
-                  <span style="font-size: 0.92rem; font-weight: 750; color: #64748B; margin-top: 10px;">Comissão a Receber</span>
-                  <strong id="crm-calc-result-commission" style="font-size: 2.8rem; font-weight: 950; color: #15803D; margin: 10px 0; letter-spacing: -0.03em;">R$ 1.500,00</strong>
-
-                  <div style="display: flex; gap: 16px; margin-top: 10px; width: 100%; justify-content: center; flex-wrap: wrap;">
-                    <div style="background: #F1F5F9; padding: 10px 18px; border-radius: 12px; min-width: 120px;">
-                      <span style="font-size: 0.75rem; color: #64748B; font-weight: 700; display: block;">Percentual</span>
-                      <strong id="crm-calc-result-pct" style="font-size: 1.05rem; font-weight: 850; color: #B98220;">1,50%</strong>
-                    </div>
-                    <div style="background: #F1F5F9; padding: 10px 18px; border-radius: 12px; min-width: 160px;">
-                      <span style="font-size: 0.75rem; color: #64748B; font-weight: 700; display: block;">Crédito Simulado</span>
-                      <strong id="crm-calc-result-credit" style="font-size: 1.05rem; font-weight: 850; color: #161616;">R$ 100.000,00</strong>
-                    </div>
-                  </div>
-                </section>
-              </div>
-
             </section>
           </main>
 
@@ -2133,10 +2339,6 @@
         <div class="lead-modal-actions-row" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <button class="delete-lead-modal-btn" id="delete-lead-modal-btn" type="button" style="display: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; flex-shrink: 0;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>Excluir Lead</button>
-            <label id="delete-lead-history-label" style="display: none; align-items: center; gap: 6px; font-size: 0.78rem; color: #dc2626; font-weight: 600; cursor: pointer; user-select: none;">
-              <input type="checkbox" id="delete-lead-history-checkbox" style="accent-color: #dc2626; cursor: pointer;" />
-              Remover todo o histórico dele no sistema
-            </label>
           </div>
           <button class="new-lead-button" type="submit">Salvar lead</button>
         </div>
@@ -2233,7 +2435,7 @@
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=ms78lgte"></script>
     <script src="perfil.js?v=ms78lgte"></script>
-    <script src="script.js?v=ms78lgte"></script>
+    <script src="script.js?v=20260730-race-realtime-fix"></script>
     <!-- html2pdf.js for professional PDF exports -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="financeiro.js?v=ms78lgte"></script>

@@ -1583,6 +1583,7 @@ body.theme-dark .lead-trash-origin-badge--unknown {
 @media (max-width: 900px) {
   .app-shell {
     grid-template-columns: 1fr;
+    padding-left: 0 !important;
   }
 
   .sidebar-overlay {
@@ -3684,6 +3685,64 @@ body.theme-dark .crm-workspace {
 .nav-item:hover {
   background: rgba(232, 177, 56, 0.14) !important;
   color: #E8B138 !important;
+}
+
+.nav-item-external {
+  position: relative;
+  padding-right: 10px;
+  border: 1px solid rgba(232, 177, 56, 0.18);
+  background: rgba(232, 177, 56, 0.04);
+  color: #ffffff !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.nav-item-external:hover,
+.nav-item-external:focus-visible {
+  background: rgba(232, 177, 56, 0.16) !important;
+  border-color: rgba(232, 177, 56, 0.72);
+  color: #ffffff !important;
+  box-shadow: inset 0 0 0 1px rgba(232, 177, 56, 0.18), 0 8px 22px rgba(216, 173, 61, 0.12);
+  outline: none;
+}
+
+.nav-item-external.active {
+  background: rgba(232, 177, 56, 0.04) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.nav-item-external .nav-label {
+  flex: 1 1 auto;
+}
+
+.nav-item-external .nav-external-icon {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-left: auto;
+  color: rgba(255, 255, 255, 0.76);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-item-external:hover .nav-external-icon,
+.nav-item-external:focus-visible .nav-external-icon {
+  color: #E8B138;
+  transform: translate(1px, -1px);
+}
+
+.nav-item-external:hover .nav-icon svg,
+.nav-item-external:focus-visible .nav-icon svg {
+  filter: drop-shadow(0 0 6px rgba(232, 177, 56, 0.42));
+}
+
+body.sidebar-collapsed .nav-item-external .nav-external-icon {
+  display: none;
+}
+
+body.sidebar-collapsed .nav-item.nav-item-external::after {
+  background: #15120a;
+  border-color: rgba(232, 177, 56, 0.45);
+  color: #ffffff;
 }
 
 /* User Box refinement */
@@ -6786,6 +6845,7 @@ body.sidebar-collapsed .user-box .sidebar-user-actions .sidebar-logout-btn:hover
 @media (max-width: 900px) {
   body.sidebar-collapsed .app-shell {
     grid-template-columns: 1fr;
+    padding-left: 0 !important;
   }
   body.sidebar-collapsed .sidebar {
     width: min(280px, 86vw);
@@ -10701,6 +10761,106 @@ body.theme-dark #pipeline-search-input:focus {
   font-weight: 850;
 }
 
+.appointment-race-mode-field {
+  margin: 18px 0;
+  padding: 0;
+  border: 0;
+}
+
+.appointment-race-mode-field legend {
+  margin: 0 0 10px;
+  color: #334155;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.appointment-race-mode-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.appointment-race-settings-form .appointment-race-mode-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  min-height: 86px;
+  margin: 0;
+  padding: 13px;
+  border: 1px solid #E6EAF2;
+  border-radius: 14px;
+  background: #FFFFFF;
+  color: var(--sg-text);
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.appointment-race-settings-form .appointment-race-mode-option:has(input:checked) {
+  border-color: rgba(232, 177, 56, 0.72);
+  background: #FFF9E7;
+  box-shadow: 0 10px 24px rgba(144, 104, 32, 0.12);
+}
+
+.appointment-race-settings-form .appointment-race-mode-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.appointment-race-mode-option-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  color: var(--sg-gold-dark);
+  background: #FFF4CA;
+  border: 1px solid rgba(232, 177, 56, 0.34);
+}
+
+.appointment-race-mode-option-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.appointment-race-mode-option strong,
+.appointment-race-mode-option small {
+  display: block;
+}
+
+.appointment-race-mode-option strong {
+  color: var(--sg-text);
+  font-size: 0.88rem;
+  font-weight: 950;
+}
+
+.appointment-race-mode-option small {
+  margin-top: 3px;
+  color: var(--sg-muted);
+  font-size: 0.72rem;
+  font-weight: 750;
+  line-height: 1.25;
+}
+
+.appointment-race-target-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.appointment-race-target-grid label {
+  margin: 0;
+}
+
 .appointment-race-modal-status {
   min-height: 20px;
   margin: 0 0 16px;
@@ -10957,6 +11117,28 @@ body.theme-dark .appointment-race {
   color: var(--sg-muted);
   font-size: 0.76rem;
   font-weight: 800;
+}
+
+.appointment-race-title-group [data-race-subtitle] {
+  margin: 2px 0 0;
+  color: var(--sg-muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.appointment-race-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  margin-top: 7px;
+  padding: 0 10px;
+  border: 1px solid rgba(232, 177, 56, 0.38);
+  border-radius: 999px;
+  color: var(--sg-gold-dark);
+  background: #FFF8DC;
+  font-size: 0.68rem;
+  font-weight: 950;
+  line-height: 1;
 }
 
 .appointment-race-config-btn {
@@ -11881,7 +12063,16 @@ body.theme-dark .appointment-race {
 
 .appointment-race-modal,
 .appointment-race-settings-form {
+  --sg-gold-dark: #906820;
+  --sg-text: #111827;
+  --sg-muted: #64748B;
+  --sg-border: #E6EAF2;
+  --sg-gold-gradient: linear-gradient(135deg, #906820 0%, #D1992C 30%, #F5D874 55%, #E8B138 75%, #B98220 100%);
   color: var(--sg-text);
+}
+
+.appointment-race-modal {
+  width: min(680px, calc(100vw - 32px));
 }
 
 .appointment-race-settings-form .primary-button {
@@ -11906,6 +12097,7 @@ body.theme-dark .appointment-race-stat strong {
 }
 
 body.theme-dark .appointment-race-title-group p:last-child,
+body.theme-dark .appointment-race-title-group [data-race-subtitle],
 body.theme-dark .appointment-race-status,
 body.theme-dark .appointment-race-track-meta,
 body.theme-dark .appointment-race-ranking-person small,
@@ -11919,7 +12111,8 @@ body.theme-dark .appointment-race-stat,
 body.theme-dark .appointment-race-tracks,
 body.theme-dark .appointment-race-ranking,
 body.theme-dark .appointment-race-ranking-item,
-body.theme-dark .appointment-race-settings-form {
+body.theme-dark .appointment-race-settings-form,
+body.theme-dark .appointment-race-settings-form .appointment-race-mode-option {
   background: #FFFFFF;
   border-color: var(--sg-border);
   box-shadow: 0 22px 58px rgba(17, 24, 39, 0.08);
@@ -11991,8 +12184,10 @@ body.theme-dark .appointment-race-settings-form .ghost-button {
     flex: 1 1 auto;
     height: 100%;
     min-height: 0;
-    overflow: auto;
-    padding-right: 2px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin-right: -58px;
+    padding-right: 70px;
     grid-auto-rows: minmax(78px, 1fr);
   }
 
@@ -12180,6 +12375,11 @@ body.theme-dark .appointment-race-settings-form .ghost-button {
   .appointment-race-ranking-photo {
     width: 36px;
     height: 36px;
+  }
+
+  .appointment-race-mode-options,
+  .appointment-race-target-grid {
+    grid-template-columns: 1fr;
   }
 }
 
