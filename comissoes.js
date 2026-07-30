@@ -160,7 +160,7 @@
     }
   };
 
-  // Calculadora de comissões
+  // Calculadora de comissões com máscara de moeda em tempo real (sem limite de escala)
   const initCommissionCalculator = () => {
     const creditInput = document.getElementById("calc-credit-input");
     const levelSelect = document.getElementById("calc-level-select");
@@ -169,11 +169,26 @@
     const resultCommission = document.getElementById("calc-result-commission");
     const resultPct = document.getElementById("calc-result-pct");
     const resultCredit = document.getElementById("calc-result-credit");
-    const refTbody = document.getElementById("calc-reference-tbody");
+
+    const parseCurrencyDigits = (val) => {
+      const digits = String(val || "").replace(/\D/g, "");
+      if (!digits) return 0;
+      return parseFloat(digits) / 100;
+    };
+
+    const applyCurrencyMask = (input) => {
+      if (!input) return 0;
+      const num = parseCurrencyDigits(input.value);
+      if (num === 0 && input.value.trim() === "") {
+        return 0;
+      }
+      input.value = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(num);
+      return num;
+    };
 
     const updateCalculator = () => {
       if (!creditInput || !pctInput) return;
-      let credit = parseFloat(creditInput.value) || 0;
+      let credit = applyCurrencyMask(creditInput);
       let pct = parseFloat(pctInput.value) || 0;
 
       let commVal = credit * (pct / 100);
@@ -192,26 +207,19 @@
       });
     }
 
-    if (creditInput) creditInput.addEventListener("input", updateCalculator);
+    if (creditInput) {
+      creditInput.addEventListener("input", updateCalculator);
+      creditInput.addEventListener("focus", () => {
+        if (creditInput.value.trim() === "") {
+          creditInput.value = "R$ 0,00";
+        }
+      });
+    }
+
     if (pctInput) {
       pctInput.addEventListener("input", () => {
         if (levelSelect) levelSelect.value = "custom";
         updateCalculator();
-      });
-    }
-
-    if (refTbody) {
-      refTbody.innerHTML = "";
-      const tiers = [30000, 50000, 100000, 250000, 500000, 1000000];
-      tiers.forEach((val) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td class="client-cell">${formatCurrency(val)}</td>
-          <td>${formatCurrency(val * 0.0055)}</td>
-          <td>${formatCurrency(val * 0.015)}</td>
-          <td>${formatCurrency(val * 0.025)}</td>
-        `;
-        refTbody.appendChild(tr);
       });
     }
 
