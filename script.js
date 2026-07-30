@@ -7994,7 +7994,6 @@ const setupBulkActions = () => {
 const tabTitleMap = {
   dashboard: "Dashboard",
   pipeline: "Pipeline",
-  tarefas: "Tarefas",
   feed: "Feed",
   calendario: "Calendario",
   corrida: "Corrida",
@@ -8007,7 +8006,7 @@ const tabTitleMap = {
 
 const switchTab = () => {
   const hash = window.location.hash.replace("#", "") || "pipeline";
-  const validTabs = ["dashboard", "pipeline", "tarefas", "feed", "calendario", "corrida", "vendas", "financeiro", "cadastro", "equipe", "perfil"];
+  const validTabs = ["dashboard", "pipeline", "feed", "calendario", "corrida", "vendas", "financeiro", "cadastro", "equipe", "perfil"];
   const activeTab = validTabs.includes(hash) ? hash : "pipeline";
 
   const userRole = window.userRole || (window.sevenGoldCrmSession?.userRole);
