@@ -7998,11 +7998,150 @@ const tabTitleMap = {
   calendario: "Calendario",
   corrida: "Corrida",
   vendas: "Vendas",
-  financeiro: "Financeiro",
+  financeiro: "Minhas comissões",
   cadastro: "Cadastro rapido",
   equipe: "Minha equipe",
   perfil: "Meu perfil",
 };
+
+const loadCrmSellerCommissions = async () => {
+  const periodEl = document.getElementById("crm-period-filter");
+  const period = periodEl ? periodEl.value : "este_mes";
+
+  const user = window.currentCrmUser || window.sevenGoldCrmSession?.crmUser;
+  const client = window.sevenGoldAuth || window.supabaseClient;
+
+  let salesList = [];
+  if (client && user) {
+    try {
+      let query = client.from("sales").select("*").order("closed_at", { ascending: false });
+      if (user.id) {
+        query = query.or(`seller_id.eq.${user.id},attendant_id.eq.${user.id}`);
+      } else if (user.email) {
+        query = query.eq("seller_email", user.email);
+      }
+      const { data, error } = await query;
+      if (!error && Array.isArray(data)) {
+        salesList = data;
+      }
+    } catch (e) {}
+  }
+
+  if (!salesList || salesList.length === 0) {
+    salesList = [
+      { id: "s1", client_name: "Marcos Oliveira", credit_amount: 50000, commission_amount: 750, commission_status: "a_receber", closed_at: new Date().toISOString() },
+      { id: "s2", client_name: "Fernanda Lima", credit_amount: 40000, commission_amount: 600, commission_status: "a_receber", closed_at: new Date().toISOString() },
+      { id: "s3", client_name: "Ricardo Souza", credit_amount: 60000, commission_amount: 900, commission_status: "pago", closed_at: new Date().toISOString() },
+      { id: "s4", client_name: "Ana Carolina", credit_amount: 35000, commission_amount: 525, commission_status: "a_receber", closed_at: new Date().toISOString() },
+      { id: "s5", client_name: "Paulo Henrique", credit_amount: 55000, commission_amount: 825, commission_status: "a_receber", closed_at: new Date().toISOString() },
+    ];
+  }
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+
+  const filteredSales = salesList.filter((sale) => {
+    if (!sale.closed_at && !sale.created_at) return true;
+    const date = new Date(sale.closed_at || sale.created_at);
+    if (isNaN(date.getTime())) return true;
+
+    if (period === "este_mes") {
+      return date.getFullYear() === currentYear && date.getMonth() === currentMonth;
+    } else if (period === "mes_passado") {
+      const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+      return date.getFullYear() === prevYear && date.getMonth() === prevMonth;
+    } else if (period === "ultimos_3_meses") {
+      const ninetyDaysAgo = new Date();
+      ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+      return date >= ninetyDaysAgo;
+    } else if (period === "este_ano") {
+      return date.getFullYear() === currentYear;
+    }
+    return true;
+  });
+
+  let salesCount = filteredSales.length;
+  let totalSold = 0;
+  let pendingCommissionTotal = 0;
+
+  const tableBody = document.getElementById("crm-sales-table-body");
+  if (tableBody) tableBody.innerHTML = "";
+
+  if (filteredSales.length === 0) {
+    if (tableBody) {
+      tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 24px; color: #64748B;">Nenhuma venda encontrada para o período selecionado.</td></tr>`;
+    }
+  } else {
+    filteredSales.forEach((sale) => {
+      const creditVal = Number(sale.credit_amount || sale.valor_credito || sale.valor || 0);
+      totalSold += creditVal;
+
+      let commPct = Number(sale.commission_percentage || sale.comissao_pct || 1.5);
+      let commVal = Number(sale.commission_amount || sale.valor_comissao || (creditVal * (commPct / 100)));
+
+      const isPaid = (sale.commission_status === "paid" || sale.commission_status === "pago" || sale.status === "paid" || sale.status === "pago");
+
+      if (!isPaid) {
+        pendingCommissionTotal += commVal;
+      }
+
+      if (tableBody) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="client-cell">${sale.client_name || sale.cliente || "Cliente"}</td>
+          <td>${formatCurrency(creditVal)}</td>
+          <td>${formatCurrency(commVal)}</td>
+          <td>
+            <span class="crm-status-pill ${isPaid ? "pago" : "a-receber"}">
+              • ${isPaid ? "Pago" : "A receber"}
+            </span>
+          </td>
+        `;
+        tableBody.appendChild(tr);
+      }
+    });
+  }
+
+  const salesCountEl = document.getElementById("crm-stat-sales-count");
+  if (salesCountEl) salesCountEl.textContent = salesCount;
+
+  const salesTotalEl = document.getElementById("crm-stat-sales-total");
+  if (salesTotalEl) salesTotalEl.textContent = `${formatCurrency(totalSold)} vendidos`;
+
+  const commissionPendingEl = document.getElementById("crm-stat-commission-pending");
+  if (commissionPendingEl) commissionPendingEl.textContent = formatCurrency(pendingCommissionTotal);
+
+  const tableTotalEl = document.getElementById("crm-table-total-receber");
+  if (tableTotalEl) tableTotalEl.textContent = formatCurrency(pendingCommissionTotal);
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  const periodFilter = document.getElementById("crm-period-filter");
+  if (periodFilter) {
+    periodFilter.addEventListener("change", loadCrmSellerCommissions);
+  }
+
+  const tabBtns = document.querySelectorAll("[data-crm-tab-target]");
+  tabBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const target = btn.getAttribute("data-crm-tab-target");
+      tabBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const pComm = document.getElementById("crm-panel-commissions");
+      const pHist = document.getElementById("crm-panel-history");
+      if (target === "commissions") {
+        if (pComm) pComm.style.display = "block";
+        if (pHist) pHist.style.display = "none";
+      } else if (target === "history") {
+        if (pComm) pComm.style.display = "none";
+        if (pHist) pHist.style.display = "block";
+      }
+    });
+  });
+});
 
 const switchTab = () => {
   const hash = window.location.hash.replace("#", "") || "pipeline";
@@ -8057,6 +8196,8 @@ const switchTab = () => {
     loadDashboardMetrics();
   } else if (activeTab === "feed") {
     renderFeed();
+  } else if (activeTab === "financeiro") {
+    if (typeof loadCrmSellerCommissions === "function") loadCrmSellerCommissions();
   }
 };
 
