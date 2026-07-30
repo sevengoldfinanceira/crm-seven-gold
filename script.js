@@ -1752,27 +1752,21 @@ const findAppointmentRaceRankingItem = (userId) =>
   Array.from(appointmentRaceRankingList?.querySelectorAll(".appointment-race-ranking-item") || [])
     .find((item) => String(item.dataset.raceUserId || "") === String(userId));
 
-const positionAppointmentRaceCrown = (userId, { position = null, large = false, switching = false } = {}) => {
+const positionAppointmentRaceCrown = (userId, { large = false, switching = false } = {}) => {
   if (!appointmentRaceFloatingCrown || !appointmentRaceTrackList || !userId) {
     if (appointmentRaceFloatingCrown) appointmentRaceFloatingCrown.hidden = true;
     return;
   }
   const track = findAppointmentRaceTrack(userId);
-  const lane = track?.querySelector(".appointment-race-lane");
-  const container = appointmentRaceFloatingCrown.offsetParent || appointmentRaceTrackList.closest(".appointment-race-tracks");
-  if (!track || !lane || !container) {
+  const car = track?.querySelector(".appointment-race-car");
+  if (!track || !car) {
     appointmentRaceFloatingCrown.hidden = true;
     return;
   }
-  const laneRect = lane.getBoundingClientRect();
-  const containerRect = container.getBoundingClientRect();
-  const carPosition = Number.isFinite(Number(position))
-    ? Number(position)
-    : Number(track.dataset.raceCarLeft || APPOINTMENT_RACE_START_POSITION);
-  const x = laneRect.left - containerRect.left + (laneRect.width * carPosition) / 100;
-  const y = laneRect.top - containerRect.top + laneRect.height / 2 - (large ? 30 : 23);
-  appointmentRaceFloatingCrown.style.setProperty("--race-crown-x", `${x}px`);
-  appointmentRaceFloatingCrown.style.setProperty("--race-crown-y", `${y}px`);
+  if (appointmentRaceFloatingCrown.parentElement !== car) {
+    appointmentRaceFloatingCrown.hidden = true;
+    car.append(appointmentRaceFloatingCrown);
+  }
   appointmentRaceFloatingCrown.classList.toggle("is-large", large);
   appointmentRaceFloatingCrown.classList.toggle("is-switching", switching);
   appointmentRaceFloatingCrown.hidden = false;
