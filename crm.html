@@ -1478,6 +1478,10 @@
               border-radius: 8px 8px 0 0;
             }
 
+            .crm-seller-tab-btn * {
+              pointer-events: none;
+            }
+
             .crm-seller-tab-btn:hover {
               color: #161616;
             }
@@ -1745,15 +1749,15 @@
           <main class="crm-seller-commissions-shell">
             <!-- Top Navigation Tabs -->
             <nav class="crm-seller-top-tabs" aria-label="Navegação de comissões">
-              <button type="button" class="crm-seller-tab-btn active" data-crm-tab-target="commissions">
+              <button type="button" class="crm-seller-tab-btn active" data-crm-tab-target="commissions" onclick="switchCommissionSubTab('commissions')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                 <span>Minhas comissões</span>
               </button>
-              <button type="button" class="crm-seller-tab-btn" data-crm-tab-target="history">
+              <button type="button" class="crm-seller-tab-btn" data-crm-tab-target="history" onclick="switchCommissionSubTab('history')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 <span>Histórico de pagamentos</span>
               </button>
-              <button type="button" class="crm-seller-tab-btn" data-crm-tab-target="calculator">
+              <button type="button" class="crm-seller-tab-btn" data-crm-tab-target="calculator" onclick="switchCommissionSubTab('calculator')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
                 <span>Calculadora de comissões</span>
               </button>

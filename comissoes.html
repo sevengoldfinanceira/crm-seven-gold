@@ -56,6 +56,10 @@
         border-radius: 8px 8px 0 0;
       }
 
+      .seller-tab-btn * {
+        pointer-events: none;
+      }
+
       .seller-tab-btn:hover {
         color: #161616;
       }
@@ -329,15 +333,15 @@
     <main class="seller-commissions-shell">
       <!-- Top Navigation Tabs -->
       <nav class="seller-top-tabs" aria-label="Navegação de comissões">
-        <button type="button" class="seller-tab-btn active" data-tab-target="commissions">
+        <button type="button" class="seller-tab-btn active" data-tab-target="commissions" onclick="switchCommissionSubTab('commissions')">
           <i data-lucide="bar-chart-3"></i>
           <span>Minhas comissões</span>
         </button>
-        <button type="button" class="seller-tab-btn" data-tab-target="history">
+        <button type="button" class="seller-tab-btn" data-tab-target="history" onclick="switchCommissionSubTab('history')">
           <i data-lucide="calendar"></i>
           <span>Histórico de pagamentos</span>
         </button>
-        <button type="button" class="seller-tab-btn" data-tab-target="calculator">
+        <button type="button" class="seller-tab-btn" data-tab-target="calculator" onclick="switchCommissionSubTab('calculator')">
           <i data-lucide="calculator"></i>
           <span>Calculadora de comissões</span>
         </button>

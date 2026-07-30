@@ -8174,6 +8174,34 @@ const initCrmCommissionCalculator = () => {
   updateCalculator();
 };
 
+window.switchCommissionSubTab = (target) => {
+  const btns = document.querySelectorAll("[data-tab-target], [data-crm-tab-target]");
+  btns.forEach((b) => {
+    const btnTarget = b.getAttribute("data-tab-target") || b.getAttribute("data-crm-tab-target");
+    if (btnTarget === target) {
+      b.classList.add("active");
+    } else {
+      b.classList.remove("active");
+    }
+  });
+
+  const pComm = document.getElementById("panel-commissions");
+  const pHist = document.getElementById("panel-history");
+  const pCalc = document.getElementById("panel-calculator");
+
+  if (pComm) pComm.style.display = target === "commissions" ? "block" : "none";
+  if (pHist) pHist.style.display = target === "history" ? "block" : "none";
+  if (pCalc) pCalc.style.display = target === "calculator" ? "block" : "none";
+
+  const crmPComm = document.getElementById("crm-panel-commissions");
+  const crmPHist = document.getElementById("crm-panel-history");
+  const crmPCalc = document.getElementById("crm-panel-calculator");
+
+  if (crmPComm) crmPComm.style.display = target === "commissions" ? "block" : "none";
+  if (crmPHist) crmPHist.style.display = target === "history" ? "block" : "none";
+  if (crmPCalc) crmPCalc.style.display = target === "calculator" ? "block" : "none";
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   initCrmCommissionCalculator();
 
@@ -8183,31 +8211,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document.addEventListener("click", (e) => {
-    const btn = e.target.closest("[data-crm-tab-target]");
+    const btn = e.target.closest("[data-tab-target], [data-crm-tab-target]");
     if (!btn) return;
-
-    const target = btn.getAttribute("data-crm-tab-target");
-    if (!target) return;
-
-    document.querySelectorAll("[data-crm-tab-target]").forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    const pComm = document.getElementById("crm-panel-commissions");
-    const pHist = document.getElementById("crm-panel-history");
-    const pCalc = document.getElementById("crm-panel-calculator");
-
-    if (target === "commissions") {
-      if (pComm) pComm.style.display = "block";
-      if (pHist) pHist.style.display = "none";
-      if (pCalc) pCalc.style.display = "none";
-    } else if (target === "history") {
-      if (pComm) pComm.style.display = "none";
-      if (pHist) pHist.style.display = "block";
-      if (pCalc) pCalc.style.display = "none";
-    } else if (target === "calculator") {
-      if (pComm) pComm.style.display = "none";
-      if (pHist) pHist.style.display = "none";
-      if (pCalc) pCalc.style.display = "block";
+    const target = btn.getAttribute("data-tab-target") || btn.getAttribute("data-crm-tab-target");
+    if (target) {
+      window.switchCommissionSubTab(target);
     }
   });
 });
