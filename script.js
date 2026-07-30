@@ -1285,7 +1285,11 @@ document.getElementById("delete-lead-modal-btn")?.addEventListener("click", asyn
     const success = await deleteLead(leadId);
     if (success) {
       modal?.close();
-      await loadLeads();
+      await Promise.all([
+        loadLeads(),
+        loadAppointments(),
+        loadAppointmentRace({ silent: true }),
+      ]);
     }
   }
 });
@@ -8131,7 +8135,11 @@ const setupBulkActions = () => {
           return;
         }
 
-        await loadLeads();
+        await Promise.all([
+          loadLeads(),
+          loadAppointments(),
+          loadAppointmentRace({ silent: true }),
+        ]);
       } catch (err) {
         alert("Erro de conexao ao excluir os leads. Tente novamente.");
         console.error("Bulk delete failed:", err);
