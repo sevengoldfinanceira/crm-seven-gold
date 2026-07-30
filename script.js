@@ -63,6 +63,9 @@ let appointmentRaceCurrentRaceKey = "";
 let appointmentRaceLastLeaderId = "";
 let appointmentRaceLastMode = "";
 const appointmentRaceAnimationTimers = new Set();
+const appointmentRaceAmbientTimers = new Set();
+let appointmentRaceAmbientTimer = null;
+let appointmentRaceLastAmbientUserId = "";
 let appointmentRaceTimer = null;
 let appointmentRacePollTimer = null;
 let appointmentRaceWinnerSeenKey = sessionStorage.getItem("seven-gold-race-winner-seen") || "";
@@ -1433,6 +1436,8 @@ function shouldSeeAllLeads(crmUser) {
 const APPOINTMENT_RACE_AVATAR_BUCKET = "company-documents";
 const APPOINTMENT_RACE_MOVE_MS = 900;
 const APPOINTMENT_RACE_GOAL_MS = 2500;
+const APPOINTMENT_RACE_AMBIENT_START_MS = 520;
+const APPOINTMENT_RACE_AMBIENT_LAUNCH_MS = 1080;
 const APPOINTMENT_RACE_START_POSITION = 6;
 const APPOINTMENT_RACE_FINISH_POSITION = 94;
 const APPOINTMENT_RACE_GOAL_POSITION = 97;
@@ -1631,8 +1636,81 @@ const setAppointmentRaceAnimationTimer = (callback, delay) => {
   return timerId;
 };
 
+const clearAppointmentRaceAmbientClasses = (track) => {
+  if (!track) return;
+  track.classList.remove(
+    "is-ambient-starting",
+    "is-ambient-launching",
+    "is-ambient-double-launch"
+  );
+  track.style.removeProperty("--race-ambient-lurch");
+};
+
+const setAppointmentRaceAmbientPhaseTimer = (callback, delay) => {
+  const timerId = window.setTimeout(() => {
+    appointmentRaceAmbientTimers.delete(timerId);
+    callback();
+  }, delay);
+  appointmentRaceAmbientTimers.add(timerId);
+  return timerId;
+};
+
+const stopAppointmentRaceAmbientMotion = () => {
+  if (appointmentRaceAmbientTimer) {
+    window.clearTimeout(appointmentRaceAmbientTimer);
+    appointmentRaceAmbientTimer = null;
+  }
+  appointmentRaceAmbientTimers.forEach((timerId) => window.clearTimeout(timerId));
+  appointmentRaceAmbientTimers.clear();
+  appointmentRaceLastAmbientUserId = "";
+  document.querySelectorAll(".appointment-race-track.is-ambient-starting, .appointment-race-track.is-ambient-launching, .appointment-race-track.is-ambient-double-launch")
+    .forEach(clearAppointmentRaceAmbientClasses);
+};
+
+const scheduleAppointmentRaceAmbientMotion = (minimumDelay = 1800) => {
+  if (appointmentRaceAmbientTimer || !isAppointmentRaceViewVisible() || prefersReducedAppointmentRaceMotion()) return;
+  const delay = minimumDelay + Math.round(Math.random() * 2800);
+  appointmentRaceAmbientTimer = window.setTimeout(() => {
+    appointmentRaceAmbientTimer = null;
+    if (!isAppointmentRaceViewVisible() || prefersReducedAppointmentRaceMotion()) return;
+
+    const candidates = Array.from(document.querySelectorAll(
+      ".appointment-race-track.is-race-active:not(.is-advancing):not(.is-goal-celebrating)"
+    ));
+    const alternateCandidates = candidates.filter(
+      (track) => track.dataset.raceUserId !== appointmentRaceLastAmbientUserId
+    );
+    const availableTracks = alternateCandidates.length ? alternateCandidates : candidates;
+    const track = availableTracks[Math.floor(Math.random() * availableTracks.length)];
+
+    if (track) {
+      appointmentRaceLastAmbientUserId = track.dataset.raceUserId || "";
+      clearAppointmentRaceAmbientClasses(track);
+      track.style.setProperty("--race-ambient-lurch", `${10 + Math.round(Math.random() * 10)}px`);
+      track.classList.add("is-ambient-starting");
+
+      setAppointmentRaceAmbientPhaseTimer(() => {
+        if (!track.isConnected || !isAppointmentRaceViewVisible() || track.classList.contains("is-advancing")) {
+          clearAppointmentRaceAmbientClasses(track);
+          return;
+        }
+        track.classList.remove("is-ambient-starting");
+        track.classList.add(Math.random() < 0.34 ? "is-ambient-double-launch" : "is-ambient-launching");
+      }, APPOINTMENT_RACE_AMBIENT_START_MS);
+
+      setAppointmentRaceAmbientPhaseTimer(
+        () => clearAppointmentRaceAmbientClasses(track),
+        APPOINTMENT_RACE_AMBIENT_START_MS + APPOINTMENT_RACE_AMBIENT_LAUNCH_MS
+      );
+    }
+
+    scheduleAppointmentRaceAmbientMotion(2200);
+  }, delay);
+};
+
 const cleanupAppointmentRaceAnimations = ({ stopTimer = false, resetSnapshot = false } = {}) => {
   clearAppointmentRaceAnimationTimers();
+  stopAppointmentRaceAmbientMotion();
   document.querySelectorAll(".appointment-race-confetti-burst, .appointment-race-goal-toast").forEach((node) => node.remove());
   document.querySelectorAll(".appointment-race-track.is-advancing, .appointment-race-track.is-goal-celebrating, .appointment-race-ranking-item.is-goal-celebrating")
     .forEach((node) => node.classList.remove("is-advancing", "is-goal-celebrating"));
@@ -1804,6 +1882,7 @@ const animateAppointmentRaceAdvance = ({ userId, count, target, finalProgress, f
       const track = findAppointmentRaceTrack(userId);
       if (!track) return;
       if (Number(track.dataset.raceTargetCount || count) !== Number(count || 0)) return;
+      clearAppointmentRaceAmbientClasses(track);
       track.classList.add("is-advancing");
       track.style.setProperty("--race-progress", `${finalProgress}%`);
       track.style.setProperty("--race-car-left", `${finalPosition}%`);
@@ -2271,6 +2350,7 @@ const renderAppointmentRace = () => {
   saveAppointmentRaceCountSnapshot(race, nextCountSnapshot);
 
   hydrateAppointmentRaceAvatars(participants);
+  scheduleAppointmentRaceAmbientMotion(900);
 
   const leaderCount = Number(leader?.count || 0);
   const leaderMissing = Math.max(0, target - leaderCount);
@@ -8627,8 +8707,14 @@ const switchTab = () => {
 
 window.addEventListener("hashchange", switchTab);
 document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    stopAppointmentRaceAmbientMotion();
+    return;
+  }
   if (!document.hidden && appointmentRaceNeedsRefresh && window.location.hash === "#corrida") {
     initAppointmentRace();
+  } else if (window.location.hash === "#corrida") {
+    scheduleAppointmentRaceAmbientMotion(600);
   }
 });
 
