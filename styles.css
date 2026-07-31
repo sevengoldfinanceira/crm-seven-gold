@@ -13317,7 +13317,7 @@ body.theme-dark .sales-history-list article {
 .sg-transition-overlay.active {
   opacity: 1 !important;
   visibility: visible !important;
-  pointer-events: all !important;
+  pointer-events: none !important;
 }
 
 .sg-transition-content {

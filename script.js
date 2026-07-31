@@ -9112,22 +9112,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("crm-authorized", async () => {
   showCrmEntranceTransition("Sincronizando Leads e Metas...");
-  window.currentCrmUser = window.crmUser || window.sevenGoldCrmSession?.crmUser;
-  await loadCommercialProductions();
-  await loadLeads();
-  hideCrmEntranceTransition();
-  const hash = window.location.hash.replace("#", "") || "pipeline";
-  if (hash === "calendario") {
-    loadAppointments();
-  } else if (hash === "tarefas") {
-    loadTasks();
-  } else if (hash === "dashboard") {
-    loadDashboardMetrics();
-  } else if (hash === "feed") {
-    renderFeed();
-  } else if (hash === "financeiro") {
-    initCrmCommissionCalculator();
-    loadCrmSellerCommissions();
+  try {
+    window.currentCrmUser = window.crmUser || window.sevenGoldCrmSession?.crmUser;
+    await loadCommercialProductions();
+    await loadLeads();
+    const hash = window.location.hash.replace("#", "") || "pipeline";
+    if (hash === "calendario") {
+      loadAppointments();
+    } else if (hash === "tarefas") {
+      loadTasks();
+    } else if (hash === "dashboard") {
+      loadDashboardMetrics();
+    } else if (hash === "feed") {
+      renderFeed();
+    } else if (hash === "financeiro") {
+      initCrmCommissionCalculator();
+      loadCrmSellerCommissions();
+    }
+  } catch (err) {
+    console.error("Erro na inicialização do CRM:", err);
+  } finally {
+    hideCrmEntranceTransition();
   }
 });
 
