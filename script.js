@@ -8325,16 +8325,6 @@ const loadCrmSellerCommissions = async () => {
     } catch (e) {}
   }
 
-  if (!salesList || salesList.length === 0) {
-    salesList = [
-      { id: "s1", client_name: "Marcos Oliveira", credit_amount: 50000, commission_amount: 750, commission_status: "a_receber", closed_at: new Date().toISOString() },
-      { id: "s2", client_name: "Fernanda Lima", credit_amount: 40000, commission_amount: 600, commission_status: "a_receber", closed_at: new Date().toISOString() },
-      { id: "s3", client_name: "Ricardo Souza", credit_amount: 60000, commission_amount: 900, commission_status: "pago", closed_at: new Date().toISOString() },
-      { id: "s4", client_name: "Ana Carolina", credit_amount: 35000, commission_amount: 525, commission_status: "a_receber", closed_at: new Date().toISOString() },
-      { id: "s5", client_name: "Paulo Henrique", credit_amount: 55000, commission_amount: 825, commission_status: "a_receber", closed_at: new Date().toISOString() },
-    ];
-  }
-
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
@@ -9092,33 +9082,6 @@ const renderFeed = async () => {
     }
   });
 
-  // Se o banco ainda não possuir vendas cadastradas, gera postagens demonstrativas reais da equipe
-  if (feedSales.length === 0) {
-    feedSales = [
-      {
-        id: "feed-demo-1",
-        seller_name: "Jhow Oliveira",
-        seller_avatar: null,
-        credit_amount: 350000,
-        closed_at: new Date(Date.now() - 1000 * 60 * 45).toISOString()
-      },
-      {
-        id: "feed-demo-2",
-        seller_name: "Lucas Santos",
-        seller_avatar: null,
-        credit_amount: 220000,
-        closed_at: new Date(Date.now() - 1000 * 60 * 180).toISOString()
-      },
-      {
-        id: "feed-demo-3",
-        seller_name: "Mariana Costa",
-        seller_avatar: null,
-        credit_amount: 500000,
-        closed_at: new Date(Date.now() - 1000 * 60 * 600).toISOString()
-      }
-    ];
-  }
-
   const getFeedSaleTimestamp = (sale) => {
     const rawDate = sale.closed_at || sale.updated_at || sale.created_at;
     const timestamp = rawDate ? new Date(rawDate).getTime() : Number.POSITIVE_INFINITY;
@@ -9136,6 +9099,16 @@ const renderFeed = async () => {
   const currentUserName = currentUser?.nome || currentUser?.name || "Consultor Seven Gold";
 
   feedList.innerHTML = "";
+
+  if (feedSales.length === 0) {
+    feedList.innerHTML = `
+      <div class="feed-empty-state">
+        <strong>Nenhuma venda no feed ainda.</strong>
+        <span>As vendas aparecem aqui quando o contrato for finalizado.</span>
+      </div>
+    `;
+    return;
+  }
 
   feedSales.forEach((sale) => {
     const saleId = String(sale.id);

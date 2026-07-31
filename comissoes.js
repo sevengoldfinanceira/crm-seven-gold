@@ -87,17 +87,6 @@
       }
     }
 
-    // Se o banco ainda não possuir vendas cadastradas para o usuário, carrega a lista padrão com o layout da referência visual
-    if (!salesList || salesList.length === 0) {
-      salesList = [
-        { id: "s1", client_name: "Marcos Oliveira", credit_amount: 50000, commission_amount: 750, commission_status: "a_receber", closed_at: new Date().toISOString() },
-        { id: "s2", client_name: "Fernanda Lima", credit_amount: 40000, commission_amount: 600, commission_status: "a_receber", closed_at: new Date().toISOString() },
-        { id: "s3", client_name: "Ricardo Souza", credit_amount: 60000, commission_amount: 900, commission_status: "pago", closed_at: new Date().toISOString() },
-        { id: "s4", client_name: "Ana Carolina", credit_amount: 35000, commission_amount: 525, commission_status: "a_receber", closed_at: new Date().toISOString() },
-        { id: "s5", client_name: "Paulo Henrique", credit_amount: 55000, commission_amount: 825, commission_status: "a_receber", closed_at: new Date().toISOString() },
-      ];
-    }
-
     const filteredSales = filterSalesByPeriod(salesList, period);
 
     let salesCount = filteredSales.length;
