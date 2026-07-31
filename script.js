@@ -89,12 +89,28 @@ let selectedPipelinePeriodValue = "";
 
 const syncPipelineMonthToProduction = () => {
   const monthInput = document.getElementById("pipeline-period-month-input");
-  const productionMonth = selectedProduction?.starts_at?.slice(0, 7);
-  if (!monthInput || !productionMonth) return;
-  monthInput.min = productionMonth;
-  monthInput.max = productionMonth;
+  if (!monthInput) return;
+  const now = new Date();
+  const pad = (v) => String(v).padStart(2, "0");
+  const fallbackMonth = `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
+  const productionMonth = selectedProduction?.starts_at?.slice(0, 7) || fallbackMonth;
+  
+  if (selectedProduction?.starts_at) {
+    monthInput.min = productionMonth;
+    monthInput.max = productionMonth;
+  } else {
+    monthInput.removeAttribute("min");
+    monthInput.removeAttribute("max");
+  }
+  
   monthInput.value = productionMonth;
   if (selectedPipelinePeriod === "month") selectedPipelinePeriodValue = productionMonth;
+
+  const displayInput = document.getElementById("pipeline-period-display-input");
+  if (displayInput) {
+    const start = selectedProduction?.starts_at ? new Date(`${selectedProduction.starts_at}T00:00:00Z`) : new Date();
+    displayInput.value = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric", timeZone: "UTC" }).format(start);
+  }
 };
 
 const isSelectedProductionClosed = () => selectedProduction?.status === "closed";

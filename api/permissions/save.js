@@ -80,13 +80,22 @@ async function listAuthorizedPipelineLeads(crmUser, productionId) {
     if (role !== 'diretor-ceo' && requestedProduction.status !== 'open') return { status: 403, error: 'Seu perfil só pode acessar a produção atual aberta.' };
     scopedProduction = requestedProduction;
   } else {
-    const { data: openProduction, error: productionError } = await supabase.from('commercial_productions').select('id,status,starts_at,ends_at').eq('status', 'open').limit(1).maybeSingle();
-    if (productionError?.code === 'PGRST205') scopedProductionId = null;
-    else if (productionError) return { status: 500, error: productionError.message };
-    if (!openProduction && productionError?.code !== 'PGRST205') return { status: 409, error: 'Não existe produção aberta. Peça ao Diretor-CEO para iniciar uma nova produção.' };
-    if (openProduction) {
+    const { data: openProduction, error: productionError } = await supabase.from('commercial_productions').select('id,status,starts_at,ends_at').eq('status', 'open').order('starts_at', { ascending: false }).limit(1).maybeSingle();
+    if (productionError?.code === 'PGRST205') {
+      scopedProductionId = null;
+    } else if (productionError) {
+      return { status: 500, error: productionError.message };
+    } else if (openProduction) {
       scopedProductionId = openProduction.id;
       scopedProduction = openProduction;
+    } else {
+      const { data: latestProduction } = await supabase.from('commercial_productions').select('id,status,starts_at,ends_at').order('starts_at', { ascending: false }).limit(1).maybeSingle();
+      if (latestProduction) {
+        scopedProductionId = latestProduction.id;
+        scopedProduction = latestProduction;
+      } else {
+        scopedProductionId = null;
+      }
     }
   }
   const baseLeadFields = 'id,name,origin,note,status,created_at,updated_at,ultima_interacao,telefone,property_region,credit_value,down_payment_value,installment_value,tags,assigned_to_email,assigned_to_name,created_by_email,created_by_name,updated_by_email,updated_by_name';
