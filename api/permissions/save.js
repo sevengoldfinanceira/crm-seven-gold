@@ -7,6 +7,67 @@ const TEAM_MANAGER_ROLES = new Set([...ADMIN_ROLES, 'coordenador-comercial', 'su
 const normalizeRole = (value) => String(value || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/^diretor-e-ceo$/, 'diretor-ceo');
 
 const PIPELINE_TEAM_ROLES = new Set(['coordenador-comercial', 'supervisor-comercial']);
+const DASHBOARD_APPOINTMENT_FIELDS = 'id,lead_id,data_agendamento,hora_agendamento,status,created_at,usuario_id,assigned_to_email,assigned_to_name';
+const DASHBOARD_APPOINTMENT_BASE_FIELDS = 'id,lead_id,data_agendamento,hora_agendamento,status,created_at,usuario_id';
+const isMissingAppointmentAssigneeColumns = (error) => /assigned_to_(email|name)/i.test(`${error?.message || ''} ${error?.details || ''}`);
+
+async function getAuthUserIdsByEmails(emails) {
+  const wantedEmails = new Set((emails || []).map(email => String(email || '').trim().toLowerCase()).filter(Boolean));
+  if (!wantedEmails.size || !supabase?.auth?.admin?.listUsers) return [];
+
+  const ids = new Set();
+  for (let page = 1; page <= 20 && ids.size < wantedEmails.size; page += 1) {
+    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage: 1000 });
+    if (error) {
+      console.warn('[Dashboard] Não foi possível mapear auth.users por e-mail:', error.message);
+      break;
+    }
+
+    const users = data?.users || [];
+    users.forEach(user => {
+      const email = String(user?.email || '').trim().toLowerCase();
+      if (wantedEmails.has(email) && user?.id) ids.add(user.id);
+    });
+    if (users.length < 1000) break;
+  }
+
+  return [...ids];
+}
+
+async function getPipelineTeamEmails(crmUser) {
+  const teamEmails = [String(crmUser.email || '').trim().toLowerCase()].filter(Boolean);
+  const { data: team, error: teamError } = await supabase.from('crm_teams').select('id').eq('coordinator_user_id', crmUser.id).maybeSingle();
+  if (teamError) return { error: teamError.message };
+  if (!team?.id) return { emails: teamEmails };
+
+  const { data: members, error: membersError } = await supabase.from('crm_team_members').select('user_id').eq('team_id', team.id);
+  if (membersError) return { error: membersError.message };
+  if (!members?.length) return { emails: teamEmails };
+
+  const { data: users, error: usersError } = await supabase.from('crm_users').select('email').in('id', members.map(m => m.user_id)).eq('ativo', true);
+  if (usersError) return { error: usersError.message };
+
+  return {
+    emails: [...new Set([...teamEmails, ...(users || []).map(u => String(u.email || '').trim().toLowerCase())].filter(Boolean))],
+  };
+}
+
+async function runDashboardAppointmentQuery(applyQuery, { requiresAssignee = false } = {}) {
+  let result = await applyQuery(
+    supabase.from('appointments').select(DASHBOARD_APPOINTMENT_FIELDS).neq('status', 'cancelado'),
+    true
+  );
+
+  if (result.error && isMissingAppointmentAssigneeColumns(result.error)) {
+    if (requiresAssignee) return { data: [], error: null };
+    result = await applyQuery(
+      supabase.from('appointments').select(DASHBOARD_APPOINTMENT_BASE_FIELDS).neq('status', 'cancelado'),
+      false
+    );
+  }
+
+  return result;
+}
 
 async function listAuthorizedPipelineLeads(crmUser, productionId) {
   const role = normalizeRole(crmUser.cargo);
@@ -113,12 +174,52 @@ async function getAuthorizedPipelineHistory(crmUser, productionId) {
   if (leadResult.error) return leadResult;
   const leads = leadResult.leads || [];
   const leadIds = leads.map(l => l.id).filter(Boolean);
-  if (!leadIds.length) return { status: 200, leads, stageEvents: [], appointments: [] };
-  const [eventsResult, appointmentsResult] = await Promise.all([
-    supabase.from('lead_activity_logs').select('lead_id,action_type,old_value,new_value,created_at').in('lead_id', leadIds).in('action_type', ['status_changed', 'stage_changed']).order('created_at', { ascending: true }),
-    supabase.from('appointments').select('id,lead_id,data_agendamento,hora_agendamento,status,created_at').in('lead_id', leadIds).neq('status', 'cancelado'),
+  const role = normalizeRole(crmUser.cargo);
+  const appointmentQueries = [];
+
+  if (leadIds.length) {
+    appointmentQueries.push(runDashboardAppointmentQuery(query => query.in('lead_id', leadIds)));
+  }
+
+  if (ADMIN_ROLES.has(role)) {
+    appointmentQueries.push(runDashboardAppointmentQuery(query => query));
+  } else {
+    let scopedEmails = [String(crmUser.email || '').trim().toLowerCase()].filter(Boolean);
+    if (PIPELINE_TEAM_ROLES.has(role)) {
+      const teamResult = await getPipelineTeamEmails(crmUser);
+      if (teamResult.error) return { status: 500, error: teamResult.error };
+      scopedEmails = teamResult.emails || scopedEmails;
+    }
+
+    const authUserIds = await getAuthUserIdsByEmails(scopedEmails);
+    if (scopedEmails.length) {
+      appointmentQueries.push(runDashboardAppointmentQuery(query => query.in('assigned_to_email', scopedEmails), { requiresAssignee: true }));
+    }
+    if (authUserIds.length) {
+      appointmentQueries.push(runDashboardAppointmentQuery(query => query.in('usuario_id', authUserIds)));
+    }
+  }
+
+  const [eventsResult, ...appointmentResults] = await Promise.all([
+    leadIds.length
+      ? supabase.from('lead_activity_logs').select('lead_id,action_type,old_value,new_value,created_at').in('lead_id', leadIds).in('action_type', ['status_changed', 'stage_changed']).order('created_at', { ascending: true })
+      : Promise.resolve({ data: [], error: null }),
+    ...appointmentQueries,
   ]);
-  return { status: 200, leads, stageEvents: eventsResult.error ? [] : (eventsResult.data || []), appointments: appointmentsResult.error ? [] : (appointmentsResult.data || []) };
+
+  const appointmentsById = new Map();
+  appointmentResults.forEach(result => {
+    if (result.error) {
+      console.warn('[Dashboard] Erro ao buscar agendamentos:', result.error.message);
+      return;
+    }
+    (result.data || []).forEach(appointment => {
+      const key = String(appointment.id || `${appointment.lead_id || 'sem-lead'}-${appointment.data_agendamento || ''}-${appointment.hora_agendamento || ''}`);
+      if (!appointmentsById.has(key)) appointmentsById.set(key, appointment);
+    });
+  });
+
+  return { status: 200, leads, stageEvents: eventsResult.error ? [] : (eventsResult.data || []), appointments: [...appointmentsById.values()] };
 }
 
 const getPreviousMonthKeys = (period, count = 6) => { const [y, m] = period.split('-').map(Number); return Array.from({ length: count }, (_, i) => { const d = new Date(Date.UTC(y, m - 1 - i, 1)); return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`; }); };

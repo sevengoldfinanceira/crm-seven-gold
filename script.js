@@ -4462,12 +4462,14 @@ const loadDashboardMetrics = async () => {
   let leads = history.leads;
 
   const normalizeMetricEmail = (value) => String(value || "").trim().toLowerCase();
+  let dashboardResponsibleEmail = "";
+  let dashboardAllowedEmails = null;
   if (activeDashResponsibleEmail) {
-    const responsibleEmail = normalizeMetricEmail(activeDashResponsibleEmail);
-    leads = leads.filter((lead) => normalizeMetricEmail(lead.assigned_to_email) === responsibleEmail);
+    dashboardResponsibleEmail = normalizeMetricEmail(activeDashResponsibleEmail);
+    leads = leads.filter((lead) => normalizeMetricEmail(lead.assigned_to_email) === dashboardResponsibleEmail);
   } else if (dashboardTeamEmails?.length) {
-    const allowedEmails = new Set(dashboardTeamEmails.map(normalizeMetricEmail));
-    leads = leads.filter((lead) => allowedEmails.has(normalizeMetricEmail(lead.assigned_to_email)));
+    dashboardAllowedEmails = new Set(dashboardTeamEmails.map(normalizeMetricEmail));
+    leads = leads.filter((lead) => dashboardAllowedEmails.has(normalizeMetricEmail(lead.assigned_to_email)));
   }
 
   const periodRange = getDashboardPeriodRange(selectedDashPeriod, selectedDashPeriodValue);
@@ -4476,8 +4478,18 @@ const loadDashboardMetrics = async () => {
   const periodEvents = history.stageEvents.filter((event) =>
     visibleLeadIds.has(String(event.lead_id)) && isWithinDashboardPeriod(event.created_at, periodRange)
   );
+  const isDashboardAppointmentVisible = (appointment) => {
+    const appointmentEmail = normalizeMetricEmail(appointment.assigned_to_email);
+    if (dashboardResponsibleEmail) {
+      return appointmentEmail === dashboardResponsibleEmail || visibleLeadIds.has(String(appointment.lead_id || ""));
+    }
+    if (dashboardAllowedEmails) {
+      return (appointmentEmail && dashboardAllowedEmails.has(appointmentEmail)) || visibleLeadIds.has(String(appointment.lead_id || ""));
+    }
+    return true;
+  };
   const periodAppointments = history.appointments.filter((appointment) =>
-    visibleLeadIds.has(String(appointment.lead_id)) &&
+    isDashboardAppointmentVisible(appointment) &&
     isWithinDashboardPeriod(appointment.data_agendamento || appointment.created_at, periodRange, Boolean(appointment.data_agendamento))
   );
 
@@ -4640,8 +4652,8 @@ const loadDashboardMetrics = async () => {
       const actualLeads = userLeads.length;
       const actualSales = userLeads.filter(l => l.status === "venda_fechada").length;
 
-      const actualAppts = (apptsData || []).filter(a => {
-        if (a.assigned_to_email !== email || !a.data_agendamento) return false;
+      const actualAppts = (history.appointments || []).filter(a => {
+        if (normalizeMetricEmail(a.assigned_to_email) !== normalizeMetricEmail(email) || !a.data_agendamento) return false;
         return a.data_agendamento.startsWith(currentMonthStr);
       }).length;
 
