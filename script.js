@@ -4494,16 +4494,23 @@ const loadDashboardMetrics = async () => {
   );
 
   const serviceLeadIds = new Set();
+  const scheduledLeadKeys = new Set();
   const storeLeadIds = new Set();
   const closedLeadIds = new Set();
   const cancelledLeadIds = new Set();
   const historicalLeadIds = new Set(history.stageEvents.map((event) => String(event.lead_id)));
+
+  periodAppointments.forEach((appointment) => {
+    const lid = String(appointment.lead_id || appointment.id || "").trim();
+    if (lid) scheduledLeadKeys.add(lid);
+  });
 
   periodEvents.forEach((event) => {
     const leadId = String(event.lead_id);
     const status = String(event.new_value || "").trim().toLowerCase();
     const previousStatus = String(event.old_value || "").trim().toLowerCase();
     if (status === "primeiro_contato" || previousStatus === "primeiro_contato") serviceLeadIds.add(leadId);
+    if (status === "agendamento" || previousStatus === "agendamento") scheduledLeadKeys.add(leadId);
     if (status === "cliente_em_loja") storeLeadIds.add(leadId);
     if (status === "venda_fechada") closedLeadIds.add(leadId);
     if (status === "cancelado") cancelledLeadIds.add(leadId);
@@ -4513,20 +4520,29 @@ const loadDashboardMetrics = async () => {
   // quando a última movimentação pertence ao período selecionado.
   leads.forEach((lead) => {
     const leadId = String(lead.id);
-    if (historicalLeadIds.has(leadId)) return;
-    const movementDate = lead.updated_at || lead.ultima_interacao || lead.created_at;
-    if (!isWithinDashboardPeriod(movementDate, periodRange)) return;
     const status = String(lead.status || "").trim().toLowerCase();
     const statusIndex = pipelineStatusOrder.indexOf(status);
+    const movementDate = lead.updated_at || lead.ultima_interacao || lead.created_at;
+    const inPeriod = isWithinDashboardPeriod(movementDate, periodRange) || isWithinDashboardPeriod(lead.created_at, periodRange);
+
+    if (inPeriod && (statusIndex >= pipelineStatusOrder.indexOf("agendamento") || ["agendamento", "agendados", "agendado"].includes(status))) {
+      scheduledLeadKeys.add(leadId);
+    }
+
+    if (historicalLeadIds.has(leadId)) {
+      if (inPeriod && ["agendamento", "agendados", "agendado"].includes(status)) {
+        scheduledLeadKeys.add(leadId);
+      }
+      return;
+    }
+    if (!inPeriod) return;
+
     if (statusIndex >= pipelineStatusOrder.indexOf("primeiro_contato")) serviceLeadIds.add(leadId);
     if (["cliente_em_loja", "em_aprovacao", "proposta_enviada", "venda_fechada", "nao_quer", "não_quer", "nao_tem_interesse", "perdido"].includes(status)) {
       storeLeadIds.add(leadId);
     }
     if (status === "venda_fechada") closedLeadIds.add(leadId);
     if (status === "cancelado") cancelledLeadIds.add(leadId);
-  });
-
-  const scheduledLeadKeys = new Set(periodAppointments.map((appointment) => String(appointment.lead_id || appointment.id)).filter(Boolean));
   const inService = serviceLeadIds.size;
   const notServed = Math.max(receivedLeads - inService, 0);
   const clientsInStore = storeLeadIds.size;
