@@ -9053,20 +9053,6 @@ document.addEventListener("crm-authorized", async () => {
 /* ==========================================================================
    SISTEMA INTERATIVO DE FEED DE VENDAS (MURAL DE CONQUISTAS)
    ========================================================================== */
-const getFeedReactionsStorage = () => {
-  try {
-    return JSON.parse(localStorage.getItem("crm_feed_reactions") || "{}");
-  } catch (e) {
-    return {};
-  }
-};
-
-const saveFeedReactionsStorage = (data) => {
-  try {
-    localStorage.setItem("crm_feed_reactions", JSON.stringify(data));
-  } catch (e) {}
-};
-
 const getFeedCommentsStorage = () => {
   try {
     return JSON.parse(localStorage.getItem("crm_feed_comments") || "{}");
@@ -9145,10 +9131,8 @@ const renderFeed = async () => {
     countEl.textContent = `${feedSales.length} Venda(s) no Feed`;
   }
 
-  const reactionsData = getFeedReactionsStorage();
   const commentsData = getFeedCommentsStorage();
   const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : window.currentCrmUser;
-  const currentUserId = currentUser?.id || "user-local";
   const currentUserName = currentUser?.nome || currentUser?.name || "Consultor Seven Gold";
 
   feedList.innerHTML = "";
@@ -9181,10 +9165,6 @@ const renderFeed = async () => {
       ? `<img src="${escapeHtml(sale.seller_avatar)}" alt="${escapeHtml(sellerName)}" />`
       : `<span>${initials}</span>`;
 
-    // Reações
-    const postReactions = reactionsData[saleId] || { clap: 0, fire: 0, heart: 0, party: 0, userReacted: {} };
-    const userReactedMap = postReactions.userReacted || {};
-
     // Comentários
     const postComments = commentsData[saleId] || [];
 
@@ -9208,21 +9188,6 @@ const renderFeed = async () => {
       </div>
 
       <footer class="feed-card-footer">
-        <div class="feed-reactions-bar">
-          <button type="button" class="feed-reaction-btn ${userReactedMap[currentUserId + '_clap'] ? 'is-active' : ''}" data-reaction="clap">
-            <span>👏</span> <small class="reaction-count">${postReactions.clap || 0}</small>
-          </button>
-          <button type="button" class="feed-reaction-btn ${userReactedMap[currentUserId + '_fire'] ? 'is-active' : ''}" data-reaction="fire">
-            <span>🔥</span> <small class="reaction-count">${postReactions.fire || 0}</small>
-          </button>
-          <button type="button" class="feed-reaction-btn ${userReactedMap[currentUserId + '_heart'] ? 'is-active' : ''}" data-reaction="heart">
-            <span>❤️</span> <small class="reaction-count">${postReactions.heart || 0}</small>
-          </button>
-          <button type="button" class="feed-reaction-btn ${userReactedMap[currentUserId + '_party'] ? 'is-active' : ''}" data-reaction="party">
-            <span>🎉</span> <small class="reaction-count">${postReactions.party || 0}</small>
-          </button>
-        </div>
-
         <div class="feed-comments-section">
           <div class="feed-comments-list" id="feed-comments-${saleId}">
             ${postComments.map(c => `
@@ -9249,15 +9214,6 @@ const renderFeed = async () => {
       </footer>
     `;
 
-    // Event listeners de reações
-    const rxBtns = card.querySelectorAll(".feed-reaction-btn");
-    rxBtns.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const type = btn.getAttribute("data-reaction");
-        toggleFeedReaction(saleId, type, currentUserId, card);
-      });
-    });
-
     // Event listener de comentários
     const commentForm = card.querySelector(".feed-comment-form");
     if (commentForm) {
@@ -9272,34 +9228,6 @@ const renderFeed = async () => {
 
     feedList.appendChild(card);
   });
-};
-
-const toggleFeedReaction = (saleId, type, userId, cardEl) => {
-  const storage = getFeedReactionsStorage();
-  if (!storage[saleId]) {
-    storage[saleId] = { clap: 0, fire: 0, heart: 0, party: 0, userReacted: {} };
-  }
-  const post = storage[saleId];
-  post.userReacted = post.userReacted || {};
-  const userKey = userId + "_" + type;
-
-  if (post.userReacted[userKey]) {
-    delete post.userReacted[userKey];
-    post[type] = Math.max(0, (post[type] || 1) - 1);
-  } else {
-    post.userReacted[userKey] = true;
-    post[type] = (post[type] || 0) + 1;
-  }
-
-  storage[saleId] = post;
-  saveFeedReactionsStorage(storage);
-
-  const btn = cardEl.querySelector(`.feed-reaction-btn[data-reaction="${type}"]`);
-  if (btn) {
-    btn.classList.toggle("is-active", !!post.userReacted[userKey]);
-    const countEl = btn.querySelector(".reaction-count");
-    if (countEl) countEl.textContent = post[type] || 0;
-  }
 };
 
 const addFeedComment = (saleId, userName, text, cardEl) => {

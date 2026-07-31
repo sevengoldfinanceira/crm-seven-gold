@@ -13632,60 +13632,12 @@ body.theme-dark .sales-history-list article {
   overflow-wrap: anywhere;
 }
 
-/* BOTTOM: REAÇÕES E COMENTÁRIOS */
+/* BOTTOM: COMENTÁRIOS */
 .feed-card-footer {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding-top: 0;
-}
-
-/* BARRA DE REAÇÕES */
-.feed-reactions-bar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 6px;
-  flex-wrap: wrap;
-  padding: 8px;
-  background: #F8FAFC;
-  border-radius: 12px;
-  border: 1px solid #E2E8F0;
-}
-
-.feed-reaction-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 32px;
-  padding: 5px 10px;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 999px;
-  font-size: 0.88rem;
-  font-weight: 750;
-  color: #475569;
-  cursor: pointer;
-  transition: all 0.18s ease;
-  user-select: none;
-}
-
-.feed-reaction-btn:hover {
-  border-color: rgba(185, 130, 32, 0.4);
-  background: #FFFDF5;
-  transform: translateY(-1px);
-}
-
-.feed-reaction-btn.is-active {
-  background: #FFFDF5;
-  border-color: #B98220;
-  color: #B98220;
-  box-shadow: 0 4px 12px rgba(185, 130, 32, 0.18);
-}
-
-.feed-reaction-btn .reaction-count {
-  font-weight: 800;
-  font-size: 0.78rem;
 }
 
 /* ESPAÇO DE COMENTÁRIOS */
@@ -13835,22 +13787,9 @@ body.theme-dark .feed-card-cota {
   border-color: rgba(212, 175, 55, 0.3);
 }
 
-body.theme-dark .feed-reactions-bar,
 body.theme-dark .feed-comment-item {
   background: #1E293B;
   border-color: #334155;
-}
-
-body.theme-dark .feed-reaction-btn {
-  background: #0F172A;
-  border-color: #334155;
-  color: #94A3B8;
-}
-
-body.theme-dark .feed-reaction-btn.is-active {
-  background: rgba(212, 175, 55, 0.15);
-  border-color: #B98220;
-  color: #E8B138;
 }
 
 body.theme-dark .feed-comment-input {
