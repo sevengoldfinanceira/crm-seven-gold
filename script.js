@@ -3327,12 +3327,26 @@ const initPipelineCalendarPicker = () => {
   periodSelect.dataset.calendarReady = "true";
 
   const pad = (v) => String(v).padStart(2, "0");
-  const parseDateKey = (value) => value ? new Date(`${value}T12:00:00`) : null;
+  const safeParseDate = (value) => {
+    if (!value) return null;
+    const str = String(value).trim();
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(str);
+    if (match) {
+      const year = parseInt(match[1], 10);
+      const month = parseInt(match[2], 10) - 1;
+      const day = parseInt(match[3], 10);
+      const d = new Date(year, month, day, 12, 0, 0);
+      return Number.isNaN(d.getTime()) ? null : d;
+    }
+    const d = new Date(str);
+    return Number.isNaN(d.getTime()) ? null : d;
+  };
+  const parseDateKey = (value) => safeParseDate(value);
   const toDateKeyFromDate = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
   const shortDate = (date) => `${pad(date.getDate())}/${pad(date.getMonth() + 1)}`;
   const fullDate = (date) => `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
-  const productionStartDate = () => parseDateKey(selectedProduction?.starts_at);
-  const productionEndDate = () => parseDateKey(selectedProduction?.ends_at);
+  const productionStartDate = () => safeParseDate(selectedProduction?.starts_at);
+  const productionEndDate = () => safeParseDate(selectedProduction?.ends_at);
 
   const getWeekStartFromValue = (value) => {
     const match = /^(\d{4})-W(\d{2})$/.exec(value || "");
@@ -3413,10 +3427,12 @@ const initPipelineCalendarPicker = () => {
       displayInput.value = `${shortDate(start)} - ${shortDate(end)}`;
       return;
     }
-    const start = productionStartDate();
-    displayInput.value = start
-      ? new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(start)
-      : value;
+    const start = productionStartDate() || parseDateKey(value) || new Date();
+    try {
+      displayInput.value = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(start);
+    } catch (_) {
+      displayInput.value = value || "";
+    }
   };
 
   const updateNavigationBounds = () => {
@@ -7495,21 +7511,53 @@ const renderLeads = (leads) => {
 setupPipelineTagFilters();
 
 const getPipelineLeadDateRange = () => {
-  if (!selectedPipelinePeriodValue) return null;
+  const parseDateString = (value) => {
+    if (!value) return null;
+    const str = String(value).trim();
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(str);
+    if (match) {
+      const year = parseInt(match[1], 10);
+      const month = parseInt(match[2], 10) - 1;
+      const day = parseInt(match[3], 10);
+      const d = new Date(year, month, day, 12, 0, 0);
+      return Number.isNaN(d.getTime()) ? null : d;
+    }
+    const d = new Date(str);
+    return Number.isNaN(d.getTime()) ? null : d;
+  };
+
+  if (!selectedPipelinePeriodValue) {
+    const now = new Date();
+    const pad = (v) => String(v).padStart(2, "0");
+    selectedPipelinePeriodValue = selectedProduction?.starts_at?.slice(0, 7) || `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
+  }
 
   if (selectedPipelinePeriod === "day") {
-    const start = new Date(`${selectedPipelinePeriodValue}T00:00:00-03:00`);
-    if (Number.isNaN(start.getTime())) return null;
+    const start = parseDateString(selectedPipelinePeriodValue);
+    if (!start) return null;
+    start.setHours(0, 0, 0, 0);
     return { start, end: new Date(start.getTime() + 24 * 60 * 60 * 1000) };
   }
 
   if (selectedPipelinePeriod === "month") {
-    const startsAt = selectedProduction?.starts_at;
+    const startsAt = selectedProduction?.starts_at || (selectedPipelinePeriodValue ? `${selectedPipelinePeriodValue}-01` : null);
     const endsAt = selectedProduction?.ends_at;
-    if (!startsAt || !endsAt) return null;
-    const start = new Date(`${startsAt}T00:00:00-03:00`);
-    const finalDay = new Date(`${endsAt}T00:00:00-03:00`);
-    return { start, end: new Date(finalDay.getTime() + 24 * 60 * 60 * 1000) };
+    const start = parseDateString(startsAt);
+    if (!start) return null;
+    start.setHours(0, 0, 0, 0);
+
+    let end;
+    if (endsAt) {
+      const finalDay = parseDateString(endsAt);
+      if (finalDay) {
+        finalDay.setHours(23, 59, 59, 999);
+        end = finalDay;
+      }
+    }
+    if (!end) {
+      end = new Date(start.getFullYear(), start.getMonth() + 1, 0, 23, 59, 59, 999);
+    }
+    return { start, end };
   }
 
   const match = /^(\d{4})-W(\d{2})$/.exec(selectedPipelinePeriodValue);
@@ -7520,8 +7568,7 @@ const getPipelineLeadDateRange = () => {
   const januaryFourthDay = januaryFourth.getUTCDay() || 7;
   const monday = new Date(januaryFourth);
   monday.setUTCDate(januaryFourth.getUTCDate() - januaryFourthDay + 1 + ((week - 1) * 7));
-  const date = `${monday.getUTCFullYear()}-${String(monday.getUTCMonth() + 1).padStart(2, "0")}-${String(monday.getUTCDate()).padStart(2, "0")}`;
-  const start = new Date(`${date}T00:00:00-03:00`);
+  const start = new Date(monday.getUTCFullYear(), monday.getUTCMonth(), monday.getUTCDate(), 0, 0, 0);
   return { start, end: new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000) };
 };
 
