@@ -7573,11 +7573,17 @@ const getPipelineLeadDateRange = () => {
 };
 
 const filterLeadsByPipelinePeriod = (leads) => {
+  if (!Array.isArray(leads)) return [];
+  if (selectedPipelinePeriod === "month") {
+    return leads;
+  }
   const range = getPipelineLeadDateRange();
   if (!range) return leads;
   return leads.filter((lead) => {
+    if (selectedProduction && String(lead.production_id) === String(selectedProduction.id)) return true;
     const createdAt = new Date(lead.created_at);
-    return !Number.isNaN(createdAt.getTime()) && createdAt >= range.start && createdAt < range.end;
+    if (Number.isNaN(createdAt.getTime())) return true;
+    return createdAt >= range.start && createdAt < range.end;
   });
 };
 

@@ -284,19 +284,19 @@ function sgNavigateWithPanelsTransition(target, title = "Acessando Painéis...")
     }
 
     const permissions = {
-      "diretor-ceo": ["dashboard", "pipeline", "calendario", "corrida", "vendas", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios", "financeiro", "marketing"],
-      vendedor: ["dashboard", "pipeline", "calendario", "corrida", "vendas"],
-      representante: ["dashboard", "pipeline", "calendario", "corrida", "vendas"],
-      "assistente-vendas": ["dashboard", "pipeline", "calendario", "corrida", "vendas"],
-      "home-office": ["dashboard", "pipeline", "calendario", "corrida", "vendas"],
-      "coordenador-comercial": ["dashboard", "pipeline", "calendario", "corrida", "vendas", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios"],
-      "supervisor-comercial": ["dashboard", "pipeline", "calendario", "corrida", "vendas", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios"],
-      "coordenador-posvenda": ["dashboard", "pipeline", "calendario", "corrida", "vendas", "tarefas", "feed", "cadastro", "relatorios"],
-      "coordenador-adm": ["dashboard", "cadastro", "equipe", "organograma", "relatorios"],
-      "coordenador-financeiro": ["dashboard", "pipeline", "calendario", "corrida", "vendas", "cadastro", "financeiro", "relatorios"],
-      "coordenador-mkt": ["dashboard", "pipeline", "calendario", "corrida", "vendas", "cadastro", "marketing", "feed"],
-      "coordenador-rh": ["dashboard", "equipe", "organograma", "relatorios"],
-      "advogado-juridico": ["dashboard", "cadastro"]
+      "diretor-ceo": ["dashboard", "pipeline", "calendario", "corrida", "vendas", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios", "financeiro", "marketing", "mapas"],
+      vendedor: ["dashboard", "pipeline", "calendario", "corrida", "vendas", "feed", "financeiro", "equipe", "tarefas", "mapas"],
+      representante: ["dashboard", "pipeline", "calendario", "corrida", "vendas", "feed", "financeiro", "equipe", "tarefas", "mapas"],
+      "assistente-vendas": ["dashboard", "pipeline", "calendario", "corrida", "vendas", "feed", "financeiro", "equipe", "tarefas", "mapas"],
+      "home-office": ["dashboard", "pipeline", "calendario", "corrida", "vendas", "feed", "financeiro", "equipe", "tarefas", "mapas"],
+      "coordenador-comercial": ["dashboard", "pipeline", "calendario", "corrida", "vendas", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios", "financeiro", "mapas"],
+      "supervisor-comercial": ["dashboard", "pipeline", "calendario", "corrida", "vendas", "tarefas", "feed", "cadastro", "equipe", "equipes-desempenho", "relatorios", "financeiro", "mapas"],
+      "coordenador-posvenda": ["dashboard", "pipeline", "calendario", "corrida", "vendas", "tarefas", "feed", "cadastro", "relatorios", "financeiro", "mapas"],
+      "coordenador-adm": ["dashboard", "cadastro", "equipe", "organograma", "relatorios", "financeiro", "mapas"],
+      "coordenador-financeiro": ["dashboard", "pipeline", "calendario", "corrida", "vendas", "cadastro", "financeiro", "relatorios", "mapas"],
+      "coordenador-mkt": ["dashboard", "pipeline", "calendario", "corrida", "vendas", "cadastro", "marketing", "feed", "financeiro", "mapas"],
+      "coordenador-rh": ["dashboard", "equipe", "organograma", "relatorios", "mapas"],
+      "advogado-juridico": ["dashboard", "cadastro", "mapas"]
     };
 
     return permissions[role]?.includes(areaKey) || false;
