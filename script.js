@@ -8679,6 +8679,7 @@ const switchTab = () => {
   });
   document.body.classList.toggle("crm-race-active", activeTab === "corrida");
   document.body.classList.toggle("crm-maps-active", activeTab === "mapas");
+  document.body.classList.toggle("crm-feed-active", activeTab === "feed");
   if (activeTab !== "corrida") {
     cleanupAppointmentRaceAnimations({ stopTimer: true });
   }
@@ -9100,7 +9101,7 @@ const renderFeed = async () => {
         seller_name: lead.seller_name || lead.responsavel || lead.vendedor || "Vendedor Seven Gold",
         seller_avatar: lead.seller_avatar || null,
         credit_amount: lead.credit_amount || lead.valor_credito || lead.valor || 150000,
-        closed_at: lead.updated_at || lead.created_at || new Date().toISOString()
+        closed_at: lead.closed_at || lead.updated_at || lead.created_at || new Date().toISOString()
       });
     }
   });
@@ -9131,6 +9132,14 @@ const renderFeed = async () => {
       }
     ];
   }
+
+  const getFeedSaleTimestamp = (sale) => {
+    const rawDate = sale.closed_at || sale.updated_at || sale.created_at;
+    const timestamp = rawDate ? new Date(rawDate).getTime() : Number.POSITIVE_INFINITY;
+    return Number.isFinite(timestamp) ? timestamp : Number.POSITIVE_INFINITY;
+  };
+
+  feedSales.sort((a, b) => getFeedSaleTimestamp(a) - getFeedSaleTimestamp(b));
 
   if (countEl) {
     countEl.textContent = `${feedSales.length} Venda(s) no Feed`;

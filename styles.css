@@ -13394,9 +13394,36 @@ body.theme-dark .sales-history-list article {
 /* ==========================================================================
    FEED DE VENDAS (MURAL DE CONQUISTAS) - SEVEN GOLD THEME
    ========================================================================== */
+@media (min-width: 901px) {
+  body.crm-feed-active {
+    overflow: hidden;
+  }
+
+  body.crm-feed-active .crm-workspace {
+    height: 100vh;
+    min-height: 0;
+    align-content: stretch;
+    grid-template-rows: 1fr;
+    overflow: hidden;
+  }
+}
+
+.tab-content[data-tab="feed"] {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 16px 24px !important;
+  overflow: hidden;
+}
+
 .feed-page {
-  padding: 20px 10px;
-  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  height: 100%;
+  padding: 0;
+  max-width: 1220px;
   margin: 0 auto;
 }
 
@@ -13404,21 +13431,22 @@ body.theme-dark .sales-history-list article {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 28px;
+  gap: 14px;
+  margin-bottom: 14px;
   flex-wrap: wrap;
+  flex: 0 0 auto;
 }
 
 .feed-title-group {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .feed-title-icon {
-  width: 58px;
-  height: 58px;
-  border-radius: 18px;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
   background: #FFFDF5;
   border: 1.5px solid rgba(185, 130, 32, 0.25);
   color: #B98220;
@@ -13429,8 +13457,8 @@ body.theme-dark .sales-history-list article {
 }
 
 .feed-title-icon svg {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   stroke-width: 2.2;
 }
 
@@ -13446,16 +13474,16 @@ body.theme-dark .sales-history-list article {
 .feed-title-group h1 {
   margin: 0;
   color: #0F172A;
-  font-size: clamp(1.85rem, 2.5vw, 2.35rem);
+  font-size: clamp(1.6rem, 2vw, 2rem);
   font-weight: 800;
   line-height: 1.1;
-  letter-spacing: -.03em;
+  letter-spacing: 0;
 }
 
 .feed-title-group p {
   margin: 4px 0 0;
   color: #64748B;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 600;
 }
 
@@ -13474,19 +13502,25 @@ body.theme-dark .sales-history-list article {
 }
 
 .feed-posts-container {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2px 4px 4px;
+  align-content: start;
 }
 
 /* CARD DE VENDA NO FEED */
 .feed-card {
   background: #FFFFFF;
   border: 1px solid rgba(226, 232, 240, 0.9);
-  border-radius: 24px;
-  padding: 24px;
+  border-radius: 16px;
+  padding: 16px;
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-width: 0;
 }
 
 .feed-card:hover {
@@ -13498,26 +13532,26 @@ body.theme-dark .sales-history-list article {
 /* TOP: FOTO DE PERFIL DO VENDEDOR GRANDE + NOME DO VENDEDOR APENAS */
 .feed-card-header {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  text-align: center;
+  text-align: left;
   gap: 12px;
-  padding-bottom: 20px;
+  padding-bottom: 12px;
   border-bottom: 1px solid #F1F5F9;
 }
 
 .feed-avatar-large {
-  width: 76px;
-  height: 76px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
-  border: 3px solid #D4AF37;
+  border: 2px solid #D4AF37;
   box-shadow: 0 8px 24px rgba(185, 130, 32, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #B98220, #E8B138);
   color: #FFFFFF;
-  font-size: 1.6rem;
+  font-size: 1.08rem;
   font-weight: 900;
   overflow: hidden;
   flex-shrink: 0;
@@ -13532,38 +13566,47 @@ body.theme-dark .sales-history-list article {
 .feed-seller-info {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
+  min-width: 0;
 }
 
 .feed-seller-name {
   margin: 0;
-  font-size: 1.3rem;
+  max-width: 100%;
+  font-size: 1.02rem;
   font-weight: 850;
   color: #0F172A;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .feed-post-time {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.78rem;
+  max-width: 100%;
+  font-size: 0.72rem;
   font-weight: 700;
   color: #64748B;
   background: #F8FAFC;
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: 999px;
   border: 1px solid #E2E8F0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* MIDDLE: VALOR DA COTA */
 .feed-card-cota {
-  margin: 20px 0;
-  padding: 20px;
+  margin: 12px 0;
+  padding: 12px 14px;
   background: linear-gradient(135deg, #FFFDF5 0%, #FAF4E3 100%);
   border: 1.5px solid rgba(185, 130, 32, 0.3);
-  border-radius: 18px;
+  border-radius: 12px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -13573,7 +13616,7 @@ body.theme-dark .sales-history-list article {
 }
 
 .feed-cota-label {
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   font-weight: 900;
   color: #B98220;
   letter-spacing: 0.14em;
@@ -13581,30 +13624,32 @@ body.theme-dark .sales-history-list article {
 }
 
 .feed-cota-value {
-  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  max-width: 100%;
+  font-size: clamp(1.35rem, 2.2vw, 1.8rem);
   font-weight: 950;
   color: #0F172A;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 /* BOTTOM: REAÇÕES E COMENTÁRIOS */
 .feed-card-footer {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding-top: 8px;
+  gap: 10px;
+  padding-top: 0;
 }
 
 /* BARRA DE REAÇÕES */
 .feed-reactions-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  justify-content: flex-start;
+  gap: 6px;
   flex-wrap: wrap;
-  padding: 10px;
+  padding: 8px;
   background: #F8FAFC;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid #E2E8F0;
 }
 
@@ -13612,7 +13657,8 @@ body.theme-dark .sales-history-list article {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
+  min-height: 32px;
+  padding: 5px 10px;
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
   border-radius: 999px;
@@ -13646,15 +13692,15 @@ body.theme-dark .sales-history-list article {
 .feed-comments-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 4px;
+  gap: 8px;
+  margin-top: 0;
 }
 
 .feed-comments-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-height: 260px;
+  gap: 6px;
+  max-height: 78px;
   overflow-y: auto;
   padding-right: 4px;
 }
@@ -13662,17 +13708,17 @@ body.theme-dark .sales-history-list article {
 .feed-comment-item {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 10px 14px;
+  gap: 8px;
+  padding: 8px 10px;
   background: #F8FAFC;
-  border-radius: 14px;
+  border-radius: 10px;
   border: 1px solid #F1F5F9;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
 }
 
 .feed-comment-avatar {
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: linear-gradient(135deg, #B98220, #E8B138);
   color: #FFF;
@@ -13722,13 +13768,14 @@ body.theme-dark .sales-history-list article {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: 0;
 }
 
 .feed-comment-input {
   flex: 1;
-  height: 44px;
-  padding: 0 16px;
+  height: 38px;
+  min-width: 0;
+  padding: 0 12px;
   border: 1px solid #E2E8F0;
   border-radius: 12px;
   font-size: 0.83rem;
@@ -13747,8 +13794,8 @@ body.theme-dark .sales-history-list article {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 44px;
-  padding: 0 18px;
+  height: 38px;
+  padding: 0 14px;
   background: linear-gradient(135deg, #B98220, #D4AF37);
   border: 0;
   border-radius: 12px;
@@ -13816,5 +13863,56 @@ body.theme-dark .feed-post-time {
   background: #1E293B;
   border-color: #334155;
   color: #94A3B8;
+}
+
+@media (max-width: 1100px) {
+  .feed-posts-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .tab-content[data-tab="feed"] {
+    height: auto;
+    overflow: visible;
+    padding: 16px 12px !important;
+  }
+
+  .feed-page {
+    height: auto;
+  }
+
+  .feed-header {
+    align-items: flex-start;
+  }
+
+  .feed-posts-container {
+    overflow: visible;
+    padding: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .feed-title-group {
+    align-items: flex-start;
+  }
+
+  .feed-title-group p {
+    display: none;
+  }
+
+  .feed-card-header {
+    align-items: flex-start;
+  }
+
+  .feed-comment-form {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .feed-comment-submit-btn {
+    justify-content: center;
+    width: 100%;
+  }
 }
 
