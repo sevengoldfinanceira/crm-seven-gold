@@ -4575,6 +4575,8 @@ const loadDashboardMetrics = async () => {
     }
     if (status === "venda_fechada") closedLeadIds.add(leadId);
     if (status === "cancelado") cancelledLeadIds.add(leadId);
+  });
+
   const inService = serviceLeadIds.size;
   const notServed = Math.max(receivedLeads - inService, 0);
   const clientsInStore = storeLeadIds.size;
