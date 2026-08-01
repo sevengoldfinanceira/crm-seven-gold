@@ -391,6 +391,17 @@
       return null;
     };
 
+    const getCurrentLoggedUser = () => {
+      if (window.crmUser) return window.crmUser;
+      if (window.currentCrmUser) return window.currentCrmUser;
+      if (window.sevenGoldCurrentUser) return window.sevenGoldCurrentUser;
+      try {
+        const stored = localStorage.getItem("seven_gold_crm_user") || localStorage.getItem("sb-user-profile");
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+      return null;
+    };
+
     const loadTeamUsers = async () => {
       if (!usersList) return;
       usersList.innerHTML = '<div style="text-align:center; padding:20px; color:#94A3B8; font-size:0.82rem;">Carregando colaboradores reais...</div>';
@@ -412,6 +423,7 @@
               .map(u => ({
                 id: u.id,
                 name: u.nome || u.email || "Colaborador",
+                email: u.email || "",
                 avatar: "",
                 cargo: formatUserRole(u.cargo)
               }));
@@ -430,23 +442,30 @@
             .map(u => ({
               id: u.id || Math.random(),
               name: u.nome || u.full_name || u.name || u.email || "Colaborador",
+              email: u.email || "",
               avatar: u.avatar_url || "",
               cargo: formatUserRole(u.cargo || u.role)
             }));
         }
       }
 
-      // 3. Try current logged-in user if available
-      if (loadedUsers.length === 0) {
-        const currentUser = window.crmUser || window.currentCrmUser;
-        if (currentUser) {
-          loadedUsers.push({
-            id: currentUser.id || "me",
-            name: currentUser.nome || currentUser.name || currentUser.email || "Colaborador",
-            avatar: currentUser.avatar_url || "",
-            cargo: formatUserRole(currentUser.cargo || currentUser.role)
-          });
-        }
+      // Filter out currently logged-in user so user cannot send messages to oneself
+      const activeMe = getCurrentLoggedUser();
+      if (activeMe) {
+        const myId = String(activeMe.id || activeMe.user_id || "");
+        const myEmail = String(activeMe.email || activeMe.user_email || "").toLowerCase().trim();
+        const myName = String(activeMe.nome || activeMe.name || "").toLowerCase().trim();
+
+        loadedUsers = loadedUsers.filter(u => {
+          const uId = String(u.id || "");
+          const uEmail = String(u.email || "").toLowerCase().trim();
+          const uName = String(u.name || "").toLowerCase().trim();
+
+          if (myId && uId && uId === myId) return false;
+          if (myEmail && uEmail && uEmail === myEmail) return false;
+          if (myName && uName && uName === myName && myName.length > 2) return false;
+          return true;
+        });
       }
 
       teamUsers = loadedUsers;
