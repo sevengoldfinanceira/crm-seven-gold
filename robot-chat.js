@@ -491,7 +491,26 @@
     });
   }
 
+  function isLoginPage() {
+    const path = window.location.pathname.toLowerCase();
+    if (path.endsWith("index.html") || path.endsWith("crm-login.html") || path.endsWith("auth-callback.html")) {
+      return true;
+    }
+    if (document.body && (document.body.classList.contains("login-page-body") || document.body.classList.contains("crm-login-body") || document.body.classList.contains("index-login-body"))) {
+      return true;
+    }
+    if (document.querySelector("#login-form") || document.querySelector("#crm-login-form")) {
+      return true;
+    }
+    return false;
+  }
+
   function start() {
+    if (isLoginPage()) {
+      const container = document.getElementById("floating-robot-chat-container");
+      if (container) container.remove();
+      return;
+    }
     injectCSS();
     injectHTML();
     initLogic();
