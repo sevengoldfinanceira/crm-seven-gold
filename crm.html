@@ -2605,6 +2605,68 @@
           Cancelar
         </button>
       </div>
+    <!-- Floating Robot Chat Widget (Ephemeral P2P Team Chat) -->
+    <div id="floating-robot-chat-container">
+      <button type="button" id="floating-robot-chat-trigger" title="Chat rápido de equipe" aria-label="Abrir Chat Flutuante">
+        <span id="robot-chat-unread-badge" style="display:none;">0</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:26px; height:26px;">
+          <rect x="3" y="11" width="18" height="10" rx="3"/>
+          <circle cx="9" cy="16" r="1.5" fill="currentColor"/>
+          <circle cx="15" cy="16" r="1.5" fill="currentColor"/>
+          <path d="M12 2v4"/>
+          <circle cx="12" cy="2" r="1.5"/>
+          <path d="M7 11V8a5 5 0 0 1 10 0v3"/>
+        </svg>
+      </button>
+
+      <div id="floating-robot-chat-box" style="display:none;">
+        <!-- Step 1: User Selection -->
+        <div id="robot-chat-step-select-user" class="robot-chat-step">
+          <header class="robot-chat-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.2rem;">🤖</span>
+              <div>
+                <strong style="font-size:0.9rem; color:#FFF; display:block;">Chat Rápido de Equipe</strong>
+                <span style="font-size:0.72rem; color:#D4AF37;">Conversas temporárias (não salvas)</span>
+              </div>
+            </div>
+            <button type="button" class="robot-chat-close-btn">&times;</button>
+          </header>
+
+          <div style="padding:14px;">
+            <input type="text" id="robot-chat-user-search" placeholder="🔍 Buscar colaborador..." style="width:100%; height:38px; border:1px solid #CBD5E1; border-radius:10px; padding:0 12px; font-size:0.84rem; outline:none; box-sizing:border-box; margin-bottom:10px;" />
+            <div id="robot-chat-users-list" style="max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">
+              <div style="text-align:center; padding:20px; color:#94A3B8; font-size:0.82rem;">Carregando equipe...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Direct Chat Window -->
+        <div id="robot-chat-step-conversation" class="robot-chat-step" style="display:none;">
+          <header class="robot-chat-header">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <button type="button" id="robot-chat-back-to-users" title="Trocar colaborador" style="background:none; border:none; color:#FFF; font-size:1.1rem; cursor:pointer; padding:0 4px;">&larr;</button>
+              <div id="robot-chat-target-avatar" style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg, #B98220, #D4AF37); color:#FFF; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.82rem; flex-shrink:0; overflow:hidden;"></div>
+              <div>
+                <strong id="robot-chat-target-name" style="font-size:0.88rem; color:#FFF; display:block;">Colaborador</strong>
+                <span style="font-size:0.7rem; color:#5EEAD4;">● Conversa ativa (temporária)</span>
+              </div>
+            </div>
+            <button type="button" class="robot-chat-close-btn">&times;</button>
+          </header>
+
+          <div id="robot-chat-messages-body" style="height:260px; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px; background:#F8FAFC;">
+            <!-- Message bubbles -->
+          </div>
+
+          <form id="robot-chat-message-form" style="display:flex; align-items:center; gap:8px; padding:10px; border-top:1px solid #E2E8F0; background:#FFF;">
+            <input type="text" id="robot-chat-input" placeholder="Digite uma mensagem temporária..." required style="flex:1; height:38px; border:1px solid #CBD5E1; border-radius:18px; padding:0 14px; font-size:0.84rem; outline:none;" />
+            <button type="submit" style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, #B98220, #D4AF37); border:none; color:#FFF; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 8px rgba(185,130,32,0.3);">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

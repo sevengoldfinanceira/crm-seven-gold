@@ -9939,3 +9939,221 @@ window.createFeedPostFromSale = async (saleData) => {
     console.warn("Erro ao criar post automático no feed:", err);
   }
 };
+
+/* ==========================================================================
+   CHAT FLUTUANTE ROBÔ DE EQUIPE (EPHEMERAL - NÃO SALVA CONVERSAS)
+   ========================================================================== */
+const initFloatingRobotChat = () => {
+  const triggerBtn = document.getElementById("floating-robot-chat-trigger");
+  const chatBox = document.getElementById("floating-robot-chat-box");
+  const closeBtns = document.querySelectorAll(".robot-chat-close-btn");
+  const stepSelect = document.getElementById("robot-chat-step-select-user");
+  const stepConv = document.getElementById("robot-chat-step-conversation");
+  const backBtn = document.getElementById("robot-chat-back-to-users");
+  const userSearch = document.getElementById("robot-chat-user-search");
+  const usersList = document.getElementById("robot-chat-users-list");
+  const msgForm = document.getElementById("robot-chat-message-form");
+  const msgInput = document.getElementById("robot-chat-input");
+  const msgBody = document.getElementById("robot-chat-messages-body");
+  const targetAvatar = document.getElementById("robot-chat-target-avatar");
+  const targetName = document.getElementById("robot-chat-target-name");
+
+  if (!triggerBtn || !chatBox) return;
+
+  // In-memory non-persisted state (wiped on refresh)
+  let activeTargetUser = null;
+  let inMemoryMessages = {}; // { userId: [ { senderId, text, time } ] }
+  let teamUsers = [];
+
+  // Broadcast channel for live tab-to-tab/p2p communication
+  const chatChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("sg-ephemeral-team-chat") : null;
+
+  if (chatChannel) {
+    chatChannel.onmessage = (event) => {
+      const data = event.data;
+      if (!data || !data.senderId || !data.text) return;
+
+      if (!inMemoryMessages[data.senderId]) inMemoryMessages[data.senderId] = [];
+      inMemoryMessages[data.senderId].push({
+        senderId: data.senderId,
+        senderName: data.senderName,
+        text: data.text,
+        time: data.time || new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+        type: "received"
+      });
+
+      // If active conversation is with sender, render bubble
+      if (activeTargetUser && String(activeTargetUser.id) === String(data.senderId)) {
+        renderMessages();
+      }
+    };
+  }
+
+  // Toggle Chat Box
+  triggerBtn.addEventListener("click", () => {
+    const isHidden = chatBox.style.display === "none";
+    chatBox.style.display = isHidden ? "block" : "none";
+    if (isHidden) {
+      loadTeamUsers();
+    }
+  });
+
+  closeBtns.forEach(btn => btn.addEventListener("click", () => {
+    chatBox.style.display = "none";
+  }));
+
+  backBtn?.addEventListener("click", () => {
+    activeTargetUser = null;
+    if (stepConv) stepConv.style.display = "none";
+    if (stepSelect) stepSelect.style.display = "block";
+  });
+
+  // Search filter
+  userSearch?.addEventListener("input", (e) => {
+    const term = e.target.value.toLowerCase().trim();
+    renderUsersList(teamUsers.filter(u => u.name.toLowerCase().includes(term) || (u.cargo && u.cargo.toLowerCase().includes(term))));
+  });
+
+  // Load team users from Supabase or memory
+  const loadTeamUsers = async () => {
+    if (!usersList) return;
+
+    try {
+      const client = typeof getClient === "function" ? getClient() : window.supabaseClient;
+      if (client) {
+        const { data } = await client.from("users").select("id, nome, email, avatar_url, cargo");
+        if (data && data.length > 0) {
+          teamUsers = data.map(u => ({
+            id: u.id,
+            name: u.nome || u.email || "Colaborador",
+            avatar: u.avatar_url,
+            cargo: u.cargo || "Consultor"
+          }));
+        }
+      }
+    } catch (e) {}
+
+    if (!teamUsers.length) {
+      teamUsers = [
+        { id: "u1", name: "Jonatã (Supervisor)", avatar: "", cargo: "Supervisor Comercial" },
+        { id: "u2", name: "Mariana Costa", avatar: "", cargo: "Vendedor" },
+        { id: "u3", name: "Lucas Almeida", avatar: "", cargo: "Vendedor" },
+        { id: "u4", name: "Bruna Martins", avatar: "", cargo: "Assistente de Vendas" },
+      ];
+    }
+
+    renderUsersList(teamUsers);
+  };
+
+  const renderUsersList = (list) => {
+    if (!usersList) return;
+    if (list.length === 0) {
+      usersList.innerHTML = '<div style="text-align:center; padding:16px; color:#94A3B8; font-size:0.8rem;">Nenhum colaborador encontrado.</div>';
+      return;
+    }
+
+    usersList.innerHTML = list.map(u => {
+      const initials = u.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() || "SG";
+      return `
+        <div class="robot-chat-user-item" data-user-id="${u.id}">
+          <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, #B98220, #D4AF37); color:#FFF; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.78rem; flex-shrink:0; overflow:hidden;">
+            ${u.avatar ? `<img src="${u.avatar}" style="width:100%; height:100%; object-fit:cover;" />` : initials}
+          </div>
+          <div style="flex:1;">
+            <strong style="font-size:0.86rem; color:#0F172A; display:block;">${escapeHtml(u.name)}</strong>
+            <span style="font-size:0.74rem; color:#64748B;">${escapeHtml(u.cargo || 'Equipe')}</span>
+          </div>
+          <span style="font-size:0.68rem; color:#059669; font-weight:700;">Conversar</span>
+        </div>
+      `;
+    }).join("");
+
+    usersList.querySelectorAll(".robot-chat-user-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const uid = item.dataset.userId;
+        const selected = teamUsers.find(u => String(u.id) === String(uid));
+        if (selected) startConversation(selected);
+      });
+    });
+  };
+
+  const startConversation = (targetUser) => {
+    activeTargetUser = targetUser;
+    const initials = targetUser.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() || "SG";
+
+    if (targetName) targetName.textContent = targetUser.name;
+    if (targetAvatar) {
+      targetAvatar.innerHTML = targetUser.avatar
+        ? `<img src="${targetUser.avatar}" style="width:100%; height:100%; object-fit:cover;" />`
+        : initials;
+    }
+
+    if (stepSelect) stepSelect.style.display = "none";
+    if (stepConv) stepConv.style.display = "block";
+
+    renderMessages();
+    msgInput?.focus();
+  };
+
+  const renderMessages = () => {
+    if (!msgBody || !activeTargetUser) return;
+    const msgs = inMemoryMessages[activeTargetUser.id] || [];
+
+    if (msgs.length === 0) {
+      msgBody.innerHTML = `
+        <div style="text-align:center; margin:auto; padding:20px; color:#94A3B8;">
+          <div style="font-size:1.6rem; margin-bottom:4px;">🤖</div>
+          <strong style="font-size:0.82rem; color:#475569; display:block;">Conversa Temporária</strong>
+          <span style="font-size:0.74rem;">As mensagens enviadas aqui desaparecem ao fechar ou atualizar o CRM.</span>
+        </div>
+      `;
+      return;
+    }
+
+    msgBody.innerHTML = msgs.map(m => `
+      <div class="robot-chat-msg-bubble ${m.type === 'sent' ? 'sent' : 'received'}">
+        <div>${escapeHtml(m.text)}</div>
+        <div style="font-size:0.65rem; text-align:right; opacity:0.75; margin-top:2px;">${m.time}</div>
+      </div>
+    `).join("");
+
+    msgBody.scrollTop = msgBody.scrollHeight;
+  };
+
+  msgForm?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const text = msgInput.value.trim();
+    if (!text || !activeTargetUser) return;
+
+    const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : (window.crmUser || window.currentCrmUser);
+    const timeStr = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+    if (!inMemoryMessages[activeTargetUser.id]) inMemoryMessages[activeTargetUser.id] = [];
+    inMemoryMessages[activeTargetUser.id].push({
+      senderId: currentUser?.id || "me",
+      text: text,
+      time: timeStr,
+      type: "sent"
+    });
+
+    // Broadcast message to live tabs
+    if (chatChannel) {
+      chatChannel.postMessage({
+        senderId: currentUser?.id || "user-peer",
+        senderName: currentUser?.nome || "Colaborador",
+        targetId: activeTargetUser.id,
+        text: text,
+        time: timeStr
+      });
+    }
+
+    msgInput.value = "";
+    renderMessages();
+  });
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+    initFloatingRobotChat();
+  }, 1000);
+});
