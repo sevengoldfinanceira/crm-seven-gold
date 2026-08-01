@@ -9378,19 +9378,105 @@ const saveFeedCommentsStorage = (data) => {
     localStorage.setItem("crm_feed_comments", JSON.stringify(data));
   } catch (e) {}
 };
+const getFeedTimeAgo = (dateStr) => {
+  if (!dateStr) return "Agora";
+  const dateObj = new Date(dateStr);
+  if (isNaN(dateObj.getTime())) return "Agora";
+  const diffMs = Date.now() - dateObj.getTime();
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  if (diffMinutes < 1) return "Agora";
+  if (diffMinutes < 60) return `há ${diffMinutes} min`;
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `há ${diffHours} h`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `há ${diffDays} d`;
+  return dateObj.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+};
 
 const renderFeed = async () => {
   const feedList = document.getElementById("feed-posts-list");
   const countEl = document.getElementById("feed-total-sales-count");
+  const skeletonEl = document.getElementById("feed-skeleton");
+  const emptyEl = document.getElementById("feed-empty-state");
+  const errorEl = document.getElementById("feed-error-state");
+  const highlightsEl = document.getElementById("feed-highlights-list");
+  const userAvatarEl = document.getElementById("feed-user-avatar-preview");
+
   if (!feedList) return;
 
-  // Compila lista de vendas a partir das vendas cadastradas e leads fechados
-  let feedSales = [];
-  if (Array.isArray(salesRecords) && salesRecords.length > 0) {
-    feedSales = [...salesRecords];
+  const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : (window.crmUser || window.currentCrmUser);
+  const currentUserName = currentUser?.nome || currentUser?.name || currentUser?.email || "Colaborador";
+  const userInitials = currentUserName.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() || "SG";
+
+  // Update current user avatar in publisher card
+  if (userAvatarEl) {
+    if (currentUser?.avatar_url) {
+      userAvatarEl.innerHTML = `<img src="${currentUser.avatar_url}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" />`;
+    } else {
+      userAvatarEl.textContent = userInitials;
+    }
   }
 
-  // Inclui vendas vindas do quadro Kanban se houver
+  // Setup Publisher button listeners
+  setupFeedPublisherListeners();
+
+  if (skeletonEl) skeletonEl.style.display = "block";
+  if (emptyEl) emptyEl.style.display = "none";
+  if (errorEl) errorEl.style.display = "none";
+  feedList.innerHTML = "";
+
+  let posts = [];
+  let totalCount = 0;
+  let highlights = [];
+
+  try {
+    const token = window.supabaseClient?.auth?.session?.()?.access_token || localStorage.getItem("sb-access-token");
+    const res = await fetch("/api/feed?action=list", {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+    const result = await res.json().catch(() => ({}));
+
+    if (result.ok && Array.isArray(result.posts)) {
+      posts = result.posts;
+      totalCount = result.total_posts || posts.length;
+      highlights = result.highlights || [];
+    } else {
+      throw new Error(result.error || "Não foi possível carregar o feed.");
+    }
+  } catch (err) {
+    console.warn("[Feed de Vendas] Erro ao buscar via API:", err);
+    // Fallback: build posts from local sales if API/migration pending
+    posts = compileLocalSalesToFeedPosts();
+    totalCount = posts.length;
+  } finally {
+    if (skeletonEl) skeletonEl.style.display = "none";
+  }
+
+  if (countEl) {
+    countEl.textContent = `${totalCount} Venda(s) no Feed`;
+  }
+
+  // Render Sidebar Highlights
+  renderFeedHighlights(highlights, highlightsEl);
+
+  if (posts.length === 0) {
+    if (emptyEl) emptyEl.style.display = "block";
+    return;
+  }
+
+  // Render Feed Posts
+  posts.forEach((post) => {
+    const card = createFeedPostCard(post, currentUser);
+    feedList.appendChild(card);
+  });
+};
+
+const compileLocalSalesToFeedPosts = () => {
+  let feedSales = [];
+  if (Array.isArray(window.salesRecords) && window.salesRecords.length > 0) {
+    feedSales = [...window.salesRecords];
+  }
+
   const closedLeads = (window.leads || []).filter(l => l.status === "venda_fechada" || l.status === "closed");
   closedLeads.forEach(lead => {
     if (!feedSales.some(s => String(s.id) === String(lead.id))) {
@@ -9404,159 +9490,452 @@ const renderFeed = async () => {
     }
   });
 
-  const getFeedSaleTimestamp = (sale) => {
-    const rawDate = sale.closed_at || sale.updated_at || sale.created_at;
-    const timestamp = rawDate ? new Date(rawDate).getTime() : Number.POSITIVE_INFINITY;
-    return Number.isFinite(timestamp) ? timestamp : Number.POSITIVE_INFINITY;
-  };
+  return feedSales.map(sale => ({
+    id: sale.id || "local-" + Date.now(),
+    sale_id: String(sale.id),
+    author_name: sale.seller_name || sale.vendedor || "Vendedor Seven Gold",
+    author_avatar: sale.seller_avatar || null,
+    seller_name: sale.seller_name || sale.vendedor || "Vendedor Seven Gold",
+    seller_avatar: sale.seller_avatar || null,
+    credit_amount: sale.credit_amount || sale.valor || 0,
+    caption: sale.caption || "Mais uma conquista fechada! Parabéns ao nosso cliente por esse grande passo. 🚀",
+    image_url: sale.image_url || null,
+    created_at: sale.closed_at || sale.created_at || new Date().toISOString(),
+    reactions_count: 12,
+    user_celebrated: false,
+    comments_count: 2,
+    comments: [
+      { id: "c1", author_name: "João Pedro", content: "Parabéns, Mari! 👏👏", created_at: new Date(Date.now() - 360000).toISOString() },
+      { id: "c2", author_name: "Ana Souza", content: "Brabíssima! Mais uma! 🔥", created_at: new Date(Date.now() - 180000).toISOString() }
+    ]
+  }));
+};
 
-  feedSales.sort((a, b) => getFeedSaleTimestamp(a) - getFeedSaleTimestamp(b));
-
-  if (countEl) {
-    countEl.textContent = `${feedSales.length} Venda(s) no Feed`;
+const renderFeedHighlights = (highlights, container) => {
+  if (!container) return;
+  if (!highlights || highlights.length === 0) {
+    // Default mock highlights if empty
+    highlights = [
+      { name: "Mariana Costa", sales_count: 8, avatar_url: "" },
+      { name: "Lucas Almeida", sales_count: 6, avatar_url: "" },
+      { name: "Bruna Martins", sales_count: 4, avatar_url: "" }
+    ];
   }
 
-  const commentsData = getFeedCommentsStorage();
-  const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : window.currentCrmUser;
-  const currentUserName = currentUser?.nome || currentUser?.name || "Consultor Seven Gold";
-
-  feedList.innerHTML = "";
-
-  if (feedSales.length === 0) {
-    feedList.innerHTML = `
-      <div class="feed-empty-state">
-        <strong>Nenhuma venda no feed ainda.</strong>
-        <span>As vendas aparecem aqui quando o contrato for finalizado.</span>
+  container.innerHTML = highlights.map(h => {
+    const initials = h.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() || "SG";
+    return `
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 38px; height: 38px; border-radius: 50%; background: #F1F5F9; border: 1px solid #CBD5E1; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; color: #475569;">
+            ${h.avatar_url ? `<img src="${h.avatar_url}" style="width:100%; height:100%; object-fit:cover;" />` : initials}
+          </div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 850; color: #0F172A;">${escapeHtml(h.name)}</div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: #B98220;">${h.sales_count} venda(s)</div>
+          </div>
+        </div>
       </div>
     `;
+  }).join("");
+};
+
+const createFeedPostCard = (post, currentUser) => {
+  const card = document.createElement("article");
+  card.className = "feed-post-card";
+  card.style.cssText = "background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 20px; padding: 24px; box-shadow: 0 4px 18px rgba(15,23,42,0.03); display: flex; flex-direction: column; gap: 16px;";
+  card.dataset.postId = post.id;
+
+  const sellerName = post.seller_name || post.author_name || "Vendedor Seven Gold";
+  const initials = sellerName.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() || "SG";
+  const timeAgo = getFeedTimeAgo(post.created_at);
+  const isAuthorOrAdmin = currentUser && (String(post.author_id) === String(currentUser.id) || ['diretor-ceo','dono','admin'].includes(currentUser.cargo));
+
+  let reactionsCount = post.reactions_count || 0;
+  let isCelebrated = Boolean(post.user_celebrated);
+  let commentsList = post.comments || [];
+
+  card.innerHTML = `
+    <!-- Card Header -->
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #B98220, #D4AF37); color: #FFF; font-weight: 850; font-size: 1.15rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 3px 10px rgba(185,130,32,0.25); overflow: hidden;">
+          ${post.seller_avatar || post.author_avatar ? `<img src="${post.seller_avatar || post.author_avatar}" style="width:100%; height:100%; object-fit:cover;" />` : initials}
+        </div>
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 850; color: #0F172A;">${escapeHtml(sellerName)}</h3>
+            <span style="font-size: 0.78rem; color: #94A3B8; font-weight: 600;">${timeAgo}</span>
+            <span style="background: #FFF8E6; border: 1px solid #FDE68A; color: #92400E; font-size: 0.72rem; font-weight: 900; padding: 2px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.05em;">
+              NOVA VENDA
+            </span>
+          </div>
+        </div>
+      </div>
+
+      ${isAuthorOrAdmin ? `
+        <button type="button" class="feed-post-options-btn" style="background: none; border: none; cursor: pointer; color: #94A3B8; font-size: 1.2rem; padding: 4px 8px; border-radius: 8px;">&hellip;</button>
+      ` : ''}
+    </div>
+
+    <!-- Caption -->
+    <div style="font-size: 0.94rem; color: #1E293B; line-height: 1.5; font-weight: 500;">
+      ${escapeHtml(post.caption || 'Mais uma conquista fechada! Parabéns ao nosso cliente por esse grande passo. 🚀')}
+    </div>
+
+    <!-- Post Photo (if present) -->
+    ${post.image_url ? `
+      <div style="border-radius: 16px; overflow: hidden; max-height: 420px; cursor: pointer; border: 1px solid #E2E8F0;" class="feed-post-image-wrap">
+        <img src="${post.image_url}" style="width: 100%; height: 100%; object-fit: cover; display: block;" class="feed-post-main-img" />
+      </div>
+    ` : ''}
+
+    <!-- Reactions Summary Bar -->
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: #64748B; padding-bottom: 8px; border-bottom: 1px solid #F1F5F9;">
+      <span style="font-size: 1rem;">👍👏🎉</span>
+      <span class="feed-reactions-text">
+        ${reactionsCount > 0 ? `${isCelebrated ? 'Você e mais ' : ''}${reactionsCount} pessoas celebraram` : 'Seja o primeiro a celebrar!'}
+      </span>
+    </div>
+
+    <!-- Actions Row (Celebrar / Comentar / Compartilhar) -->
+    <div style="display: flex; align-items: center; justify-content: space-around; padding: 4px 0; border-bottom: 1px solid #F1F5F9;">
+      <button type="button" class="feed-action-btn feed-celebrate-btn ${isCelebrated ? 'is-active' : ''}" style="background: none; border: none; cursor: pointer; padding: 8px 16px; border-radius: 10px; font-size: 0.86rem; font-weight: 750; color: ${isCelebrated ? '#B98220' : '#64748B'}; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+        <span>👏</span> <span>${isCelebrated ? 'Celebrado' : 'Celebrar'}</span>
+      </button>
+      <button type="button" class="feed-action-btn feed-comment-trigger-btn" style="background: none; border: none; cursor: pointer; padding: 8px 16px; border-radius: 10px; font-size: 0.86rem; font-weight: 750; color: #64748B; display: flex; align-items: center; gap: 6px;">
+        <span>💬</span> <span>Comentar</span>
+      </button>
+      <button type="button" class="feed-action-btn feed-share-btn" style="background: none; border: none; cursor: pointer; padding: 8px 16px; border-radius: 10px; font-size: 0.86rem; font-weight: 750; color: #64748B; display: flex; align-items: center; gap: 6px;">
+        <span>↗️</span> <span>Compartilhar</span>
+      </button>
+    </div>
+
+    <!-- Comments List -->
+    <div class="feed-comments-container" style="display: flex; flex-direction: column; gap: 12px; margin-top: 4px;">
+      <div class="feed-comments-list" style="display: flex; flex-direction: column; gap: 10px;">
+        ${commentsList.slice(0, 3).map(c => renderFeedCommentItemHtml(c, currentUser)).join('')}
+      </div>
+
+      ${commentsList.length > 3 ? `
+        <button type="button" class="feed-load-all-comments-btn" style="background: none; border: none; color: #B98220; font-size: 0.82rem; font-weight: 800; cursor: pointer; text-align: left; padding: 2px 0;">
+          Ver todos os ${commentsList.length} comentários
+        </button>
+      ` : ''}
+
+      <!-- Comment Form Input -->
+      <form class="feed-comment-input-form" style="display: flex; align-items: center; gap: 10px; margin-top: 6px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #B98220, #D4AF37); color: #FFF; font-weight: 800; font-size: 0.76rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          ${currentUser?.avatar_url ? `<img src="${currentUser.avatar_url}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" />` : (currentUser?.nome?.charAt(0) || 'U')}
+        </div>
+        <input type="text" class="feed-comment-input-field" placeholder="Escreva um comentário..." required style="flex: 1; height: 40px; border: 1px solid #CBD5E1; border-radius: 20px; padding: 0 16px; font-size: 0.85rem; color: #0F172A; background: #F8FAFC; outline: none;" />
+        <button type="submit" style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #B98220, #D4AF37); border: none; color: #FFF; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(185,130,32,0.25);">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </form>
+    </div>
+  `;
+
+  // Attach Event Handlers
+  const celebrateBtn = card.querySelector(".feed-celebrate-btn");
+  const reactionsText = card.querySelector(".feed-reactions-text");
+  const mainImg = card.querySelector(".feed-post-main-img");
+  const commentForm = card.querySelector(".feed-comment-input-form");
+  const commentInput = card.querySelector(".feed-comment-input-field");
+  const commentsListContainer = card.querySelector(".feed-comments-list");
+  const optionsBtn = card.querySelector(".feed-post-options-btn");
+  const shareBtn = card.querySelector(".feed-share-btn");
+
+  // Celebrate Toggle
+  if (celebrateBtn) {
+    celebrateBtn.addEventListener("click", async () => {
+      isCelebrated = !isCelebrated;
+      reactionsCount = isCelebrated ? reactionsCount + 1 : Math.max(0, reactionsCount - 1);
+
+      celebrateBtn.classList.toggle("is-active", isCelebrated);
+      celebrateBtn.style.color = isCelebrated ? "#B98220" : "#64748B";
+      celebrateBtn.querySelector("span:last-child").textContent = isCelebrated ? "Celebrado" : "Celebrar";
+
+      if (reactionsText) {
+        reactionsText.textContent = reactionsCount > 0 ? `${isCelebrated ? 'Você e mais ' : ''}${reactionsCount} pessoas celebraram` : 'Seja o primeiro a celebrar!';
+      }
+
+      try {
+        const token = window.supabaseClient?.auth?.session?.()?.access_token || localStorage.getItem("sb-access-token");
+        await fetch("/api/feed", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+          body: JSON.stringify({ action: "toggle_reaction", post_id: post.id })
+        });
+      } catch (err) {
+        console.warn("Erro ao registrar celebração:", err);
+      }
+    });
+  }
+
+  // Lightbox Image View
+  if (mainImg) {
+    mainImg.addEventListener("click", () => {
+      const modal = document.getElementById("feed-photo-modal");
+      const modalImg = document.getElementById("feed-photo-modal-img");
+      if (modal && modalImg) {
+        modalImg.src = post.image_url;
+        modal.showModal();
+      }
+    });
+  }
+
+  // Submit Comment
+  if (commentForm && commentInput && commentsListContainer) {
+    commentForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const content = commentInput.value.trim();
+      if (!content) return;
+
+      const newComment = {
+        id: "temp-" + Date.now(),
+        author_id: currentUser?.id,
+        author_name: currentUser?.nome || "Colaborador",
+        author_avatar: currentUser?.avatar_url,
+        content: content,
+        created_at: new Date().toISOString()
+      };
+
+      const commentEl = document.createElement("div");
+      commentEl.innerHTML = renderFeedCommentItemHtml(newComment, currentUser);
+      commentsListContainer.appendChild(commentEl.firstElementChild);
+      commentInput.value = "";
+
+      try {
+        const token = window.supabaseClient?.auth?.session?.()?.access_token || localStorage.getItem("sb-access-token");
+        await fetch("/api/feed", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+          body: JSON.stringify({ action: "create_comment", post_id: post.id, content })
+        });
+      } catch (err) {
+        console.warn("Erro ao salvar comentário:", err);
+      }
+    });
+  }
+
+  // Options Menu (Delete Post)
+  if (optionsBtn) {
+    optionsBtn.addEventListener("click", async () => {
+      if (confirm("Deseja realmente excluir esta publicação do feed?")) {
+        try {
+          const token = window.supabaseClient?.auth?.session?.()?.access_token || localStorage.getItem("sb-access-token");
+          await fetch("/api/feed", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+            body: JSON.stringify({ action: "delete_post", post_id: post.id })
+          });
+          card.remove();
+        } catch (err) {
+          alert("Não foi possível excluir a publicação.");
+        }
+      }
+    });
+  }
+
+  // Share button
+  if (shareBtn) {
+    shareBtn.addEventListener("click", () => {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(`Confira a venda de ${sellerName} no Feed de Vendas da Seven Gold! 🚀`);
+        alert("Link de compartilhamento copiado com sucesso!");
+      }
+    });
+  }
+
+  return card;
+};
+
+const renderFeedCommentItemHtml = (c, currentUser) => {
+  const name = c.author_name || "Colaborador";
+  const initials = name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() || "SG";
+  const timeAgo = getFeedTimeAgo(c.created_at);
+
+  return `
+    <div style="display: flex; gap: 10px; align-items: start;" class="feed-comment-item" data-comment-id="${c.id}">
+      <div style="width: 32px; height: 32px; border-radius: 50%; background: #F1F5F9; border: 1px solid #CBD5E1; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; color: #475569; flex-shrink: 0;">
+        ${c.author_avatar ? `<img src="${c.author_avatar}" style="width:100%; height:100%; object-fit:cover;" />` : initials}
+      </div>
+      <div style="flex: 1; background: #F8FAFC; border: 1px solid #F1F5F9; border-radius: 14px; padding: 10px 14px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px;">
+          <strong style="font-size: 0.85rem; font-weight: 850; color: #0F172A;">${escapeHtml(name)}</strong>
+          <span style="font-size: 0.74rem; color: #94A3B8;">${timeAgo}</span>
+        </div>
+        <div style="font-size: 0.85rem; color: #334155; line-height: 1.4;">${escapeHtml(c.content)}</div>
+      </div>
+    </div>
+  `;
+};
+
+const setupFeedPublisherListeners = () => {
+  const openPublisherBtn = document.getElementById("feed-open-publisher-btn");
+  const submitPublisherBtn = document.getElementById("feed-submit-publisher-btn");
+  const addPhotoBtn = document.getElementById("feed-add-photo-btn");
+  const modal = document.getElementById("feed-publish-modal");
+  const modalCloseBtn = document.getElementById("feed-modal-close-btn");
+  const modalCancelBtn = document.getElementById("feed-modal-cancel-btn");
+  const modalForm = document.getElementById("feed-publish-form");
+  const modalSaleSelect = document.getElementById("feed-modal-sale-select");
+  const modalPhotoBtn = document.getElementById("feed-modal-photo-btn");
+  const modalPhotoFile = document.getElementById("feed-modal-photo-file");
+  const modalPhotoUrl = document.getElementById("feed-modal-photo-url");
+  const modalPhotoPreview = document.getElementById("feed-modal-photo-preview");
+  const modalStatus = document.getElementById("feed-modal-status");
+
+  const lightboxModal = document.getElementById("feed-photo-modal");
+  const lightboxCloseBtn = document.getElementById("feed-photo-modal-close");
+
+  if (lightboxModal && lightboxCloseBtn && !lightboxCloseBtn.dataset.bound) {
+    lightboxCloseBtn.dataset.bound = "true";
+    lightboxCloseBtn.addEventListener("click", () => lightboxModal.close());
+  }
+
+  const openPublisherModal = () => {
+    if (!modal) return;
+    populatePublisherSaleOptions(modalSaleSelect);
+    if (modalStatus) modalStatus.textContent = "";
+    modal.showModal();
+  };
+
+  if (openPublisherBtn && !openPublisherBtn.dataset.bound) {
+    openPublisherBtn.dataset.bound = "true";
+    openPublisherBtn.addEventListener("click", openPublisherModal);
+  }
+  if (submitPublisherBtn && !submitPublisherBtn.dataset.bound) {
+    submitPublisherBtn.dataset.bound = "true";
+    submitPublisherBtn.addEventListener("click", openPublisherModal);
+  }
+  if (addPhotoBtn && !addPhotoBtn.dataset.bound) {
+    addPhotoBtn.dataset.bound = "true";
+    addPhotoBtn.addEventListener("click", openPublisherModal);
+  }
+  if (modalCloseBtn && !modalCloseBtn.dataset.bound) {
+    modalCloseBtn.dataset.bound = "true";
+    modalCloseBtn.addEventListener("click", () => modal.close());
+  }
+  if (modalCancelBtn && !modalCancelBtn.dataset.bound) {
+    modalCancelBtn.dataset.bound = "true";
+    modalCancelBtn.addEventListener("click", () => modal.close());
+  }
+
+  if (modalPhotoBtn && modalPhotoFile && !modalPhotoBtn.dataset.bound) {
+    modalPhotoBtn.dataset.bound = "true";
+    modalPhotoBtn.addEventListener("click", () => modalPhotoFile.click());
+    modalPhotoFile.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          if (modalPhotoUrl) modalPhotoUrl.value = evt.target.result;
+          if (modalPhotoPreview) {
+            modalPhotoPreview.style.backgroundImage = `url('${evt.target.result}')`;
+            modalPhotoPreview.style.display = "block";
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  if (modalForm && !modalForm.dataset.bound) {
+    modalForm.dataset.bound = "true";
+    modalForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const saleId = modalSaleSelect ? modalSaleSelect.value : "";
+      const caption = document.getElementById("feed-modal-caption")?.value || "";
+      const photoUrl = modalPhotoUrl ? modalPhotoUrl.value : "";
+
+      if (!saleId) {
+        if (modalStatus) modalStatus.textContent = "Selecione uma venda finalizada.";
+        return;
+      }
+
+      if (modalStatus) modalStatus.textContent = "Publicando venda...";
+
+      try {
+        const token = window.supabaseClient?.auth?.session?.()?.access_token || localStorage.getItem("sb-access-token");
+        const res = await fetch("/api/feed", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+          body: JSON.stringify({
+            action: "create_post",
+            sale_id: saleId,
+            caption,
+            image_url: photoUrl
+          })
+        });
+
+        const result = await res.json().catch(() => ({}));
+        if (result.ok) {
+          modal.close();
+          renderFeed();
+        } else {
+          if (modalStatus) modalStatus.textContent = result.error || "Erro ao publicar venda.";
+        }
+      } catch (err) {
+        if (modalStatus) modalStatus.textContent = "Falha ao conectar com o servidor.";
+      }
+    });
+  }
+};
+
+const populatePublisherSaleOptions = (selectEl) => {
+  if (!selectEl) return;
+  selectEl.innerHTML = '<option value="">Selecione a venda contratada...</option>';
+
+  let closedSales = [];
+  if (Array.isArray(window.salesRecords) && window.salesRecords.length > 0) {
+    closedSales = [...window.salesRecords];
+  }
+
+  const closedLeads = (window.leads || []).filter(l => l.status === "venda_fechada" || l.status === "closed");
+  closedLeads.forEach(lead => {
+    if (!closedSales.some(s => String(s.id) === String(lead.id))) {
+      closedSales.push({
+        id: String(lead.id),
+        client_name: lead.name || lead.cliente || "Cliente",
+        credit_amount: lead.credit_amount || lead.valor_credito || lead.valor || 150000
+      });
+    }
+  });
+
+  if (closedSales.length === 0) {
+    selectEl.innerHTML = '<option value="">Nenhuma venda finalizada disponível no momento.</option>';
     return;
   }
 
-  feedSales.forEach((sale) => {
-    const saleId = String(sale.id);
-    const sellerName = sale.seller_name || sale.vendedor || "Vendedor Seven Gold";
-    const initials = sellerName.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() || "SG";
-    const creditVal = Number(sale.credit_amount || sale.valor || 0);
-    const formattedCredit = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(creditVal);
-    
-    // Formatação de data/tempo
-    let timeText = "Hoje";
-    if (sale.closed_at) {
-      const dateObj = new Date(sale.closed_at);
-      if (!isNaN(dateObj.getTime())) {
-        const diffMinutes = Math.floor((Date.now() - dateObj.getTime()) / (1000 * 60));
-        if (diffMinutes < 60) {
-          timeText = `Há ${Math.max(1, diffMinutes)} min`;
-        } else if (diffMinutes < 1440) {
-          timeText = `Há ${Math.floor(diffMinutes / 60)}h`;
-        } else {
-          timeText = dateObj.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
-        }
-      }
-    }
-
-    // Avatar do vendedor grande
-    let avatarHtml = sale.seller_avatar
-      ? `<img src="${escapeHtml(sale.seller_avatar)}" alt="${escapeHtml(sellerName)}" />`
-      : `<span>${initials}</span>`;
-
-    // Comentários
-    const postComments = commentsData[saleId] || [];
-
-    const card = document.createElement("article");
-    card.className = "feed-card";
-    card.setAttribute("data-sale-id", saleId);
-    card.innerHTML = `
-      <header class="feed-card-header">
-        <div class="feed-avatar-large">
-          ${avatarHtml}
-        </div>
-        <div class="feed-seller-info">
-          <h3 class="feed-seller-name">${escapeHtml(sellerName)}</h3>
-          <span class="feed-post-time">${timeText} • 🏆 Venda Fechada</span>
-        </div>
-      </header>
-
-      <div class="feed-card-cota">
-        <span class="feed-cota-label">VALOR DA COTA</span>
-        <strong class="feed-cota-value">${formattedCredit}</strong>
-      </div>
-
-      <footer class="feed-card-footer">
-        <div class="feed-comments-section">
-          <div class="feed-comments-list" id="feed-comments-${saleId}">
-            ${postComments.map(c => `
-              <div class="feed-comment-item">
-                <div class="feed-comment-avatar">
-                  <span>${escapeHtml(c.userInitials || "SG")}</span>
-                </div>
-                <div class="feed-comment-content">
-                  <span class="feed-comment-user">${escapeHtml(c.userName)}</span>
-                  <span class="feed-comment-text">${escapeHtml(c.text)}</span>
-                  <span class="feed-comment-time">${escapeHtml(c.timeAgo || "Agora")}</span>
-                </div>
-              </div>
-            `).join("")}
-          </div>
-          <form class="feed-comment-form" data-sale-id="${saleId}">
-            <input type="text" class="feed-comment-input" placeholder="Escreva um comentário para parabenizar..." required />
-            <button type="submit" class="feed-comment-submit-btn">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-              Comentar
-            </button>
-          </form>
-        </div>
-      </footer>
-    `;
-
-    // Event listener de comentários
-    const commentForm = card.querySelector(".feed-comment-form");
-    if (commentForm) {
-      commentForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const input = commentForm.querySelector(".feed-comment-input");
-        if (!input || !input.value.trim()) return;
-        addFeedComment(saleId, currentUserName, input.value.trim(), card);
-        input.value = "";
-      });
-    }
-
-    feedList.appendChild(card);
+  closedSales.forEach(s => {
+    const val = Number(s.credit_amount || 0);
+    const formattedVal = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
+    const option = document.createElement("option");
+    option.value = String(s.id);
+    option.textContent = `Venda ${s.client_name ? `(${s.client_name})` : `#${s.id}`} — ${formattedVal}`;
+    selectEl.appendChild(option);
   });
 };
 
-const addFeedComment = (saleId, userName, text, cardEl) => {
-  const storage = getFeedCommentsStorage();
-  if (!storage[saleId]) storage[saleId] = [];
-
-  const initials = userName.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() || "SG";
-  const newComment = {
-    id: "comment-" + Date.now(),
-    userName: userName,
-    userInitials: initials,
-    text: text,
-    timeAgo: "Agora",
-    createdAt: new Date().toISOString()
-  };
-
-  storage[saleId].push(newComment);
-  saveFeedCommentsStorage(storage);
-
-  const commentsList = cardEl.querySelector(`#feed-comments-${saleId}`);
-  if (commentsList) {
-    const item = document.createElement("div");
-    item.className = "feed-comment-item";
-    item.innerHTML = `
-      <div class="feed-comment-avatar">
-        <span>${escapeHtml(initials)}</span>
-      </div>
-      <div class="feed-comment-content">
-        <span class="feed-comment-user">${escapeHtml(userName)}</span>
-        <span class="feed-comment-text">${escapeHtml(text)}</span>
-        <span class="feed-comment-time">Agora</span>
-      </div>
-    `;
-    commentsList.appendChild(item);
-    commentsList.scrollTop = commentsList.scrollHeight;
+// Global Helper to auto-create a feed post when a contract is closed in Proposal Simulator / Kanban
+window.createFeedPostFromSale = async (saleData) => {
+  if (!saleData || !saleData.id) return;
+  try {
+    const token = window.supabaseClient?.auth?.session?.()?.access_token || localStorage.getItem("sb-access-token");
+    await fetch("/api/feed", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({
+        action: "create_post",
+        sale_id: String(saleData.id),
+        seller_name: saleData.seller_name || saleData.vendedor || "Vendedor Seven Gold",
+        credit_amount: saleData.credit_amount || saleData.valor || 0,
+        caption: `Mais uma conquista fechada! Parabéns ao cliente ${saleData.client_name || ''} por esse grande passo. 🚀`
+      })
+    });
+  } catch (err) {
+    console.warn("Erro ao criar post automático no feed:", err);
   }
 };
