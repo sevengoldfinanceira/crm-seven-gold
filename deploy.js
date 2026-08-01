@@ -20,4 +20,12 @@ for (const file of htmlFiles) {
   fs.writeFileSync(filePath, content);
 }
 
+const adminShellPath = path.join(root, 'admin-shell.js');
+let adminShell = fs.readFileSync(adminShellPath, 'utf-8');
+adminShell = adminShell.replace(
+  /robot-chat\.js\?v=[a-zA-Z0-9_-]+/g,
+  `robot-chat.js?v=${version}`
+);
+fs.writeFileSync(adminShellPath, adminShell);
+
 console.log(`PWA version auto-updated: seven-gold-v${version}`);

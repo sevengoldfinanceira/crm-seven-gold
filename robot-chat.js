@@ -831,19 +831,25 @@
       msgBody.innerHTML = msgs.map(m => {
         let attachmentHtml = "";
         if (m.file) {
+          const fileName = escapeHtml(m.file.name || "anexo");
+          const fileSize = escapeHtml(m.file.size || "");
           if (m.file.type === "image") {
             attachmentHtml = `
               <div style="margin-bottom:6px;">
                 <img src="${m.file.dataUrl}" style="max-width:100%; max-height:180px; border-radius:10px; cursor:pointer; display:block; border:1px solid rgba(0,0,0,0.1); box-shadow:0 2px 8px rgba(0,0,0,0.12);" onclick="window.open(this.src, '_blank')" title="Clique para abrir imagem" />
+                <a href="${m.file.dataUrl}" download="${fileName}" style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:7px; padding:7px 10px; background:rgba(255,255,255,0.24); border-radius:10px; text-decoration:none; color:inherit; border:1px solid rgba(0,0,0,0.08); box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+                  <span style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:0.76rem; font-weight:800;">${fileName}</span>
+                  <span style="flex-shrink:0; font-size:0.68rem; opacity:0.82; font-weight:800;">${fileSize ? `${fileSize} · ` : ""}Baixar imagem</span>
+                </a>
               </div>
             `;
           } else {
             attachmentHtml = `
-              <a href="${m.file.dataUrl}" download="${escapeHtml(m.file.name)}" style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:rgba(255,255,255,0.22); border-radius:10px; text-decoration:none; color:inherit; margin-bottom:6px; border:1px solid rgba(0,0,0,0.08); box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+              <a href="${m.file.dataUrl}" download="${fileName}" style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:rgba(255,255,255,0.22); border-radius:10px; text-decoration:none; color:inherit; margin-bottom:6px; border:1px solid rgba(0,0,0,0.08); box-shadow:0 1px 4px rgba(0,0,0,0.05);">
                 <span style="font-size:1.2rem; flex-shrink:0;">📄</span>
                 <div style="flex:1; overflow:hidden;">
-                  <strong style="font-size:0.8rem; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(m.file.name)}</strong>
-                  <span style="font-size:0.68rem; opacity:0.8;">${m.file.size || ''} · Baixar arquivo</span>
+                  <strong style="font-size:0.8rem; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${fileName}</strong>
+                  <span style="font-size:0.68rem; opacity:0.8;">${fileSize ? `${fileSize} · ` : ""}Baixar arquivo</span>
                 </div>
               </a>
             `;
