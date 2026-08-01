@@ -25,7 +25,7 @@
       title: "FINANCEIRO",
       items: [
         ["financeiro.html", "badge-dollar-sign", "Financeiro", "financeiro", "dono,administrador,financeiro"],
-        ["comissoes.html", "percent", "Comissões", "comissoes", "dono,administrador,financeiro"],
+        ["comissoes.html", "percent", "Comissões", "comissoes", ""],
         ["relatorios.html", "chart-column", "Relatórios", "relatorios", "dono,administrador,financeiro,marketing,rh"],
       ],
     },

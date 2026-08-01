@@ -275,6 +275,10 @@ function sgNavigateWithPanelsTransition(target, title = "Acessando Painéis...")
       return true;
     }
 
+    if (["financeiro", "comissoes", "comissões"].includes(normalizedArea)) {
+      return true;
+    }
+
     if (isAdminRole(role)) {
       return true;
     }
