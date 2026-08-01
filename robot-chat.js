@@ -294,45 +294,106 @@
       renderUsersList(teamUsers.filter(u => u.name.toLowerCase().includes(term) || (u.cargo && u.cargo.toLowerCase().includes(term))));
     });
 
+    const formatUserRole = (role) => {
+      if (!role) return "Consultor Comercial";
+      const map = {
+        "diretor-ceo": "Diretor / CEO",
+        "dono": "Diretor / Dono",
+        "administrador": "Administrador",
+        "admin": "Administrador",
+        "coordenador": "Coordenador",
+        "supervisor": "Supervisor Comercial",
+        "vendedor": "Consultor Comercial",
+        "home_office": "Consultor Home Office",
+        "financeiro": "Gestor Financeiro",
+        "marketing": "Gestor de Marketing",
+        "rh": "Recursos Humanos"
+      };
+      return map[String(role).toLowerCase()] || role;
+    };
+
+    const getUserInitials = (name) => {
+      if (!name) return "SG";
+      const cleanName = String(name).replace(/\([^)]*\)/g, "").trim();
+      const parts = cleanName.split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      }
+      return cleanName.slice(0, 2).toUpperCase() || "SG";
+    };
+
     const loadTeamUsers = async () => {
       if (!usersList) return;
+      usersList.innerHTML = '<div style="text-align:center; padding:20px; color:#94A3B8; font-size:0.82rem;">Carregando colaboradores da equipe...</div>';
+
+      let loadedUsers = [];
 
       try {
-        const client = window.supabaseClient || (typeof supabase !== "undefined" ? supabase : null);
+        const client = window.supabaseClient || (typeof getClient === "function" ? getClient() : null) || (typeof supabase !== "undefined" ? supabase : null);
+
         if (client && client.from) {
-          const { data } = await client.from("users").select("id, nome, email, avatar_url, cargo");
-          if (data && data.length > 0) {
-            teamUsers = data.map(u => ({
-              id: u.id,
-              name: u.nome || u.email || "Colaborador",
-              avatar: u.avatar_url,
-              cargo: u.cargo || "Consultor"
-            }));
+          // Query real crm_users table from Supabase
+          const { data: crmData } = await client
+            .from("crm_users")
+            .select("id, nome, name, email, avatar_url, photo_url, cargo, role, ativo");
+
+          if (crmData && crmData.length > 0) {
+            loadedUsers = crmData
+              .filter(u => u.ativo !== false && u.active !== false)
+              .map(u => ({
+                id: u.id,
+                name: u.nome || u.name || u.email || "Colaborador",
+                avatar: u.avatar_url || u.photo_url || "",
+                cargo: formatUserRole(u.cargo || u.role)
+              }));
           }
         }
-      } catch (e) {}
-
-      if (!teamUsers.length) {
-        teamUsers = [
-          { id: "u1", name: "Jonatã (Supervisor)", avatar: "", cargo: "Supervisor Comercial" },
-          { id: "u2", name: "Mariana Costa", avatar: "", cargo: "Vendedor" },
-          { id: "u3", name: "Lucas Almeida", avatar: "", cargo: "Vendedor" },
-          { id: "u4", name: "Bruna Martins", avatar: "", cargo: "Assistente de Vendas" },
-        ];
+      } catch (e) {
+        console.warn("[Robot Chat] Erro ao buscar crm_users via Supabase:", e);
       }
 
+      // Fallback via API if Supabase client not ready or returns empty
+      if (loadedUsers.length === 0) {
+        try {
+          const res = await fetch("/api/permissions/save?action=list");
+          const apiResult = await res.json().catch(() => ({}));
+          if (apiResult.ok && Array.isArray(apiResult.users)) {
+            loadedUsers = apiResult.users.map(u => ({
+              id: u.id,
+              name: u.nome || u.name || u.email || "Colaborador",
+              avatar: u.avatar_url || u.photo_url || "",
+              cargo: formatUserRole(u.cargo || u.role)
+            }));
+          }
+        } catch (err) {}
+      }
+
+      // Fallback to local window caches
+      if (loadedUsers.length === 0) {
+        const cached = window.crmUsers || window.usersRecords || window.equipeData || [];
+        if (Array.isArray(cached) && cached.length > 0) {
+          loadedUsers = cached.map(u => ({
+            id: u.id || Math.random(),
+            name: u.nome || u.name || u.email || "Colaborador",
+            avatar: u.avatar_url || u.photo_url || "",
+            cargo: formatUserRole(u.cargo || u.role)
+          }));
+        }
+      }
+
+      teamUsers = loadedUsers;
       renderUsersList(teamUsers);
     };
 
     const renderUsersList = (list) => {
       if (!usersList) return;
       if (list.length === 0) {
-        usersList.innerHTML = '<div style="text-align:center; padding:16px; color:#94A3B8; font-size:0.8rem;">Nenhum colaborador encontrado.</div>';
+        usersList.innerHTML = '<div style="text-align:center; padding:20px; color:#94A3B8; font-size:0.82rem;">Nenhum colaborador encontrado.</div>';
         return;
       }
 
       usersList.innerHTML = list.map(u => {
-        const initials = u.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() || "SG";
+        const initials = getUserInitials(u.name);
         return `
           <div class="robot-chat-user-item" data-user-id="${u.id}">
             <div style="width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg, #B98220, #D4AF37); color:#FFF; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem; flex-shrink:0; overflow:hidden;">
@@ -358,7 +419,7 @@
 
     const startConversation = (targetUser) => {
       activeTargetUser = targetUser;
-      const initials = targetUser.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() || "SG";
+      const initials = getUserInitials(targetUser.name);
 
       if (targetName) targetName.textContent = targetUser.name;
       if (targetAvatar) {
