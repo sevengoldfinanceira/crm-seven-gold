@@ -8621,32 +8621,18 @@ const initCrmCommissionCalculator = () => {
       return;
     }
 
-    profileSelect.innerHTML = '<option value="">Selecione um cargo ou vendedor</option>';
+    profileSelect.innerHTML = '<option value="">Selecione um cargo</option>';
     if (levels.length) {
-      const group = document.createElement("optgroup");
-      group.label = "Cargos";
       levels.forEach((level) => {
         const option = document.createElement("option");
         option.value = `level:${level.id}`;
         option.textContent = level.name;
-        group.appendChild(option);
+        profileSelect.appendChild(option);
       });
-      profileSelect.appendChild(group);
-    }
-    if (sellers.length) {
-      const group = document.createElement("optgroup");
-      group.label = "Vendedores";
-      sellers.forEach((seller) => {
-        const option = document.createElement("option");
-        option.value = `user:${seller.id}`;
-        option.textContent = `${seller.name} - ${seller.levelName}`;
-        group.appendChild(option);
-      });
-      profileSelect.appendChild(group);
     }
 
     profileSelect.value = result.selection?.value || "";
-    profileSelect.disabled = levels.length === 0 && sellers.length === 0;
+    profileSelect.disabled = levels.length === 0;
   };
 
   const loadTables = async (profileValue = "") => {
