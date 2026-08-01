@@ -2132,12 +2132,44 @@
 
 
 
-        <!-- Minha equipe -->
+        <!-- Minha equipe / Ranking das Equipes -->
         <section class="tab-content" data-tab="equipe" style="display:none;">
-          <div class="empty-tab-state">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #d4a017; margin-bottom: 16px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <h2>Minha equipe</h2>
-            <p>Em breve.</p>
+          <div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+            <!-- Header -->
+            <header style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px;">
+              <div>
+                <h1 style="font-size: clamp(1.6rem, 2.5vw, 2.25rem); font-weight: 850; margin: 0; color: #0f172a; display: flex; align-items: center; gap: 10px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:32px; height:32px; color:#B98220;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  Desempenho & Ranking das Equipes
+                </h1>
+                <p style="color: #64748b; font-size: 0.92rem; margin: 6px 0 0; font-weight: 500;">
+                  Acompanhe as vendas das equipes em tempo real e veja quem está liderando o ranking!
+                </p>
+              </div>
+
+              <!-- Período & Ações -->
+              <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <select id="crm-equipe-period-select" style="min-width: 170px; height: 42px; border: 1px solid #CBD5E1; border-radius: 12px; background: #FFFFFF; color: #0f172a; padding: 0 14px; font-size: 0.88rem; font-weight: 700; outline: none; cursor: pointer;">
+                  <option value="this_month" selected>Este mês</option>
+                  <option value="last_month">Mês passado</option>
+                  <option value="all">Todo o período</option>
+                </select>
+                <button type="button" id="crm-refresh-equipe-btn" style="height: 42px; padding: 0 18px; background: linear-gradient(135deg, #B98220, #D4AF37); color: #FFF; font-weight: 800; border: 0; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; box-shadow: 0 4px 14px rgba(185,130,32,0.25);">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px; height:16px;"><path d="M21.5 2v6h-6M2.13 15.57a10 10 0 1 0 4.1-10.73L2 9"/></svg>
+                  Atualizar Ranking
+                </button>
+              </div>
+            </header>
+
+            <!-- Banner Destaque da Equipe Líder (1º Lugar) -->
+            <div id="crm-equipe-leader-banner" style="margin-bottom: 28px;"></div>
+
+            <div id="crm-equipe-loading" style="text-align: center; padding: 60px 20px; color: #64748b;">
+              <div style="font-size: 1rem; font-weight: 700;">Carregando ranking das equipes...</div>
+            </div>
+
+            <!-- Layout Grid das Equipes -->
+            <div id="crm-equipe-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px;"></div>
           </div>
         </section>
 

@@ -8758,6 +8758,191 @@ window.switchCommissionSubTab = (target) => {
   if (crmPCalc) crmPCalc.style.display = target === "calculator" ? "block" : "none";
 };
 
+const initCrmEquipesRanking = async () => {
+  const grid = document.getElementById("crm-equipe-grid");
+  const banner = document.getElementById("crm-equipe-leader-banner");
+  const loading = document.getElementById("crm-equipe-loading");
+  if (!grid) return;
+
+  if (loading) loading.style.display = "block";
+
+  const periodSelect = document.getElementById("crm-equipe-period-select");
+  const refreshBtn = document.getElementById("crm-refresh-equipe-btn");
+
+  if (refreshBtn && !refreshBtn.dataset.bound) {
+    refreshBtn.dataset.bound = "true";
+    refreshBtn.addEventListener("click", () => initCrmEquipesRanking());
+  }
+  if (periodSelect && !periodSelect.dataset.bound) {
+    periodSelect.dataset.bound = "true";
+    periodSelect.addEventListener("change", () => initCrmEquipesRanking());
+  }
+
+  const client = typeof getClient === "function" ? getClient() : window.supabaseClient;
+  const period = periodSelect ? periodSelect.value : "this_month";
+
+  let teams = [];
+  let sales = [];
+  let users = [];
+
+  try {
+    if (client) {
+      const { data: tData } = await client.from("crm_teams").select("*").eq("active", true).order("name");
+      if (tData && tData.length > 0) teams = tData;
+
+      const { data: sData } = await client.from("sales").select("*");
+      if (sData) sales = sData;
+
+      const { data: uData } = await client.from("users").select("id, nome, email, avatar_url, cargo, team_id");
+      if (uData) users = uData;
+    }
+  } catch (err) {
+    console.warn("[Equipes Ranking] Erro ao buscar dados do Supabase:", err);
+  }
+
+  // Fallback teams if DB teams empty
+  if (!teams || teams.length === 0) {
+    teams = [
+      { id: "team-1", name: "Equipe Alpha - Elite", photo_url: "", coordinator_name: "Coordenador Comercial" },
+      { id: "team-2", name: "Equipe Gold - Vendas", photo_url: "", coordinator_name: "Supervisor Comercial" },
+      { id: "team-3", name: "Equipe Prime", photo_url: "", coordinator_name: "Gestor Comercial" },
+    ];
+  }
+
+  const now = new Date();
+  const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+  const teamStats = teams.map((team) => {
+    const teamMembers = users.filter((u) => u.team_id === team.id);
+    const memberIds = new Set(teamMembers.map((m) => m.id));
+
+    const teamSales = sales.filter((sale) => {
+      if (period === "this_month" && sale.closed_at) {
+        if (!sale.closed_at.startsWith(currentMonthStr)) return false;
+      }
+      return sale.team_id === team.id || memberIds.has(sale.seller_id) || memberIds.has(sale.attendant_id);
+    });
+
+    const totalSold = teamSales.reduce((sum, s) => sum + Number(s.credit_amount || 0), 0);
+    const totalCount = teamSales.length;
+
+    // Calculate top seller inside team
+    const sellerSalesMap = {};
+    teamSales.forEach((s) => {
+      const sellerId = s.seller_id || "outros";
+      if (!sellerSalesMap[sellerId]) sellerSalesMap[sellerId] = 0;
+      sellerSalesMap[sellerId] += Number(s.credit_amount || 0);
+    });
+
+    const sortedSellers = Object.entries(sellerSalesMap)
+      .sort((a, b) => b[1] - a[1])
+      .map(([id, amount]) => {
+        const u = users.find((usr) => usr.id === id);
+        return {
+          id,
+          name: u ? u.nome || u.email : "Vendedor",
+          avatar_url: u ? u.avatar_url : "",
+          amount,
+        };
+      });
+
+    return {
+      ...team,
+      totalSold,
+      totalCount,
+      members: teamMembers,
+      topSeller: sortedSellers[0] || null,
+    };
+  });
+
+  // Sort teams by total sold DESC
+  teamStats.sort((a, b) => b.totalSold - a.totalSold);
+
+  if (loading) loading.style.display = "none";
+
+  // 1. Leader Banner (#1 na Frente)
+  const leader = teamStats[0];
+  if (leader && banner) {
+    banner.innerHTML = `
+      <div style="background: linear-gradient(135deg, #161616 0%, #262016 100%); border: 2px solid #D4AF37; border-radius: 24px; padding: 24px 30px; color: #FFF; box-shadow: 0 12px 36px rgba(212,175,55,0.2); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; position: relative; overflow: hidden;">
+        <div style="position: absolute; right: -25px; top: -25px; width: 160px; height: 160px; background: rgba(212,175,55,0.08); border-radius: 50%; pointer-events: none;"></div>
+        <div style="display: flex; align-items: center; gap: 20px;">
+          <div style="position: relative;">
+            <div style="width: 76px; height: 76px; border-radius: 50%; border: 3.5px solid #D4AF37; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; font-weight: 900; color: #D4AF37; box-shadow: 0 6px 20px rgba(0,0,0,0.4);">
+              ${leader.photo_url ? `<img src="${leader.photo_url}" style="width:100%; height:100%; object-fit:cover;" />` : leader.name.slice(0, 2).toUpperCase()}
+            </div>
+            <span style="position: absolute; top: -12px; right: -6px; font-size: 1.5rem;">👑</span>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="background: linear-gradient(135deg, #B98220, #D4AF37); color: #000; font-size: 0.74rem; font-weight: 900; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 0 2px 8px rgba(212,175,55,0.3);">
+                🥇 1º LUGAR NA FRENTE
+              </span>
+            </div>
+            <h2 style="margin: 8px 0 3px; font-size: 1.45rem; font-weight: 900; color: #FFF;">${leader.name}</h2>
+            <p style="margin: 0; font-size: 0.88rem; color: #CBD5E1;">${leader.coordinator_name || 'Coordenador Comercial'}</p>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 36px; flex-wrap: wrap;">
+          <div style="text-align: right;">
+            <div style="font-size: 0.76rem; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Total Vendido</div>
+            <div style="font-size: 1.85rem; font-weight: 950; color: #5EEAD4; letter-spacing: -0.02em;">${formatSalesCurrency(leader.totalSold)}</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 0.76rem; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Vendas Fechadas</div>
+            <div style="font-size: 1.4rem; font-weight: 900; color: #FFF;">${leader.totalCount} contratadas</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // 2. Render Team Grid
+  grid.innerHTML = teamStats.map((t, idx) => {
+    const rankBadges = ['🥇 1º Lugar', '🥈 2º Lugar', '🥉 3º Lugar'];
+    const rankBadgeText = rankBadges[idx] || `${idx + 1}º Lugar`;
+    const isLeader = idx === 0;
+
+    return `
+      <div class="crm-team-card" style="background: #FFFFFF; border: 1.5px solid ${isLeader ? '#D4AF37' : '#E2E8F0'}; border-radius: 22px; padding: 24px; box-shadow: 0 4px 20px rgba(15,23,42,0.04); display: flex; flex-direction: column; gap: 16px; position: relative;">
+        <!-- Top Rank Badge -->
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 0.78rem; font-weight: 850; padding: 5px 14px; border-radius: 20px; background: ${isLeader ? 'rgba(212,175,55,0.15)' : '#F1F5F9'}; color: ${isLeader ? '#906820' : '#475569'}; border: 1px solid ${isLeader ? 'rgba(212,175,55,0.4)' : '#E2E8F0'};">
+            ${rankBadgeText} ${isLeader ? '🔥 LÍDER' : ''}
+          </span>
+          <span style="font-size: 0.8rem; color: #64748b; font-weight: 700;">${t.totalCount} venda(s)</span>
+        </div>
+
+        <!-- Team Header (Foto + Nome) -->
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 58px; height: 58px; border-radius: 18px; background: linear-gradient(135deg, #B98220, #D4AF37); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; font-weight: 900; flex-shrink: 0; box-shadow: 0 4px 14px rgba(185,130,32,0.25);">
+            ${t.photo_url ? `<img src="${t.photo_url}" style="width:100%; height:100%; object-fit:cover; border-radius:18px;" />` : t.name.slice(0, 2).toUpperCase()}
+          </div>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 850; color: #0f172a;">${t.name}</h3>
+            <p style="margin: 3px 0 0; font-size: 0.82rem; color: #64748b;">${t.coordinator_name || 'Coordenador Comercial'}</p>
+          </div>
+        </div>
+
+        <!-- Total Sold Card -->
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 0.84rem; font-weight: 700; color: #475569;">Total Vendido</span>
+          <strong style="font-size: 1.35rem; font-weight: 950; color: #059669;">${formatSalesCurrency(t.totalSold)}</strong>
+        </div>
+
+        <!-- Top Seller of Team -->
+        ${t.topSeller ? `
+          <div style="font-size: 0.8rem; color: #64748b; border-top: 1px solid #F1F5F9; padding-top: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <span>⭐ Destaque: <strong style="color: #0f172a;">${t.topSeller.name}</strong></span>
+            <strong style="color: #B98220;">${formatSalesCurrency(t.topSeller.amount)}</strong>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join("");
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   initCrmCommissionCalculator();
 
@@ -8834,6 +9019,8 @@ const switchTab = () => {
   } else if (activeTab === "financeiro") {
     if (typeof initCrmCommissionCalculator === "function") initCrmCommissionCalculator();
     if (typeof loadCrmSellerCommissions === "function") loadCrmSellerCommissions();
+  } else if (activeTab === "equipe") {
+    if (typeof initCrmEquipesRanking === "function") initCrmEquipesRanking();
   }
 };
 
