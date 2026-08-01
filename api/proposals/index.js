@@ -7,7 +7,7 @@ const crypto = require('crypto');
 const { getActiveProposalOptions, checkDuplicateHash, createImportRecord, activateImport, getProposalSettings, updateProposalSettings, inMemoryStore } = require('../../lib/server/proposals/store');
 const { rankProposals } = require('../../lib/server/proposals/ranking');
 const { parseProposalPdfText } = require('../../lib/server/proposals/pdf-parser');
-const { syncGoogleDriveFolder } = require('../../lib/server/proposals/drive-sync');
+const { syncGoogleDriveFolder, syncGoogleDriveUrl } = require('../../lib/server/proposals/drive-sync');
 
 module.exports = async (req, res) => {
   // Set CORS and Content-Type headers
@@ -99,7 +99,6 @@ module.exports = async (req, res) => {
       }
 
       // Extract text from PDF binary
-      // Use internal path to avoid pdf-parse test file loading bug on Vercel
       let rawText = '';
       let pageCount = 1;
       try {
@@ -169,8 +168,9 @@ module.exports = async (req, res) => {
 
     // 7. Google Drive Sync
     if (pathname.includes('/drive/sync')) {
-      const settings = getProposalSettings();
-      const result = await syncGoogleDriveFolder(settings.drive_folder_id);
+      const body = req.body || {};
+      const driveUrl = body.drive_file_url || body.drive_url || '';
+      const result = await syncGoogleDriveUrl(driveUrl, { force: body.force });
       res.writeHead(200);
       return res.end(JSON.stringify(result));
     }

@@ -85,10 +85,7 @@
           </a>
           <a class="nav-item nav-item-fixed nav-item-maps" href="#mapas" data-permission-key="mapas" title="Google Maps em São Bernardo do Campo" aria-label="Abrir Google Maps no painel, na região de São Bernardo do Campo" data-tooltip="Google Maps - São Bernardo do Campo" data-fixed-nav="google-maps">
             <span class="nav-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="width: 20px; height: 20px; display: block;">
-                <path fill="#EA4335" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                <circle fill="#FFFFFF" cx="12" cy="9" r="2.5"/>
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
             </span>
             <span class="nav-label">Google Maps</span>
           </a>
@@ -1146,19 +1143,40 @@
               <div>
                 <p class="appointment-race-kicker">Configuração</p>
                 <h2 data-race-settings-title>Configurar corridas</h2>
-                <span data-race-settings-description>Ajuste a meta diária de agendamentos e clientes em loja.</span>
+                <span data-race-settings-description>Ajuste a meta diária de agendamentos por vendedor.</span>
               </div>
               <button type="button" class="modal-close-button" data-race-close-settings aria-label="Fechar">×</button>
             </header>
             <div class="appointment-race-target-grid">
-              <label>
-                <span>Meta diária de agendamentos e clientes em loja</span>
-                <input type="number" min="1" step="1" value="10" data-race-target-input data-race-appointment-target-input />
-              </label>
-              <div class="appointment-race-fixed-target" aria-label="Meta semanal fixa de vendas">
-                <span>Meta semanal de vendas</span>
-                <strong>1 venda</strong>
-                <small>Fixa por vendedor, de segunda a domingo.</small>
+              <div class="appointment-race-target-card appointment-race-editable-card">
+                <label for="appointment-race-target-field" class="appointment-race-card-header">
+                  <span class="appointment-race-card-title">Agendamentos</span>
+                  <small class="appointment-race-card-sub">Meta diária por vendedor</small>
+                </label>
+                <div class="appointment-race-input-group">
+                  <input id="appointment-race-target-field" type="number" min="1" step="1" value="10" data-race-target-input data-race-appointment-target-input />
+                </div>
+                <small class="appointment-race-card-footer">Ajustável por corrida.</small>
+              </div>
+              <div class="appointment-race-target-card appointment-race-editable-card">
+                <label for="appointment-race-store-target-field" class="appointment-race-card-header">
+                  <span class="appointment-race-card-title">Clientes em loja</span>
+                  <small class="appointment-race-card-sub">Meta diária por vendedor</small>
+                </label>
+                <div class="appointment-race-input-group">
+                  <input id="appointment-race-store-target-field" type="number" min="1" step="1" value="5" data-race-store-clients-target-input />
+                </div>
+                <small class="appointment-race-card-footer">Ajustável por corrida.</small>
+              </div>
+              <div class="appointment-race-target-card appointment-race-fixed-target" aria-label="Meta semanal fixa de vendas">
+                <div class="appointment-race-card-header">
+                  <span class="appointment-race-card-title">Vendas na semana</span>
+                  <small class="appointment-race-card-sub">Meta semanal por vendedor</small>
+                </div>
+                <div class="appointment-race-value-group">
+                  <strong class="appointment-race-card-value">1 venda</strong>
+                </div>
+                <small class="appointment-race-card-footer">Fixa (seg. a dom.).</small>
               </div>
             </div>
             <p class="appointment-race-modal-status" data-race-modal-status></p>
@@ -1451,6 +1469,7 @@
             .crm-seller-top-tabs {
               display: flex;
               align-items: center;
+              justify-content: center;
               flex-wrap: wrap;
               gap: 8px;
               margin-bottom: 24px;

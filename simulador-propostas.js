@@ -457,9 +457,9 @@
 
         <!-- Sub-tab 3: Configurações -->
         <div class="simulador-subtab-content" id="subtab-configuracoes" style="display:none;">
-          <div class="admin-proposals-panel">
+          <div class="admin-proposals-panel" style="display:flex; flex-direction:column; gap:20px;">
             <!-- Active Table Info Panel -->
-            <div id="sim-active-table-panel" class="admin-card-box" style="margin-bottom:16px;">
+            <div id="sim-active-table-panel" class="admin-card-box">
               <h2 style="color:#0f172a; font-size:1.1rem; margin:0 0 14px; font-weight:800; display:flex; align-items:center; gap:8px;">
                 <i data-lucide="database" style="color:#b45309; width:18px;"></i> Tabela Comercial Ativa
               </h2>
@@ -471,9 +471,46 @@
               </div>
             </div>
 
-            <!-- Upload PDF Box -->
+            <!-- Google Drive Link Auto-Sync Box -->
+            <div class="admin-card-box" style="border:1.5px solid rgba(201,168,76,0.4); background:linear-gradient(180deg, #FFFFFF 0%, #FFFDF7 100%);">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                <h2 style="color:#0f172a; font-size:1.1rem; margin:0; font-weight:800; display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="link-2" style="color:#b45309; width:20px;"></i> Tabela Online via Google Drive (Auto-atualizável)
+                </h2>
+                <span style="background:rgba(201,168,76,0.15); color:#906820; font-size:0.72rem; font-weight:800; padding:4px 10px; border-radius:20px; border:1px solid rgba(201,168,76,0.3);">
+                  ✨ RECOMENDADO
+                </span>
+              </div>
+              <p style="font-size:0.84rem; color:#64748b; margin:0 0 16px; line-height:1.4;">
+                Cole abaixo o link de compartilhamento do arquivo PDF no Google Drive.
+                O sistema lerá a tabela diretamente do link online para que as simulações utilizem sempre a versão atualizada do Drive.
+              </p>
+
+              <div style="display:flex; flex-direction:column; gap:12px;">
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                  <input type="url" id="sim-drive-link-input"
+                    placeholder="https://drive.google.com/file/d/1ABC.../view?usp=sharing"
+                    style="flex:1; min-width:280px; height:44px; padding:0 14px; border:1px solid #CBD5E1; border-radius:10px; font-size:0.88rem; outline:none;" />
+                  <button type="button" id="sim-sync-drive-btn"
+                    style="height:44px; padding:0 20px; background:linear-gradient(135deg, #B98220, #D4AF37); color:#FFF; font-weight:800; border:0; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; white-space:nowrap; box-shadow:0 4px 12px rgba(185,130,32,0.25);">
+                    <i data-lucide="refresh-cw" style="width:16px; height:16px;"></i> Salvar e Sincronizar Link
+                  </button>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:8px; font-size:0.8rem; color:#475569; margin-top:2px;">
+                  <input type="checkbox" id="sim-auto-sync-checkbox" checked style="width:16px; height:16px; accent-color:#b45309; cursor:pointer;" />
+                  <label for="sim-auto-sync-checkbox" style="cursor:pointer; font-weight:600;">
+                    Sincronizar link do Google Drive automaticamente ao entrar para simular
+                  </label>
+                </div>
+
+                <div id="sim-drive-sync-status" style="display:none; margin-top:8px;"></div>
+              </div>
+            </div>
+
+            <!-- Upload PDF Box (Fallback) -->
             <div class="admin-card-box">
-              <h2 style="color:#0f172a; font-size:1.1rem; margin:0; font-weight:800;"><i data-lucide="file-up" style="color:#b45309; width:18px;"></i> Importar Nova Tabela Comercial (PDF)</h2>
+              <h2 style="color:#0f172a; font-size:1.1rem; margin:0; font-weight:800;"><i data-lucide="file-up" style="color:#b45309; width:18px;"></i> Importar por Arquivo PDF Local (Fallback)</h2>
               
               <div class="pdf-upload-dropzone" id="sim-pdf-dropzone">
                 <i data-lucide="upload-cloud" style="width:40px; height:40px; color:#b45309;"></i>
@@ -514,7 +551,10 @@
         if (activeContent) activeContent.style.display = 'block';
 
         if (targetSubtab === 'tabelas') fetchActiveTablesList();
-        if (targetSubtab === 'configuracoes') loadActiveTableInfo();
+        if (targetSubtab === 'configuracoes') {
+          loadActiveTableInfo();
+          bindDriveSyncHandlers();
+        }
         if (targetSubtab === 'propostas') renderSavedProposalsTab();
         if (targetSubtab === 'clientes') renderClosedClientsTab();
       });
@@ -580,15 +620,20 @@
           ? new Date(active.activated_at || active.created_at).toLocaleString('pt-BR')
           : '—';
 
+        const isDrive = active.source_type === 'GOOGLE_DRIVE' || (active.source_file_name && active.source_file_name.includes('GoogleDrive'));
+
         contentEl.innerHTML = `
           <div style="display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center;">
             <div style="display:flex; flex-direction:column; gap:10px;">
               <div style="display:flex; align-items:center; gap:10px;">
                 <div style="width:36px; height:36px; border-radius:8px; background:rgba(180,83,9,0.08); border:1px solid rgba(180,83,9,0.25); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                  <i data-lucide="file-text" style="width:18px; height:18px; color:#b45309;"></i>
+                  <i data-lucide="${isDrive ? 'link-2' : 'file-text'}" style="width:18px; height:18px; color:#b45309;"></i>
                 </div>
                 <div>
-                  <div style="font-weight:800; color:#0f172a; font-size:0.95rem; word-break:break-all;">${active.source_file_name || 'Tabela.pdf'}</div>
+                  <div style="font-weight:800; color:#0f172a; font-size:0.95rem; word-break:break-all; display:flex; align-items:center; gap:8px;">
+                    ${active.source_file_name || 'Tabela.pdf'}
+                    ${isDrive ? '<span style="font-size:0.68rem; font-weight:800; background:rgba(201,168,76,0.2); color:#906820; padding:2px 8px; border-radius:12px; border:1px solid rgba(201,168,76,0.4);">ONLINE (DRIVE)</span>' : ''}
+                  </div>
                   <div style="font-size:0.75rem; color:#64748b; margin-top:2px;">
                     Versão: <strong style="color:#b45309;">${active.version || 'v1.0'}</strong>
                     &nbsp;•&nbsp; ${active.valid_tables_count || 0} planos &nbsp;•&nbsp; ${active.proposal_rows_count || 0} propostas
@@ -596,17 +641,17 @@
                 </div>
               </div>
               <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.78rem; color:#64748b;">
-                <div><i data-lucide="calendar" style="width:12px; height:12px; vertical-align:middle; color:#b45309;"></i> Ativada em: <strong style="color:#0f172a;">${uploadedDate}</strong></div>
-                <div><i data-lucide="user" style="width:12px; height:12px; vertical-align:middle; color:#b45309;"></i> Por: <strong style="color:#0f172a;">${active.uploaded_by || 'Administrador'}</strong></div>
+                <div><i data-lucide="calendar" style="width:12px; height:12px; vertical-align:middle; color:#b45309;"></i> Sincronizada em: <strong style="color:#0f172a;">${uploadedDate}</strong></div>
+                <div><i data-lucide="user" style="width:12px; height:12px; vertical-align:middle; color:#b45309;"></i> Origem: <strong style="color:#0f172a;">${active.uploaded_by || 'Google Drive Sync'}</strong></div>
               </div>
             </div>
             <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
               <span style="background:rgba(16,185,129,0.12); color:#047857; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:20px; border:1px solid rgba(16,185,129,0.3); white-space:nowrap;">
-                ✓ ATIVA
+                ✓ ATIVA E CONECTADA
               </span>
               <button type="button" id="sim-open-pdf-btn"
                 style="padding:6px 14px; font-size:0.76rem; font-weight:700; border-radius:8px; background:#000000; color:#C9A84C; border:1px solid #C9A84C; cursor:pointer; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;"
-                title="Abrir PDF da tabela">
+                title="Abrir PDF no Google Drive">
                 <i data-lucide="external-link" style="width:13px; height:13px;"></i> Abrir PDF
               </button>
             </div>
@@ -614,19 +659,99 @@
         `;
         if (window.lucide) window.lucide.createIcons();
 
-        // Open PDF button — tries to open the stored PDF URL or download link
-        document.getElementById('sim-open-pdf-btn')?.addEventListener('click', () => {
-          const pdfUrl = active.pdf_url || active.source_url || null;
+        // Open PDF button
+        document.getElementById('sim-open-pdf-btn')?.addEventListener('click', async () => {
+          const settingsResp = await fetch('/api/attendance/proposals/settings').catch(() => null);
+          const settingsData = settingsResp ? await readApiPayload(settingsResp) : null;
+          const pdfUrl = active.pdf_url || active.source_drive_url || settingsData?.drive_file_url || null;
           if (pdfUrl) {
             window.open(pdfUrl, '_blank');
           } else {
-            alert(`Arquivo: ${active.source_file_name || 'Tabela.pdf'}\n\nO PDF desta tabela não possui URL direta armazenada. Para visualizá-lo, faça uma nova importação.`);
+            alert(`Arquivo: ${active.source_file_name || 'Tabela.pdf'}\n\nInforme um link do Google Drive no painel abaixo para abrir diretamente.`);
           }
         });
 
       } catch (err) {
         contentEl.innerHTML = `<p style="color:#ef4444; font-size:0.82rem; margin:0;">Erro ao carregar tabela ativa: ${err.message}</p>`;
       }
+    }
+
+    // Bind Google Drive link sync action handler
+    async function bindDriveSyncHandlers() {
+      const linkInput = document.getElementById('sim-drive-link-input');
+      const syncBtn = document.getElementById('sim-sync-drive-btn');
+      const statusEl = document.getElementById('sim-drive-sync-status');
+      if (!syncBtn) return;
+
+      // Pre-fill input with stored settings
+      try {
+        const settingsResp = await fetch('/api/attendance/proposals/settings');
+        const settingsData = await readApiPayload(settingsResp);
+        if (settingsData && settingsData.drive_file_url && linkInput) {
+          linkInput.value = settingsData.drive_file_url;
+        }
+      } catch (err) {
+        console.warn('Could not fetch proposal settings:', err);
+      }
+
+      syncBtn.onclick = async () => {
+        const driveUrl = linkInput?.value?.trim() || '';
+        if (!driveUrl) {
+          alert('Por favor, informe o link de compartilhamento da tabela no Google Drive.');
+          return;
+        }
+
+        syncBtn.disabled = true;
+        syncBtn.innerHTML = `<i data-lucide="loader-2" class="animate-spin" style="width:16px; height:16px;"></i> Sincronizando...`;
+        if (window.lucide) window.lucide.createIcons();
+
+        if (statusEl) {
+          statusEl.style.display = 'block';
+          statusEl.innerHTML = `
+            <div style="padding:12px 14px; background:rgba(212,175,55,0.12); border:1px solid rgba(212,175,55,0.3); border-radius:8px; color:#906820; font-size:0.82rem; font-weight:600;">
+              <i data-lucide="loader-2" class="animate-spin" style="width:14px; height:14px; vertical-align:middle;"></i>
+              Conectando ao Google Drive e baixando a tabela comercial em PDF...
+            </div>
+          `;
+          if (window.lucide) window.lucide.createIcons();
+        }
+
+        try {
+          const resp = await fetch('/api/attendance/proposals/drive/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ drive_file_url: driveUrl, force: true }),
+          });
+          const data = await readApiPayload(resp);
+
+          if (!resp.ok || !data.success) {
+            throw new Error(data.message || 'Não foi possível sincronizar com o Google Drive.');
+          }
+
+          if (statusEl) {
+            statusEl.innerHTML = `
+              <div style="padding:12px 14px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:8px; color:#047857; font-size:0.82rem; font-weight:700;">
+                ✓ ${data.message}
+              </div>
+            `;
+          }
+
+          await loadActiveTableInfo();
+
+        } catch (err) {
+          if (statusEl) {
+            statusEl.innerHTML = `
+              <div style="padding:12px 14px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.25); border-radius:8px; color:#b91c1c; font-size:0.82rem; font-weight:600;">
+                ⚠ ${err.message}
+              </div>
+            `;
+          }
+        } finally {
+          syncBtn.disabled = false;
+          syncBtn.innerHTML = `<i data-lucide="refresh-cw" style="width:16px; height:16px;"></i> Salvar e Sincronizar Link`;
+          if (window.lucide) window.lucide.createIcons();
+        }
+      };
     }
 
     // Handle simulation form submit

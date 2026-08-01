@@ -41,6 +41,7 @@ const appointmentRaceSettingsModal = document.querySelector("[data-race-settings
 const appointmentRaceSettingsForm = document.querySelector("[data-race-settings-form]");
 const appointmentRaceTargetInput = document.querySelector("[data-race-target-input]");
 const appointmentRaceAppointmentTargetInput = document.querySelector("[data-race-appointment-target-input]") || appointmentRaceTargetInput;
+const appointmentRaceStoreClientsTargetInput = document.querySelector("[data-race-store-clients-target-input]");
 const appointmentRaceModalStatus = document.querySelector("[data-race-modal-status]");
 const salesModal = document.querySelector("[data-sales-modal]");
 const salesForm = document.querySelector("[data-sales-form]");
@@ -2543,7 +2544,9 @@ const openAppointmentRaceSettings = () => {
   const race = appointmentRaceState?.race || null;
   const mode = getAppointmentRaceMode(race);
   const appointmentTarget = Number(race?.appointment_target || (mode === "appointments" ? race?.target : 10) || 10);
+  const storeClientsTarget = Number(race?.store_clients_target || (mode === "store_clients" ? race?.target : 5) || 5);
   if (appointmentRaceAppointmentTargetInput) appointmentRaceAppointmentTargetInput.value = appointmentTarget;
+  if (appointmentRaceStoreClientsTargetInput) appointmentRaceStoreClientsTargetInput.value = storeClientsTarget;
   setAppointmentRaceModalStatus("");
   if (typeof appointmentRaceSettingsModal?.showModal === "function") {
     appointmentRaceSettingsModal.showModal();
@@ -2557,9 +2560,11 @@ const closeAppointmentRaceSettings = () => {
 const getAppointmentRaceFormConfig = () => {
   const mode = normalizeAppointmentRaceMode(appointmentRaceViewMode);
   const appointmentTarget = Number.parseInt(appointmentRaceAppointmentTargetInput?.value || "0", 10);
+  const storeClientsTarget = Number.parseInt(appointmentRaceStoreClientsTargetInput?.value || "0", 10);
   return {
     mode,
     appointmentTarget,
+    storeClientsTarget,
   };
 };
 
@@ -2568,7 +2573,11 @@ const runAppointmentRaceAdminAction = async (action) => {
   if (!client) return;
   const config = getAppointmentRaceFormConfig();
   if (!Number.isInteger(config.appointmentTarget) || config.appointmentTarget <= 0) {
-    setAppointmentRaceModalStatus("Informe uma meta diária maior que zero.", "error");
+    setAppointmentRaceModalStatus("Informe uma meta de agendamentos maior que zero.", "error");
+    return;
+  }
+  if (!Number.isInteger(config.storeClientsTarget) || config.storeClientsTarget <= 0) {
+    setAppointmentRaceModalStatus("Informe uma meta de clientes em loja maior que zero.", "error");
     return;
   }
   try {
@@ -2586,6 +2595,7 @@ const runAppointmentRaceAdminAction = async (action) => {
         action,
         mode: config.mode,
         appointment_target: config.appointmentTarget,
+        store_clients_target: config.storeClientsTarget,
       }),
     });
     const result = await response.json().catch(() => ({}));

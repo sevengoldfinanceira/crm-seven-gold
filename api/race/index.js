@@ -297,13 +297,17 @@ const loadRaceRows = async (dateKey) => {
 };
 
 const getTargets = (rows) => {
-  const dailyTarget = Math.max(1, Number(
+  const appointmentTarget = Math.max(1, Number(
     rows.find((row) => row.organization_id === ORGANIZATION_IDS.appointments)?.target
       || DEFAULT_TARGETS.appointments
   ));
+  const storeClientsTarget = Math.max(1, Number(
+    rows.find((row) => row.organization_id === ORGANIZATION_IDS.store_clients)?.target
+      || DEFAULT_TARGETS.store_clients
+  ));
   return {
-    appointments: dailyTarget,
-    store_clients: dailyTarget,
+    appointments: appointmentTarget,
+    store_clients: storeClientsTarget,
     closed_clients: DEFAULT_TARGETS.closed_clients,
   };
 };
@@ -384,6 +388,7 @@ const handleAdminAction = async (req, authorization) => {
   const action = String(payload.action || '');
   const mode = normalizeRaceMode(payload.mode);
   const appointmentTarget = Number.parseInt(payload.appointment_target, 10);
+  const storeClientsTarget = Number.parseInt(payload.store_clients_target, 10);
   const requiresAppointmentTarget = action === 'save_targets' || mode !== 'closed_clients';
   if (requiresAppointmentTarget && (!Number.isInteger(appointmentTarget) || appointmentTarget <= 0)) {
     return { status: 400, body: { ok: false, error: 'Informe uma meta diária maior que zero.' } };
@@ -401,19 +406,34 @@ const handleAdminAction = async (req, authorization) => {
       status: 'active',
       createdBy,
     });
+    if (Number.isInteger(storeClientsTarget) && storeClientsTarget > 0) {
+      await upsertRace({
+        organizationId: ORGANIZATION_IDS.store_clients,
+        raceDate: todayDateKey,
+        target: storeClientsTarget,
+        status: 'active',
+        createdBy,
+      });
+    }
   } else if (action === 'restart') {
+    const selectedTarget = mode === 'store_clients' && Number.isInteger(storeClientsTarget) && storeClientsTarget > 0
+      ? storeClientsTarget
+      : mode === 'closed_clients' ? DEFAULT_TARGETS.closed_clients : appointmentTarget;
     await upsertRace({
       organizationId: ORGANIZATION_IDS[mode],
       raceDate,
-      target: mode === 'closed_clients' ? DEFAULT_TARGETS.closed_clients : appointmentTarget,
+      target: selectedTarget,
       status: 'active',
       createdBy,
     });
   } else if (action === 'cancel') {
+    const selectedTarget = mode === 'store_clients' && Number.isInteger(storeClientsTarget) && storeClientsTarget > 0
+      ? storeClientsTarget
+      : mode === 'closed_clients' ? DEFAULT_TARGETS.closed_clients : appointmentTarget;
     await upsertRace({
       organizationId: ORGANIZATION_IDS[mode],
       raceDate,
-      target: mode === 'closed_clients' ? DEFAULT_TARGETS.closed_clients : appointmentTarget,
+      target: selectedTarget,
       status: 'cancelled',
       createdBy,
     });

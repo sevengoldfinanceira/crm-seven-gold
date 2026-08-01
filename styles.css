@@ -10895,47 +10895,101 @@ body.theme-dark #pipeline-search-input:focus {
 
 .appointment-race-target-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+  margin: 18px 0 16px;
 }
 
-.appointment-race-target-grid label {
-  margin: 0;
+.appointment-race-target-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 145px;
+  padding: 16px 18px;
+  border-radius: 20px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.appointment-race-editable-card {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+}
+
+.appointment-race-editable-card:focus-within {
+  border-color: #D4AF37;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+  background: #FFFFFF;
 }
 
 .appointment-race-fixed-target {
-  min-height: 78px;
-  display: grid;
-  align-content: center;
-  gap: 3px;
-  padding: 10px 16px;
-  border: 1px solid rgba(232, 177, 56, 0.38);
-  border-radius: 18px;
   background: #FFF9E7;
+  border: 1px solid rgba(232, 177, 56, 0.38);
 }
 
-.appointment-race-fixed-target > span,
-.appointment-race-fixed-target > strong,
-.appointment-race-fixed-target > small {
-  display: block;
+.appointment-race-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  cursor: pointer;
 }
 
-.appointment-race-fixed-target > span {
+.appointment-race-card-title {
   color: #334155;
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   font-weight: 850;
+  line-height: 1.25;
 }
 
-.appointment-race-fixed-target > strong {
-  color: #906820;
+.appointment-race-card-sub {
+  color: #64748B;
+  font-size: 0.73rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.appointment-race-input-group {
+  margin: 8px 0;
+}
+
+.appointment-race-editable-card input {
+  width: 100%;
+  height: 44px;
+  border: 1px solid #CBD5E1;
+  border-radius: 12px;
+  padding: 0 14px;
   font-size: 1.12rem;
-  font-weight: 950;
+  font-weight: 900;
+  color: #0F172A;
+  background: #FFFFFF;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.appointment-race-fixed-target > small {
+.appointment-race-editable-card input:focus {
+  outline: none;
+  border-color: #B98220;
+  box-shadow: 0 0 0 3px rgba(185, 130, 32, 0.18);
+}
+
+.appointment-race-value-group {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  margin: 8px 0;
+}
+
+.appointment-race-card-value {
+  color: #906820;
+  font-size: 1.25rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.appointment-race-card-footer {
+  display: block;
   color: #64748B;
   font-size: 0.72rem;
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .appointment-race-modal-status {
@@ -11039,6 +11093,45 @@ body.theme-dark .appointment-race-settings-form .ghost-button {
   background: #1f2937;
   color: #f8fafc;
   border-color: rgba(148, 163, 184, 0.22);
+}
+
+body.theme-dark .appointment-race-editable-card {
+  background: #1F2937;
+  border-color: #374151;
+}
+
+body.theme-dark .appointment-race-editable-card:focus-within {
+  background: #1F2937;
+  border-color: #E8B138;
+}
+
+body.theme-dark .appointment-race-fixed-target {
+  background: rgba(144, 104, 32, 0.2);
+  border-color: rgba(232, 177, 56, 0.4);
+}
+
+body.theme-dark .appointment-race-card-title {
+  color: #F3F4F6;
+}
+
+body.theme-dark .appointment-race-card-sub,
+body.theme-dark .appointment-race-card-footer {
+  color: #9CA3AF;
+}
+
+body.theme-dark .appointment-race-editable-card input {
+  background: #111827;
+  border-color: #4B5563;
+  color: #F9FAFB;
+}
+
+body.theme-dark .appointment-race-editable-card input:focus {
+  border-color: #E8B138;
+  box-shadow: 0 0 0 3px rgba(232, 177, 56, 0.25);
+}
+
+body.theme-dark .appointment-race-card-value {
+  color: #F5D874;
 }
 
 @media (max-width: 1100px) {
