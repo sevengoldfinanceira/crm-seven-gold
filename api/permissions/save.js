@@ -345,7 +345,7 @@ async function manageCommercialTeams(action, data, crmUser) {
     let teamsQuery = supabase.from('crm_teams').select('id,name,coordinator_user_id,photo_url,active,created_at,updated_at').order('name');
     if (isCoordinator) { teamsQuery = teamsQuery.eq('coordinator_user_id', crmUser.id); } else if (!isAdmin) { const { data: ownMemberships, error: ownMembershipsError } = await supabase.from('crm_team_members').select('team_id').eq('user_id', crmUser.id); if (ownMembershipsError) return { status: 500, error: ownMembershipsError.message }; const ownTeamIds = (ownMemberships || []).map(i => i.team_id); if (!ownTeamIds.length) return { status: 200, teams: [], members: [], leadCounts: {}, appointmentCounts: {}, sellerMetrics: {}, monthlyComparison: {}, teamAlerts: {} }; teamsQuery = teamsQuery.in('id', ownTeamIds); }
     let { data: teams, error: teamsError } = await teamsQuery;
-    if (teamsError && (teamsError.message.includes('photo_url') || teamsError.code === '42703')) {
+    if (teamsError && (teamsError.message?.includes('photo_url') || teamsError.code === '42703')) {
       let fallbackQuery = supabase.from('crm_teams').select('id,name,coordinator_user_id,active,created_at,updated_at').order('name');
       if (isCoordinator) { fallbackQuery = fallbackQuery.eq('coordinator_user_id', crmUser.id); }
       const res = await fallbackQuery;

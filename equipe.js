@@ -628,6 +628,8 @@
       console.error("Erro ao carregar equipes comerciais:", error);
       setTeamStatus(error.message, "error");
       state.commercialTeamsLoaded = false;
+      state.commercialTeams = [];
+      renderCommercialTeams();
       return false;
     }
 
