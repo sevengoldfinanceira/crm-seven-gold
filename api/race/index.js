@@ -3,10 +3,12 @@ const { getAuthorizedCrmUser, normalizeEmail, normalizeRole } = require('../../l
 
 const ORGANIZATION_IDS = {
   appointments: 'seven_gold',
+  store_clients: 'seven_gold_store_clients',
   closed_clients: 'seven_gold_sales_weekly',
 };
 const DEFAULT_TARGETS = {
   appointments: 10,
+  store_clients: 10,
   closed_clients: 1,
 };
 const MODES = new Set(Object.keys(ORGANIZATION_IDS));
@@ -22,6 +24,17 @@ const ADMIN_ROLES = new Set(['diretor-ceo', 'dono', 'admin', 'administrador']);
 const send = (res, status, body) => {
   res.writeHead(status, { 'Content-Type': 'application/json' });
   return res.end(JSON.stringify(body));
+};
+
+const normalizeRaceMode = (mode = '') => {
+  const normalized = String(mode || '').trim().toLowerCase();
+  if (['closed_clients', 'clientes_fechados', 'clientes-fechados', 'vendas'].includes(normalized)) {
+    return 'closed_clients';
+  }
+  if (['store_clients', 'cliente_em_loja', 'clientes_em_loja', 'clientes-em-loja', 'clientes-loja'].includes(normalized)) {
+    return 'store_clients';
+  }
+  return MODES.has(normalized) ? normalized : 'appointments';
 };
 
 const normalizeName = (value = '') => String(value || '')
@@ -205,6 +218,57 @@ const loadSalesPoints = async ({ startKey, endKey, start, end }) => {
   return pointsByUser;
 };
 
+const loadStoreClientPoints = async (participants, dateKey) => {
+  const { start, end } = getSaoPauloDayRange(dateKey);
+  const { data: logs, error: logsError } = await supabase
+    .from('lead_activity_logs')
+    .select('lead_id,created_at,created_by_email,created_by_name,new_value')
+    .in('action_type', ['status_changed', 'stage_changed'])
+    .eq('new_value', 'cliente_em_loja')
+    .gte('created_at', start)
+    .lt('created_at', end)
+    .order('created_at', { ascending: true });
+  if (logsError) throw logsError;
+
+  const leadIds = [...new Set((logs || [])
+    .map((log) => String(log.lead_id || '').trim())
+    .filter(Boolean))];
+  const leadsById = new Map();
+  if (leadIds.length) {
+    const { data: leads, error: leadsError } = await supabase
+      .from('leads')
+      .select('id,name,telefone,assigned_to_email,assigned_to_name')
+      .in('id', leadIds);
+    if (leadsError) throw leadsError;
+    (leads || []).forEach((lead) => leadsById.set(String(lead.id), lead));
+  }
+
+  const byEmail = new Map();
+  const byName = new Map();
+  participants.forEach((participant) => {
+    if (participant.email) byEmail.set(participant.email, participant);
+    const name = normalizeName(participant.name);
+    if (name && !byName.has(name)) byName.set(name, participant);
+  });
+
+  const pointsByUser = new Map();
+  (logs || []).forEach((log) => {
+    const leadId = String(log.lead_id || '').trim();
+    const lead = leadsById.get(leadId) || {};
+    const participant = byEmail.get(normalizeEmail(lead.assigned_to_email))
+      || byEmail.get(normalizeEmail(log.created_by_email))
+      || byName.get(normalizeName(lead.assigned_to_name || log.created_by_name));
+    if (!participant) return;
+    const clientKey = getClientKey({
+      leadId,
+      phone: lead.telefone,
+      name: lead.name,
+    });
+    addPoint(pointsByUser, String(participant.user_id), clientKey, String(log.created_at || ''));
+  });
+  return pointsByUser;
+};
+
 const buildParticipants = (participants, pointsByUser, target) => sortParticipants(
   participants.map((participant) => {
     const pointTimes = Array.from(pointsByUser.get(String(participant.user_id))?.values() || []).sort();
@@ -232,13 +296,17 @@ const loadRaceRows = async (dateKey) => {
   return data || [];
 };
 
-const getTargets = (rows) => ({
-  appointments: Math.max(1, Number(
+const getTargets = (rows) => {
+  const dailyTarget = Math.max(1, Number(
     rows.find((row) => row.organization_id === ORGANIZATION_IDS.appointments)?.target
       || DEFAULT_TARGETS.appointments
-  )),
-  closed_clients: DEFAULT_TARGETS.closed_clients,
-});
+  ));
+  return {
+    appointments: dailyTarget,
+    store_clients: dailyTarget,
+    closed_clients: DEFAULT_TARGETS.closed_clients,
+  };
+};
 
 const buildRaceState = async (mode) => {
   const todayDateKey = getSaoPauloDateKey();
@@ -252,7 +320,9 @@ const buildRaceState = async (mode) => {
   const target = targets[mode];
   const pointsByUser = mode === 'closed_clients'
     ? await loadSalesPoints(salesWeek)
-    : await loadAppointmentPoints(participants, todayDateKey);
+    : mode === 'store_clients'
+      ? await loadStoreClientPoints(participants, todayDateKey)
+      : await loadAppointmentPoints(participants, todayDateKey);
   const rankedParticipants = buildParticipants(participants, pointsByUser, target);
   const storedRace = rows.find((row) => (
     row.organization_id === ORGANIZATION_IDS[mode] && row.race_date === period.raceDate
@@ -277,6 +347,7 @@ const buildRaceState = async (mode) => {
       target,
       selected_target: target,
       appointment_target: targets.appointments,
+      store_clients_target: targets.store_clients,
       closed_clients_target: targets.closed_clients,
       status,
       winner_user_id: winner?.user_id || null,
@@ -311,11 +382,11 @@ const handleAdminAction = async (req, authorization) => {
 
   const payload = req.body || {};
   const action = String(payload.action || '');
-  const mode = MODES.has(payload.mode) ? payload.mode : 'appointments';
+  const mode = normalizeRaceMode(payload.mode);
   const appointmentTarget = Number.parseInt(payload.appointment_target, 10);
-  const requiresAppointmentTarget = action === 'save_targets' || mode === 'appointments';
+  const requiresAppointmentTarget = action === 'save_targets' || mode !== 'closed_clients';
   if (requiresAppointmentTarget && (!Number.isInteger(appointmentTarget) || appointmentTarget <= 0)) {
-    return { status: 400, body: { ok: false, error: 'Informe uma meta de agendamentos maior que zero.' } };
+    return { status: 400, body: { ok: false, error: 'Informe uma meta diária maior que zero.' } };
   }
 
   const todayDateKey = getSaoPauloDateKey();
@@ -368,7 +439,7 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === 'GET') {
-      const mode = MODES.has(req.query?.mode) ? req.query.mode : 'appointments';
+      const mode = normalizeRaceMode(req.query?.mode);
       return send(res, 200, { ok: true, state: await buildRaceState(mode) });
     }
     if (req.method === 'POST') {

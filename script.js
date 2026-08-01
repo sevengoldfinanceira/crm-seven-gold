@@ -1478,6 +1478,24 @@ const APPOINTMENT_RACE_MODE_COPY = {
     leaderStatusUnitSingular: "agendamento",
     leaderStatusUnitPlural: "agendamentos",
   },
+  store_clients: {
+    label: "Clientes em loja",
+    title: "Corrida de Clientes em Loja",
+    subtitle: "Quem leva mais clientes à loja hoje?",
+    targetPeriod: "Meta diária",
+    targetUnit: "clientes em loja por vendedor",
+    timeCaption: "até meia-noite",
+    periodGoalLabel: "meta diária",
+    periodReference: "hoje",
+    progressUnit: "clientes em loja",
+    pointSingular: "cliente em loja",
+    pointPlural: "clientes em loja",
+    missingSingular: "cliente em loja",
+    missingPlural: "clientes em loja",
+    emptyStatus: "Corrida ativa, aguardando os primeiros clientes em loja de hoje.",
+    leaderStatusUnitSingular: "cliente em loja",
+    leaderStatusUnitPlural: "clientes em loja",
+  },
   closed_clients: {
     label: "Vendas",
     title: "Corrida de Vendas",
@@ -1506,8 +1524,16 @@ const appointmentRaceCarThemes = [
   { primary: "#0F766E", light: "#5EEAD4", dark: "#115E59", shadow: "rgba(15, 118, 110, 0.22)" },
 ];
 
-const normalizeAppointmentRaceMode = (mode = "") =>
-  APPOINTMENT_RACE_MODE_COPY[mode] ? mode : APPOINTMENT_RACE_DEFAULT_MODE;
+const normalizeAppointmentRaceMode = (mode = "") => {
+  const normalized = String(mode || "").trim().toLowerCase();
+  if (["closed_clients", "clientes_fechados", "clientes-fechados", "vendas"].includes(normalized)) {
+    return "closed_clients";
+  }
+  if (["store_clients", "cliente_em_loja", "clientes_em_loja", "clientes-em-loja", "clientes-loja"].includes(normalized)) {
+    return "store_clients";
+  }
+  return APPOINTMENT_RACE_MODE_COPY[normalized] ? normalized : APPOINTMENT_RACE_DEFAULT_MODE;
+};
 
 appointmentRaceViewMode = normalizeAppointmentRaceMode(appointmentRaceViewMode);
 
@@ -1527,7 +1553,11 @@ const formatAppointmentRaceMetric = (count = 0, singular = "", plural = "") => {
 const getAppointmentRaceSelectedTarget = (race = null) => {
   const mode = getAppointmentRaceMode(race);
   const fallback = mode === "closed_clients" ? 1 : 10;
-  const modeTarget = mode === "closed_clients" ? race?.closed_clients_target : race?.appointment_target;
+  const modeTarget = mode === "closed_clients"
+    ? race?.closed_clients_target
+    : mode === "store_clients"
+      ? race?.store_clients_target || race?.appointment_target
+      : race?.appointment_target;
   return Number(modeTarget || race?.selected_target || race?.target || fallback);
 };
 
@@ -2465,6 +2495,9 @@ const ensureAppointmentRaceRealtime = () => {
     .on("postgres_changes", { event: "*", schema: "public", table: "sales" }, () => {
       scheduleAppointmentRaceRealtimeRefresh();
     })
+    .on("postgres_changes", { event: "*", schema: "public", table: "lead_activity_logs" }, () => {
+      scheduleAppointmentRaceRealtimeRefresh();
+    })
     .on("postgres_changes", { event: "*", schema: "public", table: "appointment_races" }, () => {
       scheduleAppointmentRaceRealtimeRefresh();
     })
@@ -2535,7 +2568,7 @@ const runAppointmentRaceAdminAction = async (action) => {
   if (!client) return;
   const config = getAppointmentRaceFormConfig();
   if (!Number.isInteger(config.appointmentTarget) || config.appointmentTarget <= 0) {
-    setAppointmentRaceModalStatus("Informe uma meta de agendamentos maior que zero.", "error");
+    setAppointmentRaceModalStatus("Informe uma meta diária maior que zero.", "error");
     return;
   }
   try {

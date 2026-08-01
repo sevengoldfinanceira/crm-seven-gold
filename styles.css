@@ -11205,9 +11205,9 @@ body.theme-dark .appointment-race {
 
 .appointment-race-tabs {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
-  width: min(660px, 100%);
+  width: min(780px, 100%);
   min-height: 42px;
   margin: 0 auto 8px;
   padding: 4px;
@@ -11224,7 +11224,7 @@ body.theme-dark .appointment-race {
   gap: 8px;
   min-width: 0;
   min-height: 34px;
-  padding: 0 14px;
+  padding: 0 12px;
   border: 0;
   border-radius: 6px;
   color: var(--sg-muted);
@@ -12528,8 +12528,14 @@ body.theme-dark .appointment-race-settings-form .ghost-button {
   }
 
   .appointment-race-tab {
-    padding: 0 8px;
-    font-size: 0.68rem;
+    gap: 5px;
+    padding: 0 4px;
+    font-size: 0.62rem;
+  }
+
+  .appointment-race-tab svg {
+    width: 15px;
+    height: 15px;
   }
 
   .appointment-race-config-btn {

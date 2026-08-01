@@ -1028,6 +1028,15 @@
                 </svg>
                 <span>Agendamentos</span>
               </button>
+              <button class="appointment-race-tab" type="button" role="tab" aria-selected="false" data-race-view-mode="store_clients">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                  <path d="M3 10h18L19 4H5l-2 6Z"/>
+                  <path d="M5 10v10h14V10"/>
+                  <path d="M9 20v-6h6v6"/>
+                  <path d="M8 4V2h8v2"/>
+                </svg>
+                <span>Clientes em loja</span>
+              </button>
               <button class="appointment-race-tab" type="button" role="tab" aria-selected="false" data-race-view-mode="closed_clients">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                   <path d="M20 6 9 17l-5-5"/>
@@ -1137,13 +1146,13 @@
               <div>
                 <p class="appointment-race-kicker">Configuração</p>
                 <h2 data-race-settings-title>Configurar corridas</h2>
-                <span data-race-settings-description>Ajuste a meta diária de agendamentos.</span>
+                <span data-race-settings-description>Ajuste a meta diária de agendamentos e clientes em loja.</span>
               </div>
               <button type="button" class="modal-close-button" data-race-close-settings aria-label="Fechar">×</button>
             </header>
             <div class="appointment-race-target-grid">
               <label>
-                <span>Meta diária de agendamentos</span>
+                <span>Meta diária de agendamentos e clientes em loja</span>
                 <input type="number" min="1" step="1" value="10" data-race-target-input data-race-appointment-target-input />
               </label>
               <div class="appointment-race-fixed-target" aria-label="Meta semanal fixa de vendas">
