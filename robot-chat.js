@@ -243,10 +243,40 @@
     const targetAvatar = document.getElementById("robot-chat-target-avatar");
     const targetName = document.getElementById("robot-chat-target-name");
 
-    if (!triggerBtn || !chatBox) return;
+    const getTodayKey = () => {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    };
+
+    const loadDailyMessages = () => {
+      const today = getTodayKey();
+      const savedDate = localStorage.getItem("seven-gold-robot-chat-date");
+
+      // Next day reset check! If saved date is from a previous day, clear history!
+      if (savedDate !== today) {
+        localStorage.setItem("seven-gold-robot-chat-date", today);
+        localStorage.removeItem("seven-gold-robot-chat-messages");
+        return {};
+      }
+
+      try {
+        const stored = localStorage.getItem("seven-gold-robot-chat-messages");
+        return stored ? JSON.parse(stored) : {};
+      } catch (e) {
+        return {};
+      }
+    };
+
+    const saveDailyMessages = (msgsObj) => {
+      try {
+        const today = getTodayKey();
+        localStorage.setItem("seven-gold-robot-chat-date", today);
+        localStorage.setItem("seven-gold-robot-chat-messages", JSON.stringify(msgsObj));
+      } catch (e) {}
+    };
 
     let activeTargetUser = null;
-    let inMemoryMessages = {};
+    let inMemoryMessages = loadDailyMessages();
     let teamUsers = [];
 
     const chatChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("sg-ephemeral-team-chat") : null;
@@ -264,6 +294,8 @@
           time: data.time || new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
           type: "received"
         });
+
+        saveDailyMessages(inMemoryMessages);
 
         if (activeTargetUser && String(activeTargetUser.id) === String(data.senderId)) {
           renderMessages();
@@ -505,6 +537,8 @@
           time: timeStr
         });
       }
+
+      saveDailyMessages(inMemoryMessages);
 
       msgInput.value = "";
       renderMessages();
