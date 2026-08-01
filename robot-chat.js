@@ -12,6 +12,11 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     }
 
+    #floating-robot-chat-container.robot-chat-positioned {
+      right: auto !important;
+      bottom: auto !important;
+    }
+
     #floating-robot-chat-trigger {
       width: 58px !important;
       height: 58px !important;
@@ -19,7 +24,7 @@
       background: linear-gradient(135deg, #161616 0%, #282216 100%) !important;
       border: 2px solid #D4AF37 !important;
       color: #D4AF37 !important;
-      cursor: pointer !important;
+      cursor: grab !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -27,11 +32,19 @@
       transition: transform 0.25s ease, box-shadow 0.25s ease !important;
       position: relative !important;
       outline: none !important;
+      touch-action: none !important;
+      user-select: none !important;
     }
 
     #floating-robot-chat-trigger:hover {
       transform: scale(1.08) translateY(-2px) !important;
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 24px rgba(212, 175, 55, 0.5) !important;
+    }
+
+    #floating-robot-chat-container.robot-chat-dragging #floating-robot-chat-trigger {
+      cursor: grabbing !important;
+      transform: scale(1.03) !important;
+      transition: none !important;
     }
 
     #robot-chat-unread-badge {
@@ -244,8 +257,13 @@
   }
 
   function initLogic() {
+    const container = document.getElementById("floating-robot-chat-container");
     const triggerBtn = document.getElementById("floating-robot-chat-trigger");
     const chatBox = document.getElementById("floating-robot-chat-box");
+    if (!container || !triggerBtn || !chatBox) return;
+    if (container.dataset.robotChatReady === "1") return;
+    container.dataset.robotChatReady = "1";
+
     const closeBtns = document.querySelectorAll(".robot-chat-close-btn");
     const stepSelect = document.getElementById("robot-chat-step-select-user");
     const stepConv = document.getElementById("robot-chat-step-conversation");
@@ -293,6 +311,199 @@
     let activeTargetUser = null;
     let inMemoryMessages = loadDailyMessages();
     let teamUsers = [];
+    let dragState = null;
+    let suppressNextTriggerClick = false;
+    let previousDocumentUserSelect = "";
+
+    const ROBOT_CHAT_POSITION_KEY = "seven-gold-robot-chat-position";
+    const ROBOT_CHAT_EDGE_PADDING = 8;
+    const ROBOT_CHAT_DRAG_THRESHOLD = 6;
+
+    function getViewportSize() {
+      return {
+        width: document.documentElement.clientWidth || window.innerWidth || 0,
+        height: document.documentElement.clientHeight || window.innerHeight || 0
+      };
+    }
+
+    function clampNumber(value, min, max) {
+      const safeMax = Math.max(min, max);
+      return Math.min(Math.max(value, min), safeMax);
+    }
+
+    function getWidgetSize() {
+      const rect = container.getBoundingClientRect();
+      return {
+        width: rect.width || triggerBtn.offsetWidth || 58,
+        height: rect.height || triggerBtn.offsetHeight || 58
+      };
+    }
+
+    function clampWidgetPosition(left, top) {
+      const viewport = getViewportSize();
+      const size = getWidgetSize();
+      return {
+        left: clampNumber(left, ROBOT_CHAT_EDGE_PADDING, viewport.width - size.width - ROBOT_CHAT_EDGE_PADDING),
+        top: clampNumber(top, ROBOT_CHAT_EDGE_PADDING, viewport.height - size.height - ROBOT_CHAT_EDGE_PADDING)
+      };
+    }
+
+    function saveWidgetPosition(position) {
+      try {
+        localStorage.setItem(ROBOT_CHAT_POSITION_KEY, JSON.stringify(position));
+      } catch (e) {}
+    }
+
+    function setWidgetPosition(left, top, shouldSave) {
+      const position = clampWidgetPosition(left, top);
+      container.classList.add("robot-chat-positioned");
+      container.style.setProperty("left", `${position.left}px`, "important");
+      container.style.setProperty("top", `${position.top}px`, "important");
+      container.style.setProperty("right", "auto", "important");
+      container.style.setProperty("bottom", "auto", "important");
+      if (shouldSave) saveWidgetPosition(position);
+      updateChatBoxPlacement();
+      return position;
+    }
+
+    function restoreSavedWidgetPosition() {
+      try {
+        const stored = localStorage.getItem(ROBOT_CHAT_POSITION_KEY);
+        if (!stored) return;
+        const saved = JSON.parse(stored);
+        const left = Number(saved?.left);
+        const top = Number(saved?.top);
+        if (!Number.isFinite(left) || !Number.isFinite(top)) return;
+        setWidgetPosition(left, top, true);
+      } catch (e) {}
+    }
+
+    function updateChatBoxPlacement() {
+      if (!chatBox || !triggerBtn || !container) return;
+
+      const previousDisplay = chatBox.style.display;
+      const previousVisibility = chatBox.style.visibility;
+      const wasHidden = previousDisplay === "none" || window.getComputedStyle(chatBox).display === "none";
+
+      if (wasHidden) {
+        chatBox.style.setProperty("visibility", "hidden", "important");
+        chatBox.style.setProperty("display", "block", "important");
+      }
+
+      const viewport = getViewportSize();
+      const triggerRect = triggerBtn.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const gap = 14;
+      const boxWidth = Math.min(chatBox.offsetWidth || 360, viewport.width - (ROBOT_CHAT_EDGE_PADDING * 2));
+      const boxHeight = Math.min(chatBox.offsetHeight || 420, viewport.height - (ROBOT_CHAT_EDGE_PADDING * 2));
+      const spaceAbove = triggerRect.top - ROBOT_CHAT_EDGE_PADDING;
+      const spaceBelow = viewport.height - triggerRect.bottom - ROBOT_CHAT_EDGE_PADDING;
+
+      let desiredLeft = triggerRect.right - boxWidth;
+      let desiredTop = (spaceAbove >= boxHeight + gap || spaceAbove >= spaceBelow)
+        ? triggerRect.top - boxHeight - gap
+        : triggerRect.bottom + gap;
+
+      desiredLeft = clampNumber(desiredLeft, ROBOT_CHAT_EDGE_PADDING, viewport.width - boxWidth - ROBOT_CHAT_EDGE_PADDING);
+      desiredTop = clampNumber(desiredTop, ROBOT_CHAT_EDGE_PADDING, viewport.height - boxHeight - ROBOT_CHAT_EDGE_PADDING);
+
+      chatBox.style.setProperty("left", `${desiredLeft - containerRect.left}px`, "important");
+      chatBox.style.setProperty("top", `${desiredTop - containerRect.top}px`, "important");
+      chatBox.style.setProperty("right", "auto", "important");
+      chatBox.style.setProperty("bottom", "auto", "important");
+
+      if (wasHidden) {
+        if (previousDisplay) {
+          chatBox.style.display = previousDisplay;
+        } else {
+          chatBox.style.removeProperty("display");
+        }
+
+        if (previousVisibility) {
+          chatBox.style.visibility = previousVisibility;
+        } else {
+          chatBox.style.removeProperty("visibility");
+        }
+      }
+    }
+
+    function handleRobotDragMove(event) {
+      if (!dragState || event.pointerId !== dragState.pointerId) return;
+
+      const deltaX = event.clientX - dragState.startX;
+      const deltaY = event.clientY - dragState.startY;
+
+      if (!dragState.hasMoved && Math.hypot(deltaX, deltaY) >= ROBOT_CHAT_DRAG_THRESHOLD) {
+        dragState.hasMoved = true;
+        suppressNextTriggerClick = true;
+        container.classList.add("robot-chat-dragging");
+        document.documentElement.style.userSelect = "none";
+      }
+
+      if (!dragState.hasMoved) return;
+
+      event.preventDefault();
+      setWidgetPosition(dragState.startLeft + deltaX, dragState.startTop + deltaY, false);
+    }
+
+    function finishRobotDrag(event) {
+      if (!dragState || event.pointerId !== dragState.pointerId) return;
+
+      if (dragState.hasMoved) {
+        event.preventDefault();
+        const rect = container.getBoundingClientRect();
+        saveWidgetPosition({ left: rect.left, top: rect.top });
+        window.setTimeout(() => {
+          suppressNextTriggerClick = false;
+        }, 350);
+      }
+
+      try {
+        triggerBtn.releasePointerCapture(event.pointerId);
+      } catch (e) {}
+
+      document.documentElement.style.userSelect = previousDocumentUserSelect;
+      container.classList.remove("robot-chat-dragging");
+      dragState = null;
+    }
+
+    triggerBtn.addEventListener("pointerdown", (event) => {
+      if (event.isPrimary === false) return;
+      if (typeof event.button === "number" && event.button !== 0) return;
+
+      const rect = container.getBoundingClientRect();
+      dragState = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        startLeft: rect.left,
+        startTop: rect.top,
+        hasMoved: false
+      };
+      previousDocumentUserSelect = document.documentElement.style.userSelect || "";
+
+      try {
+        triggerBtn.setPointerCapture(event.pointerId);
+      } catch (e) {}
+    });
+
+    triggerBtn.addEventListener("pointermove", handleRobotDragMove);
+    triggerBtn.addEventListener("pointerup", finishRobotDrag);
+    triggerBtn.addEventListener("pointercancel", finishRobotDrag);
+    window.addEventListener("pointermove", handleRobotDragMove, { passive: false });
+    window.addEventListener("pointerup", finishRobotDrag);
+    window.addEventListener("pointercancel", finishRobotDrag);
+
+    window.addEventListener("resize", () => {
+      if (container.classList.contains("robot-chat-positioned")) {
+        const rect = container.getBoundingClientRect();
+        setWidgetPosition(rect.left, rect.top, true);
+      } else {
+        updateChatBoxPlacement();
+      }
+    });
+
+    restoreSavedWidgetPosition();
 
     const chatChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("sg-ephemeral-team-chat") : null;
 
@@ -319,10 +530,18 @@
       };
     }
 
-    triggerBtn.addEventListener("click", () => {
+    triggerBtn.addEventListener("click", (event) => {
+      if (suppressNextTriggerClick) {
+        event.preventDefault();
+        event.stopPropagation();
+        suppressNextTriggerClick = false;
+        return;
+      }
+
       const isHidden = chatBox.style.display === "none";
       chatBox.style.display = isHidden ? "block" : "none";
       if (isHidden) {
+        updateChatBoxPlacement();
         loadTeamUsers();
       }
     });
@@ -335,11 +554,13 @@
       activeTargetUser = null;
       if (stepConv) stepConv.style.display = "none";
       if (stepSelect) stepSelect.style.display = "block";
+      updateChatBoxPlacement();
     });
 
     userSearch?.addEventListener("input", (e) => {
       const term = e.target.value.toLowerCase().trim();
       renderUsersList(teamUsers.filter(u => u.name.toLowerCase().includes(term) || (u.cargo && u.cargo.toLowerCase().includes(term))));
+      updateChatBoxPlacement();
     });
 
     const formatUserRole = (role) => {
@@ -470,6 +691,7 @@
 
       teamUsers = loadedUsers;
       renderUsersList(teamUsers);
+      updateChatBoxPlacement();
     };
 
     const renderUsersList = (list) => {
@@ -517,6 +739,7 @@
 
       if (stepSelect) stepSelect.style.display = "none";
       if (stepConv) stepConv.style.display = "block";
+      updateChatBoxPlacement();
 
       renderMessages();
       msgInput?.focus();
@@ -577,6 +800,7 @@
               </div>
             `;
           }
+          updateChatBoxPlacement();
         }
       };
       reader.readAsDataURL(file);
@@ -586,6 +810,7 @@
       pendingAttachment = null;
       if (fileInput) fileInput.value = "";
       if (previewBar) previewBar.style.display = "none";
+      updateChatBoxPlacement();
     });
 
     const renderMessages = () => {
@@ -674,6 +899,7 @@
       pendingAttachment = null;
       if (fileInput) fileInput.value = "";
       if (previewBar) previewBar.style.display = "none";
+      updateChatBoxPlacement();
 
       msgInput.value = "";
       renderMessages();
