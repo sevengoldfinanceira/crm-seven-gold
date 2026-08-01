@@ -546,15 +546,17 @@
   }
 
   function isLoginPage() {
+    if (document.body && document.body.hasAttribute("data-require-auth")) {
+      return false; // Authenticated panel page - ALWAYS render robot chat!
+    }
     const path = window.location.pathname.toLowerCase();
-    if (path.endsWith("index.html") || path.endsWith("crm-login.html") || path.endsWith("auth-callback.html")) {
+    if (path.endsWith("crm-login.html") || path.endsWith("auth-callback.html")) {
       return true;
     }
-    if (document.body && (document.body.classList.contains("login-page-body") || document.body.classList.contains("crm-login-body") || document.body.classList.contains("index-login-body"))) {
-      return true;
-    }
-    if (document.querySelector("#login-form") || document.querySelector("#crm-login-form")) {
-      return true;
+    if (document.body && (document.body.classList.contains("crm-login-body") || document.body.classList.contains("login-page-body"))) {
+      if (!document.body.hasAttribute("data-require-auth")) {
+        return true;
+      }
     }
     return false;
   }
@@ -575,4 +577,11 @@
   } else {
     start();
   }
+
+  // Heartbeat to guarantee floating robot chat is ALWAYS present on all authenticated pages/panels
+  setInterval(() => {
+    if (!isLoginPage() && !document.getElementById("floating-robot-chat-trigger")) {
+      start();
+    }
+  }, 1500);
 })();
