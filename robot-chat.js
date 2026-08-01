@@ -190,10 +190,25 @@
           <!-- Message bubbles -->
         </div>
 
-        <form id="robot-chat-message-form" style="display:flex; align-items:center; gap:8px; padding:12px; border-top:1px solid #E2E8F0; background:#FFF;">
-          <input type="text" id="robot-chat-input" placeholder="Digite uma mensagem temporária..." required style="flex:1; height:40px; border:1px solid #CBD5E1; border-radius:20px; padding:0 16px; font-size:0.86rem; outline:none; font-family:inherit;" />
+        <!-- Attachment Preview Bar -->
+        <div id="robot-chat-attachment-preview" style="display:none; padding:8px 12px; background:#F1F5F9; border-top:1px solid #E2E8F0; align-items:center; justify-content:space-between; gap:8px;">
+          <div id="robot-chat-preview-content" style="display:flex; align-items:center; gap:8px; overflow:hidden; flex:1;"></div>
+          <button type="button" id="robot-chat-remove-attachment" style="background:none; border:none; color:#EF4444; font-size:1.1rem; cursor:pointer; font-weight:bold; padding:0 4px;" title="Remover anexo">&times;</button>
+        </div>
+
+        <form id="robot-chat-message-form" style="display:flex; align-items:center; gap:6px; padding:10px 12px; border-top:1px solid #E2E8F0; background:#FFF;">
+          <input type="file" id="robot-chat-file-input" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt" style="display:none;" />
+          
+          <button type="button" id="robot-chat-attach-btn" title="Anexar foto ou arquivo" aria-label="Anexar foto ou arquivo" style="background:none; border:none; color:#64748B; cursor:pointer; padding:6px; display:flex; align-items:center; justify-content:center; border-radius:50%; transition:background 0.2s, color 0.2s; flex-shrink:0;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+            </svg>
+          </button>
+
+          <input type="text" id="robot-chat-input" placeholder="Digite ou anexe foto/arquivo..." style="flex:1; height:38px; border:1px solid #CBD5E1; border-radius:20px; padding:0 14px; font-size:0.85rem; outline:none; font-family:inherit;" />
+
           <button type="submit" style="width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg, #B98220, #D4AF37); border:none; color:#FFF; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 3px 10px rgba(185,130,32,0.35);">
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
           </button>
         </form>
       </div>
@@ -284,13 +299,14 @@
     if (chatChannel) {
       chatChannel.onmessage = (event) => {
         const data = event.data;
-        if (!data || !data.senderId || !data.text) return;
+        if (!data || !data.senderId || (!data.text && !data.file)) return;
 
         if (!inMemoryMessages[data.senderId]) inMemoryMessages[data.senderId] = [];
         inMemoryMessages[data.senderId].push({
           senderId: data.senderId,
           senderName: data.senderName,
-          text: data.text,
+          text: data.text || "",
+          file: data.file || null,
           time: data.time || new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
           type: "received"
         });
@@ -487,6 +503,72 @@
       msgInput?.focus();
     };
 
+    const attachBtn = document.getElementById("robot-chat-attach-btn");
+    const fileInput = document.getElementById("robot-chat-file-input");
+    const previewBar = document.getElementById("robot-chat-attachment-preview");
+    const previewContent = document.getElementById("robot-chat-preview-content");
+    const removeAttachBtn = document.getElementById("robot-chat-remove-attachment");
+
+    let pendingAttachment = null;
+
+    const formatFileSize = (bytes) => {
+      if (!bytes) return "0 B";
+      const k = 1024;
+      const sizes = ["B", "KB", "MB", "GB"];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+    };
+
+    attachBtn?.addEventListener("click", () => fileInput?.click());
+
+    fileInput?.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (file.size > 8 * 1024 * 1024) {
+        alert("O arquivo selecionado deve ter no máximo 8 MB.");
+        fileInput.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target.result;
+        const isImage = file.type.startsWith("image/");
+
+        pendingAttachment = {
+          name: file.name,
+          size: formatFileSize(file.size),
+          type: isImage ? "image" : "file",
+          dataUrl: dataUrl
+        };
+
+        if (previewBar && previewContent) {
+          previewBar.style.display = "flex";
+          if (isImage) {
+            previewContent.innerHTML = `
+              <img src="${dataUrl}" style="width:34px; height:34px; object-fit:cover; border-radius:6px; border:1px solid #CBD5E1; flex-shrink:0;" />
+              <div style="font-size:0.78rem; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(file.name)}</div>
+            `;
+          } else {
+            previewContent.innerHTML = `
+              <div style="font-size:1.1rem; flex-shrink:0;">📄</div>
+              <div style="font-size:0.78rem; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                <strong>${escapeHtml(file.name)}</strong> (${formatFileSize(file.size)})
+              </div>
+            `;
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    removeAttachBtn?.addEventListener("click", () => {
+      pendingAttachment = null;
+      if (fileInput) fileInput.value = "";
+      if (previewBar) previewBar.style.display = "none";
+    });
+
     const renderMessages = () => {
       if (!msgBody || !activeTargetUser) return;
       const msgs = inMemoryMessages[activeTargetUser.id] || [];
@@ -496,18 +578,42 @@
           <div style="text-align:center; margin:auto; padding:20px; color:#94A3B8;">
             <div style="font-size:1.8rem; margin-bottom:6px;">🤖</div>
             <strong style="font-size:0.85rem; color:#475569; display:block;">Conversa Temporária</strong>
-            <span style="font-size:0.76rem; color:#64748B;">As mensagens enviadas aqui desaparecem ao fechar ou atualizar o CRM.</span>
+            <span style="font-size:0.76rem; color:#64748B;">Você pode enviar textos, fotos e arquivos. As conversas zeram no dia seguinte.</span>
           </div>
         `;
         return;
       }
 
-      msgBody.innerHTML = msgs.map(m => `
-        <div class="robot-chat-msg-bubble ${m.type === 'sent' ? 'sent' : 'received'}">
-          <div>${escapeHtml(m.text)}</div>
-          <div style="font-size:0.65rem; text-align:right; opacity:0.75; margin-top:2px;">${m.time}</div>
-        </div>
-      `).join("");
+      msgBody.innerHTML = msgs.map(m => {
+        let attachmentHtml = "";
+        if (m.file) {
+          if (m.file.type === "image") {
+            attachmentHtml = `
+              <div style="margin-bottom:6px;">
+                <img src="${m.file.dataUrl}" style="max-width:100%; max-height:180px; border-radius:10px; cursor:pointer; display:block; border:1px solid rgba(0,0,0,0.1); box-shadow:0 2px 8px rgba(0,0,0,0.12);" onclick="window.open(this.src, '_blank')" title="Clique para abrir imagem" />
+              </div>
+            `;
+          } else {
+            attachmentHtml = `
+              <a href="${m.file.dataUrl}" download="${escapeHtml(m.file.name)}" style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:rgba(255,255,255,0.22); border-radius:10px; text-decoration:none; color:inherit; margin-bottom:6px; border:1px solid rgba(0,0,0,0.08); box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+                <span style="font-size:1.2rem; flex-shrink:0;">📄</span>
+                <div style="flex:1; overflow:hidden;">
+                  <strong style="font-size:0.8rem; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(m.file.name)}</strong>
+                  <span style="font-size:0.68rem; opacity:0.8;">${m.file.size || ''} · Baixar arquivo</span>
+                </div>
+              </a>
+            `;
+          }
+        }
+
+        return `
+          <div class="robot-chat-msg-bubble ${m.type === 'sent' ? 'sent' : 'received'}">
+            ${attachmentHtml}
+            ${m.text ? `<div>${escapeHtml(m.text)}</div>` : ''}
+            <div style="font-size:0.65rem; text-align:right; opacity:0.75; margin-top:2px;">${m.time}</div>
+          </div>
+        `;
+      }).join("");
 
       msgBody.scrollTop = msgBody.scrollHeight;
     };
@@ -515,18 +621,22 @@
     msgForm?.addEventListener("submit", (e) => {
       e.preventDefault();
       const text = msgInput.value.trim();
-      if (!text || !activeTargetUser) return;
+      if (!text && !pendingAttachment) return;
+      if (!activeTargetUser) return;
 
       const currentUser = window.crmUser || window.currentCrmUser;
       const timeStr = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
-      if (!inMemoryMessages[activeTargetUser.id]) inMemoryMessages[activeTargetUser.id] = [];
-      inMemoryMessages[activeTargetUser.id].push({
+      const msgPayload = {
         senderId: currentUser?.id || "me",
         text: text,
+        file: pendingAttachment ? { ...pendingAttachment } : null,
         time: timeStr,
         type: "sent"
-      });
+      };
+
+      if (!inMemoryMessages[activeTargetUser.id]) inMemoryMessages[activeTargetUser.id] = [];
+      inMemoryMessages[activeTargetUser.id].push(msgPayload);
 
       if (chatChannel) {
         chatChannel.postMessage({
@@ -534,11 +644,17 @@
           senderName: currentUser?.nome || "Colaborador",
           targetId: activeTargetUser.id,
           text: text,
+          file: pendingAttachment ? { ...pendingAttachment } : null,
           time: timeStr
         });
       }
 
       saveDailyMessages(inMemoryMessages);
+
+      // Reset input state
+      pendingAttachment = null;
+      if (fileInput) fileInput.value = "";
+      if (previewBar) previewBar.style.display = "none";
 
       msgInput.value = "";
       renderMessages();
