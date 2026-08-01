@@ -759,9 +759,22 @@
     }
   };
 
+  function loadRobotChatScript() {
+    if (!document.getElementById("robot-chat-script")) {
+      const s = document.createElement("script");
+      s.id = "robot-chat-script";
+      s.src = "robot-chat.js?v=20260801";
+      document.head.appendChild(s);
+    }
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initialize);
+    document.addEventListener("DOMContentLoaded", () => {
+      initialize();
+      loadRobotChatScript();
+    });
   } else {
     initialize();
+    loadRobotChatScript();
   }
 })();
