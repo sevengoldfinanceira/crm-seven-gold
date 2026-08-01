@@ -343,7 +343,14 @@
               </label>
               <label>
                 <span>Foto da equipe</span>
-                <input id="eq-team-photo" type="url" placeholder="URL da imagem (opcional)" />
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px;">
+                  <button type="button" id="eq-team-photo-btn" style="height: 42px; padding: 0 16px; background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; color: #1e293b;">
+                    <i data-lucide="image" style="width: 16px; height: 16px; color: #b45309;"></i> Escolher foto da equipe
+                  </button>
+                  <input type="file" id="eq-team-photo-file" accept="image/*" style="display: none;" />
+                  <input id="eq-team-photo" type="hidden" />
+                  <div id="eq-team-photo-preview" style="width: 42px; height: 42px; border-radius: 12px; background: #E2E8F0; display: none; background-size: cover; background-position: center; border: 1.5px solid #CBD5E1;"></div>
+                </div>
               </label>
               <button type="submit" class="eq-btn-gold"><i data-lucide="plus"></i> Criar equipe</button>
             </form>

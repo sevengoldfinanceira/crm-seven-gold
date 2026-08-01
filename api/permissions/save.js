@@ -344,7 +344,14 @@ async function manageCommercialTeams(action, data, crmUser) {
     const [rangeYear, rangeMonth] = requestedMonth.split('-').map(Number); const rangeEnd = new Date(Date.UTC(rangeYear, rangeMonth, 1, 3)).toISOString(); const comparisonMonths = getPreviousMonthKeys(requestedMonth); const comparisonRangeStart = `${comparisonMonths[comparisonMonths.length - 1]}-01T03:00:00.000Z`;
     let teamsQuery = supabase.from('crm_teams').select('id,name,coordinator_user_id,photo_url,active,created_at,updated_at').order('name');
     if (isCoordinator) { teamsQuery = teamsQuery.eq('coordinator_user_id', crmUser.id); } else if (!isAdmin) { const { data: ownMemberships, error: ownMembershipsError } = await supabase.from('crm_team_members').select('team_id').eq('user_id', crmUser.id); if (ownMembershipsError) return { status: 500, error: ownMembershipsError.message }; const ownTeamIds = (ownMemberships || []).map(i => i.team_id); if (!ownTeamIds.length) return { status: 200, teams: [], members: [], leadCounts: {}, appointmentCounts: {}, sellerMetrics: {}, monthlyComparison: {}, teamAlerts: {} }; teamsQuery = teamsQuery.in('id', ownTeamIds); }
-    const { data: teams, error: teamsError } = await teamsQuery;
+    let { data: teams, error: teamsError } = await teamsQuery;
+    if (teamsError && (teamsError.message.includes('photo_url') || teamsError.code === '42703')) {
+      let fallbackQuery = supabase.from('crm_teams').select('id,name,coordinator_user_id,active,created_at,updated_at').order('name');
+      if (isCoordinator) { fallbackQuery = fallbackQuery.eq('coordinator_user_id', crmUser.id); }
+      const res = await fallbackQuery;
+      teams = res.data;
+      teamsError = res.error;
+    }
     if (teamsError) return { status: 500, error: teamsError.message };
     const teamIds = (teams || []).map(t => t.id); let members = [];
     if (teamIds.length) { const { data: memberRows, error: membersError } = await supabase.from('crm_team_members').select('id,team_id,user_id,created_at').in('team_id', teamIds); if (membersError) return { status: 500, error: membersError.message }; members = memberRows || []; if (!isAdmin && !isCoordinator) members = members.filter(i => String(i.user_id) === String(crmUser.id)); }
@@ -389,7 +396,13 @@ async function manageCommercialTeams(action, data, crmUser) {
     const insertData = { name, coordinator_user_id: coordinatorUserId, updated_at: new Date().toISOString() };
     if (data?.photo_url) insertData.photo_url = String(data.photo_url).trim();
     if (typeof data?.active === 'boolean') insertData.active = data.active;
-    const { data: team, error } = await supabase.from('crm_teams').insert(insertData).select('id,name,coordinator_user_id,photo_url,active,created_at,updated_at').single();
+    let { data: team, error } = await supabase.from('crm_teams').insert(insertData).select().single();
+    if (error && (error.message?.includes('photo_url') || error.code === '42703')) {
+      delete insertData.photo_url;
+      const retry = await supabase.from('crm_teams').insert(insertData).select().single();
+      team = retry.data;
+      error = retry.error;
+    }
     if (error?.code === '23505') return { status: 409, error: 'Já existe uma equipe com esse nome.' };
     if (error) return { status: 500, error: error.message }; return { status: 200, team };
   }
@@ -409,7 +422,12 @@ async function manageCommercialTeams(action, data, crmUser) {
     const teamUpdateData = { coordinator_user_id: coordinatorUserId, updated_at: new Date().toISOString() };
     if (data?.photo_url !== undefined) teamUpdateData.photo_url = String(data.photo_url).trim() || null;
     if (typeof data?.active === 'boolean') teamUpdateData.active = data.active;
-    const { error: teamError } = await supabase.from('crm_teams').update(teamUpdateData).eq('id', teamId);
+    let { error: teamError } = await supabase.from('crm_teams').update(teamUpdateData).eq('id', teamId);
+    if (teamError && (teamError.message?.includes('photo_url') || teamError.code === '42703')) {
+      delete teamUpdateData.photo_url;
+      const retry = await supabase.from('crm_teams').update(teamUpdateData).eq('id', teamId);
+      teamError = retry.error;
+    }
     if (teamError) return { status: 500, error: teamError.message };
     const { error: deleteError } = await supabase.from('crm_team_members').delete().eq('team_id', teamId);
     if (deleteError) return { status: 500, error: deleteError.message };

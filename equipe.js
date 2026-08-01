@@ -1279,13 +1279,52 @@
 
       const photoLabel = document.createElement("label");
       photoLabel.className = "eq-team-card-field";
-      photoLabel.append("Foto da equipe (URL)");
+      photoLabel.append("Foto da equipe");
+
+      const photoWrapper = document.createElement("div");
+      photoWrapper.style.cssText = "display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:4px;";
+
+      const photoBtn = document.createElement("button");
+      photoBtn.type = "button";
+      photoBtn.className = "eq-btn-file";
+      photoBtn.style.cssText = "height:38px; padding:0 14px; background:#F1F5F9; border:1px solid #CBD5E1; border-radius:10px; font-weight:700; font-size:0.82rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px; color:#1e293b;";
+      photoBtn.innerHTML = `🖼️ Escolher foto da equipe`;
+
+      const photoFileInput = document.createElement("input");
+      photoFileInput.type = "file";
+      photoFileInput.accept = "image/*";
+      photoFileInput.style.display = "none";
+
       const photoInput = document.createElement("input");
-      photoInput.type = "url";
+      photoInput.type = "hidden";
       photoInput.className = "eq-team-photo-input";
       photoInput.value = team.photo_url || "";
-      photoInput.placeholder = "URL da imagem (opcional)";
-      photoLabel.appendChild(photoInput);
+
+      const photoPreview = document.createElement("div");
+      photoPreview.style.cssText = "width:38px; height:38px; border-radius:10px; background:#E2E8F0; background-size:cover; background-position:center; border:1px solid #CBD5E1;";
+      if (team.photo_url) {
+        photoPreview.style.backgroundImage = `url('${team.photo_url}')`;
+        photoPreview.style.display = "block";
+      } else {
+        photoPreview.style.display = "none";
+      }
+
+      photoBtn.addEventListener("click", () => photoFileInput.click());
+      photoFileInput.addEventListener("change", (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            photoInput.value = evt.target.result;
+            photoPreview.style.backgroundImage = `url('${evt.target.result}')`;
+            photoPreview.style.display = "block";
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      photoWrapper.append(photoBtn, photoFileInput, photoInput, photoPreview);
+      photoLabel.appendChild(photoWrapper);
       card.appendChild(photoLabel);
 
       const activeLabel = document.createElement("label");
@@ -4127,6 +4166,27 @@
     document.querySelector(".btn-new-role")?.addEventListener("click", () => openNewRoleModal("comercial"));
     document.getElementById("btn-new-colab-header")?.addEventListener("click", () => openColabModal());
     document.getElementById("eq-team-create-form")?.addEventListener("submit", createCommercialTeam);
+    const photoBtn = document.getElementById("eq-team-photo-btn");
+    const photoFileInput = document.getElementById("eq-team-photo-file");
+    const photoInput = document.getElementById("eq-team-photo");
+    const photoPreview = document.getElementById("eq-team-photo-preview");
+    if (photoBtn && photoFileInput && photoInput) {
+      photoBtn.addEventListener("click", () => photoFileInput.click());
+      photoFileInput.addEventListener("change", (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            photoInput.value = evt.target.result;
+            if (photoPreview) {
+              photoPreview.style.backgroundImage = `url('${evt.target.result}')`;
+              photoPreview.style.display = "block";
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
     setupTeamGoalsListeners();
     showTeamGoalsButton();
 
