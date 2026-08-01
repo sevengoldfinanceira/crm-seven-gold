@@ -3689,30 +3689,6 @@ body.theme-dark .crm-workspace {
 
 .nav-item-maps {
   position: relative;
-  border: 1px solid rgba(232, 177, 56, 0.18);
-  background: rgba(232, 177, 56, 0.04);
-  color: #ffffff !important;
-  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
-}
-
-.nav-item-maps:hover,
-.nav-item-maps:focus-visible {
-  background: rgba(232, 177, 56, 0.16) !important;
-  border-color: rgba(232, 177, 56, 0.72);
-  color: #ffffff !important;
-  box-shadow: inset 0 0 0 1px rgba(232, 177, 56, 0.18), 0 8px 22px rgba(216, 173, 61, 0.12);
-  outline: none;
-}
-
-.nav-item-maps:hover .nav-icon svg,
-.nav-item-maps:focus-visible .nav-icon svg {
-  filter: drop-shadow(0 0 6px rgba(232, 177, 56, 0.42));
-}
-
-body.sidebar-collapsed .nav-item.nav-item-maps::after {
-  background: #15120a;
-  border-color: rgba(232, 177, 56, 0.45);
-  color: #ffffff;
 }
 
 body.crm-maps-active {
