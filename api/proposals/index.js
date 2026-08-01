@@ -170,7 +170,7 @@ module.exports = async (req, res) => {
     if (pathname.includes('/drive/sync')) {
       const body = req.body || {};
       const driveUrl = body.drive_file_url || body.drive_url || '';
-      const result = await syncGoogleDriveUrl(driveUrl, { force: body.force });
+      const result = await syncGoogleDriveUrl(driveUrl, { force: body.force, filter_category: body.filter_category || 'imoveis' });
       res.writeHead(200);
       return res.end(JSON.stringify(result));
     }
