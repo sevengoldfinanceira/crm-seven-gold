@@ -482,14 +482,14 @@
                 </span>
               </div>
               <p style="font-size:0.84rem; color:#64748b; margin:0 0 16px; line-height:1.4;">
-                Cole abaixo o link de compartilhamento do arquivo PDF no Google Drive.
-                O sistema lerá a tabela diretamente do link online para que as simulações utilizem sempre a versão atualizada do Drive.
+                Cole abaixo o link de compartilhamento do arquivo PDF ou da pasta de tabelas no Google Drive.
+                O sistema lerá os arquivos diretamente do link online para que as simulações utilizem sempre a versão atualizada do Drive.
               </p>
 
               <div style="display:flex; flex-direction:column; gap:12px;">
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                   <input type="url" id="sim-drive-link-input"
-                    placeholder="https://drive.google.com/file/d/1ABC.../view?usp=sharing"
+                    placeholder="https://drive.google.com/drive/folders/... ou https://drive.google.com/file/d/..."
                     style="flex:1; min-width:280px; height:44px; padding:0 14px; border:1px solid #CBD5E1; border-radius:10px; font-size:0.88rem; outline:none;" />
                   <button type="button" id="sim-sync-drive-btn"
                     style="height:44px; padding:0 20px; background:linear-gradient(135deg, #B98220, #D4AF37); color:#FFF; font-weight:800; border:0; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; white-space:nowrap; box-shadow:0 4px 12px rgba(185,130,32,0.25);">
