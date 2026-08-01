@@ -2888,12 +2888,17 @@ const loadSales = async () => {
       .gte("closed_at", filters.start)
       .lte("closed_at", filters.end);
 
+    const isValidId = (val) => Boolean(val && val !== "undefined" && val !== "null");
     if (filters.status) query = query.eq("status", filters.status);
     if (filters.tableNumber) query = query.eq("table_number", Number(filters.tableNumber));
     if (isSalesAdmin()) {
-      if (filters.sellerId) query = query.eq("seller_id", filters.sellerId);
+      if (isValidId(filters.sellerId)) query = query.eq("seller_id", filters.sellerId);
     } else {
-      query = query.or(`seller_id.eq.${currentUser.id},attendant_id.eq.${currentUser.id}`);
+      if (isValidId(currentUser.id)) {
+        query = query.or(`seller_id.eq.${currentUser.id},attendant_id.eq.${currentUser.id}`);
+      } else if (currentUser.email) {
+        query = query.eq("seller_email", currentUser.email);
+      }
     }
 
     const { data, error } = await query.order("closed_at", { ascending: false }).order("created_at", { ascending: false });
@@ -8455,7 +8460,8 @@ const loadCrmSellerCommissions = async () => {
   if (client && user) {
     try {
       let query = client.from("sales").select("*").order("closed_at", { ascending: false });
-      if (user.id) {
+      const isValidId = (val) => Boolean(val && val !== "undefined" && val !== "null");
+      if (isValidId(user.id)) {
         query = query.or(`seller_id.eq.${user.id},attendant_id.eq.${user.id}`);
       } else if (user.email) {
         query = query.eq("seller_email", user.email);
