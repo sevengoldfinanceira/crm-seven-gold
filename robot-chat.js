@@ -322,23 +322,43 @@
       return cleanName.slice(0, 2).toUpperCase() || "SG";
     };
 
+    const getSupabaseClient = () => {
+      if (window.sevenGoldAuth && window.sevenGoldAuth.from) return window.sevenGoldAuth;
+      if (typeof getClient === "function") {
+        try {
+          const c = getClient();
+          if (c && c.from) return c;
+        } catch (e) {}
+      }
+      if (window.supabaseClient && window.supabaseClient.from) return window.supabaseClient;
+      if (window.supabase && window.SEVEN_GOLD_SUPABASE) {
+        try {
+          window.supabaseClient = window.supabase.createClient(
+            window.SEVEN_GOLD_SUPABASE.url,
+            window.SEVEN_GOLD_SUPABASE.publishableKey
+          );
+          return window.supabaseClient;
+        } catch (e) {}
+      }
+      return null;
+    };
+
     const loadTeamUsers = async () => {
       if (!usersList) return;
-      usersList.innerHTML = '<div style="text-align:center; padding:20px; color:#94A3B8; font-size:0.82rem;">Carregando colaboradores...</div>';
+      usersList.innerHTML = '<div style="text-align:center; padding:20px; color:#94A3B8; font-size:0.82rem;">Carregando colaboradores reais...</div>';
 
       let loadedUsers = [];
 
+      // 1. Try querying real crm_users table via window.sevenGoldAuth
       try {
-        const client = window.supabaseClient || (typeof getClient === "function" ? getClient() : null) || (typeof supabase !== "undefined" ? supabase : null);
-
+        const client = getSupabaseClient();
         if (client && client.from) {
-          // Query real crm_users with valid column names (id, nome, email, cargo, ativo)
           const { data: crmData, error: crmErr } = await client
             .from("crm_users")
             .select("id, nome, email, cargo, ativo")
             .order("nome", { ascending: true });
 
-          if (!crmErr && crmData && crmData.length > 0) {
+          if (!crmErr && Array.isArray(crmData) && crmData.length > 0) {
             loadedUsers = crmData
               .filter(u => u.ativo !== false)
               .map(u => ({
@@ -353,29 +373,32 @@
         console.warn("[Robot Chat] Erro ao carregar crm_users:", e);
       }
 
-      // Fallback 1: Window cached profiles
+      // 2. Try window profile state cache (populated by auth.js / equipe.js)
       if (loadedUsers.length === 0) {
         const cached = window.crmUsers || window.usersRecords || window.equipeData || window.crmUsersList || [];
         if (Array.isArray(cached) && cached.length > 0) {
-          loadedUsers = cached.map(u => ({
-            id: u.id || Math.random(),
-            name: u.nome || u.full_name || u.name || u.email || "Colaborador",
-            avatar: u.avatar_url || "",
-            cargo: formatUserRole(u.cargo || u.role)
-          }));
+          loadedUsers = cached
+            .filter(u => u.ativo !== false && u.status !== "inativo")
+            .map(u => ({
+              id: u.id || Math.random(),
+              name: u.nome || u.full_name || u.name || u.email || "Colaborador",
+              avatar: u.avatar_url || "",
+              cargo: formatUserRole(u.cargo || u.role)
+            }));
         }
       }
 
-      // Fallback 2: Default Seven Gold team members (guarantees user list is never empty)
+      // 3. Try current logged-in user if available
       if (loadedUsers.length === 0) {
-        loadedUsers = [
-          { id: "u1", name: "Jonatã", avatar: "", cargo: "Supervisor Comercial" },
-          { id: "u2", name: "Mariana Costa", avatar: "", cargo: "Consultor Comercial" },
-          { id: "u3", name: "Lucas Almeida", avatar: "", cargo: "Consultor Comercial" },
-          { id: "u4", name: "Bruna Martins", avatar: "", cargo: "Assistente de Vendas" },
-          { id: "u5", name: "Amanda Silva", avatar: "", cargo: "Consultor Comercial" },
-          { id: "u6", name: "Carlos Eduardo", avatar: "", cargo: "Gestor Financeiro" }
-        ];
+        const currentUser = window.crmUser || window.currentCrmUser;
+        if (currentUser) {
+          loadedUsers.push({
+            id: currentUser.id || "me",
+            name: currentUser.nome || currentUser.name || currentUser.email || "Colaborador",
+            avatar: currentUser.avatar_url || "",
+            cargo: formatUserRole(currentUser.cargo || currentUser.role)
+          });
+        }
       }
 
       teamUsers = loadedUsers;
