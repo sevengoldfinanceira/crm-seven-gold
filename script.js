@@ -2896,8 +2896,6 @@ const loadSales = async () => {
     } else {
       if (isValidId(currentUser.id)) {
         query = query.or(`seller_id.eq.${currentUser.id},attendant_id.eq.${currentUser.id}`);
-      } else if (currentUser.email) {
-        query = query.eq("seller_email", currentUser.email);
       }
     }
 
@@ -8463,8 +8461,6 @@ const loadCrmSellerCommissions = async () => {
       const isValidId = (val) => Boolean(val && val !== "undefined" && val !== "null");
       if (isValidId(user.id)) {
         query = query.or(`seller_id.eq.${user.id},attendant_id.eq.${user.id}`);
-      } else if (user.email) {
-        query = query.eq("seller_email", user.email);
       }
       const { data, error } = await query;
       if (!error && Array.isArray(data)) {

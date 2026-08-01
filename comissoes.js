@@ -75,8 +75,6 @@
         const isValidId = (val) => Boolean(val && val !== "undefined" && val !== "null");
         if (isValidId(user.id)) {
           query = query.or(`seller_id.eq.${user.id},attendant_id.eq.${user.id}`);
-        } else if (user.email) {
-          query = query.eq("seller_email", user.email);
         }
 
         const { data, error } = await query;
