@@ -176,6 +176,76 @@
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 
+  const parseYouTubeTime = (value = "") => {
+    const normalized = String(value || "").trim().toLowerCase();
+    if (/^\d+$/.test(normalized)) return Number(normalized);
+
+    const match = normalized.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/);
+    if (!match) return 0;
+    return (Number(match[1]) * 3600) + (Number(match[2]) * 60) + Number(match[3]);
+  };
+
+  const getYouTubeVideo = (module = {}) => {
+    const configuredUrl = module.youtubeUrl || window.SEVEN_GOLD_YOUTUBE_VIDEOS?.[module.id];
+    if (!configuredUrl) return null;
+
+    try {
+      const rawUrl = String(configuredUrl).trim();
+      const url = new URL(rawUrl.startsWith("http") ? rawUrl : `https://${rawUrl}`);
+      const hostname = url.hostname.toLowerCase().replace(/^www\./, "");
+      let videoId = "";
+
+      if (hostname === "youtu.be") {
+        videoId = url.pathname.split("/").filter(Boolean)[0] || "";
+      } else if (["youtube.com", "m.youtube.com", "music.youtube.com", "youtube-nocookie.com"].includes(hostname)) {
+        const pathParts = url.pathname.split("/").filter(Boolean);
+        if (url.pathname === "/watch") videoId = url.searchParams.get("v") || "";
+        if (["embed", "shorts", "live"].includes(pathParts[0])) videoId = pathParts[1] || "";
+      }
+
+      if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) return null;
+
+      const startAt = parseYouTubeTime(url.searchParams.get("start") || url.searchParams.get("t"));
+      const startQuery = startAt > 0 ? `?start=${startAt}` : "";
+      return {
+        embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}${startQuery}`,
+        watchUrl: `https://www.youtube.com/watch?v=${videoId}${startAt > 0 ? `&t=${startAt}s` : ""}`,
+      };
+    } catch (error) {
+      console.warn(`Link do YouTube inválido na aula ${module.id}:`, configuredUrl);
+      return null;
+    }
+  };
+
+  const renderYouTubePlayer = (module = {}) => {
+    const youtubeVideo = getYouTubeVideo(module);
+
+    if (!youtubeVideo) {
+      return `
+        <div class="video-youtube-pending" role="status">
+          <div class="video-youtube-pending-icon"><i data-lucide="youtube"></i></div>
+          <strong>Vídeo pendente</strong>
+          <span>${escapeHtml(module.videoText || "O link desta aula será adicionado em breve.")}</span>
+        </div>
+      `;
+    }
+
+    return `
+      <iframe
+        class="video-youtube-iframe"
+        src="${escapeHtml(youtubeVideo.embedUrl)}"
+        title="Vídeo da aula: ${escapeHtml(module.title)}"
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+      ></iframe>
+      <a class="video-youtube-open-link" href="${escapeHtml(youtubeVideo.watchUrl)}" target="_blank" rel="noopener noreferrer">
+        <i data-lucide="external-link"></i> Abrir no YouTube
+      </a>
+    `;
+  };
+
   const stripHtml = (value = "") => String(value || "").replace(/<[^>]*>/g, " ");
 
   const normalizeSearchText = (value = "") => String(value || "")
@@ -600,15 +670,9 @@
 
           <!-- Main Classroom Area -->
           <main class="classroom-main" id="classroom-content-panel">
-            <!-- Mock Player -->
-            <div class="video-mock-player" id="lms-video-container">
-              <div class="video-thumbnail" id="lms-video-thumb">
-                <button type="button" class="video-play-btn" id="lms-video-play-trigger"><i data-lucide="play" fill="#000"></i></button>
-                <div style="margin-top:16px; font-size:0.9rem; font-weight:700; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,0.5); text-align:center;">
-                  ${module.videoText}
-                </div>
-                <span class="video-duration-badge">${module.duration}</span>
-              </div>
+            <!-- YouTube Player -->
+            <div class="video-youtube-player" id="lms-video-container">
+              ${renderYouTubePlayer(module)}
             </div>
 
             <!-- Header Info -->
@@ -654,29 +718,6 @@
         renderCertificateView(courseId);
       });
     }
-
-    // Play video simulation
-    const playTrigger = document.getElementById('lms-video-play-trigger');
-    playTrigger?.addEventListener('click', () => {
-      const container = document.getElementById('lms-video-container');
-      container.innerHTML = `
-        <div class="video-playing-state">
-          <div class="video-playing-watermark">SEVEN GOLD ACADEMY</div>
-          <div class="video-playing-gif">
-            <div class="video-bar"></div>
-            <div class="video-bar"></div>
-            <div class="video-bar"></div>
-            <div class="video-bar"></div>
-          </div>
-          <div class="video-playing-text">Assistindo aula em vídeo...</div>
-          <div class="video-playing-mock-controls">
-            <span><i data-lucide="pause" style="width:12px; height:12px; margin-right:4px;"></i> Pausar vídeo</span>
-            <span>00:15 / ${module.duration}</span>
-          </div>
-        </div>
-      `;
-      if (window.lucide) window.lucide.createIcons();
-    });
 
     // Checkbox complete event
     const chk = document.getElementById('lms-mark-complete');
