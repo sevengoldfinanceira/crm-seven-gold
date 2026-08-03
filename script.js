@@ -50,6 +50,10 @@ const salesFormStatus = document.querySelector("[data-sales-form-status]");
 const salesTableBody = document.querySelector("[data-sales-table-body]");
 const salesCardList = document.querySelector("[data-sales-card-list]");
 const salesEmpty = document.querySelector("[data-sales-empty]");
+const mapsSearchForm = document.querySelector("[data-maps-search-form]");
+const mapsSearchInput = document.querySelector("[data-maps-search-input]");
+const mapsSearchFrame = document.querySelector("[data-maps-frame]");
+const mapsSearchStatus = document.querySelector("[data-maps-search-status]");
 let draggedLeadId = null;
 let pointerDrag = null;
 let calendarWeekStart = null;
@@ -87,6 +91,19 @@ let selectedProduction = null;
 let isProductionDirectorCeo = false;
 let selectedPipelinePeriod = "month";
 let selectedPipelinePeriodValue = "";
+
+mapsSearchForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const query = mapsSearchInput?.value.trim();
+  if (!query || !mapsSearchFrame) {
+    mapsSearchInput?.focus();
+    return;
+  }
+
+  mapsSearchFrame.title = `Google Maps - ${query}`;
+  mapsSearchFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(query)}&z=14&output=embed`;
+  if (mapsSearchStatus) mapsSearchStatus.textContent = `Mapa atualizado para ${query}.`;
+});
 
 const syncPipelineMonthToProduction = () => {
   const monthInput = document.getElementById("pipeline-period-month-input");
