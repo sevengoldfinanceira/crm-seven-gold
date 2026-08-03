@@ -206,9 +206,18 @@
       if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) return null;
 
       const startAt = parseYouTubeTime(url.searchParams.get("start") || url.searchParams.get("t"));
-      const startQuery = startAt > 0 ? `?start=${startAt}` : "";
+      const embedParams = new URLSearchParams({
+        controls: "0",
+        disablekb: "1",
+        fs: "0",
+        iv_load_policy: "3",
+        playsinline: "1",
+        rel: "0",
+      });
+      if (startAt > 0) embedParams.set("start", String(startAt));
+
       return {
-        embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}${startQuery}`,
+        embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}?${embedParams.toString()}`,
         watchUrl: `https://www.youtube.com/watch?v=${videoId}${startAt > 0 ? `&t=${startAt}s` : ""}`,
       };
     } catch (error) {
@@ -237,8 +246,7 @@
         title="Vídeo da aula: ${escapeHtml(module.title)}"
         loading="lazy"
         referrerpolicy="strict-origin-when-cross-origin"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowfullscreen
+        allow="autoplay; encrypted-media"
       ></iframe>
       <a class="video-youtube-open-link" href="${escapeHtml(youtubeVideo.watchUrl)}" target="_blank" rel="noopener noreferrer">
         <i data-lucide="external-link"></i> Abrir no YouTube
