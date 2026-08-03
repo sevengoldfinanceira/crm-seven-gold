@@ -763,7 +763,7 @@
     if (!document.getElementById("robot-chat-script")) {
       const s = document.createElement("script");
       s.id = "robot-chat-script";
-      s.src = "robot-chat.js?v=msdugmaz";
+      s.src = "robot-chat.js?v=msdukyn8";
       document.head.appendChild(s);
     }
   }
