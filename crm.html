@@ -1337,7 +1337,8 @@
         <section class="tab-content crm-maps-tab" data-tab="mapas" style="display:none;">
           <div class="crm-maps-shell">
             <form class="crm-maps-search" data-maps-search-form role="search">
-              <label class="crm-maps-search-field">
+              <div class="crm-maps-autocomplete-host" data-maps-autocomplete-host></div>
+              <label class="crm-maps-search-field" data-maps-search-fallback>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
                 <span class="sr-only">Pesquisar no Google Maps</span>
                 <input
@@ -1348,7 +1349,7 @@
                   data-maps-search-input
                 />
               </label>
-              <button type="submit" class="crm-maps-search-button">
+              <button type="submit" class="crm-maps-search-button" data-maps-search-fallback>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="10" r="2"></circle></svg>
                 Pesquisar
               </button>

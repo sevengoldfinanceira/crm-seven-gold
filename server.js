@@ -42,6 +42,7 @@ loadRoute("/api/attendance/proposals/imports", "./api/proposals");
 loadRoute("/api/attendance/proposals/imports/upload", "./api/proposals");
 loadRoute("/api/attendance/proposals/drive/sync", "./api/proposals");
 loadRoute("/api/attendance/proposals/settings", "./api/proposals");
+loadRoute("/api/maps/config", "./api/maps/config");
 
 const port = 3000;
 const root = __dirname;

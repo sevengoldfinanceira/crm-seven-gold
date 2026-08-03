@@ -54,6 +54,7 @@ const mapsSearchForm = document.querySelector("[data-maps-search-form]");
 const mapsSearchInput = document.querySelector("[data-maps-search-input]");
 const mapsSearchFrame = document.querySelector("[data-maps-frame]");
 const mapsSearchStatus = document.querySelector("[data-maps-search-status]");
+const mapsAutocompleteHost = document.querySelector("[data-maps-autocomplete-host]");
 let draggedLeadId = null;
 let pointerDrag = null;
 let calendarWeekStart = null;
@@ -92,6 +93,15 @@ let isProductionDirectorCeo = false;
 let selectedPipelinePeriod = "month";
 let selectedPipelinePeriodValue = "";
 
+const updateGoogleMapsFrame = (query) => {
+  const normalizedQuery = String(query || "").trim();
+  if (!normalizedQuery || !mapsSearchFrame) return;
+
+  mapsSearchFrame.title = `Google Maps - ${normalizedQuery}`;
+  mapsSearchFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(normalizedQuery)}&z=14&output=embed`;
+  if (mapsSearchStatus) mapsSearchStatus.textContent = `Mapa atualizado para ${normalizedQuery}.`;
+};
+
 mapsSearchForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   const query = mapsSearchInput?.value.trim();
@@ -100,10 +110,76 @@ mapsSearchForm?.addEventListener("submit", (event) => {
     return;
   }
 
-  mapsSearchFrame.title = `Google Maps - ${query}`;
-  mapsSearchFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(query)}&z=14&output=embed`;
-  if (mapsSearchStatus) mapsSearchStatus.textContent = `Mapa atualizado para ${query}.`;
+  updateGoogleMapsFrame(query);
 });
+
+const loadGoogleMapsPlacesApi = (apiKey) => new Promise((resolve, reject) => {
+  if (window.google?.maps?.importLibrary) {
+    resolve(window.google.maps);
+    return;
+  }
+
+  const callbackName = "initSevenGoldGoogleMapsPlaces";
+  const script = document.createElement("script");
+  const cleanup = () => {
+    try { delete window[callbackName]; } catch (_) { window[callbackName] = undefined; }
+  };
+
+  window[callbackName] = () => {
+    cleanup();
+    resolve(window.google.maps);
+  };
+  script.onerror = () => {
+    cleanup();
+    reject(new Error("Não foi possível carregar o Google Places."));
+  };
+  script.async = true;
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&v=weekly&loading=async&libraries=places&language=pt-BR&region=BR&callback=${callbackName}`;
+  document.head.appendChild(script);
+});
+
+const initGoogleMapsAutocomplete = async () => {
+  if (!mapsSearchForm || !mapsAutocompleteHost) return;
+
+  try {
+    const response = await fetch("/api/maps/config", {
+      method: "GET",
+      credentials: "same-origin",
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    });
+    const config = await response.json().catch(() => ({}));
+    if (!response.ok || !config.apiKey) return;
+
+    await loadGoogleMapsPlacesApi(config.apiKey);
+    const { PlaceAutocompleteElement } = await window.google.maps.importLibrary("places");
+    const autocomplete = new PlaceAutocompleteElement();
+    autocomplete.placeholder = "Pesquisar bairro, cidade ou endereço";
+    autocomplete.includedRegionCodes = ["br"];
+    autocomplete.locationBias = {
+      center: { lat: -23.6268, lng: -46.6453 },
+      radius: 50000,
+    };
+
+    autocomplete.addEventListener("gmp-select", async ({ placePrediction }) => {
+      try {
+        const place = placePrediction.toPlace();
+        await place.fetchFields({ fields: ["displayName", "formattedAddress"] });
+        updateGoogleMapsFrame(place.formattedAddress || place.displayName);
+      } catch (error) {
+        console.warn("Não foi possível abrir o local selecionado:", error);
+        if (mapsSearchStatus) mapsSearchStatus.textContent = "Não foi possível abrir o local selecionado.";
+      }
+    });
+
+    mapsAutocompleteHost.replaceChildren(autocomplete);
+    mapsSearchForm.classList.add("is-google-autocomplete");
+  } catch (error) {
+    console.warn("Autocomplete do Google Maps indisponível; usando pesquisa simples.", error);
+  }
+};
+
+initGoogleMapsAutocomplete();
 
 const syncPipelineMonthToProduction = () => {
   const monthInput = document.getElementById("pipeline-period-month-input");

@@ -3749,6 +3749,28 @@ body.crm-maps-active .crm-workspace {
   border: 0;
 }
 
+.crm-maps-autocomplete-host {
+  display: none;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.crm-maps-search.is-google-autocomplete .crm-maps-autocomplete-host {
+  display: block;
+}
+
+.crm-maps-search.is-google-autocomplete [data-maps-search-fallback] {
+  display: none;
+}
+
+.crm-maps-autocomplete-host gmp-place-autocomplete {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  color-scheme: light;
+  font-family: 'Inter', sans-serif;
+}
+
 .crm-maps-search-field {
   flex: 1 1 auto;
   min-width: 0;
