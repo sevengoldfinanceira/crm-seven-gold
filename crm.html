@@ -1335,13 +1335,34 @@
 
         <!-- Google Maps -->
         <section class="tab-content crm-maps-tab" data-tab="mapas" style="display:none;">
-          <iframe
-            class="crm-maps-frame"
-            title="Google Maps - São Bernardo do Campo"
-            src="https://www.google.com/maps?q=S%C3%A3o%20Bernardo%20do%20Campo%2C%20SP&z=13&output=embed"
-            referrerpolicy="no-referrer-when-downgrade"
-            allowfullscreen
-          ></iframe>
+          <div class="crm-maps-shell">
+            <form class="crm-maps-search" data-maps-search-form role="search">
+              <label class="crm-maps-search-field">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+                <span class="sr-only">Pesquisar no Google Maps</span>
+                <input
+                  type="search"
+                  value="Jabaquara, São Paulo - SP"
+                  placeholder="Pesquisar bairro, cidade ou endereço"
+                  autocomplete="off"
+                  data-maps-search-input
+                />
+              </label>
+              <button type="submit" class="crm-maps-search-button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="10" r="2"></circle></svg>
+                Pesquisar
+              </button>
+              <span class="sr-only" data-maps-search-status aria-live="polite"></span>
+            </form>
+            <iframe
+              class="crm-maps-frame"
+              data-maps-frame
+              title="Google Maps - Jabaquara, São Paulo - SP"
+              src="https://www.google.com/maps?q=Jabaquara%2C%20S%C3%A3o%20Paulo%20-%20SP&z=14&output=embed"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen
+            ></iframe>
+          </div>
         </section>
 
         <!-- Vendas -->
