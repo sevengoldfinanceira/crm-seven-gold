@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="atendimento.css?v=mse75la2" />
-    <link rel="stylesheet" href="simulador-propostas.css?v=mse75la2" />
+    <link rel="stylesheet" href="simulador-propostas.css?v=fin-tab-v1" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#000000" />
   </head>
@@ -36,15 +36,15 @@
           </div>
 
           <nav class="simulador-topbar-tabs-nav" id="simulador-topbar-nav">
+            <button type="button" class="simulador-tab-btn" data-subtab="financiamento" id="topbar-btn-financiamento">
+              <i data-lucide="landmark"></i> Financiar imóvel
+            </button>
             <button type="button" class="simulador-tab-btn active" data-subtab="simulacao">
               <i data-lucide="calculator"></i> Simulação
             </button>
             <button type="button" class="simulador-tab-btn" data-subtab="propostas" id="topbar-btn-propostas">
               <i data-lucide="file-text"></i> Propostas
             </button>
-            <a class="simulador-tab-btn" href="/simular-financiamento">
-              <i data-lucide="landmark"></i> Financiar imóvel
-            </a>
             <button type="button" class="simulador-tab-btn" data-subtab="clientes" id="topbar-btn-clientes">
               <i data-lucide="users"></i> Clientes
             </button>
@@ -80,7 +80,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="auth.js?v=mse75la2"></script>
-    <script src="simulador-propostas.js?v=mse75la2"></script>
+    <script src="simulador-propostas.js?v=fin-tab-v1"></script>
     <script>
       (function() {
         const tabs = document.querySelectorAll('[data-service-tab]');

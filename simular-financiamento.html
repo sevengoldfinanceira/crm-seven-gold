@@ -8,9 +8,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="simular-financiamento.css?v=mse75la2" />
+    <link rel="stylesheet" href="simular-financiamento.css?v=fin-tab-v1" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#150126" />
+    <meta name="theme-color" content="#000000" />
+    <script>
+      if (new URLSearchParams(window.location.search).get("embedded") === "1") {
+        document.documentElement.classList.add("fin-embedded");
+      }
+    </script>
   </head>
   <body data-require-auth data-permission-area="crm" data-login-page="index.html" data-denied-redirect="painel.html" data-role-source="crm-users">
     <header class="fin-topbar">

@@ -67,6 +67,23 @@
   box-shadow: 0 4px 14px rgba(232, 177, 56, 0.35) !important;
 }
 
+/* Financiamento permanece dentro da mesma navegação do painel. */
+.financiamento-embed {
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 145px);
+  border: 0;
+  border-radius: 18px;
+  background: var(--seven-bg-sec);
+}
+
+@media (max-width: 700px) {
+  .financiamento-embed {
+    min-height: calc(100vh - 190px);
+    border-radius: 14px;
+  }
+}
+
 /* Simulation Layout (Grid Filters + Results) */
 .simulador-main-grid {
   display: grid;
