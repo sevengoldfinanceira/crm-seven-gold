@@ -14107,3 +14107,492 @@ body.theme-dark .feed-post-time {
   }
 }
 
+/* Mobile Pipeline — mantém o Kanban desktop intacto */
+.mobile-pipeline-header,
+.mobile-pipeline-stages,
+.mobile-lead-meta,
+.mobile-created-today,
+.mobile-lead-more {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  body.crm-mobile-pipeline-active {
+    background: #F7F7F8 !important;
+  }
+
+  body.crm-mobile-pipeline-active .mobile-bar {
+    display: none !important;
+  }
+
+  .tab-content[data-tab="pipeline"] {
+    height: auto !important;
+    min-height: 100vh !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0 14px 32px !important;
+    background: #F7F7F8 !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .pipeline-header {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 16px 0 4px !important;
+  }
+
+  .mobile-pipeline-header {
+    display: grid !important;
+    grid-template-columns: 44px minmax(0, 1fr) 44px !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .mobile-pipeline-menu,
+  .mobile-pipeline-filter {
+    display: grid !important;
+    place-items: center !important;
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    border: 1px solid #E5E7EB !important;
+    border-radius: 13px !important;
+    background: #FFFFFF !important;
+    color: #374151 !important;
+    box-shadow: 0 4px 14px rgba(17, 24, 39, 0.05) !important;
+  }
+
+  .mobile-pipeline-menu svg,
+  .mobile-pipeline-filter svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .mobile-pipeline-filter[aria-expanded="true"] {
+    border-color: #C9A84C !important;
+    background: #FFF8E6 !important;
+    color: #8B6914 !important;
+  }
+
+  .mobile-pipeline-heading {
+    min-width: 0 !important;
+    text-align: center !important;
+  }
+
+  .mobile-pipeline-heading h1 {
+    margin: 0 !important;
+    color: #111827 !important;
+    font-size: 1.35rem !important;
+    font-weight: 850 !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.025em !important;
+  }
+
+  .mobile-pipeline-count {
+    display: block !important;
+    margin-top: 4px !important;
+    color: #6B7280 !important;
+    font-size: 0.76rem !important;
+    font-weight: 650 !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .pipeline-title-copy,
+  .tab-content[data-tab="pipeline"] .filter-row {
+    display: none !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .pipeline-header.mobile-filters-open .pipeline-title-copy {
+    display: block !important;
+    order: 3 !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .pipeline-header.mobile-filters-open .pipeline-title-main-row {
+    display: none !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .pipeline-header.mobile-filters-open .pipeline-search-container {
+    width: 100% !important;
+    margin-top: 0 !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .pipeline-header.mobile-filters-open .filter-row {
+    display: flex !important;
+    order: 4 !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 14px !important;
+    border: 1px solid #E5E7EB !important;
+    border-radius: 16px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 8px 24px rgba(17, 24, 39, 0.06) !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .filter-row > *,
+  .tab-content[data-tab="pipeline"] .filter-row label,
+  .tab-content[data-tab="pipeline"] .filter-row select,
+  .tab-content[data-tab="pipeline"] .pipeline-calendar-picker,
+  .tab-content[data-tab="pipeline"] .pipeline-calendar-date-picker {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .new-lead-button {
+    order: 2 !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+    align-self: center !important;
+    justify-self: auto !important;
+    width: min(100%, 360px) !important;
+    min-height: 48px !important;
+    margin: 2px auto 0 !important;
+    border-radius: 14px !important;
+    font-size: 0.92rem !important;
+    box-shadow: 0 9px 22px rgba(201, 168, 76, 0.28) !important;
+  }
+
+  .mobile-pipeline-stages {
+    display: block !important;
+    margin: 14px 0 10px !important;
+  }
+
+  .mobile-stage-tabs {
+    display: flex !important;
+    gap: 10px !important;
+    width: calc(100% + 28px) !important;
+    margin-left: -14px !important;
+    padding: 2px 14px 12px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-snap-type: x proximity !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .mobile-stage-tabs::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .mobile-stage-card {
+    --mobile-stage-color: #3B82F6;
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: 24px auto !important;
+    grid-template-rows: auto auto !important;
+    align-items: center !important;
+    gap: 3px 7px !important;
+    flex: 0 0 112px !important;
+    min-height: 78px !important;
+    padding: 11px 10px 12px !important;
+    border: 1px solid #E5E7EB !important;
+    border-radius: 15px !important;
+    background: #FFFFFF !important;
+    color: #6B7280 !important;
+    text-align: left !important;
+    scroll-snap-align: start !important;
+    box-shadow: 0 5px 16px rgba(17, 24, 39, 0.05) !important;
+  }
+
+  .mobile-stage-card::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 9px !important;
+    right: 9px !important;
+    bottom: -1px !important;
+    height: 3px !important;
+    border-radius: 999px 999px 0 0 !important;
+    background: var(--mobile-stage-color) !important;
+  }
+
+  .mobile-stage-card[data-mobile-stage="primeiro_contato"] { --mobile-stage-color: #F97316; }
+  .mobile-stage-card[data-mobile-stage="agendamento"] { --mobile-stage-color: #D4AF37; }
+  .mobile-stage-card[data-mobile-stage="cliente_em_loja"] { --mobile-stage-color: #EC4899; }
+  .mobile-stage-card[data-mobile-stage="proposta_enviada"] { --mobile-stage-color: #F59E0B; }
+  .mobile-stage-card[data-mobile-stage="venda_fechada"] { --mobile-stage-color: #10B981; }
+  .mobile-stage-card[data-mobile-stage="cancelado"] { --mobile-stage-color: #EF4444; }
+
+  .mobile-stage-card.active {
+    border-color: color-mix(in srgb, var(--mobile-stage-color) 55%, #E5E7EB) !important;
+    background: color-mix(in srgb, var(--mobile-stage-color) 7%, #FFFFFF) !important;
+    color: #111827 !important;
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--mobile-stage-color) 16%, transparent) !important;
+  }
+
+  .mobile-stage-card svg {
+    grid-row: 1 / 3 !important;
+    width: 22px !important;
+    height: 22px !important;
+    color: var(--mobile-stage-color) !important;
+  }
+
+  .mobile-stage-card span {
+    overflow: hidden !important;
+    color: inherit !important;
+    font-size: 0.68rem !important;
+    font-weight: 800 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .mobile-stage-card strong {
+    color: #111827 !important;
+    font-size: 1rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+  }
+
+  .mobile-stage-list-title {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 5px !important;
+    margin: 8px 0 12px !important;
+    color: #111827 !important;
+    font-size: 1rem !important;
+    font-weight: 850 !important;
+    scroll-margin-top: 12px !important;
+  }
+
+  .mobile-stage-list-title strong {
+    color: #6B7280 !important;
+    font-size: 0.82rem !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .kanban-wrap {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .kanban-board {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .kanban-column {
+    display: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    border: 0 !important;
+    background: transparent !important;
+    overflow: visible !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .kanban-column.mobile-stage-active {
+    display: block !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .kanban-column > header {
+    display: none !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .mobile-lead-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 130px !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    overflow: visible !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .mobile-lead-card {
+    width: 100% !important;
+    padding: 16px !important;
+    gap: 10px !important;
+    border: 1px solid #E5E7EB !important;
+    border-radius: 18px !important;
+    background: #FFFFFF !important;
+    color: #111827 !important;
+    box-shadow: 0 7px 22px rgba(17, 24, 39, 0.06) !important;
+    overflow: visible !important;
+    touch-action: pan-y !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .mobile-lead-card:hover {
+    transform: none !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .lead-card-header {
+    justify-content: flex-start !important;
+    min-height: 30px !important;
+    padding-right: 34px !important;
+    margin: 0 !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .lead-checkbox {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .lead-name {
+    flex: 1 1 auto !important;
+    color: #111827 !important;
+    font-size: 1rem !important;
+    font-weight: 850 !important;
+    text-align: left !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .lead-menu-button {
+    top: 14px !important;
+    right: 13px !important;
+    width: 34px !important;
+    height: 34px !important;
+    border: 1px solid #E5E7EB !important;
+    border-radius: 10px !important;
+    background: #F9FAFB !important;
+    color: #4B5563 !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .lead-badges-row {
+    justify-content: flex-start !important;
+    margin: 0 !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .lead-badges-row:has(.mobile-created-today) .lead-time-badge {
+    display: none !important;
+  }
+
+  .mobile-created-today {
+    display: inline-flex !important;
+    align-items: center !important;
+    width: fit-content !important;
+    padding: 5px 9px !important;
+    border: 1px solid #F0D98A !important;
+    border-radius: 999px !important;
+    background: #FFF8E6 !important;
+    color: #8B6914 !important;
+    font-size: 0.68rem !important;
+    font-weight: 800 !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .lead-info-list {
+    align-items: flex-start !important;
+    gap: 7px !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .lead-info-row {
+    justify-content: flex-start !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .lead-info-text {
+    color: #374151 !important;
+    font-size: 0.86rem !important;
+    font-weight: 700 !important;
+    text-align: left !important;
+  }
+
+  .mobile-lead-meta {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    padding: 10px 0 2px !important;
+    border-top: 1px solid #F0F1F3 !important;
+  }
+
+  .mobile-lead-meta > span {
+    display: grid !important;
+    gap: 3px !important;
+    min-width: 0 !important;
+  }
+
+  .mobile-lead-meta small {
+    color: #9CA3AF !important;
+    font-size: 0.62rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+  }
+
+  .mobile-lead-meta strong {
+    overflow: hidden !important;
+    color: #4B5563 !important;
+    font-size: 0.78rem !important;
+    font-weight: 750 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .lead-card-divider {
+    background: #E5E7EB !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .lead-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .lead-action-button {
+    min-height: 44px !important;
+    height: 44px !important;
+    padding: 0 8px !important;
+    border-radius: 12px !important;
+    font-size: 0.76rem !important;
+  }
+
+  .mobile-lead-more {
+    display: inline-flex !important;
+    background: #F9FAFB !important;
+    color: #4B5563 !important;
+    border-color: #E5E7EB !important;
+  }
+
+  .mobile-lead-more svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .lead-card-dropdown {
+    top: 52px !important;
+    right: 12px !important;
+    z-index: 80 !important;
+    min-width: 190px !important;
+    border-color: #E5E7EB !important;
+    background: #FFFFFF !important;
+    color: #111827 !important;
+    box-shadow: 0 18px 42px rgba(17, 24, 39, 0.18) !important;
+  }
+
+  .tab-content[data-tab="pipeline"] .empty-column-card {
+    min-height: 180px !important;
+    border: 1px dashed #D1D5DB !important;
+    border-radius: 18px !important;
+    background: #FFFFFF !important;
+  }
+
+  body.theme-dark .tab-content[data-tab="pipeline"],
+  body.theme-dark .tab-content[data-tab="pipeline"] .mobile-lead-list,
+  body.theme-dark .tab-content[data-tab="pipeline"] .kanban-column {
+    background: #F7F7F8 !important;
+  }
+
+  body.theme-dark .tab-content[data-tab="pipeline"] .mobile-lead-card,
+  body.theme-dark .tab-content[data-tab="pipeline"] .empty-column-card {
+    border-color: #E5E7EB !important;
+    background: #FFFFFF !important;
+  }
+
+  body.theme-dark .tab-content[data-tab="pipeline"] .lead-name,
+  body.theme-dark .mobile-stage-list-title,
+  body.theme-dark .mobile-pipeline-heading h1 {
+    color: #111827 !important;
+  }
+
+  body.theme-dark .tab-content[data-tab="pipeline"] .lead-info-text {
+    color: #374151 !important;
+  }
+}
+

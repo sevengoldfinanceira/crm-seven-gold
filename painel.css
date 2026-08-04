@@ -579,6 +579,131 @@
   }
 }
 
+/* Painel inicial compacto no mobile: quatro acessos em uma única tela. */
+@media (max-width: 768px) {
+  .entry-premium-body {
+    min-height: 100svh;
+    overflow-y: auto;
+  }
+
+  .premium-entry-shell {
+    width: 100%;
+    min-height: 100svh;
+    padding: 12px 14px 16px;
+    justify-content: flex-start;
+    gap: 0;
+  }
+
+  .premium-entry-shell .hero-section {
+    min-height: calc(100svh - 28px);
+    padding: 0;
+    gap: 0;
+    justify-content: center !important;
+    margin: 0 !important;
+  }
+
+  .painel-hero-header {
+    flex: 0 0 auto;
+    margin-bottom: 10px !important;
+  }
+
+  .painel-main-logo {
+    width: 128px !important;
+    max-width: 128px !important;
+    max-height: 116px;
+  }
+
+  .premium-entry-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 9px;
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .premium-access-card {
+    min-height: 0;
+    max-width: none !important;
+    padding: 11px 13px !important;
+    gap: 8px;
+    border-radius: 15px !important;
+    overflow: hidden !important;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .premium-access-card .recommended-badge,
+  .premium-access-card .restricted-badge,
+  .premium-access-card .card-icon,
+  .premium-access-card .card-kicker,
+  .premium-access-card .card-description,
+  .premium-access-card .tags {
+    display: none !important;
+  }
+
+  .premium-access-card .card-header {
+    display: block;
+    padding: 0;
+  }
+
+  .premium-access-card .card-title {
+    margin: 0;
+    font-size: 0.96rem !important;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .premium-access-card .card-button {
+    min-height: 36px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    line-height: 1;
+    letter-spacing: 0.045em;
+  }
+}
+
+/* Garante encaixe também em celulares com pouca altura útil. */
+@media (max-width: 768px) and (max-height: 650px) {
+  .premium-entry-shell {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .premium-entry-shell .hero-section {
+    min-height: calc(100svh - 16px);
+  }
+
+  .painel-hero-header {
+    margin-bottom: 6px !important;
+  }
+
+  .painel-main-logo {
+    width: 96px !important;
+    max-width: 96px !important;
+    max-height: 84px;
+  }
+
+  .premium-entry-cards {
+    gap: 6px;
+  }
+
+  .premium-access-card {
+    padding: 8px 10px !important;
+    gap: 5px;
+  }
+
+  .premium-access-card .card-title {
+    font-size: 0.86rem !important;
+  }
+
+  .premium-access-card .card-button {
+    min-height: 32px;
+    padding: 6px 10px;
+    font-size: 0.64rem;
+  }
+}
+
 /* Overlay de Transição / Animação de 0,5 Segundo dos 4 Módulos */
 .sg-transition-overlay {
   position: fixed;

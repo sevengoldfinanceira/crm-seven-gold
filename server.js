@@ -43,6 +43,9 @@ loadRoute("/api/attendance/proposals/imports/upload", "./api/proposals");
 loadRoute("/api/attendance/proposals/drive/sync", "./api/proposals");
 loadRoute("/api/attendance/proposals/settings", "./api/proposals");
 loadRoute("/api/maps/config", "./api/maps/config");
+loadRoute("/api/financing/products", "./api/financing");
+loadRoute("/api/financing/clients", "./api/financing");
+loadRoute("/api/financing/simulations", "./api/financing");
 
 const port = 3000;
 const root = __dirname;
@@ -83,7 +86,8 @@ const server = http.createServer((request, response) => {
     return;
   }
 
-  const normalizedPath = path.normalize(pathname);
+  const pageAliases = { "/simular-financiamento": "/simular-financiamento.html" };
+  const normalizedPath = path.normalize(pageAliases[pathname] || pathname);
   const safePath = normalizedPath
     .replace(/^[/\\]+/, "")
     .replace(/^(\.\.[/\\])+/, "");

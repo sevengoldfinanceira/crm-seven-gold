@@ -2300,12 +2300,16 @@
   async function fetchAuditHistory() {}
 
   // Initialize
-  const initSimulador = () => {
+  const initSimulador = async () => {
     const hasSimulatorContainer = document.querySelector('[data-service-tab-content="simulador"]') || document.querySelector('.service-shell');
     if (!hasSimulatorContainer) return;
 
     // Render simulator UI directly on page load
-    renderSimulatorShell();
+    await renderSimulatorShell();
+    const requestedSubtab = new URLSearchParams(window.location.search).get("subtab");
+    if (requestedSubtab) {
+      document.querySelector(`[data-subtab="${requestedSubtab}"]`)?.click();
+    }
   };
 
   if (document.readyState === "loading") {
@@ -2599,7 +2603,7 @@
 
     if (filtered.length === 0) {
       tbody.innerHTML = `
-        <tr>
+        <tr class="mobile-record-empty-row">
           <td colspan="6" style="text-align:center; padding:40px; color:#64748b;">
             Nenhuma proposta salva encontrada. As propostas geradas no simulador aparecerão aqui!
           </td>
@@ -2614,8 +2618,8 @@
       const isClosedContract = statusText === "Assinado" || statusText === "Contratado";
 
       return `
-        <tr>
-          <td>
+        <tr class="mobile-record-card">
+          <td class="mobile-record-identity">
             <div class="closed-client-name-cell">
               <span class="closed-client-avatar" style="background:#0F172A; color:#D8B34A;">${initial}</span>
               <div class="closed-client-details">
@@ -2624,24 +2628,24 @@
               </div>
             </div>
           </td>
-          <td>
+          <td data-mobile-label="Tabela">
             <div class="closed-product-cell">
               <strong style="color:#0f172a; font-size:0.85rem;">${formatTableDisplay(proposal.produto, proposal.grupo_cota)}</strong>
             </div>
           </td>
-          <td>
+          <td data-mobile-label="Crédito">
             <strong style="color:#10b981; font-weight:800; font-size:0.92rem;">${formatCurrency(proposal.credito)}</strong>
           </td>
-          <td>
+          <td data-mobile-label="Entrada / Parcela">
             <div style="display:flex; flex-direction:column; gap:2px;">
               <span style="color:#0f172a; font-size:0.82rem; font-weight:700;">Entrada: ${formatCurrency(proposal.entrada)}</span>
               <span style="color:#64748b; font-size:0.75rem;">Parcela: ${formatCurrency(proposal.parcela)}</span>
             </div>
           </td>
-          <td style="color:#475569; font-size:0.82rem; font-weight:600;">
+          <td data-mobile-label="Data da proposta" style="color:#475569; font-size:0.82rem; font-weight:600;">
             ${proposal.data_fechamento ? new Date(proposal.data_fechamento + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}
           </td>
-          <td style="text-align: right;">
+          <td class="mobile-record-actions" data-mobile-label="Ações" style="text-align: right;">
             <div class="closed-actions-row">
               <button type="button" class="btn-closed-action a4" data-open-proposal-a4="${proposal.id}" title="Editar / Visualizar Proposta A4">
                 <i data-lucide="file-text"></i> A4
@@ -2793,7 +2797,7 @@
 
     if (filtered.length === 0) {
       tbody.innerHTML = `
-        <tr>
+        <tr class="mobile-record-empty-row">
           <td colspan="7" style="text-align:center; padding:40px; color:#64748b;">
             Nenhum cliente fechado encontrado com estes filtros.
           </td>
@@ -2808,8 +2812,8 @@
       const compliance = getClientDocsCompliance(client);
 
       return `
-        <tr>
-          <td>
+        <tr class="mobile-record-card">
+          <td class="mobile-record-identity">
             <div class="closed-client-name-cell">
               <span class="closed-client-avatar">${initial}</span>
               <div class="closed-client-details">
@@ -2818,24 +2822,24 @@
               </div>
             </div>
           </td>
-          <td>
+          <td data-mobile-label="Tabela">
             <div class="closed-product-cell">
               <strong style="color:#0f172a; font-size:0.85rem;">${formatTableDisplay(client.produto, client.grupo_cota)}</strong>
             </div>
           </td>
-          <td>
+          <td data-mobile-label="Crédito">
             <strong style="color:#10b981; font-weight:800; font-size:0.92rem;">${formatCurrency(client.credito)}</strong>
           </td>
-          <td>
+          <td data-mobile-label="Entrada / Parcela">
             <div style="display:flex; flex-direction:column; gap:2px;">
               <span style="color:#0f172a; font-size:0.82rem; font-weight:700;">Entrada: ${formatCurrency(client.entrada)}</span>
               <span style="color:#64748b; font-size:0.75rem;">Parcela: ${formatCurrency(client.parcela)}</span>
             </div>
           </td>
-          <td style="color:#475569; font-size:0.82rem; font-weight:600;">
+          <td data-mobile-label="Fechamento" style="color:#475569; font-size:0.82rem; font-weight:600;">
             ${client.data_fechamento ? new Date(client.data_fechamento + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}
           </td>
-          <td>
+          <td data-mobile-label="Documentos">
             ${compliance.isComplete ? `
               <span class="doc-badge-status ready" title="Todos os 4 documentos obrigatórios estão anexados!">
                 <i data-lucide="shield-check"></i> 4/4 OK
@@ -2846,10 +2850,10 @@
               </span>
             `}
           </td>
-          <td>
+          <td data-mobile-label="Status">
             <span class="closed-status-badge ${statusClass}">${client.status || "Assinado"}</span>
           </td>
-          <td style="text-align: right;">
+          <td class="mobile-record-actions" data-mobile-label="Ações" style="text-align: right;">
             <div class="closed-actions-row">
               <button type="button" class="btn-closed-action docs" data-open-docs="${client.id}" title="Gerenciar Documentos Obrigatórios">
                 <i data-lucide="folder-check"></i> Docs (${compliance.attachedCount}/4)

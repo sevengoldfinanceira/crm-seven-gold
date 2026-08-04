@@ -274,6 +274,183 @@ body { font-family: Inter, sans-serif; background: var(--page); color: var(--ink
   .service-welcome { align-items: flex-start; flex-direction: column; }
 }
 
+/* Painel de Atendimento centralizado e sem rolagem lateral no mobile. */
+@media (max-width: 768px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
+  }
+
+  .service-shell,
+  .service-content,
+  .service-header,
+  .service-header + div,
+  .service-tab-content,
+  .simulador-container,
+  .simulador-subtab-content,
+  .simulador-main-grid,
+  .simulador-filters-card,
+  .simulador-results-section,
+  .simulador-results-container,
+  .simulador-sticky-top-bar,
+  .simulador-results-header,
+  .proposals-cards-list {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .service-content {
+    padding: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  .service-header {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 14px !important;
+    padding: 18px 12px 14px !important;
+    text-align: center !important;
+  }
+
+  .service-header > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .service-header-brand {
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 10px !important;
+  }
+
+  .service-header-brand > a {
+    justify-content: center;
+  }
+
+  .service-header-vdivider {
+    display: none !important;
+  }
+
+  .service-header-titles {
+    align-items: center;
+    text-align: center;
+  }
+
+  .service-header .eyebrow {
+    max-width: 100%;
+    font-size: 0.64rem !important;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  .simulador-topbar-tabs-nav {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 390px !important;
+    margin: 0 auto !important;
+    align-items: stretch !important;
+    justify-content: center !important;
+    overflow: visible !important;
+  }
+
+  .simulador-topbar-tabs-nav .simulador-tab-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 42px;
+    padding: 8px 6px !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: normal !important;
+    font-size: 0.7rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .simulador-topbar-tabs-nav .simulador-tab-btn:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    width: calc(50% - 4px) !important;
+    justify-self: center;
+  }
+
+  .simulador-topbar-tabs-nav .simulador-tab-btn svg,
+  .simulador-topbar-tabs-nav .simulador-tab-btn i {
+    flex: 0 0 auto;
+  }
+
+  .service-header > div:last-child,
+  .service-user-actions {
+    width: 100%;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 0 !important;
+  }
+
+  .service-user-actions a,
+  .service-user-actions button {
+    justify-content: center !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding: 8px 10px !important;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .service-header + div {
+    margin: 0 auto !important;
+    padding: 14px 12px !important;
+    overflow-x: hidden !important;
+  }
+
+  .simulador-container,
+  .simulador-main-grid {
+    margin-inline: auto !important;
+  }
+
+  .simulador-main-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .simulador-main-grid > *,
+  .simulador-results-container > *,
+  .proposals-cards-list > * {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .simulador-filters-card,
+  .simulador-empty-state-card,
+  .pf-form-card,
+  .pf-summary-card,
+  .pf-header-bar {
+    margin-right: auto !important;
+    margin-left: auto !important;
+  }
+
+  .simulador-filters-header,
+  .simulador-empty-state-card {
+    justify-content: center;
+    text-align: center;
+  }
+
+  img,
+  svg,
+  video,
+  iframe,
+  canvas {
+    max-width: 100%;
+  }
+}
+
 /* Overlay Global de Transição / Animação de 0,5 Segundo (Entrada & Saída de Módulos) */
 .sg-transition-overlay {
   position: fixed !important;

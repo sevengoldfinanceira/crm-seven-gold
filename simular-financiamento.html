@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seven Gold | Simular Financiamento</title>
+    <link rel="icon" href="assets/icons/seven-gold-g7.png?v=mse745p9" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="simular-financiamento.css?v=mse745p9" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#150126" />
+  </head>
+  <body data-require-auth data-permission-area="crm" data-login-page="index.html" data-denied-redirect="painel.html" data-role-source="crm-users">
+    <header class="fin-topbar">
+      <a class="fin-brand" href="painel.html" aria-label="Voltar aos painéis">
+        <img src="assets/icons/seven-gold-g7.png?v=mse745p9" alt="Seven Gold" />
+        <span><small>SEVEN GOLD</small><strong>Financiamento imobiliário</strong></span>
+      </a>
+      <nav class="fin-main-nav" aria-label="Atendimento">
+        <a href="atendimento.html"><i data-lucide="calculator"></i> Consórcio</a>
+        <a href="atendimento.html?subtab=propostas"><i data-lucide="file-text"></i> Propostas</a>
+        <a class="active" href="/simular-financiamento" aria-current="page"><i data-lucide="landmark"></i> Financiar imóvel</a>
+      </nav>
+      <div class="fin-user-actions">
+        <a href="painel.html"><i data-lucide="arrow-left"></i><span>Painéis</span></a>
+        <span class="fin-user"><b data-user-name>Usuário</b><small data-user-role>...</small></span>
+        <button type="button" data-logout data-logout-redirect="index.html" aria-label="Sair"><i data-lucide="log-out"></i></button>
+      </div>
+    </header>
+
+    <main class="fin-page">
+      <section class="fin-hero">
+        <div>
+          <p>CRÉDITO IMOBILIÁRIO</p>
+          <h1>Simular Financiamento</h1>
+          <span>Compare condições reais cadastradas pela Seven Gold, com cálculo SAC e Price.</span>
+        </div>
+        <div class="fin-hero-badge"><i data-lucide="shield-check"></i><span>Sem taxas fictícias<small>Fonte e vigência obrigatórias</small></span></div>
+      </section>
+
+      <nav class="fin-section-tabs" aria-label="Seções do financiamento">
+        <button class="active" type="button" data-fin-tab="simulator"><i data-lucide="calculator"></i> Simular</button>
+        <button type="button" data-fin-tab="saved"><i data-lucide="bookmark"></i> Simulações salvas</button>
+        <button type="button" data-fin-tab="rates" data-rate-admin hidden><i data-lucide="settings-2"></i> Taxas de Financiamento</button>
+      </nav>
+
+      <section class="fin-tab-panel active" data-fin-panel="simulator">
+        <div class="fin-layout">
+          <form class="fin-card fin-form" id="financing-form" novalidate>
+            <div class="fin-card-heading">
+              <span class="fin-step">1</span>
+              <div><h2>Dados da simulação</h2><p>Informe os dados do imóvel e dos proponentes.</p></div>
+            </div>
+
+            <fieldset>
+              <legend>Imóvel</legend>
+              <div class="fin-field-grid two">
+                <label>Tipo de imóvel<select name="propertyType" required><option value="RESIDENCIAL">Residencial</option><option value="COMERCIAL">Comercial</option></select></label>
+                <label>Condição<select name="propertyCondition" required><option value="NOVO">Novo</option><option value="USADO">Usado</option></select></label>
+                <label>Estado<select name="state" id="fin-state" required><option value="">Selecione</option></select></label>
+                <label>Cidade<input name="city" maxlength="100" autocomplete="address-level2" required placeholder="Ex.: São Paulo" /></label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Objetivo</legend>
+              <div class="fin-choice-row">
+                <label><input type="radio" name="simulationMode" value="VALUE" checked /><span>A partir do valor</span></label>
+                <label><input type="radio" name="simulationMode" value="INCOME" /><span>A partir da renda</span></label>
+              </div>
+              <div class="fin-field-grid two">
+                <label>Renda familiar bruta<input name="grossIncome" inputmode="decimal" data-money required placeholder="R$ 0,00" /></label>
+                <label>Valor do imóvel<input name="propertyValue" inputmode="decimal" data-money required placeholder="R$ 0,00" /></label>
+                <label>Valor da entrada<input name="downPayment" inputmode="decimal" data-money required placeholder="R$ 0,00" /></label>
+                <label>Percentual financiado<div class="fin-input-suffix"><input name="financedPercent" type="number" min="0.01" max="100" step="0.01" required /><span>%</span></div></label>
+                <label class="span-two">Valor financiado<input name="financedAmount" inputmode="decimal" data-money required placeholder="R$ 0,00" /></label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Prazo e amortização</legend>
+              <div class="fin-field-grid two">
+                <label>Prazo<div class="fin-input-suffix"><input name="termMonths" type="number" min="12" max="600" step="1" value="360" required /><span>meses</span></div></label>
+                <label>Idade do proponente mais velho<div class="fin-input-suffix"><input name="oldestProposerAge" type="number" min="18" max="100" step="1" required /><span>anos</span></div></label>
+              </div>
+              <label class="fin-label-title">Sistema de amortização</label>
+              <div class="fin-choice-row three">
+                <label><input type="radio" name="amortization" value="SAC" checked /><span>SAC</span></label>
+                <label><input type="radio" name="amortization" value="PRICE" /><span>Price</span></label>
+                <label><input type="radio" name="amortization" value="BOTH" /><span>Comparar ambos</span></label>
+              </div>
+            </fieldset>
+
+            <label>Vincular a cliente <small>(opcional)</small><select name="clientId" id="fin-client"><option value="">Não vincular</option></select></label>
+            <div class="fin-form-errors" id="fin-form-errors" role="alert" hidden></div>
+            <div class="fin-form-actions">
+              <button class="fin-button ghost" type="reset"><i data-lucide="rotate-ccw"></i> Limpar</button>
+              <button class="fin-button primary" type="submit"><i data-lucide="sparkles"></i> Simular financiamento</button>
+            </div>
+          </form>
+
+          <section class="fin-card fin-results" aria-live="polite">
+            <div class="fin-card-heading">
+              <span class="fin-step">2</span>
+              <div><h2>Produtos compatíveis</h2><p id="fin-results-summary">Preencha os dados para comparar as condições disponíveis.</p></div>
+            </div>
+            <div class="fin-empty" id="fin-results-empty">
+              <i data-lucide="building-2"></i>
+              <h3>Aguardando simulação</h3>
+              <p>Nenhuma condição é inventada. Os resultados usam apenas produtos ativos cadastrados com fonte e data de atualização.</p>
+            </div>
+            <div id="fin-schema-warning" class="fin-warning" hidden></div>
+            <div class="fin-results-toolbar" id="fin-results-toolbar" hidden>
+              <label>Ordenar por<select id="fin-sort"><option value="firstPayment">Menor primeira parcela</option><option value="annualRate">Menor taxa</option><option value="cet">Menor CET</option><option value="minimumIncome">Menor renda necessária</option></select></label>
+              <button type="button" class="fin-button secondary" id="fin-save-open"><i data-lucide="bookmark-plus"></i> Salvar</button>
+            </div>
+            <div class="fin-result-list" id="fin-result-list"></div>
+            <aside class="fin-disclaimer" id="fin-disclaimer" hidden>
+              <i data-lucide="info"></i>
+              <p>Esta simulação possui caráter exclusivamente informativo e não constitui proposta de crédito. Taxas, parcelas, prazos e demais condições estão sujeitos à atualização, análise de crédito, avaliação do imóvel e aprovação da instituição financeira.</p>
+            </aside>
+          </section>
+        </div>
+      </section>
+
+      <section class="fin-tab-panel" data-fin-panel="saved">
+        <div class="fin-card">
+          <div class="fin-card-heading"><span class="fin-step"><i data-lucide="history"></i></span><div><h2>Simulações salvas</h2><p>Histórico particular do usuário, sem vínculo automático com propostas de consórcio.</p></div></div>
+          <div id="fin-saved-list" class="fin-saved-list"><div class="fin-loading">Carregando...</div></div>
+        </div>
+      </section>
+
+      <section class="fin-tab-panel" data-fin-panel="rates" data-rate-admin hidden>
+        <div class="fin-admin-grid">
+          <div class="fin-card">
+            <div class="fin-card-heading"><span class="fin-step"><i data-lucide="landmark"></i></span><div><h2>Taxas de Financiamento</h2><p>Cadastre somente condições verificadas e mantenha fonte, atualização e validade.</p></div></div>
+            <div class="fin-warning"><strong>Importante:</strong> o sistema não contém taxas de demonstração. Produtos incompletos não exibem CET.</div>
+            <div id="fin-rate-list" class="fin-rate-list"></div>
+          </div>
+          <form class="fin-card fin-rate-form" id="fin-rate-form">
+            <input type="hidden" name="id" />
+            <div class="fin-card-heading"><span class="fin-step">+</span><div><h2 id="fin-rate-form-title">Nova condição real</h2><p>Todos os campos marcados são obrigatórios.</p></div></div>
+            <div class="fin-field-grid two">
+              <label>Instituição *<input name="institution_name" maxlength="200" required /></label>
+              <label>Linha / produto *<input name="product_name" maxlength="200" required /></label>
+              <label>Taxa anual (%) *<input name="annual_interest_rate" type="number" min="0" step="0.000001" required /></label>
+              <label>Tipo da taxa<select name="rate_type"><option>EFETIVA</option><option>NOMINAL</option></select></label>
+              <label>Indexador *<input name="indexer" placeholder="TR, IPCA ou PREFIXADO" required /></label>
+              <label>Sistemas *<select name="amortization_systems" multiple required><option value="SAC" selected>SAC</option><option value="PRICE">PRICE</option></select></label>
+              <label>Financiamento máximo (%) *<input name="max_financing_percent" type="number" min="0.01" max="100" step="0.01" required /></label>
+              <label>Comprometimento de renda (%) *<input name="income_commitment_percent" type="number" min="0.01" max="100" step="0.01" value="30" required /></label>
+              <label>Imóvel mínimo<input name="min_property_value" type="number" min="0" step="0.01" /></label>
+              <label>Imóvel máximo<input name="max_property_value" type="number" min="0" step="0.01" /></label>
+              <label>Financiamento mínimo<input name="min_financing_value" type="number" min="0" step="0.01" /></label>
+              <label>Financiamento máximo<input name="max_financing_value" type="number" min="0" step="0.01" /></label>
+              <label>Prazo mínimo (meses) *<input name="min_term_months" type="number" min="1" value="12" required /></label>
+              <label>Prazo máximo (meses) *<input name="max_term_months" type="number" min="1" required /></label>
+              <label>Idade máxima ao final *<input name="max_age_at_end" type="number" min="1" step="0.01" required /></label>
+              <label>Tipos de imóvel *<input name="property_types" value="RESIDENCIAL" required /></label>
+              <label>Condições do imóvel *<input name="property_conditions" value="NOVO, USADO" required /></label>
+              <label>Estados atendidos<input name="eligible_states" placeholder="SP, RJ (vazio = todos)" /></label>
+              <label>Cidades atendidas<input name="eligible_cities" placeholder="Vazio = todas" /></label>
+              <label>Tarifa de avaliação<input name="appraisal_fee" type="number" min="0" step="0.01" value="0" /></label>
+              <label>Tarifa de registro<input name="registration_fee" type="number" min="0" step="0.01" value="0" /></label>
+              <label>Outras tarifas iniciais<input name="other_upfront_fees" type="number" min="0" step="0.01" value="0" /></label>
+              <label>Tarifa mensal<input name="monthly_fee" type="number" min="0" step="0.01" value="0" /></label>
+              <label>Seguro mensal fixo<input name="monthly_insurance_amount" type="number" min="0" step="0.01" value="0" /></label>
+              <label>Seguro mensal sobre saldo (%)<input name="monthly_insurance_percent" type="number" min="0" step="0.000001" value="0" /></label>
+              <label>Fonte *<input name="source_name" maxlength="300" required /></label>
+              <label>URL da fonte<input name="source_url" type="url" maxlength="500" /></label>
+              <label>Atualização da fonte *<input name="updated_reference_at" type="datetime-local" required /></label>
+              <label>Válida desde<input name="valid_from" type="date" /></label>
+              <label>Válida até<input name="valid_until" type="date" /></label>
+              <label class="span-two">Observações da fonte<textarea name="source_notes" rows="3" maxlength="1500"></textarea></label>
+              <label class="span-two">Detalhes de tarifas (JSON)<textarea name="fee_details" rows="3">{}</textarea></label>
+              <label class="span-two">Detalhes de seguros (JSON)<textarea name="insurance_details" rows="3">{}</textarea></label>
+            </div>
+            <div class="fin-checks">
+              <label><input name="cost_data_complete" type="checkbox" /> Custos completos para estimar CET</label>
+              <label><input name="active" type="checkbox" checked /> Produto ativo</label>
+            </div>
+            <p class="fin-form-status" id="fin-rate-status"></p>
+            <div class="fin-form-actions"><button type="button" class="fin-button ghost" id="fin-rate-cancel">Cancelar edição</button><button class="fin-button primary" type="submit"><i data-lucide="save"></i> Salvar condição</button></div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <dialog class="fin-dialog" id="fin-save-dialog">
+      <form method="dialog" id="fin-save-form">
+        <div class="fin-dialog-head"><div><h2>Salvar simulação</h2><p>O vínculo com cliente continua opcional.</p></div><button value="cancel" aria-label="Fechar"><i data-lucide="x"></i></button></div>
+        <label>Nome da simulação<input name="name" maxlength="120" required placeholder="Ex.: Apartamento do João" /></label>
+        <p id="fin-save-status"></p>
+        <div class="fin-form-actions"><button value="cancel" class="fin-button ghost">Cancelar</button><button value="default" class="fin-button primary" id="fin-save-confirm">Salvar</button></div>
+      </form>
+    </dialog>
+
+    <dialog class="fin-dialog wide" id="fin-detail-dialog">
+      <div class="fin-dialog-head"><div><h2 id="fin-detail-title">Detalhes</h2><p id="fin-detail-subtitle"></p></div><button type="button" data-close-detail aria-label="Fechar"><i data-lucide="x"></i></button></div>
+      <div id="fin-detail-content"></div>
+    </dialog>
+
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js?v=mse745p9"></script>
+    <script src="lib/financing-calculator.js?v=mse745p9"></script>
+    <script src="simular-financiamento.js?v=mse745p9"></script>
+    <script src="/pwa.js"></script>
+  </body>
+</html>

@@ -160,6 +160,17 @@ body[data-page="faculdade"] .faculdade-header-actions .faculdade-logout-btn:hove
     width: 100%;
     padding-top: 0;
   }
+
+  .faculdade-subtabs-nav {
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  .faculdade-tab-btn {
+    justify-content: center;
+    text-align: center;
+  }
 }
 
 /* Top Sub-Tabs Navigation */

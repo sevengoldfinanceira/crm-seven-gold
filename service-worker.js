@@ -1,8 +1,9 @@
-const CACHE_VERSION = "seven-gold-vmsdvqjm3";
+const CACHE_VERSION = "seven-gold-vmse745p9";
 const STATIC_ASSETS = [
   "/home.css",
   "/painel.css",
   "/atendimento.css",
+  "/simular-financiamento.css",
   "/permissoes.css",
   "/permissoes.js",
   "/equipe.js",
@@ -14,7 +15,10 @@ const STATIC_ASSETS = [
   "/supabase-config.js",
   "/assets/icons/seven-gold-g7.png",
   "/manifest.json",
-  "/atendimento.html"
+  "/atendimento.html",
+  "/simular-financiamento.html",
+  "/simular-financiamento.js",
+  "/lib/financing-calculator.js"
 ];
 
 self.addEventListener("install", (event) => {

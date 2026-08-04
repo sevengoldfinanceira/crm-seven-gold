@@ -48,6 +48,8 @@
   align-items: center !important;
   gap: 8px !important;
   transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
 }
 
 .simulador-tab-btn:hover {
@@ -2429,5 +2431,210 @@ select.simulador-input option {
 .btn-action-doc.remove:hover {
   background: #EF4444;
   color: #FFFFFF;
+}
+
+/* Propostas e clientes em cards verticais apenas no mobile. */
+@media (max-width: 768px) {
+  .closed-clients-panel {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    gap: 14px;
+    margin-top: 0;
+  }
+
+  .closed-clients-kpi-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    width: 100%;
+  }
+
+  .closed-kpi-card {
+    width: 100%;
+    min-width: 0;
+    padding: 14px 16px;
+  }
+
+  .closed-kpi-info {
+    min-width: 0;
+  }
+
+  .closed-kpi-value {
+    font-size: 1.12rem;
+    overflow-wrap: anywhere;
+  }
+
+  .closed-clients-filter-bar {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .closed-search-input-box,
+  .closed-filter-select,
+  .btn-add-closed-gold {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .btn-add-closed-gold {
+    min-height: 42px;
+    justify-content: center;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .closed-clients-table-wrapper {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .closed-clients-table,
+  .closed-clients-table tbody {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .closed-clients-table thead {
+    display: none;
+  }
+
+  .closed-clients-table tbody {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .closed-clients-table .mobile-record-card {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 14px;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    background: #FFFFFF;
+    box-shadow: 0 5px 18px rgba(15, 23, 42, 0.07);
+    overflow: hidden;
+  }
+
+  .closed-clients-table .mobile-record-card:hover td {
+    background: transparent;
+  }
+
+  .closed-clients-table .mobile-record-card td {
+    display: grid;
+    grid-template-columns: minmax(92px, 0.42fr) minmax(0, 0.58fr);
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding: 9px 0;
+    border-bottom: 1px solid #F1F5F9;
+    text-align: left !important;
+    overflow-wrap: anywhere;
+  }
+
+  .closed-clients-table .mobile-record-card td::before {
+    content: attr(data-mobile-label);
+    color: #6B7280;
+    font-size: 0.67rem;
+    font-weight: 800;
+    letter-spacing: 0.045em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .closed-clients-table .mobile-record-card .mobile-record-identity {
+    display: block;
+    padding: 0 0 13px;
+    margin-bottom: 2px;
+    border-bottom-color: #E5E7EB;
+  }
+
+  .closed-clients-table .mobile-record-card .mobile-record-identity::before,
+  .closed-clients-table .mobile-record-card .mobile-record-actions::before {
+    display: none;
+  }
+
+  .closed-client-name-cell {
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+  }
+
+  .closed-client-details,
+  .closed-client-title,
+  .closed-client-sub,
+  .closed-product-cell {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .closed-client-title {
+    font-size: 0.98rem;
+  }
+
+  .closed-client-sub {
+    margin-top: 2px;
+    line-height: 1.35;
+  }
+
+  .closed-clients-table .mobile-record-card .mobile-record-actions {
+    display: block;
+    padding: 12px 0 0;
+    border-bottom: 0;
+  }
+
+  .closed-actions-row {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    align-items: stretch;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .closed-actions-row .btn-closed-action,
+  .closed-actions-row > span {
+    flex: 1 1 92px;
+    min-width: 0;
+    min-height: 40px;
+    justify-content: center;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .closed-clients-table .mobile-record-empty-row {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 1px dashed #CBD5E1;
+    border-radius: 16px;
+    background: #FFFFFF;
+  }
+
+  .closed-clients-table .mobile-record-empty-row td {
+    display: block;
+    width: 100%;
+    padding: 28px 18px !important;
+    border: 0;
+    line-height: 1.5;
+  }
 }
 

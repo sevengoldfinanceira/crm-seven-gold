@@ -7063,6 +7063,7 @@ const createLeadCard = (lead) => {
   let tagDropdownList = null;
   const card = document.createElement("article");
   card.className = lead.status === "venda_fechada" ? "lead-card done" : "lead-card";
+  card.classList.add("mobile-lead-card");
   const leadLocked = lead.commercial_productions?.status === "closed" || Boolean(lead.locked_at);
   card.draggable = !leadLocked;
   card.classList.toggle("is-production-locked", leadLocked);
@@ -7116,6 +7117,12 @@ const createLeadCard = (lead) => {
   const badgeRow = document.createElement("div");
   badgeRow.className = "lead-badges-row";
   badgeRow.append(warningBadge);
+  if (diffDays === 0) {
+    const createdTodayBadge = document.createElement("span");
+    createdTodayBadge.className = "mobile-created-today";
+    createdTodayBadge.textContent = "Criado hoje";
+    badgeRow.append(createdTodayBadge);
+  }
 
   const getLeadTagIcon = (className) => {
     if (className === "numero-invalido" || className === "sem-whats") {
@@ -7279,6 +7286,22 @@ const createLeadCard = (lead) => {
     infoList.append(respRow);
   }
 
+  const mobileMeta = document.createElement("div");
+  mobileMeta.className = "mobile-lead-meta";
+  const originText = document.createElement("span");
+  const originLabel = document.createElement("small");
+  originLabel.textContent = "Origem";
+  const originValue = document.createElement("strong");
+  originValue.textContent = lead.origin || "Não informada";
+  originText.append(originLabel, originValue);
+  const createdText = document.createElement("span");
+  const createdLabel = document.createElement("small");
+  createdLabel.textContent = "Criação";
+  const createdValue = document.createElement("strong");
+  createdValue.textContent = createdDate && !Number.isNaN(createdDate.getTime()) ? createdDate.toLocaleDateString("pt-BR") : "Não informada";
+  createdText.append(createdLabel, createdValue);
+  mobileMeta.append(originText, createdText);
+
   // Optional Note
   const hasCustomNote = lead.note && lead.note.trim() !== "" && lead.note.trim().toLowerCase() !== "sem observacao cadastrada.";
   let noteTooltip = null;
@@ -7421,7 +7444,7 @@ const createLeadCard = (lead) => {
   if (legacyTags.length > 0) {
     card.append(tagsContainer);
   }
-  card.append(infoList);
+  card.append(infoList, mobileMeta);
   if (noteTooltip) {
     card.append(noteTooltip);
   }
@@ -7570,6 +7593,18 @@ const createLeadCard = (lead) => {
     leadDropdown.classList.toggle("is-open");
   });
 
+  if (!isTrashLead) {
+    const mobileMoreButton = document.createElement("button");
+    mobileMoreButton.type = "button";
+    mobileMoreButton.className = "lead-action-button mobile-lead-more";
+    mobileMoreButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>Mais';
+    mobileMoreButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      leadMenuBtn.click();
+    });
+    actionsRow.append(mobileMoreButton);
+  }
+
   document.addEventListener("click", () => {
     leadDropdown.classList.remove("is-open");
     if (tagDropdownList) tagDropdownList.classList.remove("is-open");
@@ -7601,6 +7636,56 @@ const renderEmptyState = (stack) => {
   stack.append(container);
 };
 
+let activeMobilePipelineStage = "lead_recebido";
+
+const syncMobilePipelineView = (total) => {
+  const stageButtons = Array.from(document.querySelectorAll("[data-mobile-stage]"));
+  if (stageButtons.length === 0) return;
+
+  const activeColumn = columns.find((column) => column.dataset.status === activeMobilePipelineStage) || columns[0];
+  if (!activeColumn) return;
+  activeMobilePipelineStage = activeColumn.dataset.status;
+
+  columns.forEach((column) => column.classList.toggle("mobile-stage-active", column === activeColumn));
+  stageButtons.forEach((button) => {
+    const column = columns.find((item) => item.dataset.status === button.dataset.mobileStage);
+    const count = column?.querySelector("header small")?.textContent?.trim() || "0";
+    button.querySelector("[data-mobile-stage-count]").textContent = count;
+    const active = button.dataset.mobileStage === activeMobilePipelineStage;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-selected", String(active));
+  });
+
+  const activeCount = activeColumn.querySelector("header small")?.textContent?.trim() || "0";
+  const activeTitle = activeColumn.querySelector("header strong")?.textContent?.trim() || "Etapa";
+  const title = document.querySelector("[data-mobile-stage-title]");
+  const titleCount = document.querySelector("[data-mobile-stage-title-count]");
+  const totalCount = document.querySelector("[data-mobile-lead-count]");
+  if (title) title.textContent = activeTitle;
+  if (titleCount) titleCount.textContent = `(${activeCount})`;
+  if (totalCount) {
+    const parsedTotal = Number.isFinite(Number(total)) ? Number(total) : (window.pipelineLeadsCache || []).length;
+    totalCount.textContent = `${parsedTotal} ${parsedTotal === 1 ? "lead ativo" : "leads ativos"}`;
+  }
+};
+
+const setupMobilePipeline = () => {
+  document.querySelectorAll("[data-mobile-stage]").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeMobilePipelineStage = button.dataset.mobileStage;
+      syncMobilePipelineView();
+      document.querySelector(".mobile-stage-list-title")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  document.querySelector("[data-mobile-pipeline-menu]")?.addEventListener("click", () => menuButton?.click());
+  document.querySelector("[data-mobile-pipeline-filter]")?.addEventListener("click", (event) => {
+    const pipelineHeader = document.querySelector('[data-tab="pipeline"] .pipeline-header');
+    const open = pipelineHeader?.classList.toggle("mobile-filters-open") || false;
+    event.currentTarget.setAttribute("aria-expanded", String(open));
+  });
+};
+
 const renderLeads = (leads) => {
   setupPipelineTagFilters();
   window.pipelineLeadsCache = Array.isArray(leads) ? leads : [];
@@ -7609,6 +7694,7 @@ const renderLeads = (leads) => {
   columns.forEach((column) => {
     const status = column.dataset.status;
     const stack = column.querySelector(".card-stack");
+    stack.classList.add("mobile-lead-list");
     const counter = column.querySelector("small");
     const leadsInColumn = leads.filter((lead) => lead.status === status);
     const searchVal = String(window.pipelineSearchQuery || "").trim().toLowerCase();
@@ -7647,9 +7733,11 @@ const renderLeads = (leads) => {
   if (leadCount) {
     leadCount.textContent = `${total} ${total === 1 ? "lead ativo" : "leads ativos"}`;
   }
+  syncMobilePipelineView(total);
 };
 
 setupPipelineTagFilters();
+setupMobilePipeline();
 
 const getPipelineLeadDateRange = () => {
   const parseDateString = (value) => {
@@ -9078,6 +9166,7 @@ const switchTab = () => {
   document.body.classList.toggle("crm-race-active", activeTab === "corrida");
   document.body.classList.toggle("crm-maps-active", activeTab === "mapas");
   document.body.classList.toggle("crm-feed-active", activeTab === "feed");
+  document.body.classList.toggle("crm-mobile-pipeline-active", activeTab === "pipeline");
   if (activeTab !== "corrida") {
     cleanupAppointmentRaceAnimations({ stopTimer: true });
   }
