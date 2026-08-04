@@ -138,6 +138,16 @@
 
     container.innerHTML = `
       <div class="simulador-container">
+        <!-- Financiamento imobiliário integrado ao painel -->
+        <div class="simulador-subtab-content" id="subtab-financiamento" style="display:none;">
+          <iframe
+            class="financiamento-embed"
+            title="Simulador de financiamento imobiliário"
+            src="/simular-financiamento?embedded=1"
+            loading="lazy"
+          ></iframe>
+        </div>
+
         <!-- Sub-tab 1: Simulação -->
         <div class="simulador-subtab-content" id="subtab-simulacao">
           <div class="simulador-main-grid">
