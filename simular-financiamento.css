@@ -9,4 +9,5 @@
 .fin-topbar{background:radial-gradient(circle at 12% 0,rgba(236,210,127,.17),transparent 32%),linear-gradient(135deg,#000,#090909)}
 .fin-embedded body{background:transparent}
 .fin-embedded .fin-topbar{display:none}
+.fin-embedded #sg-module-transition-overlay{display:none!important}
 .fin-embedded .fin-page{width:100%;padding:0 0 50px}
