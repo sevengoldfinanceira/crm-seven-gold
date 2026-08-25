@@ -402,6 +402,11 @@ const PIPELINE_STAGE_TAGS = {
       className: "sem-whats",
     },
     {
+      value: "sem_entrada",
+      label: "Sem entrada",
+      className: "sem-entrada",
+    },
+    {
       value: "acompanhar",
       label: "Acompanhar",
       className: "acompanhar",

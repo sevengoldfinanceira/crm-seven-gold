@@ -9298,14 +9298,16 @@ body.theme-dark .lead-tag-badge.lead-tag-nao-responde {
 }
 
 .lead-tag-badge.lead-tag-numero-invalido,
-.lead-tag-badge.lead-tag-sem-whats {
+.lead-tag-badge.lead-tag-sem-whats,
+.lead-tag-badge.lead-tag-sem-entrada {
   background: #fef2f2 !important;
   color: #dc2626 !important;
   border-color: #fecaca !important;
 }
 
 body.theme-dark .lead-tag-badge.lead-tag-numero-invalido,
-body.theme-dark .lead-tag-badge.lead-tag-sem-whats {
+body.theme-dark .lead-tag-badge.lead-tag-sem-whats,
+body.theme-dark .lead-tag-badge.lead-tag-sem-entrada {
   background: rgba(220, 38, 38, 0.15) !important;
   color: #f87171 !important;
   border-color: rgba(248, 113, 113, 0.3) !important;
@@ -10277,6 +10279,9 @@ body.theme-dark .lead-tag-badge.lead-trash-origin-badge--agendamento {
 
 .lead-tag-dropdown-item--acompanhar { color: #0891b2 !important; }
 .lead-tag-dropdown-item--acompanhar:hover { background-color: #ecfeff !important; }
+
+.lead-tag-dropdown-item--sem-entrada { color: #dc2626 !important; }
+.lead-tag-dropdown-item--sem-entrada:hover { background-color: #fef2f2 !important; }
 
 .lead-tag-dropdown-item--nao-quer { color: #dc2626 !important; }
 .lead-tag-dropdown-item--nao-quer:hover { background-color: #fef2f2 !important; }
