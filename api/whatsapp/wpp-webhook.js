@@ -11,15 +11,10 @@ const getText = (msg) => {
   return "";
 };
 
-const getPhone = (msg) => {
-  const raw =
-    msg?.from ||
-    msg?.to ||
-    msg?.sender?.id ||
-    msg?.sender?.user ||
-    msg?.chatId ||
-    msg?.chat?.id ||
-    "";
+const getPhone = (msg, isFromMe) => {
+  const raw = isFromMe
+    ? (msg?.to || msg?.chatId || msg?.chat?.id || msg?.from || "")
+    : (msg?.from || msg?.sender?.id || msg?.sender?.user || msg?.chatId || msg?.chat?.id || "");
   return normalizePhone(String(raw).split("@")[0]);
 };
 
@@ -45,13 +40,15 @@ module.exports = async (req, res) => {
     if (!text) return res.end(JSON.stringify({ ok: true, ignored: true }));
 
     const isFromMe = Boolean(msg?.fromMe || msg?.isSentByMe || msg?.isSelf || event.includes("self"));
-    const phone = getPhone(msg);
+    const phone = getPhone(msg, isFromMe);
     if (!phone) return res.end(JSON.stringify({ ok: true, ignored: true }));
+    const localPhone = phone.startsWith("55") ? phone.slice(2) : phone;
 
     const { data: lead } = await supabase
       .from("leads")
       .select("id")
-      .eq("telefone", phone)
+      .in("telefone", [phone, localPhone])
+      .limit(1)
       .maybeSingle();
 
     if (!lead?.id) return res.end(JSON.stringify({ ok: true, ignored: true, reason: "lead_not_found" }));
