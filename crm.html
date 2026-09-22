@@ -13,6 +13,7 @@
     />
     <link rel="stylesheet" href="styles.css?v=mt8tw68t" />
     <link rel="stylesheet" href="searchable-select.css?v=mt8tw68t" />
+    <link rel="stylesheet" href="whatsapp-crm.css?v=1" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#000000" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -2512,6 +2513,7 @@
           <button type="button" class="lead-modal-tab-btn active" data-tab="dados" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 3px solid var(--gold); color: var(--gold); font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg><span>Dados</span></button>
           <button type="button" class="lead-modal-tab-btn" data-tab="tarefas" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 3px solid transparent; color: var(--muted); font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Tarefas</span></button>
           <button type="button" class="lead-modal-tab-btn" data-tab="historico" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 3px solid transparent; color: var(--muted); font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Histórico</span></button>
+          <button type="button" class="lead-modal-tab-btn" data-tab="whatsapp" data-whatsapp-tab hidden style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 3px solid transparent; color: var(--muted); font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.2 9.2 0 0 1-4-.9L3 20l1.2-4.3A8.5 8.5 0 1 1 21 11.5Z"/><path d="M8.5 8.5c.5 3 2 4.5 5 5"/></svg><span>WhatsApp</span></button>
         </div>
 
         <div id="modal-lead-tab-dados" class="lead-modal-tab-content" style="display: block; width: 100%;">
@@ -2577,6 +2579,36 @@
         <div id="modal-lead-history-section" class="lead-modal-tab-content" style="display: none; width: 100%;">
           <h3 style="font-size: 0.95rem; font-weight: 700; margin: 0 0 12px; color: var(--ink);">Histórico / Linha do Tempo</h3>
           <div id="modal-lead-history-list" style="display: grid; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 4px;"></div>
+        </div>
+
+        <div id="modal-lead-whatsapp-section" class="lead-modal-tab-content lead-whatsapp-panel" style="display: none; width: 100%;">
+          <div class="lead-whatsapp-toolbar">
+            <div>
+              <strong>Conversa do WhatsApp</strong>
+              <div id="lead-whatsapp-status" class="lead-whatsapp-status">Verificando conexão...</div>
+            </div>
+            <div class="lead-whatsapp-actions">
+              <button type="button" class="lead-whatsapp-action" data-whatsapp-action="archive">Arquivar</button>
+              <button type="button" class="lead-whatsapp-action" data-whatsapp-action="clear">Limpar conversa</button>
+              <button type="button" class="lead-whatsapp-action danger" data-whatsapp-action="delete">Excluir do WhatsApp</button>
+            </div>
+          </div>
+
+          <div id="lead-whatsapp-connect" class="lead-whatsapp-connect" hidden>
+            <strong>Conectar WhatsApp</strong>
+            <p>Escaneie o QR Code como no WhatsApp Web.</p>
+            <button id="lead-whatsapp-connect-btn" type="button" class="new-lead-button">Gerar QR Code</button>
+            <img id="lead-whatsapp-qr" alt="QR Code do WhatsApp" hidden />
+          </div>
+
+          <div id="lead-whatsapp-chat" class="lead-whatsapp-chat">
+            <div class="lead-whatsapp-empty">Abra um cliente para carregar as mensagens.</div>
+          </div>
+
+          <form id="lead-whatsapp-compose" class="lead-whatsapp-compose">
+            <textarea id="lead-whatsapp-input" placeholder="Digite sua mensagem..." rows="2"></textarea>
+            <button type="submit">Enviar</button>
+          </form>
         </div>
  
         <p class="form-status" data-lead-form-status></p>
@@ -2677,6 +2709,7 @@
     <script src="auth.js?v=mt8tw68t"></script>
     <script src="perfil.js?v=mt8tw68t"></script>
     <script src="script.js?v=mt8tw68t"></script>
+    <script src="whatsapp-crm.js?v=1"></script>
     <!-- html2pdf.js for professional PDF exports -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="financeiro.js?v=mt8tw68t"></script>
