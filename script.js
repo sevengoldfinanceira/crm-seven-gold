@@ -932,6 +932,8 @@ openModalButton?.addEventListener("click", () => {
     if (metaContainer) metaContainer.style.display = "none";
     const responsibleSection = modal.querySelector("#modal-lead-responsible");
     if (responsibleSection) responsibleSection.style.display = "none";
+    const whatsappTab = modal.querySelector("[data-whatsapp-tab]");
+    if (whatsappTab) whatsappTab.hidden = true;
     setFormStatus("");
     modal.showModal();
   }
@@ -986,6 +988,9 @@ const openEditLeadModal = async (lead, highlightTaskId = null) => {
   leadForm.dataset.leadId = lead.id;
   leadForm.dataset.originalStatus = lead.status || "lead_recebido";
   currentEditingLead = lead;
+  const whatsappTab = modal.querySelector("[data-whatsapp-tab]");
+  if (whatsappTab) whatsappTab.hidden = false;
+  window.dispatchEvent(new CustomEvent("seven-gold:lead-opened", { detail: lead }));
 
   const metaRow = modal.querySelector("#modal-lead-meta");
   const originDisplay = modal.querySelector("#modal-lead-origin-display");
@@ -9269,6 +9274,11 @@ const initLeadModalTabs = () => {
       } else if (targetTab === "historico") {
         const historyContainer = document.getElementById("modal-lead-history-section");
         if (historyContainer) historyContainer.style.setProperty("display", "block", "important");
+        if (submitButton) submitButton.style.display = "none";
+        if (deleteButton) deleteButton.style.display = "none";
+      } else if (targetTab === "whatsapp") {
+        const whatsappContainer = document.getElementById("modal-lead-whatsapp-section");
+        if (whatsappContainer) whatsappContainer.style.setProperty("display", "flex", "important");
         if (submitButton) submitButton.style.display = "none";
         if (deleteButton) deleteButton.style.display = "none";
       }
