@@ -1,0 +1,17 @@
+services:
+  wppconnect:
+    image: wppconnect/wppconnect-server:2.10.27
+    restart: unless-stopped
+    ports:
+      - "21465:21465"
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      PORT: 21465
+      MANAGER_ENABLED: "true"
+    volumes:
+      - wppconnect_tokens:/usr/src/wpp-server/tokens
+      - wppconnect_user_data:/usr/src/wpp-server/userDataDir
+
+volumes:
+  wppconnect_tokens:
+  wppconnect_user_data:
