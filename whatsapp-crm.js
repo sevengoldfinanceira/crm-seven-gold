@@ -64,7 +64,8 @@
     try {
       const data = await request("/api/whatsapp/session");
       const raw = JSON.stringify(data.status || {}).toLowerCase();
-      const online = raw.includes("connected") || raw.includes("islogged") || raw.includes("inchat");
+      const offline = raw.includes("disconnected") || raw.includes("not connected") || raw.includes("unpaired") || raw.includes("closed");
+      const online = !offline && (raw.includes('"connected"') || raw.includes("islogged") || raw.includes("inchat") || raw.includes('"status":"connected"'));
       status.textContent = online ? "WhatsApp conectado" : "WhatsApp desconectado";
       status.classList.toggle("is-online", online);
       if (connect) connect.hidden = online;
